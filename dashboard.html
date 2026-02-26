@@ -2,1105 +2,445 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VGN – Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VGN – Accueil</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --orange: #F97316;
-  --orange-light: #FDBA74;
-  --orange-dark: #EA580C;
   --green: #16A34A;
-  --green-light: #4ADE80;
   --green-dark: #15803D;
-  --green-pale: #F0FDF4;
-  --cream: #FFFBF5;
-  --white: #FFFFFF;
-  --gray: #6B7280;
-  --gray-light: #F3F4F6;
-  --text: #1C1917;
-  --text-soft: #78716C;
-  --nav-h: 64px;
-  --bot-h: 70px;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #F7FBF8;
-  min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-  position: relative;
-  overflow-x: hidden;
-}
-
-/* ── TOP NAV ── */
-.topnav {
-  position: fixed;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  height: var(--nav-h);
-  background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.25rem;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(22,163,74,0.3);
-}
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.nav-logo-badge {
-  width: 36px; height: 36px;
-  background: var(--orange);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 10px rgba(249,115,22,0.4);
-}
-
-.nav-logo-text {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900;
-  font-size: 1.4rem;
-  color: white;
-  letter-spacing: 0.08em;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.nav-icon-btn {
-  width: 38px; height: 38px;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.nav-icon-btn:hover { background: rgba(255,255,255,0.25); }
-
-.notif-dot {
-  position: relative;
-}
-
-.notif-dot::after {
-  content: '';
-  position: absolute;
-  top: 4px; right: 4px;
-  width: 8px; height: 8px;
-  background: var(--orange);
-  border: 2px solid var(--green-dark);
-  border-radius: 50%;
-}
-
-/* ── SCROLL CONTENT ── */
-.content {
-  padding-top: calc(var(--nav-h) + 1rem);
-  padding-bottom: calc(var(--bot-h) + 1rem);
-}
-
-/* ── WELCOME BANNER ── */
-.welcome-banner {
-  margin: 0 1rem 1.25rem;
-  background: linear-gradient(135deg, var(--green-dark) 0%, #22C55E 100%);
-  border-radius: 20px;
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(22,163,74,0.25);
-  animation: fadeDown 0.5s ease both;
-}
-
-.welcome-banner::before {
-  content: '🌾';
-  position: absolute;
-  right: -10px; top: -10px;
-  font-size: 5rem;
-  opacity: 0.12;
-  transform: rotate(15deg);
-}
-
-.welcome-text h3 {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.75);
-  font-weight: 400;
-  margin-bottom: 0.2rem;
-}
-
-.welcome-text h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  color: white;
-  font-weight: 700;
-}
-
-.welcome-text .tagline {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.65);
-  margin-top: 0.2rem;
-}
-
-/* Announce ticker */
-.announce-bar {
-  margin: 0 1rem 1.25rem;
-  background: white;
-  border-radius: 14px;
-  padding: 0.75rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  overflow: hidden;
-  animation: fadeDown 0.5s ease 0.05s both;
-}
-
-.announce-icon {
-  font-size: 1.2rem;
-  flex-shrink: 0;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
-
-.announce-ticker {
-  overflow: hidden;
-  flex: 1;
-}
-
-.announce-ticker span {
-  display: block;
-  white-space: nowrap;
-  font-size: 0.85rem;
-  color: var(--text);
-  font-weight: 500;
-  animation: tickerScroll 18s linear infinite;
-}
-
-@keyframes tickerScroll {
-  0%   { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-/* ── HERO SLIDER ── */
-.slider-section {
-  margin: 0 1rem 1.5rem;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-  position: relative;
-  height: 200px;
-  animation: fadeDown 0.5s ease 0.1s both;
-}
-
-.slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-  display: flex;
-  align-items: flex-end;
-}
-
-.slide.active { opacity: 1; }
-
-.slide-bg {
-  position: absolute;
-  inset: 0;
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-
-/* SVG illustration fallbacks */
-.slide-illus {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 8rem;
-}
-
-.slide-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%);
-}
-
-.slide-caption {
-  position: relative;
-  z-index: 2;
-  padding: 1rem 1.25rem;
-  width: 100%;
-}
-
-.slide-caption h4 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  color: white;
-  font-weight: 700;
-}
-
-.slide-caption p {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.8);
-  margin-top: 0.1rem;
-}
-
-.slider-dots {
-  position: absolute;
-  bottom: 10px;
-  right: 12px;
-  display: flex;
-  gap: 5px;
-  z-index: 3;
-}
-
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 3px;
-  background: rgba(255,255,255,0.5);
-  transition: all 0.3s;
-}
-
-.dot.active {
-  width: 18px;
-  background: var(--orange);
-}
-
-/* Slide backgrounds using CSS gradients + emoji */
-.slide-corn    { background: linear-gradient(135deg, #78350F, #B45309, #D97706); }
-.slide-wheat   { background: linear-gradient(135deg, #92400E, #CA8A04, #EAB308); }
-.slide-cattle  { background: linear-gradient(135deg, #064E3B, #065F46, #059669); }
-.slide-farm    { background: linear-gradient(135deg, #1E3A2F, #15803D, #4ADE80); }
-
-/* ── SECTION TITLE ── */
-.section-title {
-  padding: 0 1rem;
-  margin-bottom: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  animation: fadeDown 0.5s ease 0.15s both;
-}
-
-.section-title h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  color: var(--text);
-  font-weight: 700;
-}
-
-.section-title a {
-  font-size: 0.8rem;
-  color: var(--green);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-/* ── QUICK ACTIONS GRID ── */
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.85rem;
-  padding: 0 1rem;
-  margin-bottom: 1.5rem;
-  animation: fadeUp 0.5s ease 0.2s both;
-}
-
-.action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.action-btn:active { transform: scale(0.92); }
-
-.action-icon {
-  width: 58px; height: 58px;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  position: relative;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-
-.action-btn:hover .action-icon {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.18);
-}
-
-.action-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text);
-  text-align: center;
-  line-height: 1.3;
-}
-
-/* Action colors */
-.ic-recharge  { background: linear-gradient(135deg, #F97316, #EA580C); }
-.ic-retrait   { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
-.ic-fonds     { background: linear-gradient(135deg, #16A34A, #15803D); }
-.ic-roue      { background: linear-gradient(135deg, #A3E635, #65A30D); }
-.ic-invite    { background: linear-gradient(135deg, #F97316, #DC2626); }
-.ic-entreprise{ background: linear-gradient(135deg, #06B6D4, #0284C7); }
-.ic-titres    { background: linear-gradient(135deg, #A855F7, #7C3AED); }
-.ic-vip       { background: linear-gradient(135deg, #EAB308, #CA8A04); }
-
-/* ── STATS ROW ── */
-.stats-strip {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  padding: 0 1rem;
-  margin-bottom: 1.5rem;
-  animation: fadeUp 0.5s ease 0.25s both;
-}
-
-.stat-tile {
-  background: white;
-  border-radius: 16px;
-  padding: 1rem 1.1rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-tile::before {
-  content: attr(data-emoji);
-  position: absolute;
-  right: -5px; bottom: -5px;
-  font-size: 3rem;
-  opacity: 0.12;
-}
-
-.stat-tile .st-label {
-  font-size: 0.72rem;
-  color: var(--gray);
-  font-weight: 500;
-  margin-bottom: 0.35rem;
-}
-
-.stat-tile .st-value {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.stat-tile .st-sub {
-  font-size: 0.7rem;
-  margin-top: 0.2rem;
-}
-
-.st-green { color: var(--green); }
-.st-orange { color: var(--orange); }
-
-/* ── TASKS SECTION ── */
-.tasks-section {
-  padding: 0 1rem;
-  margin-bottom: 1.5rem;
-  animation: fadeUp 0.5s ease 0.3s both;
-}
-
-.task-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.task-card {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
-}
-
-.task-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-
-.task-thumb {
-  height: 110px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 4.5rem;
-  position: relative;
-}
-
-.task-tag {
-  position: absolute;
-  top: 8px; left: 8px;
-  background: var(--orange);
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.task-info {
-  background: white;
-  padding: 0.6rem 0.75rem;
-}
-
-.task-info .t-name {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 0.2rem;
-}
-
-.task-info .t-reward {
-  font-size: 0.75rem;
-  color: var(--green);
-  font-weight: 700;
-}
-
-/* Task backgrounds */
-.tb-corn    { background: linear-gradient(135deg, #B45309 0%, #D97706 100%); }
-.tb-wheat   { background: linear-gradient(135deg, #92400E 0%, #EAB308 100%); }
-.tb-cattle  { background: linear-gradient(135deg, #065F46 0%, #16A34A 100%); }
-.tb-milk    { background: linear-gradient(135deg, #1E40AF 0%, #60A5FA 100%); }
-.tb-harvest { background: linear-gradient(135deg, #7C2D12 0%, #F97316 100%); }
-.tb-soil    { background: linear-gradient(135deg, #374151 0%, #6B7280 100%); }
-
-/* ── BOTTOM NAV ── */
-.botnav {
-  position: fixed;
-  bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  height: var(--bot-h);
-  background: white;
-  border-top: 1px solid #E5E7EB;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 0.5rem;
-  z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-}
-
-.botnav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-  border-radius: 14px;
-  position: relative;
-}
-
-.botnav-item:active { transform: scale(0.9); }
-
-.botnav-item .bn-icon {
-  font-size: 1.4rem;
-  transition: transform 0.2s;
-}
-
-.botnav-item .bn-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--gray);
-  transition: color 0.2s;
-}
-
-.botnav-item.active .bn-label { color: var(--green); }
-.botnav-item.active .bn-icon { transform: scale(1.1); }
-
-.botnav-item.active::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%; transform: translateX(-50%);
-  width: 30px; height: 3px;
-  background: var(--green);
-  border-radius: 0 0 4px 4px;
-}
-
-/* Center FAB */
-.botnav-fab {
-  width: 52px; height: 52px;
-  background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 20px rgba(249,115,22,0.45);
-  cursor: pointer;
-  margin-top: -24px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.botnav-fab:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 8px 28px rgba(249,115,22,0.5); }
-
-/* ── ANIMATIONS ── */
-@keyframes fadeDown {
-  from { opacity:0; transform:translateY(-16px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(16px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 200;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-
-.modal-sheet {
-  background: white;
-  width: 100%;
-  max-width: 480px;
-  border-radius: 24px 24px 0 0;
-  padding: 1.5rem 1.5rem 2.5rem;
-  transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-}
-
-.modal-overlay.open .modal-sheet { transform: translateY(0); }
-
-.modal-handle {
-  width: 40px; height: 4px;
-  background: #E5E7EB;
-  border-radius: 2px;
-  margin: 0 auto 1.25rem;
-}
-
-.modal-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  color: var(--text);
-  margin-bottom: 1.25rem;
-  text-align: center;
-}
-
-.modal-input {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem;
-  color: var(--text);
-  outline: none;
-  margin-bottom: 1rem;
-  transition: border-color 0.2s;
-}
-
-.modal-input:focus { border-color: var(--green); }
-
-.modal-btn {
-  width: 100%;
-  padding: 0.9rem;
-  background: linear-gradient(135deg, var(--green), var(--green-dark));
-  color: white;
-  border: none;
-  border-radius: 14px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(22,163,74,0.3);
-  transition: transform 0.15s, box-shadow 0.2s;
-}
-
-.modal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(22,163,74,0.4); }
-
-/* ── TOAST ── */
-.toast {
-  position: fixed;
-  top: 80px; right: 1rem;
-  background: var(--green-dark);
-  color: white;
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  z-index: 500;
-  transform: translateX(150%);
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-
-.toast.show { transform: translateX(0); }
-
-/* ── DESKTOP CENTERING ── */
-@media (min-width: 480px) {
-  body { border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB; }
-}
+  --orange: #F97316;
+  --orange-dark: #EA580C;
+  --bg: #F2F5F2;
+  --card: #FFFFFF;
+  --text: #111827;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --top: 58px;
+  --bot: 58px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  max-width:430px;
+  margin:0 auto;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* TOP BAR */
+.topbar{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;height:var(--top);
+  background:linear-gradient(135deg,var(--green-dark),#22C55E);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;z-index:999;
+  box-shadow:0 2px 10px rgba(0,0,0,0.15);
+}
+.tl{display:flex;align-items:center;gap:8px;}
+.tl-badge{
+  width:32px;height:32px;background:var(--orange);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;box-shadow:0 2px 8px rgba(249,115,22,0.4);
+}
+.tl-name{font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:0.07em;}
+.tr{display:flex;gap:7px;}
+.ibtn{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.95rem;cursor:pointer;
+}
+
+/* BODY */
+.body{
+  padding-top:calc(var(--top)+10px);
+  padding-bottom:calc(var(--bot)+14px);
+}
+
+/* HERO */
+.hero{
+  margin:0 11px 11px;
+  background:linear-gradient(135deg,var(--green-dark) 0%,#22C55E 100%);
+  border-radius:18px;padding:13px 15px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 16px rgba(22,163,74,0.22);
+}
+.hero h4{font-size:0.68rem;color:rgba(255,255,255,0.72);font-weight:600;}
+.hero h2{font-size:1rem;color:#fff;font-weight:800;margin:2px 0;}
+.hero p{font-size:0.65rem;color:rgba(255,255,255,0.6);}
+.hero-ico{font-size:2rem;}
+
+/* ANNOUNCE */
+.announce{
+  margin:0 11px 11px;background:#fff;border-radius:12px;
+  padding:9px 11px;display:flex;align-items:center;gap:7px;
+  box-shadow:0 1px 6px rgba(0,0,0,0.06);overflow:hidden;
+}
+.ann-dot{font-size:0.95rem;flex-shrink:0;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.ann-track{overflow:hidden;flex:1;}
+.ann-track span{
+  display:block;white-space:nowrap;
+  font-size:0.74rem;font-weight:700;color:var(--text);
+  animation:tick 22s linear infinite;
+}
+@keyframes tick{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+
+/* SLIDER */
+.slider{
+  margin:0 11px 13px;border-radius:17px;overflow:hidden;
+  position:relative;height:178px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.13);
+}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 0.85s ease;}
+.slide.on{opacity:1;}
+.slide img{width:100%;height:100%;object-fit:cover;display:block;}
+.sov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.58) 0%,transparent 52%);}
+.scap{position:absolute;bottom:0;left:0;right:0;padding:9px 13px;}
+.scap h4{font-size:0.88rem;font-weight:800;color:#fff;}
+.scap p{font-size:0.66rem;color:rgba(255,255,255,0.78);margin-top:1px;}
+.sdots{position:absolute;bottom:9px;right:10px;display:flex;gap:4px;}
+.sd{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,0.45);transition:all .3s;}
+.sd.on{width:15px;background:var(--orange);}
+
+/* SECTION HEAD */
+.sh{display:flex;align-items:center;justify-content:space-between;padding:0 13px;margin-bottom:9px;}
+.sh h3{font-size:0.9rem;font-weight:800;color:var(--text);}
+.sh a{font-size:0.7rem;color:var(--green);font-weight:700;text-decoration:none;}
+
+/* ACTIONS — 3 colonnes */
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 11px;margin-bottom:13px;}
+.ab{display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;cursor:pointer;}
+.ab:active .ai{transform:scale(0.88);}
+.ai{
+  width:50px;height:50px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.35rem;
+  box-shadow:0 3px 10px rgba(0,0,0,0.12);
+  transition:transform .18s,box-shadow .18s;
+}
+.ab:hover .ai{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,0.17);}
+.al{font-size:0.64rem;font-weight:800;color:var(--text);text-align:center;line-height:1.2;}
+.c1{background:linear-gradient(135deg,#F97316,#EA580C);}
+.c2{background:linear-gradient(135deg,#3B82F6,#1D4ED8);}
+.c3{background:linear-gradient(135deg,#16A34A,#15803D);}
+.c4{background:linear-gradient(135deg,#84CC16,#65A30D);}
+.c5{background:linear-gradient(135deg,#F43F5E,#BE123C);}
+.c6{background:linear-gradient(135deg,#EAB308,#CA8A04);}
+
+/* SOLDE CARDS */
+.solde-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 11px;margin-bottom:13px;}
+.sc{
+  background:var(--card);border-radius:15px;padding:11px 13px;
+  box-shadow:0 1px 7px rgba(0,0,0,0.07);position:relative;overflow:hidden;
+}
+.sc::after{content:attr(data-e);position:absolute;right:-5px;bottom:-5px;font-size:2.4rem;opacity:0.1;}
+.sc-lbl{font-size:0.65rem;color:var(--muted);font-weight:700;margin-bottom:3px;}
+.sc-val{font-size:1.05rem;font-weight:900;color:var(--text);}
+.sc-sub{font-size:0.62rem;margin-top:3px;font-weight:700;}
+.sg{color:var(--green);}
+.so{color:var(--orange);}
+
+/* TASK CARDS */
+.tasks{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 11px;margin-bottom:14px;}
+.tc{
+  background:var(--card);border-radius:15px;overflow:hidden;
+  box-shadow:0 2px 9px rgba(0,0,0,0.08);
+  text-decoration:none;display:block;
+  transition:transform .18s,box-shadow .18s;
+}
+.tc:active{transform:scale(0.95);}
+.tc:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(0,0,0,0.13);}
+.tc-img-wrap{position:relative;}
+.tc img{width:100%;height:96px;object-fit:cover;display:block;}
+.tc-tag{
+  position:absolute;top:6px;left:6px;background:var(--orange);color:#fff;
+  font-size:0.57rem;font-weight:800;padding:2px 7px;border-radius:5px;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.tc-info{padding:7px 9px;}
+.tc-n{font-size:0.75rem;font-weight:800;color:var(--text);}
+.tc-r{font-size:0.7rem;font-weight:700;color:var(--green);margin-top:2px;}
+
+/* BOTTOM NAV */
+.botnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;height:var(--bot);
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.07);
+}
+.bn{
+  display:flex;flex-direction:column;align-items:center;
+  gap:2px;flex:1;cursor:pointer;padding:6px 0;
+  text-decoration:none;position:relative;
+}
+.bn.on::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px;
+}
+.bn-ico{font-size:1.2rem;}
+.bn-lbl{font-size:0.58rem;font-weight:800;color:var(--muted);}
+.bn.on .bn-lbl{color:var(--green);}
+
+/* TOAST */
+.toast-bar{
+  position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-70px);
+  background:#111;color:#fff;padding:7px 18px;border-radius:22px;
+  font-size:0.78rem;font-weight:700;z-index:9999;white-space:nowrap;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.toast-bar.show{transform:translateX(-50%) translateY(0);}
+
+/* LOADER DOT */
+.ldot{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
-<nav class="topnav">
-  <div class="nav-logo">
-    <div class="nav-logo-badge">🌱</div>
-    <span class="nav-logo-text">VGN</span>
+<!-- TOP -->
+<div class="topbar">
+  <div class="tl">
+    <div class="tl-badge">🌱</div>
+    <span class="tl-name">VGN</span>
   </div>
-  <div class="nav-right">
-    <div class="nav-icon-btn notif-dot" onclick="showToast('Aucune nouvelle notification')">🔔</div>
-    <div class="nav-icon-btn" onclick="showToast('Support VGN en ligne 24h/24')">💬</div>
+  <div class="tr">
+    <div class="ibtn" onclick="showToast('🔔 Aucune notification')">🔔</div>
+    <div class="ibtn" onclick="showToast('💬 Support 24h/24')">💬</div>
   </div>
-</nav>
+</div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast-bar" id="tb"></div>
 
-<!-- CONTENT -->
-<div class="content">
+<!-- BODY -->
+<div class="body">
 
-  <!-- WELCOME BANNER -->
-  <div class="welcome-banner">
-    <div class="welcome-text">
-      <h3>Bienvenue sur</h3>
-      <h2 id="user-name">la plateforme VGN 🌿</h2>
-      <p class="tagline">Maïs · Blé · Élevage · Croissance</p>
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <h4>Bienvenue sur</h4>
+      <h2 id="uname"><span class="ldot"></span></h2>
+      <p>🌽 Maïs &nbsp;·&nbsp; 🌾 Blé &nbsp;·&nbsp; 🐄 Élevage</p>
     </div>
-    <div style="font-size:2.5rem; position:relative; z-index:2;">👨‍🌾</div>
+    <div class="hero-ico">👨‍🌾</div>
   </div>
 
-  <!-- ANNOUNCE BAR -->
-  <div class="announce-bar">
-    <span class="announce-icon">📢</span>
-    <div class="announce-ticker">
-      <span>🌽 Récolte de maïs +18% ce trimestre &nbsp;|&nbsp; 🌾 Nouvelle parcelle de blé disponible &nbsp;|&nbsp; 🐄 Élevage bovin : rendement record &nbsp;|&nbsp; 💰 Retirez vos gains à tout moment &nbsp;|&nbsp; 🎯 Complétez vos tâches quotidiennes pour booster vos revenus !</span>
+  <!-- ANNOUNCE -->
+  <div class="announce">
+    <span class="ann-dot">📢</span>
+    <div class="ann-track">
+      <span>🌽 Récolte maïs +18% ce trimestre &nbsp;|&nbsp; 🌾 Nouvelle parcelle blé disponible &nbsp;|&nbsp; 🐄 Élevage : rendement record &nbsp;|&nbsp; 💰 Retirez vos gains à tout moment &nbsp;|&nbsp; ✅ Tâches quotidiennes = revenus garantis !</span>
     </div>
   </div>
 
-  <!-- HERO SLIDER -->
-  <div class="slider-section">
-    <div class="slide active">
-      <div class="slide-illus slide-corn">🌽</div>
-      <div class="slide-overlay"></div>
-      <div class="slide-caption">
-        <h4>Champs de Maïs</h4>
-        <p>Investissez dans nos parcelles — rendement garanti</p>
-      </div>
+  <!-- SLIDER -->
+  <div class="slider">
+    <div class="slide on">
+      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="Maïs">
+      <div class="sov"></div>
+      <div class="scap"><h4>🌽 Champs de Maïs VGN</h4><p>Maïs bio — rendement garanti</p></div>
     </div>
     <div class="slide">
-      <div class="slide-illus slide-wheat">🌾</div>
-      <div class="slide-overlay"></div>
-      <div class="slide-caption">
-        <h4>Culture de Blé</h4>
-        <p>Des hectares de blé doré qui fructifient pour vous</p>
-      </div>
+      <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&q=80" alt="Blé">
+      <div class="sov"></div>
+      <div class="scap"><h4>🌾 Culture de Blé Doré</h4><p>Des hectares de blé pour vous</p></div>
     </div>
     <div class="slide">
-      <div class="slide-illus slide-cattle">🐄</div>
-      <div class="slide-overlay"></div>
-      <div class="slide-caption">
-        <h4>Élevage Bovin</h4>
-        <p>Un bétail sain et rentable pour des gains durables</p>
-      </div>
+      <img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=800&q=80" alt="Élevage">
+      <div class="sov"></div>
+      <div class="scap"><h4>🐄 Élevage Bovin Premium</h4><p>Gains durables et rentables</p></div>
     </div>
     <div class="slide">
-      <div class="slide-illus slide-farm">🚜</div>
-      <div class="slide-overlay"></div>
-      <div class="slide-caption">
-        <h4>Exploitation VGN</h4>
-        <p>Votre investissement entre de bonnes mains</p>
-      </div>
+      <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80" alt="Ferme">
+      <div class="sov"></div>
+      <div class="scap"><h4>🚜 Exploitation VGN</h4><p>Votre investissement en bonnes mains</p></div>
     </div>
-    <div class="slider-dots">
-      <div class="dot active" id="d0"></div>
-      <div class="dot" id="d1"></div>
-      <div class="dot" id="d2"></div>
-      <div class="dot" id="d3"></div>
+    <div class="sdots">
+      <div class="sd on" data-i="0"></div>
+      <div class="sd" data-i="1"></div>
+      <div class="sd" data-i="2"></div>
+      <div class="sd" data-i="3"></div>
     </div>
   </div>
 
   <!-- QUICK ACTIONS -->
-  <div class="section-title">
-    <h3>Actions rapides</h3>
-  </div>
-  <div class="actions-grid">
-    <div class="action-btn" onclick="openModal('recharge')">
-      <div class="action-icon ic-recharge">💰</div>
-      <span class="action-label">Recharge</span>
-    </div>
-    <div class="action-btn" onclick="openModal('retrait')">
-      <div class="action-icon ic-retrait">💳</div>
-      <span class="action-label">Retrait</span>
-    </div>
-    <div class="action-btn" onclick="openModal('fonds')">
-      <div class="action-icon ic-fonds">🛡️</div>
-      <span class="action-label">Mes Fonds</span>
-    </div>
-    <div class="action-btn" onclick="openModal('roue')">
-      <div class="action-icon ic-roue">🎡</div>
-      <span class="action-label">Roue Chance</span>
-    </div>
-    <div class="action-btn" onclick="openModal('invite')">
-      <div class="action-icon ic-invite">👥</div>
-      <span class="action-label">Inviter Amis</span>
-    </div>
-    <div class="action-btn" onclick="openModal('entreprise')">
-      <div class="action-icon ic-entreprise">🏢</div>
-      <span class="action-label">L'Entreprise</span>
-    </div>
-    <div class="action-btn" onclick="openModal('titres')">
-      <div class="action-icon ic-titres">📋</div>
-      <span class="action-label">Mes Titres</span>
-    </div>
-    <div class="action-btn" onclick="openModal('vip')">
-      <div class="action-icon ic-vip">💎</div>
-      <span class="action-label">VIP</span>
-    </div>
+  <div class="sh"><h3>Actions rapides</h3></div>
+  <div class="actions">
+    <a class="ab" href="recharge.html">
+      <div class="ai c1">💰</div><span class="al">Recharge</span>
+    </a>
+    <a class="ab" href="retrait.html">
+      <div class="ai c2">💳</div><span class="al">Retrait</span>
+    </a>
+    <a class="ab" href="fonds.html">
+      <div class="ai c3">🛡️</div><span class="al">Mes Fonds</span>
+    </a>
+    <a class="ab" href="roue.html">
+      <div class="ai c4">🎡</div><span class="al">Roue Chance</span>
+    </a>
+    <a class="ab" href="inviter.html">
+      <div class="ai c5">👥</div><span class="al">Inviter Amis</span>
+    </a>
+    <a class="ab" href="vip.html">
+      <div class="ai c6">💎</div><span class="al">VIP</span>
+    </a>
   </div>
 
-  <!-- STATS STRIP -->
-  <div class="stats-strip">
-    <div class="stat-tile" data-emoji="💰">
-      <div class="st-label">Solde disponible</div>
-      <div class="st-value" id="balance">0 FCFA</div>
-      <div class="st-sub st-green">↑ +2.4% ce mois</div>
+  <!-- SOLDE -->
+  <div class="sh"><h3>Mon Portefeuille</h3></div>
+  <div class="solde-row">
+    <div class="sc" data-e="💰">
+      <div class="sc-lbl">Solde disponible</div>
+      <div class="sc-val" id="v-solde"><span class="ldot"></span></div>
+      <div class="sc-sub sg" id="v-solde-sub">—</div>
     </div>
-    <div class="stat-tile" data-emoji="📈">
-      <div class="st-label">Gains totaux</div>
-      <div class="st-value" id="total-earn">0 FCFA</div>
-      <div class="st-sub st-orange">Cumulés</div>
+    <div class="sc" data-e="📈">
+      <div class="sc-lbl">Gains totaux</div>
+      <div class="sc-val" id="v-gains"><span class="ldot"></span></div>
+      <div class="sc-sub so">Cumulés</div>
     </div>
-    <div class="stat-tile" data-emoji="✅">
-      <div class="st-label">Tâches faites</div>
-      <div class="st-value">0</div>
-      <div class="st-sub st-green">Aujourd'hui</div>
+    <div class="sc" data-e="🌱">
+      <div class="sc-lbl">Investissement</div>
+      <div class="sc-val" id="v-invest"><span class="ldot"></span></div>
+      <div class="sc-sub sg">Actif</div>
     </div>
-    <div class="stat-tile" data-emoji="🌱">
-      <div class="st-label">Investissement</div>
-      <div class="st-value" id="investment">0 FCFA</div>
-      <div class="st-sub st-orange">Actif</div>
+    <div class="sc" data-e="✅">
+      <div class="sc-lbl">Tâches du jour</div>
+      <div class="sc-val" id="v-tasks"><span class="ldot"></span></div>
+      <div class="sc-sub so">Complétées</div>
     </div>
   </div>
 
-  <!-- TASKS SECTION -->
-  <div class="section-title">
-    <h3>🎯 Plateforme de tâches</h3>
-    <a href="#">Voir tout →</a>
+  <!-- TÂCHES -->
+  <div class="sh">
+    <h3>🎯 Tâches du jour</h3>
+    <a href="taches.html">Tout voir →</a>
+  </div>
+  <div class="tasks">
+
+    <a class="tc" href="tache-mais.html">
+      <div class="tc-img-wrap">
+        <img src="https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80" alt="Maïs">
+        <span class="tc-tag">Nouveau</span>
+      </div>
+      <div class="tc-info">
+        <div class="tc-n">Maïs Bio VGN</div>
+        <div class="tc-r">+500 FCFA</div>
+      </div>
+    </a>
+
+    <a class="tc" href="tache-ble.html">
+      <div class="tc-img-wrap">
+        <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80" alt="Blé">
+        <span class="tc-tag">Populaire</span>
+      </div>
+      <div class="tc-info">
+        <div class="tc-n">Blé Doré Premium</div>
+        <div class="tc-r">+750 FCFA</div>
+      </div>
+    </a>
+
+    <a class="tc" href="tache-elevage.html">
+      <div class="tc-img-wrap">
+        <img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=800&q=80" alt="Élevage">
+        <span class="tc-tag">VIP</span>
+      </div>
+      <div class="tc-info">
+        <div class="tc-n">Élevage Bovin</div>
+        <div class="tc-r">+1 200 FCFA</div>
+      </div>
+    </a>
+
+    <a class="tc" href="tache-ferme.html">
+      <div class="tc-img-wrap">
+        <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80" alt="Ferme">
+        <span class="tc-tag">Facile</span>
+      </div>
+      <div class="tc-info">
+        <div class="tc-n">Grande Récolte</div>
+        <div class="tc-r">+600 FCFA</div>
+      </div>
+    </a>
+
   </div>
 
-  <div class="tasks-section">
-    <div class="task-cards">
-      <div class="task-card" onclick="doTask('Maïs Bio VGN', 500)">
-        <div class="task-thumb tb-corn">🌽
-          <span class="task-tag">Nouveau</span>
-        </div>
-        <div class="task-info">
-          <div class="t-name">Maïs Bio VGN</div>
-          <div class="t-reward">+500 FCFA</div>
-        </div>
-      </div>
-      <div class="task-card" onclick="doTask('Blé Doré Premium', 750)">
-        <div class="task-thumb tb-wheat">🌾
-          <span class="task-tag">Populaire</span>
-        </div>
-        <div class="task-info">
-          <div class="t-name">Blé Doré Premium</div>
-          <div class="t-reward">+750 FCFA</div>
-        </div>
-      </div>
-      <div class="task-card" onclick="doTask('Élevage Bovin', 1200)">
-        <div class="task-thumb tb-cattle">🐄
-          <span class="task-tag">VIP</span>
-        </div>
-        <div class="task-info">
-          <div class="t-name">Élevage Bovin</div>
-          <div class="t-reward">+1 200 FCFA</div>
-        </div>
-      </div>
-      <div class="task-card" onclick="doTask('Lait & Produits', 600)">
-        <div class="task-thumb tb-milk">🥛
-          <span class="task-tag">Facile</span>
-        </div>
-        <div class="task-info">
-          <div class="t-name">Lait & Produits</div>
-          <div class="t-reward">+600 FCFA</div>
-        </div>
-      </div>
-      <div class="task-card" onclick="doTask('Grande Récolte', 950)">
-        <div class="task-thumb tb-harvest">🚜
-          <span class="task-tag">Limité</span>
-        </div>
-        <div class="task-info">
-          <div class="t-name">Grande Récolte</div>
-          <div class="t-reward">+950 FCFA</div>
-        </div>
-      </div>
-      <div class="task-card" onclick="doTask('Culture du Sol', 400)">
-        <div class="task-thumb tb-soil">🪴
-          <span class="task-tag">Débutant</span>
-        </div>
-        <div class="task-info">
-          <div class="t-name">Culture du Sol</div>
-          <div class="t-reward">+400 FCFA</div>
-        </div>
-      </div>
-    </div>
-  </div>
+</div><!-- /body -->
 
-</div>
-
-<!-- BOTTOM NAV -->
+<!-- BOTTOM NAV 4 items -->
 <nav class="botnav">
-  <div class="botnav-item active" onclick="setActive(this)">
-    <span class="bn-icon">🏠</span>
-    <span class="bn-label">Accueil</span>
-  </div>
-  <div class="botnav-item" onclick="setActive(this)">
-    <span class="bn-icon">📊</span>
-    <span class="bn-label">Rapports</span>
-  </div>
-  <div class="botnav-fab" onclick="openModal('recharge')">💰</div>
-  <div class="botnav-item" onclick="setActive(this)">
-    <span class="bn-icon">✅</span>
-    <span class="bn-label">Tâches</span>
-  </div>
-  <div class="botnav-item" onclick="setActive(this)">
-    <span class="bn-icon">👤</span>
-    <span class="bn-label">Mon Compte</span>
-  </div>
+  <a class="bn on" href="dashboard.html">
+    <span class="bn-ico">🏠</span>
+    <span class="bn-lbl">Accueil</span>
+  </a>
+  <a class="bn" href="taches.html">
+    <span class="bn-ico">✅</span>
+    <span class="bn-lbl">Tâches</span>
+  </a>
+  <a class="bn" href="rapport.html">
+    <span class="bn-ico">📊</span>
+    <span class="bn-lbl">Rapports</span>
+  </a>
+  <a class="bn" href="profil.html">
+    <span class="bn-ico">👤</span>
+    <span class="bn-lbl">Mon Compte</span>
+  </a>
 </nav>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <h3 class="modal-title" id="modal-title">Action</h3>
-    <div id="modal-body"></div>
-  </div>
-</div>
-
 <script>
-// ── SUPABASE ──
-const { createClient } = supabase;
-const sb = createClient(
+const SB = supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
 );
 
-// ── USER SESSION ──
-let userEarnings = 0;
-
-async function loadUser() {
-  const { data: { user } } = await sb.auth.getUser();
-  if (user) {
-    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Investisseur';
-    document.getElementById('user-name').textContent = `Bonjour, ${name} 👋`;
-  }
-}
-loadUser();
-
-// ── SLIDER ──
-let currentSlide = 0;
-const slides = document.querySelectorAll('.slide');
-const dots   = document.querySelectorAll('.dot');
-
-function goToSlide(n) {
-  slides[currentSlide].classList.remove('active');
-  dots[currentSlide].classList.remove('active');
-  currentSlide = (n + slides.length) % slides.length;
-  slides[currentSlide].classList.add('active');
-  dots[currentSlide].classList.add('active');
+// Toast
+function showToast(msg){
+  const t=document.getElementById('tb');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-setInterval(() => goToSlide(currentSlide + 1), 3500);
-dots.forEach((d, i) => d.addEventListener('click', () => goToSlide(i)));
+// Format
+function fmt(n){return n!=null?Number(n).toLocaleString('fr-FR')+' FCFA':'0 FCFA';}
 
-// ── TOAST ──
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+// Slider
+let cur=0;
+const slides=document.querySelectorAll('.slide');
+const dots=document.querySelectorAll('.sd');
+function goTo(n){
+  slides[cur].classList.remove('on');dots[cur].classList.remove('on');
+  cur=(n+slides.length)%slides.length;
+  slides[cur].classList.add('on');dots[cur].classList.add('on');
 }
+setInterval(()=>goTo(cur+1),3800);
+dots.forEach((d,i)=>d.addEventListener('click',()=>goTo(i)));
 
-// ── BOTTOM NAV ──
-function setActive(el) {
-  document.querySelectorAll('.botnav-item').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+// Init
+async function init(){
+  const{data:{user}}=await SB.auth.getUser();
+  if(!user){window.location.href='index.html';return;}
+
+  const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'Investisseur';
+  document.getElementById('uname').textContent='Bonjour, '+name+' 👋';
+
+  // Load from profiles table
+  const{data:p,error}=await SB.from('profiles')
+    .select('solde,gains_totaux,investissement,taches_jour')
+    .eq('id',user.id).single();
+
+  const zero='0 FCFA';
+  document.getElementById('v-solde').textContent   = p ? fmt(p.solde)          : zero;
+  document.getElementById('v-gains').textContent   = p ? fmt(p.gains_totaux)   : zero;
+  document.getElementById('v-invest').textContent  = p ? fmt(p.investissement) : zero;
+  document.getElementById('v-tasks').textContent   = p ? (p.taches_jour??0)+' / 5' : '0 / 5';
+  document.getElementById('v-solde-sub').textContent = (p&&p.solde>0)
+    ? '↑ Solde disponible' : '↑ Effectuez votre 1er dépôt';
 }
-
-// ── TASKS ──
-function doTask(name, reward) {
-  userEarnings += reward;
-  document.getElementById('balance').textContent    = userEarnings.toLocaleString('fr') + ' FCFA';
-  document.getElementById('total-earn').textContent = userEarnings.toLocaleString('fr') + ' FCFA';
-  showToast(`✅ Tâche "${name}" complétée ! +${reward.toLocaleString('fr')} FCFA`);
-}
-
-// ── MODAL ──
-const modalConfigs = {
-  recharge: {
-    title: '💰 Recharger mon compte',
-    body: `
-      <p style="color:#6B7280;font-size:0.85rem;margin-bottom:1rem;text-align:center;">Choisissez un montant à investir</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
-        ${[5000,10000,25000,50000].map(a=>`<button onclick="selectAmount(${a})" style="padding:0.65rem;border:2px solid #E5E7EB;border-radius:10px;background:white;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#16A34A'" onmouseout="this.style.borderColor='#E5E7EB'">${a.toLocaleString('fr')} FCFA</button>`).join('')}
-      </div>
-      <input class="modal-input" id="recharge-amount" type="number" placeholder="Ou saisir un montant personnalisé">
-      <button class="modal-btn" onclick="confirmRecharge()">Confirmer la recharge 🚀</button>
-    `
-  },
-  retrait: {
-    title: '💳 Retirer mes gains',
-    body: `
-      <p style="color:#6B7280;font-size:0.85rem;margin-bottom:1rem;text-align:center;">Retirez vers votre compte bancaire ou mobile money</p>
-      <input class="modal-input" type="number" placeholder="Montant à retirer (FCFA)">
-      <input class="modal-input" type="tel" placeholder="Numéro Mobile Money">
-      <button class="modal-btn" onclick="showToast('✅ Demande de retrait envoyée !');closeModal()">Demander le retrait</button>
-    `
-  },
-  fonds: {
-    title: '🛡️ Mes Fonds',
-    body: `
-      <div style="background:#F0FDF4;border-radius:14px;padding:1rem;margin-bottom:1rem;text-align:center;">
-        <div style="font-size:0.8rem;color:#6B7280;">Fonds disponibles</div>
-        <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#15803D;" id="modal-balance">0 FCFA</div>
-      </div>
-      <button class="modal-btn" onclick="closeModal()">Fermer</button>
-    `
-  },
-  roue: {
-    title: '🎡 Roue de la Chance',
-    body: `
-      <div style="text-align:center;font-size:5rem;margin:1rem 0;animation:spin 0.5s linear;">🎡</div>
-      <p style="text-align:center;color:#6B7280;font-size:0.85rem;margin-bottom:1rem;">Tentez votre chance une fois par jour !</p>
-      <button class="modal-btn" onclick="spinWheel()">🎯 Tourner la roue !</button>
-    `
-  },
-  invite: {
-    title: '👥 Inviter des Amis',
-    body: `
-      <div style="background:#FFF7ED;border-radius:14px;padding:1rem;margin-bottom:1rem;text-align:center;">
-        <div style="font-size:0.8rem;color:#6B7280;">Votre code parrainage</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#EA580C;letter-spacing:0.1em;">VGN-${Math.random().toString(36).substr(2,6).toUpperCase()}</div>
-      </div>
-      <p style="color:#6B7280;font-size:0.8rem;text-align:center;margin-bottom:1rem;">Gagnez 2 000 FCFA par ami invité qui s'inscrit !</p>
-      <button class="modal-btn" style="background:linear-gradient(135deg,#F97316,#EA580C);" onclick="showToast('📋 Lien copié !');closeModal()">📋 Copier le lien d'invitation</button>
-    `
-  },
-  entreprise: {
-    title: '🏢 VGN – Notre Entreprise',
-    body: `
-      <div style="background:linear-gradient(135deg,#15803D,#16A34A);border-radius:14px;padding:1.25rem;margin-bottom:1rem;color:white;">
-        <h4 style="font-family:'Playfair Display',serif;margin-bottom:0.5rem;">ValueGrowNetwork</h4>
-        <p style="font-size:0.8rem;opacity:0.85;line-height:1.6;">Leader de l'agro-investissement en Afrique. Nos domaines agricoles produisent du maïs, blé, et élèvent du bétail pour un rendement durable et rentable.</p>
-      </div>
-      <button class="modal-btn" onclick="closeModal()">Fermer</button>
-    `
-  },
-  titres: {
-    title: '📋 Mes Titres d\'Investissement',
-    body: `
-      <div style="text-align:center;padding:2rem 0;color:#6B7280;">
-        <div style="font-size:3rem;margin-bottom:0.75rem;">📋</div>
-        <p style="font-size:0.85rem;">Aucun titre actif pour le moment.<br>Effectuez votre premier dépôt pour commencer !</p>
-      </div>
-      <button class="modal-btn" onclick="closeModal();setTimeout(()=>openModal('recharge'),200)">Investir maintenant</button>
-    `
-  },
-  vip: {
-    title: '💎 Abonnement VIP',
-    body: `
-      <div style="background:linear-gradient(135deg,#EAB308,#CA8A04);border-radius:14px;padding:1.25rem;margin-bottom:1rem;color:white;text-align:center;">
-        <div style="font-size:2.5rem;margin-bottom:0.5rem;">👑</div>
-        <h4 style="font-family:'Playfair Display',serif;margin-bottom:0.3rem;">Membre VIP</h4>
-        <p style="font-size:0.8rem;opacity:0.85;">Accès prioritaire aux meilleures tâches, bonus x2, retrait express</p>
-      </div>
-      <button class="modal-btn" style="background:linear-gradient(135deg,#EAB308,#CA8A04);" onclick="showToast('👑 Demande VIP envoyée !');closeModal()">Devenir VIP maintenant</button>
-    `
-  }
-};
-
-function openModal(type) {
-  const cfg = modalConfigs[type];
-  document.getElementById('modal-title').textContent = cfg.title;
-  document.getElementById('modal-body').innerHTML = cfg.body;
-  if (type === 'fonds') {
-    document.getElementById('modal-balance').textContent = userEarnings.toLocaleString('fr') + ' FCFA';
-  }
-  document.getElementById('modal').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
-
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal')) closeModal();
-}
-
-function selectAmount(a) {
-  document.getElementById('recharge-amount').value = a;
-}
-
-function confirmRecharge() {
-  const val = parseInt(document.getElementById('recharge-amount').value) || 0;
-  if (val < 1000) { showToast('❌ Montant minimum : 1 000 FCFA'); return; }
-  closeModal();
-  setTimeout(() => showToast(`✅ Recharge de ${val.toLocaleString('fr')} FCFA effectuée !`), 300);
-}
-
-function spinWheel() {
-  const prizes = [500, 1000, 2000, 0, 750, 1500];
-  const prize  = prizes[Math.floor(Math.random() * prizes.length)];
-  closeModal();
-  setTimeout(() => {
-    if (prize > 0) {
-      userEarnings += prize;
-      document.getElementById('balance').textContent    = userEarnings.toLocaleString('fr') + ' FCFA';
-      document.getElementById('total-earn').textContent = userEarnings.toLocaleString('fr') + ' FCFA';
-      showToast(`🎉 Bravo ! Vous gagnez ${prize.toLocaleString('fr')} FCFA !`);
-    } else {
-      showToast('😅 Pas de chance… Réessayez demain !');
-    }
-  }, 300);
-}
+init();
 </script>
 </body>
 </html>
