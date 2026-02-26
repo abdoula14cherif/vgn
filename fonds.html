@@ -15,7 +15,14 @@
   --top:56px;--bot:58px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+html,body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  max-width:430px;
+  margin:0 auto;
+  min-height:100vh;
+  overflow-x:hidden;
+}
 
 /* ── TOP ── */
 .topbar{
@@ -26,84 +33,138 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
   padding:0 14px;z-index:999;
   box-shadow:0 2px 10px rgba(0,0,0,0.15);
 }
-.tb-back{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;text-decoration:none;color:#fff;font-weight:900;}
-.tb-title{font-size:1rem;font-weight:900;color:#fff}
-.tb-hist{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;text-decoration:none;color:#fff;}
+.tb-back{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;font-weight:900;color:#fff;
+  text-decoration:none;cursor:pointer;
+}
+.tb-title{font-size:1rem;font-weight:900;color:#fff;}
+.tb-hist{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:#fff;text-decoration:none;cursor:pointer;
+}
 
 /* ── BODY ── */
-.body{padding-top:calc(var(--top)+12px);padding-bottom:calc(var(--bot)+16px)}
+.body{
+  padding-top:calc(var(--top) + 12px);
+  padding-bottom:calc(var(--bot) + 16px);
+}
 
-/* ── STATS CARD ── */
+/* ── STATS ── */
 .stats-card{
-  margin:0 12px 14px;background:#fff;
-  border-radius:18px;padding:16px 20px;
-  display:flex;justify-content:space-around;
+  margin:0 12px 14px;
+  background:#fff;border-radius:18px;
+  padding:16px 20px;
+  display:flex;justify-content:space-around;align-items:center;
   box-shadow:0 2px 12px rgba(0,0,0,0.07);
 }
 .sc-item{text-align:center;}
-.sc-lbl{font-size:0.68rem;color:var(--muted);font-weight:700;margin-bottom:5px;}
-.sc-val{font-size:1.3rem;font-weight:900;color:var(--orange);}
-.sc-divider{width:1px;background:var(--border);align-self:stretch;margin:4px 0;}
+.sc-lbl{font-size:0.65rem;color:var(--muted);font-weight:700;margin-bottom:4px;}
+.sc-val{font-size:1.25rem;font-weight:900;color:var(--orange);}
+.sc-divider{width:1px;background:var(--border);height:40px;}
 
-/* ── SECTION TITLE ── */
+/* ── SECTION ── */
 .sec{padding:0 13px;margin-bottom:10px;}
 .sec h3{font-size:0.9rem;font-weight:800;color:var(--text);}
 
 /* ── FUND CARDS ── */
-.fund-list{display:flex;flex-direction:column;gap:11px;padding:0 12px;margin-bottom:16px;}
+.fund-list{
+  display:flex;flex-direction:column;
+  gap:12px;
+  padding:0 12px;
+  margin-bottom:16px;
+}
 
 .fund-card{
-  background:#fff;border-radius:16px;
-  border:1.5px solid var(--border);
+  background:#fff;
+  border-radius:18px;
   overflow:hidden;
-  box-shadow:0 2px 10px rgba(0,0,0,0.06);
-  display:flex;gap:0;
-  transition:box-shadow .2s,transform .15s;
-}
-.fund-card:active{transform:scale(0.98);}
-
-.fund-img{
-  width:110px;flex-shrink:0;
-  object-fit:cover;display:block;
+  box-shadow:0 3px 14px rgba(0,0,0,0.09);
+  border:1.5px solid var(--border);
 }
 
-.fund-body{
-  flex:1;padding:10px 12px 10px;
-  display:flex;flex-direction:column;justify-content:space-between;
+/* Image pleine largeur en haut */
+.fund-img-wrap{
   position:relative;
+  width:100%;
+  height:140px;
+  overflow:hidden;
 }
+.fund-img-wrap img{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+  transition:transform .4s ease;
+}
+.fund-card:hover .fund-img-wrap img{transform:scale(1.04);}
 
+.fund-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+}
+.fund-img-title{
+  position:absolute;bottom:10px;left:12px;
+  font-size:1rem;font-weight:900;color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
 .fund-vip-tag{
-  position:absolute;top:8px;right:8px;
+  position:absolute;top:10px;right:10px;
   background:var(--orange);color:#fff;
   font-size:0.6rem;font-weight:900;
-  padding:2px 8px;border-radius:6px;
-  letter-spacing:.04em;
+  padding:3px 9px;border-radius:7px;
+  letter-spacing:.04em;text-transform:uppercase;
 }
 
-.fund-name{font-size:0.88rem;font-weight:900;color:var(--text);margin-bottom:5px;padding-right:36px;}
+/* Card body */
+.fund-body{padding:12px 14px 14px;}
 
-.fund-info{display:flex;flex-direction:column;gap:2px;margin-bottom:8px;}
-.fi-row{font-size:0.72rem;color:var(--muted);font-weight:700;}
-.fi-row span{color:var(--text);font-weight:800;}
+.fund-info-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:6px;margin-bottom:10px;
+}
+.fi{
+  background:#F9FAFB;border-radius:10px;
+  padding:7px 10px;
+}
+.fi-lbl{font-size:0.6rem;color:var(--muted);font-weight:700;margin-bottom:2px;}
+.fi-val{font-size:0.82rem;font-weight:900;color:var(--text);}
+.fi-val.green{color:var(--green);}
+.fi-val.orange{color:var(--orange);}
 
-.fund-tag{
-  display:inline-block;
-  border:1.5px solid var(--green);
-  border-radius:20px;padding:2px 10px;
+.fund-rembours{
+  display:inline-flex;align-items:center;gap:5px;
+  border:1.5px solid var(--green);border-radius:20px;
+  padding:4px 12px;margin-bottom:10px;
   font-size:0.65rem;font-weight:700;color:var(--green);
-  margin-bottom:6px;
 }
 
 .fund-detail-btn{
-  font-size:0.72rem;font-weight:800;color:var(--green);
-  background:none;border:none;cursor:pointer;text-align:left;
-  padding:0;font-family:'Nunito',sans-serif;
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;
+  background:linear-gradient(135deg,var(--green),var(--green-dark));
+  border:none;border-radius:12px;
+  padding:10px 14px;
+  font-family:'Nunito',sans-serif;
+  font-size:0.82rem;font-weight:900;color:#fff;
+  cursor:pointer;
+  transition:transform .15s,box-shadow .2s;
+  box-shadow:0 3px 10px rgba(22,163,74,0.25);
 }
+.fund-detail-btn:active{transform:scale(0.97);}
+.fund-detail-btn .arr{font-size:1rem;}
 
 /* ── BOTTOM NAV ── */
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--bot);background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,0.07)}
-.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;cursor:pointer;padding:6px 0;text-decoration:none;position:relative;}
+.botnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;height:var(--bot);
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.07);
+}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative;cursor:pointer;}
 .bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px;}
 .bn-ico{font-size:1.2rem;}
 .bn-lbl{font-size:0.58rem;font-weight:800;color:var(--muted);}
@@ -111,101 +172,133 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 
 /* ── MODAL DÉTAIL ── */
 .overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.5);
-  z-index:1000;display:flex;align-items:flex-end;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .3s;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.52);
+  z-index:1000;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .28s;
 }
 .overlay.open{opacity:1;pointer-events:all;}
 
 .modal{
-  background:#fff;width:100%;max-width:430px;
+  background:#fff;
+  width:100%;max-width:430px;
   border-radius:24px 24px 0 0;
-  max-height:88vh;overflow-y:auto;
-  padding:0 18px 30px;
+  max-height:90vh;
+  overflow-y:auto;
+  padding:0 18px 32px;
   transform:translateY(100%);
   transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  -webkit-overflow-scrolling:touch;
 }
 .overlay.open .modal{transform:translateY(0);}
 
+/* Modal top image */
+.modal-img{
+  width:calc(100% + 36px);
+  margin-left:-18px;
+  height:160px;object-fit:cover;
+  display:block;
+}
+.modal-img-wrap{position:relative;margin:0 -18px;}
+.modal-img-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 50%);
+}
+.modal-img-title{
+  position:absolute;bottom:12px;left:18px;
+  font-size:1.15rem;font-weight:900;color:#fff;
+}
+
+.modal-handle{width:38px;height:4px;background:#E5E7EB;border-radius:2px;margin:14px auto 0;}
 .modal-header{
   display:flex;align-items:center;justify-content:space-between;
-  padding:16px 0 14px;position:sticky;top:0;background:#fff;
-  border-bottom:1px solid var(--border);margin-bottom:16px;
+  padding:14px 0 12px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:14px;
+  position:sticky;top:0;background:#fff;z-index:2;
 }
 .modal-header h3{font-size:1rem;font-weight:900;color:var(--text);}
 .modal-close{
-  width:30px;height:30px;border-radius:50%;background:var(--border);
+  width:30px;height:30px;border-radius:50%;background:#F3F4F6;
   display:flex;align-items:center;justify-content:center;
-  font-size:1rem;cursor:pointer;border:none;background:#F3F4F6;
-  font-weight:900;color:var(--text);
+  font-size:1rem;font-weight:900;cursor:pointer;border:none;color:var(--text);
 }
 
-/* Détail rows */
+/* detail rows */
 .detail-row{
-  display:flex;align-items:flex-start;gap:10px;
-  padding:10px 0;border-bottom:1px solid #F9FAFB;
+  display:flex;align-items:baseline;gap:8px;
+  padding:9px 0;border-bottom:1px solid #F9FAFB;
 }
-.dr-lbl{font-size:0.8rem;font-weight:800;color:var(--text);min-width:120px;flex-shrink:0;}
-.dr-val{font-size:0.8rem;color:var(--muted);font-weight:600;flex:1;}
+.dr-lbl{font-size:0.78rem;font-weight:800;color:var(--text);min-width:130px;flex-shrink:0;}
+.dr-val{font-size:0.78rem;font-weight:700;color:var(--muted);flex:1;}
 
-.detail-desc{
-  background:#F0FDF4;border-radius:14px;padding:14px;margin:14px 0;
+.detail-box{
+  border-radius:14px;padding:13px 14px;margin:12px 0;
 }
-.detail-desc .dd-title{font-size:0.8rem;font-weight:900;color:var(--green-dark);margin-bottom:8px;}
-.detail-desc p{font-size:0.78rem;color:#374151;line-height:1.6;font-weight:600;}
+.detail-box.green{background:#F0FDF4;}
+.detail-box.orange{background:#FFF7ED;}
+.detail-box .db-title{font-size:0.78rem;font-weight:900;margin-bottom:7px;}
+.detail-box.green .db-title{color:var(--green-dark);}
+.detail-box.orange .db-title{color:var(--orange-dark);}
+.detail-box p{font-size:0.75rem;color:#374151;line-height:1.65;font-weight:600;}
 
-.detail-calc{
-  background:#FFF7ED;border-radius:14px;padding:14px;margin-bottom:18px;
-}
-.detail-calc .dc-title{font-size:0.8rem;font-weight:900;color:var(--orange-dark);margin-bottom:8px;}
-.detail-calc p{font-size:0.75rem;color:#374151;line-height:1.7;font-weight:600;}
-
-/* Montant input */
-.montant-section{margin:14px 0;}
-.montant-section label{font-size:0.8rem;font-weight:800;color:var(--text);display:block;margin-bottom:6px;}
-.montant-wrap{position:relative;}
+/* Montant */
+.montant-wrap{margin:14px 0 10px;}
+.montant-wrap label{font-size:0.8rem;font-weight:800;color:var(--text);display:block;margin-bottom:6px;}
+.input-row{position:relative;}
 .montant-input{
-  width:100%;padding:12px 14px;
+  width:100%;padding:12px 60px 12px 14px;
   border:2px solid var(--border);border-radius:12px;
-  font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:800;
-  color:var(--text);outline:none;
-  transition:border-color .2s;
+  font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:800;color:var(--text);
+  outline:none;transition:border-color .2s;
 }
 .montant-input:focus{border-color:var(--green);}
-.montant-suffix{
+.input-suffix{
   position:absolute;right:14px;top:50%;transform:translateY(-50%);
-  font-size:0.8rem;font-weight:800;color:var(--muted);
+  font-size:0.75rem;font-weight:800;color:var(--muted);
 }
 
-.solde-check{
+/* Solde check */
+.solde-row{
   display:flex;justify-content:space-between;align-items:center;
-  background:#F9FAFB;border-radius:10px;padding:10px 12px;margin-bottom:14px;
+  background:#F9FAFB;border-radius:11px;padding:10px 13px;margin-bottom:12px;
 }
-.sck-lbl{font-size:0.72rem;color:var(--muted);font-weight:700;}
-.sck-val{font-size:0.9rem;font-weight:900;}
+.sr-left .sr-lbl{font-size:0.65rem;color:var(--muted);font-weight:700;}
+.sr-left .sr-val{font-size:0.95rem;font-weight:900;}
+.sr-ico{font-size:1.4rem;}
 .ok{color:var(--green);} .nok{color:#EF4444;}
 
 /* Rendement preview */
-.rendement-box{
+.rendement-preview{
+  display:none;
   background:linear-gradient(135deg,var(--green-dark),var(--green));
-  border-radius:12px;padding:12px 14px;margin-bottom:16px;
-  display:flex;justify-content:space-between;align-items:center;
+  border-radius:12px;padding:12px 14px;margin-bottom:14px;
 }
-.rb-lbl{font-size:0.72rem;color:rgba(255,255,255,0.8);font-weight:700;}
-.rb-val{font-size:1rem;font-weight:900;color:#fff;}
+.rp-row{display:flex;justify-content:space-between;align-items:center;}
+.rp-lbl{font-size:0.68rem;color:rgba(255,255,255,0.8);font-weight:700;}
+.rp-val{font-size:0.95rem;font-weight:900;color:#fff;}
 
+/* Buy btn */
 .buy-btn{
   width:100%;padding:14px;border:none;border-radius:16px;
   font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;
-  background:linear-gradient(135deg,var(--green),var(--green-dark));
-  cursor:pointer;box-shadow:0 4px 16px rgba(22,163,74,0.3);
-  transition:transform .15s,box-shadow .2s;
+  cursor:pointer;transition:transform .15s,box-shadow .2s;
 }
-.buy-btn:active{transform:scale(0.97);}
+.buy-btn.g{background:linear-gradient(135deg,var(--green),var(--green-dark));box-shadow:0 4px 16px rgba(22,163,74,0.3);}
 .buy-btn.r{background:linear-gradient(135deg,#F97316,#EA580C);box-shadow:0 4px 16px rgba(249,115,22,0.3);}
+.buy-btn:active{transform:scale(0.97);}
 
 /* ── TOAST ── */
-.toast-bar{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-70px);background:#111;color:#fff;padding:7px 18px;border-radius:22px;font-size:0.78rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
+.toast-bar{
+  position:fixed;top:64px;left:50%;
+  transform:translateX(-50%) translateY(-70px);
+  background:#111;color:#fff;padding:7px 18px;border-radius:22px;
+  font-size:0.78rem;font-weight:700;z-index:9999;
+  white-space:nowrap;pointer-events:none;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
 .toast-bar.show{transform:translateX(-50%) translateY(0);}
 
 /* loader */
@@ -219,7 +312,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 <div class="topbar">
   <a class="tb-back" href="dashboard.html">‹</a>
   <span class="tb-title">💰 Mes Fonds</span>
-  <a class="tb-hist" href="historique.html" title="Historique">📋</a>
+  <a class="tb-hist" href="historique.html">📋</a>
 </div>
 <div class="toast-bar" id="tb"></div>
 
@@ -239,11 +332,9 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
     </div>
   </div>
 
-  <!-- LISTE FONDS -->
+  <!-- LIST -->
   <div class="sec"><h3>📋 Liste des fonds VGN</h3></div>
-  <div class="fund-list" id="fund-list">
-    <!-- Générée par JS -->
-  </div>
+  <div class="fund-list" id="fund-list"></div>
 
 </div>
 
@@ -255,9 +346,17 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
   <a class="bn" href="profil.html"><span class="bn-ico">👤</span><span class="bn-lbl">Mon Compte</span></a>
 </nav>
 
-<!-- MODAL DÉTAIL -->
-<div class="overlay" id="overlay" onclick="closeModalOutside(event)">
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeOutside(event)">
   <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <!-- Image dans la modal -->
+    <div class="modal-img-wrap" id="m-img-wrap">
+      <img class="modal-img" id="m-img" src="" alt="">
+      <div class="modal-img-overlay"></div>
+      <div class="modal-img-title" id="m-img-title">—</div>
+    </div>
+
     <div class="modal-header">
       <h3 id="m-title">—</h3>
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -276,49 +375,50 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
       <span class="dr-val" id="m-taux">—</span>
     </div>
 
-    <div class="detail-desc">
-      <div class="dd-title">📖 Description du fonds</div>
+    <div class="detail-box green">
+      <div class="db-title">📖 Description du fonds</div>
       <p id="m-desc">—</p>
     </div>
 
-    <div class="detail-calc">
-      <div class="dc-title">🧮 Méthode de calcul</div>
+    <div class="detail-box orange">
+      <div class="db-title">🧮 Méthode de calcul</div>
       <p id="m-calc">—</p>
     </div>
 
     <!-- Montant -->
-    <div class="montant-section">
+    <div class="montant-wrap">
       <label>Montant à investir</label>
-      <div class="montant-wrap">
-        <input class="montant-input" type="number" id="m-montant" placeholder="Ex: 10000" oninput="updateRendement()">
-        <span class="montant-suffix">FCFA</span>
+      <div class="input-row">
+        <input class="montant-input" type="number" id="m-montant" placeholder="Ex: 10 000" oninput="updateRendement()">
+        <span class="input-suffix">FCFA</span>
       </div>
     </div>
 
-    <!-- Solde check -->
-    <div class="solde-check">
-      <div>
-        <div class="sck-lbl">Votre solde disponible</div>
-        <div class="sck-val ok" id="m-solde">—</div>
+    <!-- Solde -->
+    <div class="solde-row">
+      <div class="sr-left">
+        <div class="sr-lbl">Votre solde disponible</div>
+        <div class="sr-val ok" id="m-solde">—</div>
       </div>
-      <div id="m-solde-ico" style="font-size:1.4rem">—</div>
+      <div class="sr-ico" id="m-solde-ico">—</div>
     </div>
 
     <!-- Rendement preview -->
-    <div class="rendement-box" id="rendement-box" style="display:none">
-      <div>
-        <div class="rb-lbl">Capital + Intérêts estimés</div>
-        <div class="rb-val" id="m-rendement-total">—</div>
+    <div class="rendement-preview" id="rp">
+      <div class="rp-row" style="margin-bottom:6px;">
+        <span class="rp-lbl">Capital + Intérêts</span>
+        <span class="rp-val" id="rp-total">—</span>
       </div>
-      <div>
-        <div class="rb-lbl">Intérêts</div>
-        <div class="rb-val" id="m-rendement-interets">—</div>
+      <div class="rp-row">
+        <span class="rp-lbl">Intérêts gagnés</span>
+        <span class="rp-val" id="rp-interets">—</span>
       </div>
     </div>
 
-    <button class="buy-btn" id="buy-btn" onclick="acheter()">
+    <button class="buy-btn g" id="buy-btn" onclick="acheter()">
       🌱 Investir maintenant
     </button>
+
   </div>
 </div>
 
@@ -328,66 +428,41 @@ const SB = supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
 );
 
-// ── FONDS DATA ──
+// ── DONNÉES DES 5 FONDS ──
 const FONDS = [
   {
-    id: 1,
-    nom: 'VGN Fund 1',
-    jours: 7,
-    taux: 15,
-    min: 10000,
-    niveau: 'VIP 1',
-    img: 'https://images.unsplash.com/photo-1605792657660-596af9009e82?w=300&q=80',
-    desc: 'Le Fonds VGN 1 est un fonds d\'investissement agricole à court terme, idéal pour les investisseurs cherchant un retour rapide. Sur une période de 7 jours, vous pouvez obtenir un rendement de 15%. Ce fonds présente un faible risque et une haute liquidité, en faisant un choix idéal pour les investisseurs ayant besoin d\'une rotation rapide des fonds.',
+    id:1, nom:'VGN Fund 1', jours:7, taux:15, min:10000, niveau:'VIP 1',
+    img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80',
+    desc:'Le Fonds VGN 1 est un fonds d\'investissement agricole à court terme, idéal pour les investisseurs cherchant un retour rapide. Sur une période de 7 jours, vous pouvez obtenir un rendement de 15%. Ce fonds présente un faible risque et une haute liquidité, en faisant un choix idéal pour une rotation rapide des fonds.',
   },
   {
-    id: 2,
-    nom: 'VGN Fund 2',
-    jours: 15,
-    taux: 25,
-    min: 20000,
-    niveau: 'VIP 1',
-    img: 'https://images.unsplash.com/photo-1620714223084-8fcacc2dbe4d?w=300&q=80',
-    desc: 'Le Fonds VGN 2 est un fonds à moyen terme offrant un rendement attractif de 25% sur 15 jours. Idéal pour diversifier votre portefeuille agricole et maximiser vos gains à travers nos cultures de maïs et de blé.',
+    id:2, nom:'VGN Fund 2', jours:15, taux:25, min:20000, niveau:'VIP 1',
+    img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80',
+    desc:'Le Fonds VGN 2 est un placement à moyen terme offrant 25% de rendement sur 15 jours. Soutenu par nos champs de blé doré et notre production céréalière, ce fonds combine sécurité agricole et performance financière.',
   },
   {
-    id: 3,
-    nom: 'VGN Fund 3',
-    jours: 30,
-    taux: 35,
-    min: 30000,
-    niveau: 'VIP 1',
-    img: 'https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=300&q=80',
-    desc: 'Le Fonds VGN 3 offre un rendement de 35% sur 30 jours. Soutenu par nos exploitations d\'élevage bovin et de grandes cultures, ce fonds garantit une stabilité solide et des profits réguliers pour l\'investisseur patient.',
+    id:3, nom:'VGN Fund 3', jours:30, taux:35, min:30000, niveau:'VIP 1',
+    img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80',
+    desc:'Le Fonds VGN 3 offre un rendement de 35% sur 30 jours. Soutenu par nos grandes exploitations agricoles et notre élevage bovin, ce fonds garantit une stabilité solide et des profits réguliers pour l\'investisseur patient.',
   },
   {
-    id: 4,
-    nom: 'VGN Fund 4',
-    jours: 90,
-    taux: 100,
-    min: 40000,
-    niveau: 'VIP 1',
-    img: 'https://images.unsplash.com/photo-1559526324-593bc073d938?w=300&q=80',
-    desc: 'Le Fonds VGN 4 est notre fonds phare à long terme. Avec un rendement de 100% sur 90 jours, il double votre capital grâce à nos investissements agricoles diversifiés. Réservé aux investisseurs sérieux cherchant une croissance significative.',
+    id:4, nom:'VGN Fund 4', jours:90, taux:100, min:40000, niveau:'VIP 1',
+    img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&q=80',
+    desc:'Le Fonds VGN 4 est notre fonds phare à long terme. Avec un rendement de 100% sur 90 jours, il double votre capital grâce à nos investissements agricoles diversifiés : maïs, blé, élevage et transformation. Réservé aux investisseurs ambitieux.',
   },
   {
-    id: 5,
-    nom: 'VGN Fund 5',
-    jours: 180,
-    taux: 250,
-    min: 5000,
-    niveau: 'VIP 1',
-    img: 'https://images.unsplash.com/photo-1561414927-6d86591d0c4f?w=300&q=80',
-    desc: 'Le Fonds VGN 5 est notre offre premium sur 180 jours avec un rendement exceptionnel de 250%. Sur 6 mois, votre capital croît de manière spectaculaire grâce à l\'ensemble de nos activités agricoles : maïs, blé, élevage et transformation.',
+    id:5, nom:'VGN Fund 5', jours:95, taux:250, min:5000, niveau:'VIP 1',
+    img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=600&q=80',
+    desc:'Le Fonds VGN 5 est notre offre premium sur 95 jours avec un rendement exceptionnel de 250%. Sur 3 mois, votre capital croît de manière spectaculaire grâce à l\'ensemble de nos activités : cultures, élevage, lait et transformation agricole.',
   },
 ];
 
-let currentUser = null;
-let currentProfile = null;
-let selectedFond = null;
+let user = null;
+let profile = null;
+let fondActif = null;
 
-function fmt(n){ return Number(n).toLocaleString('fr-FR'); }
-function fmtF(n){ return fmt(n)+' FCFA'; }
+const fmt  = n => Number(n).toLocaleString('fr-FR');
+const fmtF = n => fmt(n)+' FCFA';
 
 function showToast(msg){
   const t=document.getElementById('tb');
@@ -395,212 +470,197 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3200);
 }
 
-// ── RENDER FUND CARDS ──
+// ── RENDER CARDS ──
 function renderFunds(){
-  const container = document.getElementById('fund-list');
-  container.innerHTML = '';
+  const c = document.getElementById('fund-list');
+  c.innerHTML = '';
   FONDS.forEach(f => {
+    const interetsEx = f.min * f.taux / 100;
     const card = document.createElement('div');
     card.className = 'fund-card';
     card.innerHTML = `
-      <img class="fund-img" src="${f.img}" alt="${f.nom}" loading="lazy">
-      <div class="fund-body">
+      <div class="fund-img-wrap">
+        <img src="${f.img}" alt="${f.nom}" loading="lazy">
+        <div class="fund-overlay"></div>
+        <div class="fund-img-title">${f.nom}</div>
         <span class="fund-vip-tag">${f.niveau}</span>
-        <div class="fund-name">${f.nom}</div>
-        <div class="fund-info">
-          <div class="fi-row">⏱ Durée : <span>${f.jours} jours</span></div>
-          <div class="fi-row">📈 Taux d'intérêt : <span>${f.taux}%</span></div>
-          <div class="fi-row">💰 Minimum : <span>${fmtF(f.min)}</span></div>
+      </div>
+      <div class="fund-body">
+        <div class="fund-info-grid">
+          <div class="fi">
+            <div class="fi-lbl">⏱ Durée</div>
+            <div class="fi-val">${f.jours} jours</div>
+          </div>
+          <div class="fi">
+            <div class="fi-lbl">📈 Taux</div>
+            <div class="fi-val green">${f.taux}%</div>
+          </div>
+          <div class="fi">
+            <div class="fi-lbl">💰 Minimum</div>
+            <div class="fi-val orange">${fmtF(f.min)}</div>
+          </div>
+          <div class="fi">
+            <div class="fi-lbl">🎯 Gain min</div>
+            <div class="fi-val green">${fmtF(interetsEx)}</div>
+          </div>
         </div>
-        <div class="fund-tag">🔄 Remboursement à échéance</div>
-        <button class="fund-detail-btn" onclick="openDetail(${f.id})">Voir les détails &rsaquo;&rsaquo;</button>
+        <div class="fund-rembours">🔄 Remboursement des intérêts à échéance</div>
+        <button class="fund-detail-btn" onclick="openDetail(${f.id})">
+          <span>Voir les détails</span>
+          <span class="arr">›</span>
+        </button>
       </div>
     `;
-    container.appendChild(card);
+    c.appendChild(card);
   });
 }
 
-// ── MODAL DÉTAIL ──
-function openDetail(fondId){
-  const f = FONDS.find(x=>x.id===fondId);
+// ── OUVRIR MODAL ──
+function openDetail(id){
+  const f = FONDS.find(x=>x.id===id);
   if(!f) return;
-  selectedFond = f;
+  fondActif = f;
 
-  const solde = currentProfile?.solde || 0;
-
-  document.getElementById('m-title').textContent  = f.nom;
-  document.getElementById('m-min').textContent    = fmtF(f.min);
-  document.getElementById('m-duree').textContent  = f.jours+' jours';
-  document.getElementById('m-taux').textContent   = f.taux+'% du montant total investi';
-  document.getElementById('m-desc').textContent   = f.desc;
-
+  const solde = profile?.solde || 0;
+  const peutPayer = solde >= f.min;
   const interetsEx = f.min * f.taux / 100;
-  const totalEx    = f.min + interetsEx;
-  document.getElementById('m-calc').innerHTML =
+  const totalEx = f.min + interetsEx;
+
+  // Image
+  document.getElementById('m-img').src = f.img;
+  document.getElementById('m-img-title').textContent = f.nom;
+  document.getElementById('m-title').textContent = f.nom;
+
+  document.getElementById('m-min').textContent   = fmtF(f.min);
+  document.getElementById('m-duree').textContent = f.jours+' jours';
+  document.getElementById('m-taux').textContent  = f.taux+'% du montant total investi';
+  document.getElementById('m-desc').textContent  = f.desc;
+  document.getElementById('m-calc').innerHTML    =
     `Formule : Rendement = Capital × Taux\n`+
-    `Exemple : ${fmt(f.min)} FCFA × ${f.taux}% = ${fmtF(interetsEx)}\n`+
-    `Rendement total : Capital + Intérêts = ${fmt(f.min)} + ${fmt(interetsEx)} = ${fmtF(totalEx)}`;
+    `Exemple avec le minimum :\n`+
+    `${fmt(f.min)} FCFA × ${f.taux}% = ${fmtF(interetsEx)}\n`+
+    `Rendement total = ${fmt(f.min)} + ${fmt(interetsEx)} = ${fmtF(totalEx)}`;
 
   document.getElementById('m-montant').value = '';
   document.getElementById('m-solde').textContent = fmtF(solde);
-  document.getElementById('m-solde-ico').textContent = solde >= f.min ? '✅' : '❌';
-  document.getElementById('m-solde').className = 'sck-val '+(solde>=f.min?'ok':'nok');
-  document.getElementById('rendement-box').style.display = 'none';
+  document.getElementById('m-solde').className   = 'sr-val '+(peutPayer?'ok':'nok');
+  document.getElementById('m-solde-ico').textContent = peutPayer?'✅':'❌';
+  document.getElementById('rp').style.display = 'none';
 
   const btn = document.getElementById('buy-btn');
-  if(solde < f.min){
-    btn.textContent = '❌ Solde insuffisant — Recharger';
-    btn.className = 'buy-btn r';
-  } else {
-    btn.textContent = '🌱 Investir maintenant';
-    btn.className = 'buy-btn';
-  }
+  btn.textContent = peutPayer ? '🌱 Investir maintenant' : '❌ Solde insuffisant — Recharger';
+  btn.className   = 'buy-btn '+(peutPayer?'g':'r');
+  btn.disabled    = false;
 
   document.getElementById('overlay').classList.add('open');
+  // scroll modal to top
+  document.getElementById('modal').scrollTop = 0;
 }
 
+// ── RENDEMENT LIVE ──
 function updateRendement(){
-  if(!selectedFond) return;
+  if(!fondActif) return;
+  const f = fondActif;
   const montant = parseFloat(document.getElementById('m-montant').value)||0;
-  const solde   = currentProfile?.solde || 0;
-  const f       = selectedFond;
+  const solde   = profile?.solde || 0;
 
   if(montant > 0){
-    const interets = montant * f.taux / 100;
-    const total    = montant + interets;
-    document.getElementById('m-rendement-interets').textContent = fmtF(interets);
-    document.getElementById('m-rendement-total').textContent    = fmtF(total);
-    document.getElementById('rendement-box').style.display      = 'flex';
+    const inter = montant * f.taux / 100;
+    const total = montant + inter;
+    document.getElementById('rp-interets').textContent = fmtF(inter);
+    document.getElementById('rp-total').textContent    = fmtF(total);
+    document.getElementById('rp').style.display = 'flex';
+    document.getElementById('rp').style.flexDirection = 'column';
   } else {
-    document.getElementById('rendement-box').style.display = 'none';
+    document.getElementById('rp').style.display = 'none';
   }
 
-  const peutPayer = solde >= Math.max(montant, f.min);
-  document.getElementById('m-solde-ico').textContent = peutPayer ? '✅' : '❌';
-  document.getElementById('m-solde').className = 'sck-val '+(peutPayer?'ok':'nok');
+  const requis = Math.max(montant, f.min);
+  const ok = solde >= requis;
+  document.getElementById('m-solde').className = 'sr-val '+(ok?'ok':'nok');
+  document.getElementById('m-solde-ico').textContent = ok?'✅':'❌';
 
   const btn = document.getElementById('buy-btn');
-  if(!peutPayer){
-    btn.textContent = '❌ Solde insuffisant — Recharger';
-    btn.className = 'buy-btn r';
-  } else {
-    btn.textContent = '🌱 Investir maintenant';
-    btn.className = 'buy-btn';
-  }
+  btn.textContent = ok ? '🌱 Investir maintenant' : '❌ Solde insuffisant — Recharger';
+  btn.className   = 'buy-btn '+(ok?'g':'r');
 }
 
-function closeModal(){
-  document.getElementById('overlay').classList.remove('open');
-  selectedFond = null;
-}
-function closeModalOutside(e){
-  if(e.target === document.getElementById('overlay')) closeModal();
-}
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); fondActif=null; }
+function closeOutside(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
 
 // ── ACHETER ──
 async function acheter(){
-  if(!selectedFond){ return; }
-  const f      = selectedFond;
-  const solde  = currentProfile?.solde || 0;
+  if(!fondActif) return;
+  const f      = fondActif;
+  const solde  = profile?.solde || 0;
   const montant = parseFloat(document.getElementById('m-montant').value) || f.min;
 
-  // Solde insuffisant
-  if(solde < f.min){
-    closeModal();
-    window.location.href = 'recharge.html';
-    return;
-  }
-  if(montant < f.min){
-    showToast(`⚠️ Minimum requis : ${fmtF(f.min)}`);
-    return;
-  }
-  if(montant > solde){
-    showToast('❌ Solde insuffisant pour ce montant');
-    return;
-  }
+  if(solde < f.min){ closeModal(); window.location.href='recharge.html'; return; }
+  if(montant < f.min){ showToast(`⚠️ Minimum requis : ${fmtF(f.min)}`); return; }
+  if(montant > solde){ showToast('❌ Solde insuffisant pour ce montant'); return; }
 
   const btn = document.getElementById('buy-btn');
-  btn.textContent = '⏳ Traitement...';
-  btn.disabled = true;
+  btn.textContent='⏳ Traitement...'; btn.disabled=true;
 
-  try {
+  try{
     const interets    = montant * f.taux / 100;
     const totalRetour = montant + interets;
-    const dateEcheance = new Date(Date.now() + f.jours * 86400000).toISOString();
-    const nouveauSolde = solde - montant;
-    const nouvelInvest = (currentProfile?.investissement||0) + montant;
-    const nouvelAttendu = (currentProfile?.revenu_attendu||0) + totalRetour;
+    const dateEch     = new Date(Date.now() + f.jours*86400000).toISOString();
+    const nvSolde     = solde - montant;
+    const nvInvest    = (profile?.investissement||0) + montant;
+    const nvAttendu   = (profile?.revenu_attendu||0) + totalRetour;
 
-    // 1. Débiter le solde + mettre à jour investissement
-    const { error: errProfil } = await SB.from('profiles').update({
-      solde:          nouveauSolde,
-      investissement: nouvelInvest,
-      revenu_attendu: nouvelAttendu,
-    }).eq('id', currentUser.id);
-    if(errProfil) throw errProfil;
+    // Débiter profil
+    await SB.from('profiles').update({
+      solde: nvSolde, investissement: nvInvest, revenu_attendu: nvAttendu
+    }).eq('id', user.id);
 
-    // 2. Enregistrer la transaction
+    // Transaction
     await SB.from('transactions').insert({
-      user_id: currentUser.id,
-      type:    'recharge',
-      montant: montant,
-      statut:  'confirme',
-      note:    `Investissement ${f.nom} — ${f.taux}% sur ${f.jours} jours — échéance ${dateEcheance.slice(0,10)}`,
-      reference: f.nom,
+      user_id:user.id, type:'recharge', montant, statut:'confirme',
+      note:`${f.nom} — ${f.taux}% / ${f.jours}j — échéance ${dateEch.slice(0,10)}`,
+      reference: f.nom
     });
 
-    // 3. Enregistrer dans fonds_investissements
+    // Fond investissement
     await SB.from('fonds_investissements').insert({
-      user_id:        currentUser.id,
-      fond_nom:       f.nom,
-      fond_id:        f.id,
-      montant:        montant,
-      taux:           f.taux,
-      jours:          f.jours,
-      interets:       interets,
-      total_retour:   totalRetour,
-      date_echeance:  dateEcheance,
-      statut:         'actif',
+      user_id:user.id, fond_nom:f.nom, fond_id:f.id,
+      montant, taux:f.taux, jours:f.jours,
+      interets, total_retour:totalRetour,
+      date_echeance:dateEch, statut:'actif'
     });
 
-    // Mettre à jour local
-    currentProfile.solde          = nouveauSolde;
-    currentProfile.investissement = nouvelInvest;
-    currentProfile.revenu_attendu = nouvelAttendu;
-
-    // Refresh stats
-    document.getElementById('total-fonds').textContent  = fmtF(nouvelInvest);
-    document.getElementById('total-attendu').textContent = fmtF(nouvelAttendu);
+    profile.solde = nvSolde; profile.investissement = nvInvest; profile.revenu_attendu = nvAttendu;
+    document.getElementById('total-fonds').textContent   = fmtF(nvInvest);
+    document.getElementById('total-attendu').textContent = fmtF(nvAttendu);
 
     closeModal();
-    showToast(`🎉 Investissement de ${fmtF(montant)} confirmé dans ${f.nom} !`);
+    showToast(`🎉 ${fmtF(montant)} investis dans ${f.nom} ! Retour dans ${f.jours} jours.`);
 
-  } catch(e){
+  }catch(e){
     console.error(e);
     showToast('❌ Erreur : '+(e.message||'Réessayez'));
-    btn.textContent = '🌱 Investir maintenant';
-    btn.disabled = false;
+    btn.textContent='🌱 Investir maintenant'; btn.disabled=false;
   }
 }
 
 // ── INIT ──
 async function init(){
-  const { data:{ user } } = await SB.auth.getUser();
-  if(!user){ window.location.href='index.html'; return; }
-  currentUser = user;
+  const { data:{ user: u } } = await SB.auth.getUser();
+  if(!u){ window.location.href='index.html'; return; }
+  user = u;
 
   const { data:p } = await SB.from('profiles')
     .select('solde,investissement,revenu_attendu')
-    .eq('id', user.id).single();
+    .eq('id', u.id).single();
 
-  currentProfile = p || { solde:0, investissement:0, revenu_attendu:0 };
+  profile = p || { solde:0, investissement:0, revenu_attendu:0 };
 
-  document.getElementById('total-fonds').textContent   = fmtF(currentProfile.investissement||0);
-  document.getElementById('total-attendu').textContent = fmtF(currentProfile.revenu_attendu||0);
+  document.getElementById('total-fonds').textContent   = fmtF(profile.investissement||0);
+  document.getElementById('total-attendu').textContent = fmtF(profile.revenu_attendu||0);
 
   renderFunds();
 }
-
 init();
 </script>
 </body>
