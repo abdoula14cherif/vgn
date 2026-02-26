@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VGN – Mon Compte</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --green: #16A34A;
+  --green-dark: #15803D;
+  --green-light: #DCFCE7;
+  --orange: #F97316;
+  --orange-dark: #EA580C;
+  --bg: #F2F5F2;
+  --card: #FFFFFF;
+  --text: #111827;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --top: 58px;
+  --bot: 58px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  max-width:430px;
+  margin:0 auto;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;height:var(--top);
+  background:linear-gradient(135deg,var(--green-dark),#22C55E);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;z-index:999;
+  box-shadow:0 2px 10px rgba(0,0,0,0.15);
+}
+.tl{display:flex;align-items:center;gap:8px;}
+.tl-badge{width:32px;height:32px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 2px 8px rgba(249,115,22,0.4);}
+.tl-name{font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:0.07em;}
+.tr{display:flex;gap:7px;}
+.ibtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:0.95rem;cursor:pointer;}
+
+/* ── BODY ── */
+.body{padding-top:calc(var(--top));padding-bottom:calc(var(--bot)+14px);}
+
+/* ── HERO PROFIL ── */
+.hero-profil{
+  background:linear-gradient(160deg,var(--green-dark) 0%,#22C55E 100%);
+  padding:28px 16px 28px;
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;
+}
+.hero-profil::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:28px;
+  background:var(--bg);border-radius:28px 28px 0 0;
+}
+
+/* Avatar */
+.avatar-wrap{position:relative;margin-bottom:10px;}
+.avatar{
+  width:82px;height:82px;border-radius:50%;
+  border:3px solid rgba(255,255,255,0.5);
+  object-fit:cover;background:#ccc;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;overflow:hidden;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+.avatar-edit{
+  position:absolute;bottom:2px;right:2px;
+  width:24px;height:24px;background:var(--orange);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+
+.user-phone{font-size:1.1rem;font-weight:900;color:#fff;margin-bottom:4px;letter-spacing:0.04em;}
+.user-name-sub{font-size:0.78rem;color:rgba(255,255,255,0.75);margin-bottom:16px;}
+
+/* VIP badge */
+.vip-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.35);
+  border-radius:20px;padding:4px 14px;
+  font-size:0.75rem;font-weight:800;color:#fff;
+}
+
+/* Wallets row */
+.wallets{
+  display:flex;justify-content:space-around;width:100%;
+  margin-top:18px;
+}
+.wallet-item{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.wallet-item .wlbl{font-size:0.65rem;color:rgba(255,255,255,0.72);font-weight:700;text-align:center;line-height:1.3;}
+.wallet-item .wval{font-size:1.2rem;font-weight:900;color:#fff;}
+.wallet-sep{width:1px;background:rgba(255,255,255,0.25);align-self:stretch;margin:4px 0;}
+
+/* ── CODE ÉCHANGE ── */
+.code-bar{
+  margin:28px 12px 10px;
+  background:linear-gradient(135deg,var(--green),var(--green-dark));
+  border-radius:14px;padding:13px 16px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 14px rgba(22,163,74,0.25);
+  cursor:pointer;
+}
+.code-bar .cb-ico{font-size:1.3rem;}
+.code-bar span{font-size:0.85rem;font-weight:800;color:#fff;flex:1;}
+.code-bar .cb-arr{font-size:0.9rem;color:rgba(255,255,255,0.7);}
+
+/* ── TRÉSOR FONDS ── */
+.tresor-card{
+  margin:0 12px 12px;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dark));
+  border-radius:16px;padding:14px 16px;
+  box-shadow:0 4px 14px rgba(249,115,22,0.25);
+}
+.tresor-card .tr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.tresor-card .tr-title{font-size:0.78rem;font-weight:800;color:rgba(255,255,255,0.85);}
+.tr-btn{
+  background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.35);
+  border-radius:20px;padding:5px 12px;
+  font-size:0.72rem;font-weight:800;color:#fff;text-decoration:none;
+  white-space:nowrap;
+}
+.tresor-row{display:flex;gap:12px;}
+.tresor-item{flex:1;background:rgba(255,255,255,0.15);border-radius:11px;padding:10px 12px;}
+.tresor-item .ti-lbl{font-size:0.62rem;color:rgba(255,255,255,0.75);font-weight:700;margin-bottom:4px;}
+.tresor-item .ti-val{font-size:1.1rem;font-weight:900;color:#fff;}
+
+/* ── STATS GRID ── */
+.sec-head{display:flex;align-items:center;padding:0 13px;margin-bottom:9px;}
+.sec-head h3{font-size:0.9rem;font-weight:800;color:var(--text);}
+
+.stats-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;padding:0 12px;margin-bottom:14px;
+}
+.stat-card{
+  background:var(--card);border-radius:14px;
+  padding:11px 10px;
+  box-shadow:0 1px 6px rgba(0,0,0,0.07);
+  text-align:center;
+}
+.stat-card .slbl{font-size:0.6rem;color:var(--muted);font-weight:700;line-height:1.3;margin-bottom:5px;}
+.stat-card .sval{font-size:1rem;font-weight:900;color:var(--text);}
+.stat-card.highlight .sval{color:var(--green);}
+
+/* ── MENU LIST ── */
+.menu-list{
+  background:var(--card);border-radius:18px;
+  margin:0 12px 14px;
+  box-shadow:0 1px 8px rgba(0,0,0,0.07);
+  overflow:hidden;
+}
+.menu-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  text-decoration:none;
+  border-bottom:1px solid #F3F4F6;
+  transition:background 0.15s;
+  cursor:pointer;
+}
+.menu-item:last-child{border-bottom:none;}
+.menu-item:active{background:#F0FDF4;}
+.mi-icon{
+  width:38px;height:38px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;flex-shrink:0;
+}
+.mi-text{flex:1;}
+.mi-text .mt-title{font-size:0.83rem;font-weight:800;color:var(--text);}
+.mi-text .mt-sub{font-size:0.65rem;color:var(--muted);margin-top:1px;}
+.mi-arr{font-size:0.75rem;color:#C4C9D4;font-weight:700;}
+
+/* icon backgrounds */
+.ico-1{background:#FEF3C7;} /* perso */
+.ico-2{background:#DCFCE7;} /* tâches */
+.ico-3{background:#DBEAFE;} /* état */
+.ico-4{background:#FCE7F3;} /* équipe */
+.ico-5{background:#F3E8FF;} /* historique */
+.ico-6{background:#FEF3C7;} /* trésor */
+.ico-7{background:#FEE2E2;} /* inviter */
+.ico-8{background:#F3F4F6;} /* aide */
+.ico-9{background:#DCFCE7;} /* app */
+
+/* ── LOGOUT ── */
+.logout-btn{
+  margin:0 12px 20px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px;background:#FEE2E2;border-radius:14px;
+  font-size:0.85rem;font-weight:800;color:#DC2626;
+  cursor:pointer;border:none;width:calc(100% - 24px);
+  transition:background 0.2s;
+}
+.logout-btn:active{background:#FECACA;}
+
+/* ── BOTTOM NAV ── */
+.botnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;height:var(--bot);
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.07);
+}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;cursor:pointer;padding:6px 0;text-decoration:none;position:relative;}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px;}
+.bn-ico{font-size:1.2rem;}
+.bn-lbl{font-size:0.58rem;font-weight:800;color:var(--muted);}
+.bn.on .bn-lbl{color:var(--green);}
+
+/* ── TOAST ── */
+.toast-bar{
+  position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-70px);
+  background:#111;color:#fff;padding:7px 18px;border-radius:22px;
+  font-size:0.78rem;font-weight:700;z-index:9999;white-space:nowrap;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.toast-bar.show{transform:translateX(-50%) translateY(0);}
+
+/* loader */
+.ldot{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="tl">
+    <div class="tl-badge">🌱</div>
+    <span class="tl-name">VGN</span>
+  </div>
+  <div class="tr">
+    <div class="ibtn" onclick="showToast('🔔 Aucune notification')">🔔</div>
+    <div class="ibtn" onclick="showToast('💬 Support 24h/24')">💬</div>
+  </div>
+</div>
+<div class="toast-bar" id="tb"></div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- HERO PROFIL -->
+  <div class="hero-profil">
+    <div class="avatar-wrap">
+      <div class="avatar" id="avatar-wrap">
+        <img id="avatar-img" src="https://ui-avatars.com/api/?name=VGN&background=16A34A&color=fff&size=100" alt="avatar">
+      </div>
+      <div class="avatar-edit" onclick="showToast('✏️ Modification de photo bientôt disponible')">✏️</div>
+    </div>
+    <div class="user-phone" id="u-phone"><span class="ldot"></span></div>
+    <div class="user-name-sub" id="u-name">Chargement...</div>
+    <div class="vip-badge">💎 <span id="u-vip">VIP Intern</span></div>
+
+    <div class="wallets">
+      <div class="wallet-item">
+        <span class="wlbl">Portefeuille<br>de revenus</span>
+        <span class="wval" id="w-revenus">–</span>
+      </div>
+      <div class="wallet-sep"></div>
+      <div class="wallet-item">
+        <span class="wlbl">Portefeuille<br>de recharge</span>
+        <span class="wval" id="w-recharge">–</span>
+      </div>
+      <div class="wallet-sep"></div>
+      <div class="wallet-item">
+        <span class="wlbl">Niveau<br>VIP</span>
+        <span class="wval" id="w-niveau">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODE ÉCHANGE -->
+  <a class="code-bar" href="code-echange.html">
+    <span class="cb-ico">🎟️</span>
+    <span>Veuillez entrer le code d'échange</span>
+    <span class="cb-arr">›</span>
+  </a>
+
+  <!-- TRÉSOR DE FONDS -->
+  <div class="tresor-card">
+    <div class="tr-top">
+      <span class="tr-title">💰 Trésor de Fonds & Bénéfices</span>
+      <a class="tr-btn" href="transfert.html">Transférer →</a>
+    </div>
+    <div class="tresor-row">
+      <div class="tresor-item">
+        <div class="ti-lbl">Trésor de Fonds</div>
+        <div class="ti-val" id="t-tresor">–</div>
+      </div>
+      <div class="tresor-item">
+        <div class="ti-lbl">Bénéfices attendus aujourd'hui</div>
+        <div class="ti-val" id="t-benefices">–</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS GRID -->
+  <div class="sec-head"><h3>📊 Statistiques détaillées</h3></div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="slbl">Gains d'hier</div>
+      <div class="sval" id="s-hier">–</div>
+    </div>
+    <div class="stat-card highlight">
+      <div class="slbl">Gains du jour</div>
+      <div class="sval" id="s-jour">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="slbl">Revenu total</div>
+      <div class="sval" id="s-total">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="slbl">Gains de la semaine</div>
+      <div class="sval" id="s-semaine">–</div>
+    </div>
+    <div class="stat-card highlight">
+      <div class="slbl">Tâches complétées</div>
+      <div class="sval" id="s-taches-ok">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="slbl">Tâches restantes</div>
+      <div class="sval" id="s-taches-rest">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="slbl">Gains du mois</div>
+      <div class="sval" id="s-mois">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="slbl">Rabais commission</div>
+      <div class="sval" id="s-rabais">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="slbl">Commission parrainage</div>
+      <div class="sval" id="s-commission">–</div>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <div class="menu-list">
+
+    <a class="menu-item" href="info-personnelles.html">
+      <div class="mi-icon ico-1">👤</div>
+      <div class="mi-text">
+        <div class="mt-title">Informations personnelles</div>
+        <div class="mt-sub">Nom, email, téléphone</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="liste-taches.html">
+      <div class="mi-icon ico-2">📋</div>
+      <div class="mi-text">
+        <div class="mt-title">Liste des tâches</div>
+        <div class="mt-sub">Voir toutes les tâches disponibles</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="etat-quotidien.html">
+      <div class="mi-icon ico-3">📅</div>
+      <div class="mi-text">
+        <div class="mt-title">État quotidien</div>
+        <div class="mt-sub">Rapport de la journée</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="rapport-equipe.html">
+      <div class="mi-icon ico-4">👥</div>
+      <div class="mi-text">
+        <div class="mt-title">Rapport d'équipe</div>
+        <div class="mt-sub">Suivi de vos filleuls</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="historique.html">
+      <div class="mi-icon ico-5">🕐</div>
+      <div class="mi-text">
+        <div class="mt-title">Historique des modifications</div>
+        <div class="mt-sub">Toutes vos transactions</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="enregistrement-tresor.html">
+      <div class="mi-icon ico-6">💰</div>
+      <div class="mi-text">
+        <div class="mt-title">Enregistrement Trésor de Fonds</div>
+        <div class="mt-sub">Historique des fonds</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="inviter.html">
+      <div class="mi-icon ico-7">🎁</div>
+      <div class="mi-text">
+        <div class="mt-title">Inviter des amis</div>
+        <div class="mt-sub">Partagez et gagnez ensemble</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="aide.html">
+      <div class="mi-icon ico-8">📖</div>
+      <div class="mi-text">
+        <div class="mt-title">Manuel d'aide</div>
+        <div class="mt-sub">Guide et FAQ</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+    <a class="menu-item" href="application.html">
+      <div class="mi-icon ico-9">📲</div>
+      <div class="mi-text">
+        <div class="mt-title">Télécharger l'application</div>
+        <div class="mt-sub">VGN sur Android & iOS</div>
+      </div>
+      <span class="mi-arr">›</span>
+    </a>
+
+  </div>
+
+  <!-- LOGOUT -->
+  <button class="logout-btn" onclick="logout()">
+    🚪 Se déconnecter
+  </button>
+
+</div><!-- /body -->
+
+<!-- BOTTOM NAV -->
+<nav class="botnav">
+  <a class="bn" href="dashboard.html">
+    <span class="bn-ico">🏠</span>
+    <span class="bn-lbl">Accueil</span>
+  </a>
+  <a class="bn" href="taches.html">
+    <span class="bn-ico">✅</span>
+    <span class="bn-lbl">Tâches</span>
+  </a>
+  <a class="bn" href="rapport.html">
+    <span class="bn-ico">📊</span>
+    <span class="bn-lbl">Rapports</span>
+  </a>
+  <a class="bn on" href="profil.html">
+    <span class="bn-ico">👤</span>
+    <span class="bn-lbl">Mon Compte</span>
+  </a>
+</nav>
+
+<script>
+const SB = supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
+);
+
+function showToast(msg){
+  const t=document.getElementById('tb');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function fmt(n){ return n!=null ? Number(n).toLocaleString('fr-FR') : '0'; }
+function fmtF(n){ return fmt(n)+' FCFA'; }
+
+function set(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+
+async function logout(){
+  await SB.auth.signOut();
+  window.location.href='index.html';
+}
+
+async function init(){
+  const { data:{ user } } = await SB.auth.getUser();
+  if(!user){ window.location.href='index.html'; return; }
+
+  const name  = user.user_metadata?.full_name || 'Investisseur VGN';
+  const phone = user.user_metadata?.phone || user.phone || user.email || '—';
+
+  set('u-name', name);
+  set('u-phone', phone);
+
+  // Avatar initiales
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('avatar-img').src =
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=15803D&color=fff&size=100&bold=true`;
+
+  // Charger le profil
+  const { data:p } = await SB.from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  if(!p){
+    // Aucun profil : tout à 0
+    ['w-revenus','w-recharge','t-tresor','t-benefices',
+     's-hier','s-jour','s-total','s-semaine','s-mois','s-rabais','s-commission']
+      .forEach(id => set(id,'0 FCFA'));
+    set('w-niveau','Intern');
+    set('u-vip','VIP Intern');
+    set('s-taches-ok','0');
+    set('s-taches-rest','5');
+    return;
+  }
+
+  // Wallets top
+  set('w-revenus', fmtF(p.gains_totaux || 0));
+  set('w-recharge', fmtF(p.solde || 0));
+  const niveauVip = p.vip_niveau || 'Intern';
+  set('w-niveau', niveauVip);
+  set('u-vip', 'VIP '+niveauVip);
+
+  // Trésor
+  set('t-tresor', fmtF(p.investissement || 0));
+  set('t-benefices', fmtF(p.benefices_jour || 0));
+
+  // Stats
+  set('s-hier',        fmtF(p.gains_hier      || 0));
+  set('s-jour',        fmtF(p.gains_jour      || 0));
+  set('s-total',       fmtF(p.gains_totaux    || 0));
+  set('s-semaine',     fmtF(p.gains_semaine   || 0));
+  set('s-mois',        fmtF(p.gains_mois      || 0));
+  set('s-rabais',      fmtF(p.rabais_commission || 0));
+  set('s-commission',  fmtF(p.commission_parrainage || 0));
+  set('s-taches-ok',   String(p.taches_jour   || 0));
+  set('s-taches-rest', String(Math.max(0, 5-(p.taches_jour||0))));
+}
+
+init();
+</script>
+</body>
+</html>
