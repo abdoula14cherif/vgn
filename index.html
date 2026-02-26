@@ -1,1168 +1,826 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kali Linux Master - Tutoriels Complets</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --dark-blue: #0a1931;
-            --navy-blue: #185adb;
-            --electric-blue: #2d46b9;
-            --blood-red: #b33939;
-            --orange: #ff8c32;
-            --light-orange: #ffb74d;
-            --gray: #8d93ab;
-            --light-gray: #f1f3f8;
-            --card-bg: #1a2b4a;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            --radius: 15px;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, #0c2461 100%);
-            color: var(--light-gray);
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
-
-        /* Header avec sélecteur de langue */
-        .header {
-            background: var(--card-bg);
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            transition: transform 0.3s ease;
-        }
-
-        .header.hidden {
-            transform: translateY(-100%);
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(90deg, var(--orange), var(--light-orange));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo i {
-            color: var(--orange);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .language-selector {
-            position: relative;
-        }
-
-        .lang-btn {
-            background: var(--electric-blue);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .lang-btn:hover {
-            background: var(--blood-red);
-            transform: translateY(-2px);
-        }
-
-        .lang-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 15px;
-            margin-top: 10px;
-            min-width: 180px;
-            display: none;
-            z-index: 10;
-            border: 1px solid var(--navy-blue);
-        }
-
-        .lang-dropdown.active {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .lang-option {
-            padding: 10px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s ease;
-            color: white;
-        }
-
-        .lang-option:hover {
-            background: var(--navy-blue);
-            color: var(--orange);
-        }
-
-        .lang-flag {
-            width: 24px;
-            height: 16px;
-            border-radius: 3px;
-        }
-
-        /* Menu burger */
-        .menu-btn {
-            background: var(--blood-red);
-            border: none;
-            font-size: 1.5rem;
-            color: white;
-            cursor: pointer;
-            padding: 12px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn:hover {
-            background: var(--orange);
-            transform: rotate(90deg);
-        }
-
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -350px;
-            width: 300px;
-            height: 100vh;
-            background: var(--card-bg);
-            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.4);
-            padding: 30px 20px;
-            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            border-left: 3px solid var(--orange);
-        }
-
-        .side-menu.active {
-            right: 0;
-        }
-
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            z-index: 999;
-        }
-
-        .menu-overlay.active {
-            display: block;
-        }
-
-        .menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--navy-blue);
-        }
-
-        .menu-title {
-            font-size: 1.3rem;
-            color: var(--orange);
-            font-weight: 600;
-        }
-
-        .close-menu {
-            background: var(--blood-red);
-            border: none;
-            font-size: 1.5rem;
-            color: white;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .close-menu:hover {
-            background: var(--orange);
-            transform: rotate(90deg);
-        }
-
-        .menu-links {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: var(--electric-blue);
-            border-radius: 12px;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .menu-link:hover {
-            background: var(--blood-red);
-            color: white;
-            transform: translateX(5px);
-            border-left-color: var(--orange);
-        }
-
-        .menu-link i {
-            font-size: 1.2rem;
-            width: 24px;
-            color: var(--light-orange);
-        }
-
-        /* Hero section - La carte du haut */
-        .hero {
-            padding: 40px 5%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 40px;
-            flex-wrap: wrap;
-            background: linear-gradient(135deg, rgba(10, 25, 49, 0.9), rgba(179, 57, 57, 0.1));
-            border-radius: 0 0 var(--radius) var(--radius);
-            margin-bottom: 40px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: top;
-            position: relative;
-            z-index: 10;
-        }
-
-        .hero.hidden {
-            opacity: 0;
-            transform: translateY(-100%) scaleY(0);
-            margin-bottom: 0;
-            padding: 0 5%;
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .hero-content {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .hero-title {
-            font-size: 2.8rem;
-            background: linear-gradient(90deg, var(--orange), var(--blood-red));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
-            line-height: 1.2;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: var(--gray);
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .hero-image {
-            flex: 1;
-            min-width: 300px;
-            text-align: center;
-        }
-
-        .hero-image img {
-            max-width: 100%;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            animation: float 6s ease-in-out infinite;
-            border: 3px solid var(--orange);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Grille d'options */
-        .options-section {
-            padding: 20px 5%;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            color: white;
-            margin-bottom: 30px;
-            text-align: center;
-            position: relative;
-        }
-
-        .section-title:after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--orange), var(--blood-red));
-            margin: 10px auto;
-            border-radius: 2px;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .option-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 25px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .option-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--orange);
-            box-shadow: 0 20px 40px rgba(255, 140, 50, 0.2);
-        }
-
-        .option-card:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--blood-red), var(--orange));
-        }
-
-        .option-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--blood-red), var(--orange));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 1.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .option-card:hover .option-icon {
-            transform: rotate(360deg) scale(1.1);
-        }
-
-        .option-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .option-desc {
-            color: var(--gray);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        /* Barre de navigation inférieure */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--card-bg);
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
-            z-index: 90;
-            border-top: 2px solid var(--orange);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--gray);
-            transition: all 0.3s ease;
-            padding: 8px 15px;
-            border-radius: 12px;
-            min-width: 80px;
-        }
-
-        .nav-item.active, .nav-item:hover {
-            color: var(--orange);
-            background: var(--electric-blue);
-        }
-
-        .nav-icon {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .nav-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        /* Section bas de page */
-        .bottom-section {
-            padding: 40px 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .bottom-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 30px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid transparent;
-        }
-
-        .bottom-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--orange);
-        }
-
-        .bottom-card:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--blood-red), var(--orange));
-        }
-
-        .quiz-card {
-            background: linear-gradient(135deg, var(--electric-blue), var(--navy-blue));
-        }
-
-        .premium-card {
-            background: linear-gradient(135deg, var(--dark-blue), var(--blood-red));
-            position: relative;
-        }
-
-        .premium-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--orange);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: white;
-        }
-
-        .card-desc {
-            margin-bottom: 20px;
-            color: var(--gray);
-            line-height: 1.6;
-        }
-
-        .card-btn {
-            display: inline-block;
-            background: var(--orange);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid var(--orange);
-        }
-
-        .card-btn:hover {
-            background: transparent;
-            color: var(--orange);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 140, 50, 0.3);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .options-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-            
-            .bottom-nav {
-                padding: 10px 0;
-            }
-            
-            .nav-label {
-                font-size: 0.7rem;
-            }
-            
-            .lang-btn span {
-                display: none;
-            }
-            
-            .header-right {
-                gap: 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .hero {
-                flex-direction: column;
-            }
-            
-            .bottom-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .menu-btn, .close-menu {
-                width: 45px;
-                height: 45px;
-            }
-        }
-
-        /* Animation pour les cartes */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animated {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background: var(--orange);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VGN – ValueGrowNetwork</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --orange: #F97316;
+    --orange-light: #FDBA74;
+    --orange-dark: #EA580C;
+    --green: #16A34A;
+    --green-light: #4ADE80;
+    --green-dark: #15803D;
+    --cream: #FFFBF5;
+    --white: #FFFFFF;
+    --gray: #6B7280;
+    --gray-light: #F3F4F6;
+    --text: #1C1917;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 20%, rgba(22,163,74,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 80%, rgba(249,115,22,0.10) 0%, transparent 60%),
+      var(--cream);
+  }
+
+  /* Floating leaves */
+  .leaf {
+    position: fixed;
+    opacity: 0.07;
+    font-size: 3rem;
+    animation: floatLeaf linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .leaf:nth-child(1)  { left:5%;  top:-10%; animation-duration:18s; animation-delay:0s;   font-size:2.5rem; }
+  .leaf:nth-child(2)  { left:20%; top:-10%; animation-duration:22s; animation-delay:4s;   font-size:4rem; }
+  .leaf:nth-child(3)  { left:55%; top:-10%; animation-duration:16s; animation-delay:2s;   font-size:2rem; }
+  .leaf:nth-child(4)  { left:75%; top:-10%; animation-duration:20s; animation-delay:7s;   font-size:3.5rem; }
+  .leaf:nth-child(5)  { left:90%; top:-10%; animation-duration:14s; animation-delay:1s;   font-size:2rem; }
+
+  @keyframes floatLeaf {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.07; }
+    90%  { opacity: 0.07; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    background: linear-gradient(145deg, var(--green-dark) 0%, var(--green) 50%, #22C55E 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .left-panel::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -20%;
+    width: 70%;
+    height: 70%;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+
+  .left-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    left: -10%;
+    width: 50%;
+    height: 50%;
+    background: rgba(249,115,22,0.15);
+    border-radius: 50%;
+  }
+
+  .brand {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 3rem;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    padding: 0.5rem 1.25rem 0.5rem 0.5rem;
+    margin-bottom: 2rem;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: white;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    animation: fadeDown 0.7s ease 0.1s both;
+  }
+
+  .hero-title span {
+    color: var(--orange-light);
+  }
+
+  .hero-sub {
+    color: rgba(255,255,255,0.8);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 380px;
+    animation: fadeDown 0.7s ease 0.2s both;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    position: relative;
+    z-index: 2;
+    animation: fadeDown 0.7s ease 0.3s both;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    flex: 1;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--orange-light);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    margin-top: 0.2rem;
+  }
+
+  /* Agriculture icons */
+  .agri-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    position: relative;
+    z-index: 2;
+    animation: fadeDown 0.7s ease 0.4s both;
+  }
+
+  .agri-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* ── RIGHT PANEL (Form) ── */
+  .right-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    overflow-y: auto;
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 420px;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .form-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .form-header p {
+    color: var(--gray);
+    font-size: 0.9rem;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 2rem;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 0.65rem;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--gray);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .tab-btn.active {
+    background: white;
+    color: var(--green-dark);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* Form fields */
+  .field-group {
+    margin-bottom: 1.1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.02em;
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px rgba(22,163,74,0.1);
+  }
+
+  input::placeholder { color: #9CA3AF; }
+
+  .password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--gray);
+    padding: 0;
+    line-height: 1;
+  }
+
+  /* Password strength */
+  .strength-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .strength-seg {
+    height: 3px;
+    flex: 1;
+    background: #E5E7EB;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+
+  /* Submit btn */
+  .btn-submit {
+    width: 100%;
+    padding: 0.95rem;
+    background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(249,115,22,0.35);
+  }
+
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(249,115,22,0.45); }
+  .btn-submit:hover::after { opacity: 1; }
+  .btn-submit:active { transform: translateY(0); }
+
+  .btn-submit.loading {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .divider {
+    text-align: center;
+    position: relative;
+    margin: 1.2rem 0;
+    color: var(--gray);
+    font-size: 0.8rem;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #E5E7EB;
+  }
+  .divider::before { left: 0; }
+  .divider::after { right: 0; }
+
+  .terms {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--gray);
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .terms a { color: var(--green); text-decoration: none; font-weight: 500; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: white;
+    z-index: 9999;
+    max-width: 340px;
+    transform: translateX(120%);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+
+  .toast.show { transform: translateX(0); }
+  .toast.success { background: var(--green); }
+  .toast.error { background: #EF4444; }
+
+  /* Success screen */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 1rem 0;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .success-screen.visible { display: block; }
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--green-light), var(--green));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 8px 30px rgba(22,163,74,0.3);
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .success-screen h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .success-screen p { color: var(--gray); line-height: 1.6; font-size: 0.9rem; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .page { grid-template-columns: 1fr; }
+    .left-panel {
+      padding: 2rem 1.5rem;
+      min-height: auto;
+    }
+    .hero-title { font-size: 1.8rem; }
+    .stats-row { gap: 0.8rem; }
+    .agri-icons { flex-wrap: wrap; }
+    .right-panel { padding: 2rem 1.25rem; }
+    .toast { top: auto; bottom: 1rem; right: 1rem; left: 1rem; max-width: none; }
+  }
+</style>
 </head>
 <body>
-    <!-- Header avec sélecteur de langue -->
-    <header class="header" id="header">
-        <div class="logo">
-            <i class="fas fa-terminal"></i>
-            <span data-i18n="logo">Kali Linux Master</span>
-        </div>
-        
-        <div class="header-right">
-            <!-- Sélecteur de langue -->
-            <div class="language-selector">
-                <button class="lang-btn" id="langBtn">
-                    <i class="fas fa-globe"></i>
-                    <span data-i18n="currentLang">Français</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="lang-dropdown" id="langDropdown">
-                    <div class="lang-option" data-lang="fr">
-                        <img src="https://flagcdn.com/w20/fr.png" class="lang-flag" alt="Français">
-                        <span>Français</span>
-                    </div>
-                    <div class="lang-option" data-lang="en">
-                        <img src="https://flagcdn.com/w20/gb.png" class="lang-flag" alt="English">
-                        <span>English</span>
-                    </div>
-                    <div class="lang-option" data-lang="es">
-                        <img src="https://flagcdn.com/w20/es.png" class="lang-flag" alt="Español">
-                        <span>Español</span>
-                    </div>
-                    <div class="lang-option" data-lang="de">
-                        <img src="https://flagcdn.com/w20/de.png" class="lang-flag" alt="Deutsch">
-                        <span>Deutsch</span>
-                    </div>
-                    <div class="lang-option" data-lang="ar">
-                        <img src="https://flagcdn.com/w20/ma.png" class="lang-flag" alt="العربية">
-                        <span>العربية</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Menu burger -->
-            <button class="menu-btn" id="menuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </header>
 
-    <!-- Menu latéral -->
-    <div class="menu-overlay" id="menuOverlay"></div>
-    <div class="side-menu" id="sideMenu">
-        <div class="menu-header">
-            <div class="menu-title" data-i18n="menuTitle">Menu Principal</div>
-            <button class="close-menu" id="closeMenu">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="menu-links">
-            <a href="support.html" class="menu-link">
-                <i class="fas fa-headset"></i>
-                <span data-i18n="menuSupport">Support</span>
-            </a>
-            <a href="https://t.me/joinchat/example" target="_blank" class="menu-link">
-                <i class="fab fa-telegram"></i>
-                <span data-i18n="menuTelegram">Notre Groupe Telegram</span>
-            </a>
-            <a href="https://wa.me/1234567890" target="_blank" class="menu-link">
-                <i class="fab fa-whatsapp"></i>
-                <span data-i18n="menuWhatsapp">Notre Chaîne WhatsApp</span>
-            </a>
-            <a href="more-apps.html" class="menu-link">
-                <i class="fas fa-mobile-alt"></i>
-                <span data-i18n="menuApps">Plus d'Applications</span>
-            </a>
-            <a href="premium.html" class="menu-link">
-                <i class="fas fa-star"></i>
-                <span data-i18n="menuPremium">Version Premium</span>
-            </a>
-            <a href="share.html" class="menu-link">
-                <i class="fas fa-share-alt"></i>
-                <span data-i18n="menuShare">Partager l'App</span>
-            </a>
-            <a href="settings.html" class="menu-link">
-                <i class="fas fa-cog"></i>
-                <span data-i18n="menuSettings">Paramètres</span>
-            </a>
-        </div>
+<!-- Background -->
+<div class="bg-layer"></div>
+<div class="leaf">🌿</div>
+<div class="leaf">🌾</div>
+<div class="leaf">🍃</div>
+<div class="leaf">🌱</div>
+<div class="leaf">🌿</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span id="toast-icon"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<div class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="logo-badge">
+        <div class="logo-icon">🌱</div>
+        <span class="logo-text">VGN</span>
+      </div>
+      <h1 class="hero-title">
+        Cultivez votre<br>
+        <span>avenir financier</span><br>
+        avec l'agriculture
+      </h1>
+      <p class="hero-sub">
+        Investissez dans nos exploitations agricoles — maïs, blé, élevage — 
+        effectuez de petites tâches quotidiennes et regardez votre capital fructifier sur le long terme.
+      </p>
     </div>
 
-    <!-- Section Hero avec image - LA CARTE DU HAUT -->
-    <section class="hero" id="hero">
-        <div class="hero-content">
-            <h1 class="hero-title" data-i18n="heroTitle">Maîtrisez Kali Linux comme un Expert</h1>
-            <p class="hero-subtitle" data-i18n="heroSubtitle">
-                Apprenez tout sur Kali Linux, des bases aux techniques avancées de sécurité. 
-                Guides complets, tutoriels détaillés et ressources pratiques pour devenir 
-                un professionnel de la cybersécurité.
-            </p>
+    <div class="agri-icons">
+      <div class="agri-chip">🌽 Maïs</div>
+      <div class="agri-chip">🌾 Blé</div>
+      <div class="agri-chip">🐄 Élevage</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">12K+</div>
+        <div class="stat-label">Investisseurs actifs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Satisfaction client</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">+35%</div>
+        <div class="stat-label">Rendement annuel</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="form-container">
+
+      <div class="form-header">
+        <h2>Rejoignez VGN</h2>
+        <p>Créez votre compte et commencez à investir</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('signup')">Inscription</button>
+        <button class="tab-btn" onclick="switchTab('login')">Connexion</button>
+      </div>
+
+      <!-- SUCCESS SCREEN -->
+      <div class="success-screen" id="success-screen">
+        <div class="success-icon">✅</div>
+        <h3>Compte créé !</h3>
+        <p>Bienvenue dans la famille VGN 🌱<br>Vérifiez votre email pour confirmer votre compte.</p>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <form id="signup-form" onsubmit="handleSignup(event)">
+
+        <div class="field-group">
+          <label>Nom complet</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" id="s-name" placeholder="Ex: Jean Dupont" required autocomplete="name">
+          </div>
         </div>
-        <div class="hero-image">
-            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                 alt="Programmeur utilisant Kali Linux"
-                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzBhMTkzMSIvPjx0ZXh0IHg9IjQwMCIgeT0iMzAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZjhjMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPktBTEkgTElOVVg8L3RleHQ+PC9zdmc+'">
+
+        <div class="field-group">
+          <label>Adresse email</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input type="email" id="s-email" placeholder="jean@exemple.com" required autocomplete="email">
+          </div>
         </div>
-    </section>
 
-    <!-- Grille d'options -->
-    <section class="options-section">
-        <h2 class="section-title" data-i18n="sectionTitle">Tout sur Kali Linux</h2>
-        <div class="options-grid" id="optionsGrid">
-            <!-- Les options seront générées par JavaScript -->
+        <div class="field-group">
+          <label>Numéro de téléphone</label>
+          <div class="input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="tel" id="s-phone" placeholder="+225 07 00 00 00 00" required autocomplete="tel">
+          </div>
         </div>
-    </section>
 
-    <!-- Section bas de page -->
-    <section class="bottom-section">
-        <div class="bottom-card quiz-card">
-            <h3 class="card-title" data-i18n="quizTitle">🎮 Quiz Interactif</h3>
-            <p class="card-desc" data-i18n="quizDesc">Testez vos connaissances sur Kali Linux avec notre quiz interactif et gagnez des badges !</p>
-            <a href="quiz.html" class="card-btn" data-i18n="quizBtn">Commencer le Quiz</a>
+        <div class="field-group">
+          <label>Mot de passe</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="s-password" placeholder="Au moins 8 caractères" required minlength="6" oninput="updateStrength(this.value)">
+            <button type="button" class="password-toggle" onclick="togglePwd('s-password',this)">👁️</button>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-seg" id="s1"></div>
+            <div class="strength-seg" id="s2"></div>
+            <div class="strength-seg" id="s3"></div>
+            <div class="strength-seg" id="s4"></div>
+          </div>
         </div>
-        
-        <div class="bottom-card premium-card">
-            <div class="premium-badge" data-i18n="premiumBadge">PRO</div>
-            <h3 class="card-title" data-i18n="premiumTitle">🚀 Passez à Premium</h3>
-            <p class="card-desc" data-i18n="premiumDesc">Débloquez tous les cours avancés, téléchargements exclusifs et support prioritaire.</p>
-            <a href="premium.html" class="card-btn" data-i18n="premiumBtn">Voir les Offres</a>
+
+        <button type="submit" class="btn-submit" id="signup-btn">
+          Créer mon compte 🚀
+        </button>
+
+        <p class="terms">
+          En vous inscrivant, vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre <a href="#">Politique de confidentialité</a>.
+        </p>
+
+      </form>
+
+      <!-- LOGIN FORM -->
+      <form id="login-form" onsubmit="handleLogin(event)" style="display:none;">
+
+        <div class="field-group">
+          <label>Adresse email</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input type="email" id="l-email" placeholder="jean@exemple.com" required autocomplete="email">
+          </div>
         </div>
-    </section>
 
-    <!-- Barre de navigation inférieure -->
-    <nav class="bottom-nav">
-        <a href="basique.html" class="nav-item active">
-            <i class="fas fa-graduation-cap nav-icon"></i>
-            <span class="nav-label" data-i18n="navBasic">Basique</span>
-        </a>
-        <a href="intermediaire.html" class="nav-item">
-            <i class="fas fa-chart-line nav-icon"></i>
-            <span class="nav-label" data-i18n="navIntermediate">Intermédiaire</span>
-        </a>
-        <a href="avance.html" class="nav-item">
-            <i class="fas fa-crown nav-icon"></i>
-            <span class="nav-label" data-i18n="navAdvanced">Avancé</span>
-        </a>
-        <a href="formation.html" class="nav-item">
-            <i class="fas fa-video nav-icon"></i>
-            <span class="nav-label" data-i18n="navTraining">Formation</span>
-        </a>
-    </nav>
+        <div class="field-group">
+          <label>Mot de passe</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="l-password" placeholder="Votre mot de passe" required>
+            <button type="button" class="password-toggle" onclick="togglePwd('l-password',this)">👁️</button>
+          </div>
+        </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Données des options avec leurs pages
-            const options = [
-                { 
-                    id: 'introduction', 
-                    title: { fr: 'Introduction', en: 'Introduction', es: 'Introducción', de: 'Einführung', ar: 'مقدمة' },
-                    desc: { fr: 'Découvrez les bases de Kali Linux', en: 'Discover the basics of Kali Linux', es: 'Descubre los conceptos básicos de Kali Linux', de: 'Entdecken Sie die Grundlagen von Kali Linux', ar: 'اكتشف أساسيات كالي لينكس' },
-                    icon: 'fas fa-play-circle',
-                    page: 'introduction.html'
-                },
-                { 
-                    id: 'what-is-kali', 
-                    title: { fr: 'Qu\'est-ce que Kali Linux', en: 'What is Kali Linux', es: 'Qué es Kali Linux', de: 'Was ist Kali Linux', ar: 'ما هو كالي لينكس' },
-                    desc: { fr: 'Comprendre l\'OS de sécurité', en: 'Understand the security OS', es: 'Comprender el sistema operativo de seguridad', de: 'Verstehen Sie das Sicherheits-Betriebssystem', ar: 'فهم نظام التشغيل الأمني' },
-                    icon: 'fas fa-question-circle',
-                    page: 'what-is-kali.html'
-                },
-                { 
-                    id: 'download', 
-                    title: { fr: 'Télécharger Kali Linux', en: 'Download Kali Linux', es: 'Descargar Kali Linux', de: 'Kali Linux herunterladen', ar: 'تحميل كالي لينكس' },
-                    desc: { fr: 'Obtenir l\'image ISO officielle', en: 'Get the official ISO image', es: 'Obtén la imagen ISO oficial', de: 'Holen Sie sich das offizielle ISO-Image', ar: 'احصل على صورة ISO الرسمية' },
-                    icon: 'fas fa-download',
-                    page: 'download.html'
-                },
-                { 
-                    id: 'install', 
-                    title: { fr: 'Installer Kali Linux', en: 'Install Kali Linux', es: 'Instalar Kali Linux', de: 'Kali Linux installieren', ar: 'تثبيت كالي لينكس' },
-                    desc: { fr: 'Guide d\'installation complet', en: 'Complete installation guide', es: 'Guía de instalación completa', de: 'Vollständige Installationsanleitung', ar: 'دليل التثبيت الكامل' },
-                    icon: 'fas fa-desktop',
-                    page: 'install.html'
-                },
-                { 
-                    id: 'best-commands', 
-                    title: { fr: 'Meilleures Commandes', en: 'Best Commands', es: 'Mejores Comandos', de: 'Beste Befehle', ar: 'أفضل الأوامر' },
-                    desc: { fr: 'Commandes essentielles à connaître', en: 'Essential commands to know', es: 'Comandos esenciales que debes conocer', de: 'Wesentliche Befehle', ar: 'أوامر أساسية يجب معرفتها' },
-                    icon: 'fas fa-terminal',
-                    page: 'best-commands.html'
-                },
-                { 
-                    id: 'post-install', 
-                    title: { fr: 'Après Installation', en: 'After Installation', es: 'Después de la Instalación', de: 'Nach der Installation', ar: 'بعد التثبيت' },
-                    desc: { fr: 'Choses à faire après installation', en: 'Things to do after installation', es: 'Cosas que hacer después de la instalación', de: 'Dinge, die nach der Installation zu tun sind', ar: 'أشياء يجب القيام بها بعد التثبيت' },
-                    icon: 'fas fa-check-circle',
-                    page: 'post-install.html'
-                },
-                { 
-                    id: 'install-software', 
-                    title: { fr: 'Installer un Logiciel', en: 'Install Software', es: 'Instalar Software', de: 'Software installieren', ar: 'تثبيت البرامج' },
-                    desc: { fr: 'Guide d\'installation de programmes', en: 'Program installation guide', es: 'Guía de instalación de programas', de: 'Programminstallationsanleitung', ar: 'دليل تثبيت البرامج' },
-                    icon: 'fas fa-box-open',
-                    page: 'install-software.html'
-                },
-                { 
-                    id: 'uninstall-software', 
-                    title: { fr: 'Désinstaller un Logiciel', en: 'Uninstall Software', es: 'Desinstalar Software', de: 'Software deinstallieren', ar: 'إلغاء تثبيت البرامج' },
-                    desc: { fr: 'Supprimer des programmes proprement', en: 'Properly remove programs', es: 'Eliminar programas correctamente', de: 'Programme ordnungsgemäß entfernen', ar: 'إزالة البرامج بشكل صحيح' },
-                    icon: 'fas fa-trash-alt',
-                    page: 'uninstall-software.html'
-                }
-            ];
+        <div style="text-align:right; margin-top:-0.3rem; margin-bottom:1rem;">
+          <a href="#" style="font-size:0.82rem; color:var(--green); text-decoration:none; font-weight:500;">Mot de passe oublié ?</a>
+        </div>
 
-            // Remplir la grille d'options
-            const optionsGrid = document.getElementById('optionsGrid');
-            
-            function renderOptions(lang = 'fr') {
-                optionsGrid.innerHTML = '';
-                options.forEach((option, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'option-card animated';
-                    card.style.animationDelay = `${index * 0.05}s`;
-                    card.innerHTML = `
-                        <div class="option-icon">
-                            <i class="${option.icon}"></i>
-                        </div>
-                        <h3 class="option-title">${option.title[lang]}</h3>
-                        <p class="option-desc">${option.desc[lang]}</p>
-                    `;
-                    card.addEventListener('click', () => {
-                        window.location.href = option.page;
-                    });
-                    optionsGrid.appendChild(card);
-                });
-            }
+        <button type="submit" class="btn-submit" id="login-btn">
+          Se connecter 🌿
+        </button>
 
-            // Traductions pour tous les textes
-            const translations = {
-                fr: {
-                    logo: 'Kali Linux Master',
-                    currentLang: 'Français',
-                    menuTitle: 'Menu Principal',
-                    menuSupport: 'Support',
-                    menuTelegram: 'Notre Groupe Telegram',
-                    menuWhatsapp: 'Notre Chaîne WhatsApp',
-                    menuApps: "Plus d'Applications",
-                    menuPremium: 'Version Premium',
-                    menuShare: "Partager l'App",
-                    menuSettings: 'Paramètres',
-                    heroTitle: 'Maîtrisez Kali Linux comme un Expert',
-                    heroSubtitle: 'Apprenez tout sur Kali Linux, des bases aux techniques avancées de sécurité. Guides complets, tutoriels détaillés et ressources pratiques pour devenir un professionnel de la cybersécurité.',
-                    sectionTitle: 'Tout sur Kali Linux',
-                    quizTitle: '🎮 Quiz Interactif',
-                    quizDesc: 'Testez vos connaissances sur Kali Linux avec notre quiz interactif et gagnez des badges !',
-                    quizBtn: 'Commencer le Quiz',
-                    premiumBadge: 'PRO',
-                    premiumTitle: '🚀 Passez à Premium',
-                    premiumDesc: 'Débloquez tous les cours avancés, téléchargements exclusifs et support prioritaire.',
-                    premiumBtn: 'Voir les Offres',
-                    navBasic: 'Basique',
-                    navIntermediate: 'Intermédiaire',
-                    navAdvanced: 'Avancé',
-                    navTraining: 'Formation'
-                },
-                en: {
-                    logo: 'Kali Linux Master',
-                    currentLang: 'English',
-                    menuTitle: 'Main Menu',
-                    menuSupport: 'Support',
-                    menuTelegram: 'Our Telegram Group',
-                    menuWhatsapp: 'Our WhatsApp Channel',
-                    menuApps: 'More Apps',
-                    menuPremium: 'Premium Version',
-                    menuShare: 'Share App',
-                    menuSettings: 'Settings',
-                    heroTitle: 'Master Kali Linux like an Expert',
-                    heroSubtitle: 'Learn everything about Kali Linux, from basics to advanced security techniques. Complete guides, detailed tutorials and practical resources to become a cybersecurity professional.',
-                    sectionTitle: 'All about Kali Linux',
-                    quizTitle: '🎮 Interactive Quiz',
-                    quizDesc: 'Test your knowledge of Kali Linux with our interactive quiz and earn badges!',
-                    quizBtn: 'Start Quiz',
-                    premiumBadge: 'PRO',
-                    premiumTitle: '🚀 Go Premium',
-                    premiumDesc: 'Unlock all advanced courses, exclusive downloads and priority support.',
-                    premiumBtn: 'View Offers',
-                    navBasic: 'Basic',
-                    navIntermediate: 'Intermediate',
-                    navAdvanced: 'Advanced',
-                    navTraining: 'Training'
-                },
-                es: {
-                    logo: 'Kali Linux Master',
-                    currentLang: 'Español',
-                    menuTitle: 'Menú Principal',
-                    menuSupport: 'Soporte',
-                    menuTelegram: 'Nuestro Grupo de Telegram',
-                    menuWhatsapp: 'Nuestro Canal de WhatsApp',
-                    menuApps: 'Más Aplicaciones',
-                    menuPremium: 'Versión Premium',
-                    menuShare: 'Compartir App',
-                    menuSettings: 'Ajustes',
-                    heroTitle: 'Domina Kali Linux como un Experto',
-                    heroSubtitle: 'Aprende todo sobre Kali Linux, desde lo básico hasta técnicas avanzadas de seguridad. Guías completas, tutoriales detallados y recursos prácticos para convertirte en un profesional de la ciberseguridad.',
-                    sectionTitle: 'Todo sobre Kali Linux',
-                    quizTitle: '🎮 Quiz Interactivo',
-                    quizDesc: '¡Pon a prueba tus conocimientos sobre Kali Linux con nuestro quiz interactivo y gana insignias!',
-                    quizBtn: 'Comenzar Quiz',
-                    premiumBadge: 'PRO',
-                    premiumTitle: '🚀 Hazte Premium',
-                    premiumDesc: 'Desbloquea todos los cursos avanzados, descargas exclusivas y soporte prioritario.',
-                    premiumBtn: 'Ver Ofertas',
-                    navBasic: 'Básico',
-                    navIntermediate: 'Intermedio',
-                    navAdvanced: 'Avanzado',
-                    navTraining: 'Formación'
-                },
-                de: {
-                    logo: 'Kali Linux Master',
-                    currentLang: 'Deutsch',
-                    menuTitle: 'Hauptmenü',
-                    menuSupport: 'Support',
-                    menuTelegram: 'Unsere Telegram-Gruppe',
-                    menuWhatsapp: 'Unser WhatsApp-Kanal',
-                    menuApps: 'Weitere Apps',
-                    menuPremium: 'Premium-Version',
-                    menuShare: 'App teilen',
-                    menuSettings: 'Einstellungen',
-                    heroTitle: 'Meistern Sie Kali Linux wie ein Experte',
-                    heroSubtitle: 'Lernen Sie alles über Kali Linux, von den Grundlagen bis zu fortgeschrittenen Sicherheitstechniken. Vollständige Anleitungen, detaillierte Tutorials und praktische Ressourcen, um ein Cybersicherheitsexperte zu werden.',
-                    sectionTitle: 'Alles über Kali Linux',
-                    quizTitle: '🎮 Interaktives Quiz',
-                    quizDesc: 'Testen Sie Ihr Wissen über Kali Linux mit unserem interaktiven Quiz und verdienen Sie Abzeichen!',
-                    quizBtn: 'Quiz starten',
-                    premiumBadge: 'PRO',
-                    premiumTitle: '🚀 Zur Premium-Version',
-                    premiumDesc: 'Schalten Sie alle fortgeschrittenen Kurse, exklusive Downloads und vorrangigen Support frei.',
-                    premiumBtn: 'Angebote ansehen',
-                    navBasic: 'Grundlagen',
-                    navIntermediate: 'Mittelstufe',
-                    navAdvanced: 'Fortgeschritten',
-                    navTraining: 'Training'
-                },
-                ar: {
-                    logo: 'كالي لينكس ماستر',
-                    currentLang: 'العربية',
-                    menuTitle: 'القائمة الرئيسية',
-                    menuSupport: 'الدعم',
-                    menuTelegram: 'مجموعة التليغرام',
-                    menuWhatsapp: 'قناة الواتساب',
-                    menuApps: 'تطبيقات أخرى',
-                    menuPremium: 'نسخة بريميوم',
-                    menuShare: 'مشاركة التطبيق',
-                    menuSettings: 'الإعدادات',
-                    heroTitle: 'أتقن كالي لينكس كخبير',
-                    heroSubtitle: 'تعلم كل شيء عن كالي لينكس، من الأساسيات إلى تقنيات الأمان المتقدمة. أدلة كاملة، دروس مفصلة وموارد عملية لتصبح محترفاً في الأمن السيبراني.',
-                    sectionTitle: 'كل شيء عن كالي لينكس',
-                    quizTitle: '🎮 اختبار تفاعلي',
-                    quizDesc: 'اختبر معرفتك بكالي لينكس من خلال اختبارنا التفاعلي واربح شارات!',
-                    quizBtn: 'ابدأ الاختبار',
-                    premiumBadge: 'بريميوم',
-                    premiumTitle: '🚀 انتقل إلى بريميوم',
-                    premiumDesc: 'افتح جميع الدورات المتقدمة، التنزيلات الحصرية والدعم ذو الأولوية.',
-                    premiumBtn: 'عرض العروض',
-                    navBasic: 'أساسي',
-                    navIntermediate: 'متوسط',
-                    navAdvanced: 'متقدم',
-                    navTraining: 'تدريب'
-                }
-            };
+      </form>
 
-            // Fonction pour changer la langue
-            function changeLanguage(lang) {
-                // Mettre à jour tous les éléments avec data-i18n
-                document.querySelectorAll('[data-i18n]').forEach(element => {
-                    const key = element.getAttribute('data-i18n');
-                    if (translations[lang] && translations[lang][key]) {
-                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                            element.placeholder = translations[lang][key];
-                        } else {
-                            element.textContent = translations[lang][key];
-                        }
-                    }
-                });
+    </div>
+  </div>
 
-                // Mettre à jour le texte du bouton de langue
-                const langBtnSpan = document.querySelector('#langBtn span');
-                if (langBtnSpan) {
-                    langBtnSpan.textContent = translations[lang].currentLang;
-                }
+</div>
 
-                // Re-rendre les options de la grille
-                renderOptions(lang);
-            }
+<script>
+  // ── SUPABASE ──
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
+  );
 
-            // Gestion du menu burger
-            const menuBtn = document.getElementById('menuBtn');
-            const sideMenu = document.getElementById('sideMenu');
-            const menuOverlay = document.getElementById('menuOverlay');
-            const closeMenu = document.getElementById('closeMenu');
+  // ── TABS ──
+  function switchTab(tab) {
+    const btns = document.querySelectorAll('.tab-btn');
+    btns.forEach((b,i) => b.classList.toggle('active', (i===0 && tab==='signup') || (i===1 && tab==='login')));
+    document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('login-form').style.display  = tab === 'login'  ? 'block' : 'none';
+    document.getElementById('success-screen').classList.remove('visible');
+  }
 
-            menuBtn.addEventListener('click', () => {
-                sideMenu.classList.add('active');
-                menuOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
+  // ── TOGGLE PASSWORD ──
+  function togglePwd(id, btn) {
+    const inp = document.getElementById(id);
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁️';
+  }
 
-            const closeSideMenu = () => {
-                sideMenu.classList.remove('active');
-                menuOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            };
+  // ── STRENGTH BAR ──
+  function updateStrength(val) {
+    const segs = ['s1','s2','s3','s4'];
+    const colors = ['#EF4444','#F97316','#EAB308','#16A34A'];
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    segs.forEach((id,i) => {
+      document.getElementById(id).style.background = i < score ? colors[Math.min(score-1,3)] : '#E5E7EB';
+    });
+  }
 
-            closeMenu.addEventListener('click', closeSideMenu);
-            menuOverlay.addEventListener('click', closeSideMenu);
+  // ── TOAST ──
+  function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : '❌';
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
 
-            // Gestion du sélecteur de langue
-            const langBtn = document.getElementById('langBtn');
-            const langDropdown = document.getElementById('langDropdown');
-            const langOptions = document.querySelectorAll('.lang-option');
+  // ── LOADING ──
+  function setLoading(btn, loading) {
+    if (loading) {
+      btn.classList.add('loading');
+      btn.dataset.orig = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span> Chargement...';
+    } else {
+      btn.classList.remove('loading');
+      btn.innerHTML = btn.dataset.orig;
+    }
+  }
 
-            langBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langDropdown.classList.toggle('active');
-            });
+  // ── SIGNUP ──
+  async function handleSignup(e) {
+    e.preventDefault();
+    const btn   = document.getElementById('signup-btn');
+    const name  = document.getElementById('s-name').value.trim();
+    const email = document.getElementById('s-email').value.trim();
+    const phone = document.getElementById('s-phone').value.trim();
+    const pwd   = document.getElementById('s-password').value;
 
-            langOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const lang = option.dataset.lang;
-                    changeLanguage(lang);
-                    langDropdown.classList.remove('active');
-                    
-                    // Afficher une notification
-                    showNotification(translations[lang].currentLang);
-                });
-            });
+    setLoading(btn, true);
 
-            // Fermer le dropdown en cliquant ailleurs
-            document.addEventListener('click', (e) => {
-                if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
-                    langDropdown.classList.remove('active');
-                }
-            });
+    try {
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password: pwd,
+        options: {
+          data: { full_name: name, phone }
+        }
+      });
 
-            // Gestion de la disparition de la carte du haut au scroll
-            const hero = document.getElementById('hero');
-            const header = document.getElementById('header');
-            let lastScrollTop = 0;
-            let scrollThreshold = 100; // Seuil de défilement avant de cacher/montrer
+      if (error) throw error;
 
-            window.addEventListener('scroll', () => {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                // Gestion de la carte hero
-                if (scrollTop > scrollThreshold) {
-                    hero.classList.add('hidden');
-                } else {
-                    hero.classList.remove('hidden');
-                }
-
-                // Gestion du header (optionnel - le header reste visible car sticky)
-                // Vous pouvez ajouter cette logique si vous voulez que le header se cache aussi
-                if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
-                    // Scroll vers le bas
-                    header.classList.add('hidden');
-                } else {
-                    // Scroll vers le haut
-                    header.classList.remove('hidden');
-                }
-                
-                lastScrollTop = scrollTop;
-            });
-
-            // Gestion de la navigation inférieure
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const href = item.getAttribute('href');
-                    
-                    // Animation de clic
-                    item.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        item.style.transform = '';
-                    }, 200);
-                    
-                    // Redirection après animation
-                    setTimeout(() => {
-                        if (href) {
-                            window.location.href = href;
-                        }
-                    }, 300);
-                });
-            });
-
-            // Fonction pour afficher les notifications
-            function showNotification(message) {
-                const notification = document.createElement('div');
-                notification.className = 'notification';
-                notification.textContent = `Langue changée : ${message}`;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease forwards';
-                    setTimeout(() => notification.remove(), 300);
-                }, 2000);
-            }
-
-            // Animation pour les boutons
-            document.querySelectorAll('.card-btn, .menu-link, .option-card').forEach(btn => {
-                btn.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-3px)';
-                });
-                btn.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-
-            // Initialisation avec la langue française
-            renderOptions('fr');
+      // Save profile to profiles table (if it exists)
+      if (data.user) {
+        await sb.from('profiles').upsert({
+          id: data.user.id,
+          full_name: name,
+          phone,
+          email
         });
-    </script>
+      }
+
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('success-screen').classList.add('visible');
+      showToast('Compte créé avec succès ! 🎉', 'success');
+
+    } catch (err) {
+      let msg = err.message || 'Une erreur est survenue.';
+      if (msg.includes('already registered')) msg = 'Cet email est déjà utilisé.';
+      if (msg.includes('password')) msg = 'Mot de passe trop court (min. 6 caractères).';
+      showToast(msg, 'error');
+    } finally {
+      setLoading(btn, false);
+    }
+  }
+
+  // ── LOGIN ──
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn   = document.getElementById('login-btn');
+    const email = document.getElementById('l-email').value.trim();
+    const pwd   = document.getElementById('l-password').value;
+
+    setLoading(btn, true);
+
+    try {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+      if (error) throw error;
+      showToast(`Bienvenue ${data.user.user_metadata?.full_name || ''} 🌿`, 'success');
+      // Redirect after 1.5s
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+    } catch (err) {
+      let msg = err.message || 'Erreur de connexion.';
+      if (msg.includes('Invalid login')) msg = 'Email ou mot de passe incorrect.';
+      showToast(msg, 'error');
+    } finally {
+      setLoading(btn, false);
+    }
+  }
+</script>
 </body>
-      </html>
+</html>
