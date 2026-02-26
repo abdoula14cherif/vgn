@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VGN – Accueil</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,241 +15,201 @@
   --top:58px;--bot:58px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+html{height:100%}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  max-width:430px;
+  margin:0 auto;
+  min-height:100%;
+  overflow-x:hidden;
+  /* NO fixed height — page scrolls freely */
+}
 
-/* ── TOP ── */
+/* ── TOPBAR fixed ── */
 .topbar{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:430px;height:var(--top);
   background:linear-gradient(135deg,var(--green-dark),#22C55E);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 14px;z-index:999;
-  box-shadow:0 2px 10px rgba(0,0,0,0.15);
+  padding:0 14px;z-index:500;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
 }
-.tl{display:flex;align-items:center;gap:8px;}
-.tl-badge{width:32px;height:32px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 2px 8px rgba(249,115,22,0.4);}
-.tl-name{font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:.07em;}
-.tr{display:flex;gap:7px;}
-.ibtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer;}
+.tl{display:flex;align-items:center;gap:8px}
+.tl-badge{width:32px;height:32px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 2px 8px rgba(249,115,22,.4)}
+.tl-name{font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:.07em}
+.tr{display:flex;gap:7px}
+.ibtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer}
 
-/* ── BODY ── */
-.body{
-  padding-top:calc(var(--top)+10px);
-  padding-bottom:calc(var(--bot)+16px);
+/* ── SCROLL WRAPPER ── */
+.page{
+  padding-top:calc(var(--top) + 12px);
+  padding-bottom:calc(var(--bot) + 18px);
 }
 
-/* ── HERO CARD ── */
+/* ── HERO ── */
 .hero{
   margin:0 11px 10px;
-  background:linear-gradient(135deg,var(--green-dark) 0%,#22C55E 100%);
+  background:linear-gradient(135deg,var(--green-dark),#22C55E);
   border-radius:18px;padding:13px 15px;
   display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 4px 16px rgba(22,163,74,0.22);
+  box-shadow:0 4px 16px rgba(22,163,74,.22);
   position:relative;overflow:hidden;
 }
-.hero::after{content:'🌾';position:absolute;right:-8px;top:-8px;font-size:4.5rem;opacity:.1;}
-.hero-txt h4{font-size:.68rem;color:rgba(255,255,255,.72);font-weight:600;}
-.hero-txt h2{font-size:1rem;color:#fff;font-weight:900;margin:2px 0;}
-.hero-txt p{font-size:.65rem;color:rgba(255,255,255,.6);}
-.hero-ico{font-size:2.2rem;position:relative;z-index:1;}
+.hero::after{content:'🌾';position:absolute;right:-8px;top:-8px;font-size:4.5rem;opacity:.1}
+.hero-txt h4{font-size:.67rem;color:rgba(255,255,255,.72);font-weight:600}
+.hero-txt h2{font-size:1rem;color:#fff;font-weight:900;margin:2px 0}
+.hero-txt p{font-size:.64rem;color:rgba(255,255,255,.6)}
+.hero-ico{font-size:2.2rem;position:relative;z-index:1}
 
 /* ── ANNOUNCE ── */
-.announce{
-  margin:0 11px 10px;background:#fff;
-  border-radius:12px;padding:8px 11px;
-  display:flex;align-items:center;gap:7px;
-  box-shadow:0 1px 6px rgba(0,0,0,.06);overflow:hidden;
-}
-.ann-dot{font-size:.95rem;flex-shrink:0;animation:pulse 2s infinite;}
+.announce{margin:0 11px 10px;background:#fff;border-radius:12px;padding:8px 11px;display:flex;align-items:center;gap:7px;box-shadow:0 1px 6px rgba(0,0,0,.06);overflow:hidden}
+.ann-dot{font-size:.9rem;flex-shrink:0;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-.ann-track{overflow:hidden;flex:1;}
-.ann-track span{display:block;white-space:nowrap;font-size:.73rem;font-weight:700;color:var(--text);animation:tick 22s linear infinite;}
+.ann-track{overflow:hidden;flex:1}
+.ann-track span{display:block;white-space:nowrap;font-size:.72rem;font-weight:700;color:var(--text);animation:tick 22s linear infinite}
 @keyframes tick{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 
 /* ── SLIDER ── */
-.slider{
-  margin:0 11px 12px;border-radius:17px;overflow:hidden;
-  position:relative;height:172px;
-  box-shadow:0 4px 16px rgba(0,0,0,.12);
-}
-.slide{position:absolute;inset:0;opacity:0;transition:opacity .85s ease;}
-.slide.on{opacity:1;}
-.slide img{width:100%;height:100%;object-fit:cover;display:block;}
-.sov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.58) 0%,transparent 52%);}
-.scap{position:absolute;bottom:0;left:0;right:0;padding:9px 13px;}
-.scap h4{font-size:.88rem;font-weight:900;color:#fff;}
-.scap p{font-size:.65rem;color:rgba(255,255,255,.78);margin-top:1px;}
-.sdots{position:absolute;bottom:9px;right:10px;display:flex;gap:4px;}
-.sd{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.45);transition:all .3s;}
-.sd.on{width:15px;background:var(--orange);}
+.slider{margin:0 11px 12px;border-radius:17px;overflow:hidden;position:relative;height:170px;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity .85s ease}
+.slide.on{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;display:block}
+.sov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.58) 0%,transparent 52%)}
+.scap{position:absolute;bottom:0;left:0;right:0;padding:9px 13px}
+.scap h4{font-size:.86rem;font-weight:900;color:#fff}
+.scap p{font-size:.64rem;color:rgba(255,255,255,.78);margin-top:1px}
+.sdots{position:absolute;bottom:9px;right:10px;display:flex;gap:4px}
+.sd{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.45);transition:all .3s}
+.sd.on{width:15px;background:var(--orange)}
 
 /* ── SECTION HEAD ── */
-.sh{display:flex;align-items:center;justify-content:space-between;padding:0 13px;margin-bottom:8px;}
-.sh h3{font-size:.88rem;font-weight:800;color:var(--text);}
-.sh a{font-size:.7rem;color:var(--green);font-weight:700;text-decoration:none;}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:0 13px;margin-bottom:8px}
+.sh h3{font-size:.87rem;font-weight:800;color:var(--text)}
+.sh a{font-size:.68rem;color:var(--green);font-weight:700;text-decoration:none}
 
 /* ── ACTIONS 3×2 ── */
-.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 11px;margin-bottom:12px;}
-.ab{display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;cursor:pointer;}
-.ab:active .ai{transform:scale(.88);}
-.ai{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:transform .18s,box-shadow .18s;}
-.ab:hover .ai{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.17);}
-.al{font-size:.63rem;font-weight:800;color:var(--text);text-align:center;line-height:1.2;}
-.c1{background:linear-gradient(135deg,#F97316,#EA580C);}
-.c2{background:linear-gradient(135deg,#3B82F6,#1D4ED8);}
-.c3{background:linear-gradient(135deg,#16A34A,#15803D);}
-.c4{background:linear-gradient(135deg,#84CC16,#65A30D);}
-.c5{background:linear-gradient(135deg,#F43F5E,#BE123C);}
-.c6{background:linear-gradient(135deg,#EAB308,#CA8A04);}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 11px;margin-bottom:12px}
+.ab{display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;cursor:pointer}
+.ab:active .ai{transform:scale(.88)}
+.ai{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:transform .18s,box-shadow .18s}
+.ab:hover .ai{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.17)}
+.al{font-size:.62rem;font-weight:800;color:var(--text);text-align:center;line-height:1.2}
+.c1{background:linear-gradient(135deg,#F97316,#EA580C)}
+.c2{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}
+.c3{background:linear-gradient(135deg,#16A34A,#15803D)}
+.c4{background:linear-gradient(135deg,#84CC16,#65A30D)}
+.c5{background:linear-gradient(135deg,#F43F5E,#BE123C)}
+.c6{background:linear-gradient(135deg,#EAB308,#CA8A04)}
 
-/* ── SOLDE CARDS 2×2 ── */
-.solde-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 11px;margin-bottom:12px;}
-.sc{background:var(--card);border-radius:14px;padding:11px 12px;box-shadow:0 1px 7px rgba(0,0,0,.07);position:relative;overflow:hidden;}
-.sc::after{content:attr(data-e);position:absolute;right:-4px;bottom:-4px;font-size:2.3rem;opacity:.1;}
-.sc-lbl{font-size:.63rem;color:var(--muted);font-weight:700;margin-bottom:3px;}
-.sc-val{font-size:1.05rem;font-weight:900;color:var(--text);}
-.sc-sub{font-size:.6rem;margin-top:3px;font-weight:700;}
-.sg{color:var(--green);} .so{color:var(--orange);}
+/* ── SOLDE 2×2 ── */
+.solde-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 11px;margin-bottom:12px}
+.sc{background:var(--card);border-radius:14px;padding:11px 12px;box-shadow:0 1px 7px rgba(0,0,0,.07);position:relative;overflow:hidden}
+.sc::after{content:attr(data-e);position:absolute;right:-4px;bottom:-4px;font-size:2.3rem;opacity:.1}
+.sc-lbl{font-size:.62rem;color:var(--muted);font-weight:700;margin-bottom:3px}
+.sc-val{font-size:1.02rem;font-weight:900;color:var(--text)}
+.sc-sub{font-size:.59rem;margin-top:3px;font-weight:700}
+.sg{color:var(--green)} .so{color:var(--orange)}
 
 /* ── STAGE BANNER ── */
 .stage-banner{
   margin:0 11px 8px;
   background:linear-gradient(135deg,var(--orange),var(--orange-dark));
-  border-radius:14px;padding:12px 14px;
+  border-radius:14px;padding:11px 14px;
   display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 3px 12px rgba(249,115,22,.25);
+  box-shadow:0 3px 12px rgba(249,115,22,.22)
 }
-.sb-left h4{font-size:.78rem;font-weight:900;color:#fff;}
-.sb-left p{font-size:.65rem;color:rgba(255,255,255,.8);margin-top:2px;line-height:1.4;}
-.sb-right{text-align:right;flex-shrink:0;margin-left:10px;}
-.sb-days{font-size:1.4rem;font-weight:900;color:#fff;line-height:1;}
-.sb-days-lbl{font-size:.6rem;color:rgba(255,255,255,.75);}
-.stage-progress{margin:0 11px 12px;}
-.prog-bar-wrap{background:#E5E7EB;border-radius:6px;height:6px;overflow:hidden;}
-.prog-bar{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-dark));border-radius:6px;transition:width .5s ease;}
-.prog-labels{display:flex;justify-content:space-between;margin-top:4px;}
-.prog-labels span{font-size:.6rem;font-weight:700;color:var(--muted);}
+.sb-l h4{font-size:.77rem;font-weight:900;color:#fff}
+.sb-l p{font-size:.63rem;color:rgba(255,255,255,.8);margin-top:2px;line-height:1.4}
+.sb-r{text-align:right;flex-shrink:0;margin-left:10px}
+.sb-days{font-size:1.4rem;font-weight:900;color:#fff;line-height:1}
+.sb-days-lbl{font-size:.58rem;color:rgba(255,255,255,.75)}
 
-/* ── TACHE CARDS ── */
-.taches-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:10px;padding:0 11px;
-  margin-bottom:14px;
-}
-.tc{
-  background:var(--card);border-radius:16px;
-  overflow:hidden;
-  box-shadow:0 2px 10px rgba(0,0,0,.08);
-  cursor:pointer;
-  transition:transform .18s,box-shadow .18s;
-  position:relative;
-}
-.tc:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(0,0,0,.13);}
-.tc:active{transform:scale(.95);}
-.tc.done{opacity:.55;cursor:not-allowed;}
-.tc.done::after{
-  content:'✅ Fait';
-  position:absolute;inset:0;
-  background:rgba(22,163,74,.82);
-  display:flex;align-items:center;justify-content:center;
-  font-size:.9rem;font-weight:900;color:#fff;
-  border-radius:16px;
-}
-.tc-img{width:100%;height:94px;object-fit:cover;display:block;}
-.tc-img-wrap{position:relative;}
-.tc-tag{
-  position:absolute;top:6px;left:6px;
-  background:var(--orange);color:#fff;
-  font-size:.57rem;font-weight:800;
-  padding:2px 7px;border-radius:5px;
-  text-transform:uppercase;letter-spacing:.04em;
-}
-.tc-tag.free{background:var(--green);}
-.tc-tag.vip{background:#7C3AED;}
-.tc-body{padding:7px 9px 9px;}
-.tc-n{font-size:.75rem;font-weight:800;color:var(--text);}
-.tc-r{font-size:.72rem;font-weight:900;color:var(--green);margin-top:2px;}
-.tc-desc{font-size:.62rem;color:var(--muted);margin-top:2px;line-height:1.3;}
+.stage-prog{margin:0 11px 12px}
+.prog-wrap{background:#E5E7EB;border-radius:6px;height:6px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-dark));border-radius:6px;transition:width .5s ease}
+.prog-lbls{display:flex;justify-content:space-between;margin-top:4px}
+.prog-lbls span{font-size:.59rem;font-weight:700;color:var(--muted)}
 
-/* ── BOTTOM NAV ── */
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--bot);background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07);}
-.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative;cursor:pointer;}
-.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px;}
-.bn-ico{font-size:1.2rem;}
-.bn-lbl{font-size:.58rem;font-weight:800;color:var(--muted);}
-.bn.on .bn-lbl{color:var(--green);}
+/* ── TÂCHE CARDS ── */
+.taches-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 11px;margin-bottom:16px}
+.tc{background:var(--card);border-radius:15px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);cursor:pointer;transition:transform .18s,box-shadow .18s;position:relative}
+.tc:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(0,0,0,.13)}
+.tc:active{transform:scale(.95)}
+.tc.done{pointer-events:none}
+.tc.done::after{content:'✅ Fait';position:absolute;inset:0;background:rgba(22,163,74,.82);display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:900;color:#fff;border-radius:15px}
+.tc.locked{opacity:.5;pointer-events:none}
+.tc img{width:100%;height:92px;object-fit:cover;display:block}
+.tc-img-wrap{position:relative}
+.tc-tag{position:absolute;top:6px;left:6px;background:var(--green);color:#fff;font-size:.56rem;font-weight:800;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em}
+.tc-body{padding:7px 9px 9px}
+.tc-n{font-size:.73rem;font-weight:800;color:var(--text)}
+.tc-r{font-size:.7rem;font-weight:900;color:var(--green);margin-top:2px}
+.tc-desc{font-size:.6rem;color:var(--muted);margin-top:2px;line-height:1.3}
+
+.tasks-limit-notice{
+  grid-column:1/-1;text-align:center;padding:11px;
+  background:#F0FDF4;border-radius:12px;
+  font-size:.73rem;font-weight:700;color:var(--green)
+}
+.stage-ended-notice{
+  grid-column:1/-1;text-align:center;padding:18px 14px;
+  background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.07)
+}
+
+/* ── BOTTOM NAV fixed ── */
+.botnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;height:var(--bot);
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;align-items:center;z-index:500;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)
+}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative;cursor:pointer}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px}
+.bn-ico{font-size:1.2rem}
+.bn-lbl{font-size:.57rem;font-weight:800;color:var(--muted)}
+.bn.on .bn-lbl{color:var(--green)}
 
 /* ── AD OVERLAY ── */
-.ad-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.88);
-  z-index:2000;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .3s;
-}
-.ad-overlay.open{opacity:1;pointer-events:all;}
-.ad-box{
-  background:#111;border-radius:20px;
-  width:calc(100% - 32px);max-width:400px;
-  overflow:hidden;
-  box-shadow:0 8px 40px rgba(0,0,0,.6);
-}
-.ad-video{
-  width:100%;height:200px;
-  object-fit:cover;display:block;
-  background:#000;
-}
-/* Fake video: image agriculture avec play */
-.ad-fake{
-  width:100%;height:200px;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  position:relative;background:#000;
-}
-.ad-fake img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;opacity:.6;}
-.ad-play{position:relative;z-index:2;font-size:3rem;}
-.ad-body{padding:14px 16px;}
-.ad-brand{font-size:.7rem;font-weight:700;color:#888;margin-bottom:4px;}
-.ad-title{font-size:.9rem;font-weight:900;color:#fff;margin-bottom:6px;}
-.ad-bar-wrap{background:#333;border-radius:4px;height:5px;overflow:hidden;margin-bottom:10px;}
-.ad-bar{height:100%;background:var(--orange);border-radius:4px;width:0%;transition:width .1s linear;}
-.ad-timer{font-size:.75rem;font-weight:800;color:#aaa;text-align:center;margin-bottom:10px;}
-.ad-skip{
-  width:100%;padding:11px;
-  background:linear-gradient(135deg,var(--green),var(--green-dark));
-  border:none;border-radius:12px;
-  font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;color:#fff;
-  cursor:pointer;display:none;
-  transition:transform .15s;
-}
-.ad-skip:active{transform:scale(.97);}
-.ad-skip.show{display:block;}
+.ad-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.ad-overlay.open{opacity:1;pointer-events:all}
+.ad-box{background:#111;border-radius:20px;width:calc(100% - 32px);max-width:398px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+.ad-fake{width:100%;height:196px;position:relative;background:#000;display:flex;align-items:center;justify-content:center}
+.ad-fake img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.65}
+.ad-play{position:relative;z-index:2;font-size:3rem}
+.ad-body{padding:14px 16px}
+.ad-brand{font-size:.68rem;font-weight:700;color:#888;margin-bottom:4px}
+.ad-title{font-size:.88rem;font-weight:900;color:#fff;margin-bottom:8px}
+.ad-bar-wrap{background:#333;border-radius:4px;height:5px;overflow:hidden;margin-bottom:8px}
+.ad-bar{height:100%;background:var(--orange);border-radius:4px;width:0%;transition:width .1s linear}
+.ad-timer{font-size:.73rem;font-weight:800;color:#aaa;text-align:center;margin-bottom:10px}
+.ad-skip{width:100%;padding:11px;background:linear-gradient(135deg,var(--green),var(--green-dark));border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:900;color:#fff;cursor:pointer;display:none;transition:transform .15s}
+.ad-skip:active{transform:scale(.97)}
+.ad-skip.show{display:block}
 
 /* ── TOAST ── */
-.toast-bar{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-70px);background:#111;color:#fff;padding:7px 18px;border-radius:22px;font-size:.78rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);}
-.toast-bar.show{transform:translateX(-50%) translateY(0);}
-
-/* loader */
-.ldot{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+.toast-bar{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-70px);background:#111;color:#fff;padding:7px 18px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.toast-bar.show{transform:translateX(-50%) translateY(0)}
+.ldot{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- TOP -->
 <div class="topbar">
   <div class="tl">
     <div class="tl-badge">🌱</div>
     <span class="tl-name">VGN</span>
   </div>
   <div class="tr">
-    <div class="ibtn" onclick="showToast('🔔 Aucune notification')">🔔</div>
-    <div class="ibtn" onclick="showToast('💬 Support 24h/24')">💬</div>
+    <div class="ibtn" onclick="toast('🔔 Aucune notification')">🔔</div>
+    <div class="ibtn" onclick="toast('💬 Support 24h/24')">💬</div>
   </div>
 </div>
 <div class="toast-bar" id="tb"></div>
 
-<!-- BODY -->
-<div class="body">
+<div class="page">
 
   <!-- HERO -->
   <div class="hero">
@@ -265,120 +225,67 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
   <div class="announce">
     <span class="ann-dot">📢</span>
     <div class="ann-track">
-      <span>🌽 Récolte maïs +18% ce trimestre &nbsp;|&nbsp; 🌾 Nouvelle parcelle blé disponible &nbsp;|&nbsp; 🐄 Élevage : rendement record &nbsp;|&nbsp; 💰 Retirez vos gains à tout moment &nbsp;|&nbsp; ✅ 3 tâches gratuites par jour pendant 4 jours !</span>
+      <span>🌽 Récolte maïs +18% &nbsp;|&nbsp; 🌾 Nouvelle parcelle blé &nbsp;|&nbsp; 🐄 Élevage record &nbsp;|&nbsp; 💰 Retirez vos gains &nbsp;|&nbsp; ✅ 3 tâches gratuites / jour pendant 4 jours !</span>
     </div>
   </div>
 
   <!-- SLIDER -->
   <div class="slider">
-    <div class="slide on">
-      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="Maïs">
-      <div class="sov"></div>
-      <div class="scap"><h4>🌽 Champs de Maïs VGN</h4><p>Maïs bio — rendement garanti</p></div>
-    </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&q=80" alt="Blé">
-      <div class="sov"></div>
-      <div class="scap"><h4>🌾 Culture de Blé Doré</h4><p>Des hectares de blé pour vous</p></div>
-    </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=800&q=80" alt="Élevage">
-      <div class="sov"></div>
-      <div class="scap"><h4>🐄 Élevage Bovin Premium</h4><p>Gains durables et rentables</p></div>
-    </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80" alt="Ferme">
-      <div class="sov"></div>
-      <div class="scap"><h4>🚜 Exploitation VGN</h4><p>Votre investissement en bonnes mains</p></div>
-    </div>
+    <div class="slide on"><img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt=""><div class="sov"></div><div class="scap"><h4>🌽 Champs de Maïs VGN</h4><p>Maïs bio — rendement garanti</p></div></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&q=80" alt=""><div class="sov"></div><div class="scap"><h4>🌾 Culture de Blé Doré</h4><p>Des hectares de blé pour vous</p></div></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=800&q=80" alt=""><div class="sov"></div><div class="scap"><h4>🐄 Élevage Bovin Premium</h4><p>Gains durables et rentables</p></div></div>
+    <div class="slide"><img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80" alt=""><div class="sov"></div><div class="scap"><h4>🚜 Exploitation VGN</h4><p>Votre investissement bien géré</p></div></div>
     <div class="sdots">
-      <div class="sd on" data-i="0"></div>
-      <div class="sd" data-i="1"></div>
-      <div class="sd" data-i="2"></div>
-      <div class="sd" data-i="3"></div>
+      <div class="sd on"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div>
     </div>
   </div>
 
-  <!-- QUICK ACTIONS -->
+  <!-- ACTIONS -->
   <div class="sh"><h3>Actions rapides</h3></div>
   <div class="actions">
-    <a class="ab" href="recharge.html">
-      <div class="ai c1">💰</div><span class="al">Recharge</span>
-    </a>
-    <a class="ab" href="retrait.html">
-      <div class="ai c2">💳</div><span class="al">Retrait</span>
-    </a>
-    <a class="ab" href="fonds.html">
-      <div class="ai c3">🛡️</div><span class="al">Mes Fonds</span>
-    </a>
-    <a class="ab" href="roue.html">
-      <div class="ai c4">🎡</div><span class="al">Roue Chance</span>
-    </a>
-    <a class="ab" href="inviter.html">
-      <div class="ai c5">👥</div><span class="al">Inviter</span>
-    </a>
-    <a class="ab" href="vip.html">
-      <div class="ai c6">💎</div><span class="al">VIP</span>
-    </a>
+    <a class="ab" href="recharge.html"><div class="ai c1">💰</div><span class="al">Recharge</span></a>
+    <a class="ab" href="retrait.html"><div class="ai c2">💳</div><span class="al">Retrait</span></a>
+    <a class="ab" href="fonds.html"><div class="ai c3">🛡️</div><span class="al">Mes Fonds</span></a>
+    <a class="ab" href="roue.html"><div class="ai c4">🎡</div><span class="al">Roue Chance</span></a>
+    <a class="ab" href="inviter.html"><div class="ai c5">👥</div><span class="al">Inviter</span></a>
+    <a class="ab" href="vip.html"><div class="ai c6">💎</div><span class="al">VIP</span></a>
   </div>
 
   <!-- SOLDE -->
   <div class="sh"><h3>Mon Portefeuille</h3></div>
   <div class="solde-row">
-    <div class="sc" data-e="💰">
-      <div class="sc-lbl">Solde disponible</div>
-      <div class="sc-val" id="v-solde"><span class="ldot"></span></div>
-      <div class="sc-sub sg" id="v-solde-sub">—</div>
-    </div>
-    <div class="sc" data-e="📈">
-      <div class="sc-lbl">Gains totaux</div>
-      <div class="sc-val" id="v-gains"><span class="ldot"></span></div>
-      <div class="sc-sub so">Cumulés</div>
-    </div>
-    <div class="sc" data-e="🌱">
-      <div class="sc-lbl">Investissement</div>
-      <div class="sc-val" id="v-invest"><span class="ldot"></span></div>
-      <div class="sc-sub sg">Actif</div>
-    </div>
-    <div class="sc" data-e="✅">
-      <div class="sc-lbl">Tâches / jour</div>
-      <div class="sc-val" id="v-tasks"><span class="ldot"></span></div>
-      <div class="sc-sub so" id="v-tasks-sub">Complétées</div>
-    </div>
+    <div class="sc" data-e="💰"><div class="sc-lbl">Solde disponible</div><div class="sc-val" id="v-solde"><span class="ldot"></span></div><div class="sc-sub sg" id="v-solde-sub">—</div></div>
+    <div class="sc" data-e="📈"><div class="sc-lbl">Gains totaux</div><div class="sc-val" id="v-gains"><span class="ldot"></span></div><div class="sc-sub so">Cumulés</div></div>
+    <div class="sc" data-e="🌱"><div class="sc-lbl">Investissement</div><div class="sc-val" id="v-invest"><span class="ldot"></span></div><div class="sc-sub sg">Actif</div></div>
+    <div class="sc" data-e="✅"><div class="sc-lbl">Tâches du jour</div><div class="sc-val" id="v-tasks"><span class="ldot"></span></div><div class="sc-sub so">/ 3 max</div></div>
   </div>
 
   <!-- STAGE BANNER -->
   <div class="stage-banner" id="stage-banner">
-    <div class="sb-left">
-      <h4>🎓 Tâches gratuites — Stage</h4>
-      <p>Regardez les publicités,<br>gagnez 70 FCFA par tâche (max 3/jour)</p>
+    <div class="sb-l">
+      <h4>🎓 Tâches de stage — Gratuites</h4>
+      <p>Regardez une pub, gagnez 70 FCFA<br>Max 3 tâches par jour</p>
     </div>
-    <div class="sb-right">
-      <div class="sb-days" id="stage-days-left">—</div>
+    <div class="sb-r">
+      <div class="sb-days" id="stage-days">—</div>
       <div class="sb-days-lbl">jours restants</div>
     </div>
   </div>
-  <div class="stage-progress">
-    <div class="prog-bar-wrap">
-      <div class="prog-bar" id="stage-prog-bar" style="width:0%"></div>
-    </div>
-    <div class="prog-labels">
-      <span>Jour 1</span>
-      <span id="stage-prog-label">0 / 4 jours</span>
-      <span>Jour 4</span>
-    </div>
+  <div class="stage-prog">
+    <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="prog-lbls"><span>Jour 1</span><span id="prog-lbl">0 / 4 jours</span><span>Jour 4</span></div>
   </div>
 
-  <!-- TÂCHES GRATUITES -->
+  <!-- TÂCHES STAGE -->
   <div class="sh">
-    <h3>🎯 Tâches gratuites du jour</h3>
-    <span id="tasks-count-lbl" style="font-size:.7rem;font-weight:800;color:var(--orange)"></span>
+    <h3>🎯 Tâches gratuites</h3>
+    <span id="tasks-done-lbl" style="font-size:.7rem;font-weight:800;color:var(--orange)"></span>
   </div>
   <div class="taches-grid" id="taches-grid">
-    <!-- générées par JS -->
+    <div style="grid-column:1/-1;text-align:center;padding:20px"><span class="ldot"></span></div>
   </div>
 
-</div><!-- /body -->
+</div><!-- /page -->
 
 <!-- BOTTOM NAV -->
 <nav class="botnav">
@@ -391,270 +298,202 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 <!-- AD OVERLAY -->
 <div class="ad-overlay" id="ad-overlay">
   <div class="ad-box">
-    <div class="ad-fake" id="ad-img-wrap">
-      <img id="ad-img" src="" alt="pub">
+    <div class="ad-fake">
+      <img id="ad-img" src="" alt="">
       <div class="ad-play">▶️</div>
     </div>
     <div class="ad-body">
       <div class="ad-brand" id="ad-brand">VGN Agriculture</div>
-      <div class="ad-title" id="ad-title">Découvrez nos champs de maïs</div>
+      <div class="ad-title" id="ad-title">Découvrez nos champs</div>
       <div class="ad-bar-wrap"><div class="ad-bar" id="ad-bar"></div></div>
-      <div class="ad-timer" id="ad-timer">Regardez pendant <b>15</b> secondes...</div>
-      <button class="ad-skip" id="ad-skip-btn" onclick="finishAd()">
-        ✅ Publicité terminée — Réclamer 70 FCFA
-      </button>
+      <div class="ad-timer" id="ad-timer">Regardez pendant <b>15</b> sec...</div>
+      <button class="ad-skip" id="ad-skip" onclick="finishAd()">✅ Réclamer +70 FCFA</button>
     </div>
   </div>
 </div>
 
 <script>
-const SB = supabase.createClient(
-  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
-);
+const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE');
 
-// ── DONNÉES ──
-const TACHES_LIBRES = [
-  { id:'t1', nom:'Champs de Maïs VGN',    reward:70, img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80', tag:'Gratuit', desc:'Regardez notre pub maïs' },
-  { id:'t2', nom:'Blé Doré Premium',       reward:70, img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80', tag:'Gratuit', desc:'Découvrez nos cultures' },
-  { id:'t3', nom:'Élevage Bovin VGN',      reward:70, img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80', tag:'Gratuit', desc:'Nos bêtes primées' },
-  { id:'t4', nom:'Grande Récolte 2025',    reward:70, img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80', tag:'Gratuit', desc:'Récolte record cette année' },
-  { id:'t5', nom:'Ferme Bio Certifiée',    reward:70, img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80', tag:'Gratuit', desc:'Agriculture durable' },
-  { id:'t6', nom:'Culture du Sol VGN',     reward:70, img:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80', tag:'Gratuit', desc:'Préparer la prochaine saison' },
-  { id:'t7', nom:'Lait & Produits Laitiers', reward:70, img:'https://images.unsplash.com/photo-1527847263472-aa5338d178b8?w=400&q=80', tag:'Gratuit', desc:'Produits frais de la ferme' },
-  { id:'t8', nom:'Irrigation Moderne',     reward:70, img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&q=80', tag:'Gratuit', desc:'Technologie agricole VGN' },
+const TACHES=[
+  {id:'ag1',nom:'Champs de Maïs VGN',img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80',desc:'Pub agricole VGN'},
+  {id:'ag2',nom:'Blé Doré Premium',img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',desc:'Découvrez nos cultures'},
+  {id:'ag3',nom:'Élevage Bovin VGN',img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80',desc:'Notre bétail primé'},
+  {id:'ag4',nom:'Grande Récolte 2025',img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80',desc:'Récolte record'},
+  {id:'ag5',nom:'Ferme Bio Certifiée',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',desc:'Agriculture durable'},
+  {id:'ag6',nom:'Irrigation Moderne',img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&q=80',desc:'Tech agricole VGN'},
 ];
 
-const ADS = [
-  { brand:'VGN Agriculture', title:'Découvrez nos champs de maïs bio', img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&q=80' },
-  { brand:'VGN Blé Doré',    title:'Investissez dans le blé premium', img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80' },
-  { brand:'VGN Élevage',     title:'Notre bétail primé vous attend',  img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=600&q=80' },
-  { brand:'VGN Récolte',     title:'Grande récolte 2025 en cours !',  img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80' },
-  { brand:'VGN Farm',        title:'Ferme biologique certifiée',      img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80' },
-];
+const MAX=3,REWARD=70,STAGE=4,AD_SEC=15;
+let user=null,profile=null,doneTodayIds=[],currentTask=null,adInterval=null;
 
-let authUser = null;
-let profile  = null;
-let adTimer  = null;
-let currentTaskId = null;
-let tasksDoneToday = [];
-const AD_DURATION  = 15; // secondes
-const MAX_TASKS    = 3;
-const STAGE_DAYS   = 4;
-const REWARD       = 70;
+const fmt=n=>Number(n).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
+function toast(m){const t=document.getElementById('tb');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
 
-// ── HELPERS ──
-const fmt  = n => Number(n).toLocaleString('fr-FR');
-const fmtF = n => fmt(n)+' FCFA';
-function showToast(msg){ const t=document.getElementById('tb');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200); }
-function set(id,v){ const e=document.getElementById(id);if(e)e.textContent=v; }
-
-// ── SLIDER ──
+// Slider
 let cur=0;
-const slides=document.querySelectorAll('.slide');
-const dots=document.querySelectorAll('.sd');
-function goTo(n){
-  slides[cur].classList.remove('on');dots[cur].classList.remove('on');
-  cur=(n+slides.length)%slides.length;
-  slides[cur].classList.add('on');dots[cur].classList.add('on');
-}
+const slides=document.querySelectorAll('.slide'),dots=document.querySelectorAll('.sd');
+function goTo(n){slides[cur].classList.remove('on');dots[cur].classList.remove('on');cur=(n+slides.length)%slides.length;slides[cur].classList.add('on');dots[cur].classList.add('on')}
 setInterval(()=>goTo(cur+1),3800);
 dots.forEach((d,i)=>d.addEventListener('click',()=>goTo(i)));
 
-// ── STAGE PROGRESS ──
-function updateStageBanner(createdAt){
-  const ms = Date.now() - new Date(createdAt).getTime();
-  const daysDone = Math.min(Math.floor(ms/(1000*60*60*24)), STAGE_DAYS);
-  const daysLeft = Math.max(STAGE_DAYS - daysDone, 0);
-  const pct = (daysDone / STAGE_DAYS)*100;
-
-  set('stage-days-left', daysLeft);
-  set('stage-prog-label', daysDone+' / '+STAGE_DAYS+' jours');
-  document.getElementById('stage-prog-bar').style.width = pct+'%';
-
-  const banner = document.getElementById('stage-banner');
-  if(daysLeft === 0){
-    banner.style.background='linear-gradient(135deg,#6B7280,#374151)';
-    document.querySelector('.sb-left h4').textContent = '🎓 Stage terminé';
-    document.querySelector('.sb-left p').textContent  = 'Passez à un plan VIP pour continuer';
-  }
-  return daysLeft;
+function stageInfo(createdAt){
+  const ms=Date.now()-new Date(createdAt).getTime();
+  const done=Math.min(Math.floor(ms/86400000),STAGE);
+  const left=Math.max(STAGE-done,0);
+  return{done,left,pct:(done/STAGE)*100};
 }
 
-// ── RENDER TÂCHES ──
-function renderTaches(daysLeft){
-  const grid = document.getElementById('taches-grid');
-  grid.innerHTML = '';
-  const done = tasksDoneToday.length;
-  set('tasks-count-lbl', done+' / '+MAX_TASKS+' aujourd\'hui');
+function renderTaches(left){
+  const grid=document.getElementById('taches-grid');
+  grid.innerHTML='';
+  const done=doneTodayIds.length;
+  set('tasks-done-lbl',done+' / '+MAX+' aujourd\'hui');
 
-  if(daysLeft === 0){
-    grid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:20px 14px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.07);">
-        <div style="font-size:2.5rem;margin-bottom:8px;">🎓</div>
-        <div style="font-size:.85rem;font-weight:800;color:var(--text);margin-bottom:4px;">Stage de 4 jours terminé !</div>
-        <div style="font-size:.73rem;color:var(--muted);margin-bottom:12px;">Investissez dans un plan VIP pour accéder aux tâches rémunérées.</div>
-        <a href="vip.html" style="display:inline-block;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;padding:10px 20px;border-radius:12px;font-size:.82rem;font-weight:800;text-decoration:none;">💎 Voir les plans VIP</a>
-      </div>`;
+  if(left===0){
+    grid.innerHTML=`<div class="stage-ended-notice">
+      <div style="font-size:2.2rem;margin-bottom:8px">🎓</div>
+      <div style="font-size:.84rem;font-weight:800;color:var(--text);margin-bottom:4px">Stage de 4 jours terminé !</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Investissez dans un plan VIP pour continuer.</div>
+      <a href="vip.html" style="display:inline-block;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;padding:9px 20px;border-radius:11px;font-size:.8rem;font-weight:800;text-decoration:none">💎 Voir les plans VIP</a>
+    </div>`;
     return;
   }
 
-  TACHES_LIBRES.forEach(t => {
-    const isDone = tasksDoneToday.includes(t.id);
-    const isMax  = done >= MAX_TASKS;
-    const card   = document.createElement('div');
-    card.className = 'tc'+(isDone?' done':'');
-    card.onclick = (!isDone && !isMax) ? () => startTask(t) : null;
-    if(isMax && !isDone) card.style.opacity = '.5';
-
-    card.innerHTML = `
+  TACHES.forEach(t=>{
+    const isDone=doneTodayIds.includes(t.id);
+    const isLocked=!isDone && done>=MAX;
+    const card=document.createElement('div');
+    card.className='tc'+(isDone?' done':isLocked?' locked':'');
+    if(!isDone&&!isLocked) card.onclick=()=>startTask(t);
+    card.innerHTML=`
       <div class="tc-img-wrap">
-        <img class="tc-img" src="${t.img}" alt="${t.nom}" loading="lazy">
-        <span class="tc-tag free">${t.tag}</span>
+        <img src="${t.img}" alt="${t.nom}" loading="lazy">
+        <span class="tc-tag">Gratuit</span>
       </div>
       <div class="tc-body">
         <div class="tc-n">${t.nom}</div>
-        <div class="tc-r">+${fmt(t.reward)} FCFA</div>
+        <div class="tc-r">+${REWARD} FCFA</div>
         <div class="tc-desc">${t.desc}</div>
       </div>`;
     grid.appendChild(card);
   });
 
-  if(done >= MAX_TASKS){
-    const notice = document.createElement('div');
-    notice.style.cssText = 'grid-column:1/-1;text-align:center;padding:12px;background:#F0FDF4;border-radius:12px;font-size:.75rem;font-weight:700;color:var(--green);';
-    notice.textContent = '✅ Vous avez complété vos 3 tâches du jour ! Revenez demain.';
-    grid.appendChild(notice);
+  if(done>=MAX){
+    const n=document.createElement('div');
+    n.className='tasks-limit-notice';
+    n.textContent='✅ 3 tâches complétées ! Revenez demain.';
+    grid.appendChild(n);
   }
 }
 
-// ── DÉMARRER UNE TÂCHE ──
 function startTask(t){
-  currentTaskId = t.id;
-  const ad = ADS[Math.floor(Math.random()*ADS.length)];
-
-  document.getElementById('ad-img').src   = t.img;
-  document.getElementById('ad-brand').textContent = ad.brand;
-  document.getElementById('ad-title').textContent = ad.title;
-  document.getElementById('ad-bar').style.width   = '0%';
-  document.getElementById('ad-timer').innerHTML   = `Regardez pendant <b>${AD_DURATION}</b> secondes...`;
-  document.getElementById('ad-skip-btn').classList.remove('show');
-
+  currentTask=t;
+  document.getElementById('ad-img').src=t.img;
+  document.getElementById('ad-brand').textContent='VGN Agriculture';
+  document.getElementById('ad-title').textContent=t.nom;
+  document.getElementById('ad-bar').style.width='0%';
+  document.getElementById('ad-timer').innerHTML=`Regardez pendant <b>${AD_SEC}</b> sec...`;
+  document.getElementById('ad-skip').classList.remove('show');
   document.getElementById('ad-overlay').classList.add('open');
 
-  let elapsed = 0;
-  clearInterval(adTimer);
-  adTimer = setInterval(()=>{
+  let elapsed=0;
+  clearInterval(adInterval);
+  adInterval=setInterval(()=>{
     elapsed++;
-    const pct = (elapsed/AD_DURATION)*100;
-    document.getElementById('ad-bar').style.width = pct+'%';
-    const rem = AD_DURATION - elapsed;
-    document.getElementById('ad-timer').innerHTML = rem > 0
-      ? `Regardez pendant <b>${rem}</b> seconde${rem>1?'s':''}...`
-      : '🎉 Publicité terminée !';
-    if(elapsed >= AD_DURATION){
-      clearInterval(adTimer);
-      document.getElementById('ad-skip-btn').classList.add('show');
-      document.getElementById('ad-timer').innerHTML = '🎉 Cliquez pour réclamer votre gain !';
-    }
-  }, 1000);
+    const pct=(elapsed/AD_SEC)*100;
+    document.getElementById('ad-bar').style.width=pct+'%';
+    const rem=AD_SEC-elapsed;
+    document.getElementById('ad-timer').innerHTML=rem>0?`Regardez pendant <b>${rem}</b> sec...`:'🎉 Cliquez pour réclamer !';
+    if(elapsed>=AD_SEC){clearInterval(adInterval);document.getElementById('ad-skip').classList.add('show')}
+  },1000);
 }
 
-// ── TERMINER LA PUB → CRÉDITER ──
 async function finishAd(){
-  clearInterval(adTimer);
+  clearInterval(adInterval);
   document.getElementById('ad-overlay').classList.remove('open');
+  if(!currentTask||!user)return;
+  if(doneTodayIds.includes(currentTask.id)){toast('✅ Déjà complétée');return}
+  if(doneTodayIds.length>=MAX){toast('⚠️ Max 3 tâches/jour');return}
 
-  if(!currentTaskId || !authUser) return;
+  const t=currentTask;currentTask=null;
+  doneTodayIds.push(t.id);
 
-  const daysLeft = updateStageBanner(profile.created_at || authUser.created_at);
-  if(daysLeft === 0){ showToast('⛔ Stage terminé.'); return; }
-  if(tasksDoneToday.length >= MAX_TASKS){ showToast('⚠️ Maximum 3 tâches par jour'); return; }
-  if(tasksDoneToday.includes(currentTaskId)){ showToast('✅ Tâche déjà complétée'); return; }
-
-  tasksDoneToday.push(currentTaskId);
-
-  // Mettre à jour Supabase
   try{
-    const nvSolde      = (profile.solde||0) + REWARD;
-    const nvGainsJour  = (profile.gains_jour||0) + REWARD;
-    const nvGainsTotaux= (profile.gains_totaux||0) + REWARD;
-    const nvTaches     = (profile.taches_jour||0) + 1;
+    const nvSolde=(profile.solde||0)+REWARD;
+    const nvGainsJour=(profile.gains_jour||0)+REWARD;
+    const nvGainsTotaux=(profile.gains_totaux||0)+REWARD;
+    const nvTaches=(profile.taches_jour||0)+1;
 
     await SB.from('profiles').update({
-      solde:        nvSolde,
-      gains_jour:   nvGainsJour,
-      gains_totaux: nvGainsTotaux,
-      taches_jour:  nvTaches,
-    }).eq('id', authUser.id);
+      solde:nvSolde,gains_jour:nvGainsJour,
+      gains_totaux:nvGainsTotaux,taches_jour:nvTaches
+    }).eq('id',user.id);
 
+    // Enregistrer la tâche dans taches_completees
     await SB.from('taches_completees').insert({
-      user_id:   authUser.id,
-      tache_id:  null,
-      reward:    REWARD,
-    }).select();
+      user_id:user.id,
+      tache_id:null,
+      reward:REWARD,
+    });
 
-    profile.solde         = nvSolde;
-    profile.gains_jour    = nvGainsJour;
-    profile.gains_totaux  = nvGainsTotaux;
-    profile.taches_jour   = nvTaches;
+    profile.solde=nvSolde;profile.gains_jour=nvGainsJour;
+    profile.gains_totaux=nvGainsTotaux;profile.taches_jour=nvTaches;
 
-    // Refresh UI
-    set('v-solde',  fmtF(nvSolde));
-    set('v-gains',  fmtF(nvGainsTotaux));
-    set('v-tasks',  nvTaches+' / '+MAX_TASKS);
+    set('v-solde',fmtF(nvSolde));
+    set('v-gains',fmtF(nvGainsTotaux));
+    set('v-tasks',nvTaches+' / '+MAX);
 
-    showToast(`🎉 +${REWARD} FCFA crédités sur votre compte !`);
-    renderTaches(daysLeft);
-
+    toast(`🎉 +${REWARD} FCFA crédités !`);
+    const {left}=stageInfo(profile.created_at||user.created_at);
+    renderTaches(left);
   }catch(e){
-    console.error(e);
-    showToast('❌ Erreur réseau, réessayez');
-    tasksDoneToday.pop();
+    console.error(e);toast('❌ Erreur, réessayez');
+    doneTodayIds.pop();
+  }
+}
+
+async function init(){
+  const{data:{user:u}}=await SB.auth.getUser();
+  if(!u){window.location.href='index.html';return}
+  user=u;
+  const name=u.user_metadata?.full_name||u.email?.split('@')[0]||'Investisseur';
+  set('uname','Bonjour, '+name+' 👋');
+
+  const{data:p}=await SB.from('profiles')
+    .select('solde,gains_totaux,gains_jour,investissement,taches_jour,created_at,vip_niveau')
+    .eq('id',u.id).single();
+  profile=p||{solde:0,gains_totaux:0,gains_jour:0,investissement:0,taches_jour:0,created_at:u.created_at};
+
+  set('v-solde',fmtF(profile.solde||0));
+  set('v-gains',fmtF(profile.gains_totaux||0));
+  set('v-invest',fmtF(profile.investissement||0));
+  set('v-tasks',(profile.taches_jour||0)+' / '+MAX);
+  set('v-solde-sub',(profile.solde||0)>0?'↑ Disponible':'↑ 1er dépôt ?');
+
+  const ca=profile.created_at||u.created_at;
+  const{done,left,pct}=stageInfo(ca);
+  set('stage-days',left);
+  set('prog-lbl',done+' / '+STAGE+' jours');
+  document.getElementById('prog-fill').style.width=pct+'%';
+  if(left===0){
+    const b=document.getElementById('stage-banner');
+    b.style.background='linear-gradient(135deg,#6B7280,#374151)';
+    b.querySelector('h4').textContent='🎓 Stage terminé';
+    b.querySelector('p').textContent='Passez à un plan VIP pour continuer';
   }
 
-  currentTaskId = null;
+  // Tâches du jour déjà faites
+  const today=new Date().toISOString().slice(0,10);
+  const{data:tc}=await SB.from('taches_completees')
+    .select('id').eq('user_id',u.id).gte('completee_le',today+'T00:00:00');
+  const realDone=Math.min((tc||[]).length,MAX);
+  doneTodayIds=TACHES.slice(0,realDone).map(t=>t.id);
+
+  renderTaches(left);
 }
-
-// ── INIT ──
-async function init(){
-  const { data:{ user } } = await SB.auth.getUser();
-  if(!user){ window.location.href='index.html'; return; }
-  authUser = user;
-
-  const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Investisseur';
-  set('uname', 'Bonjour, '+name+' 👋');
-
-  const { data:p } = await SB.from('profiles')
-    .select('solde,gains_totaux,gains_jour,investissement,taches_jour,created_at,vip_niveau')
-    .eq('id', user.id).single();
-
-  profile = p || { solde:0, gains_totaux:0, gains_jour:0, investissement:0, taches_jour:0, created_at:user.created_at };
-
-  set('v-solde',  fmtF(profile.solde||0));
-  set('v-gains',  fmtF(profile.gains_totaux||0));
-  set('v-invest', fmtF(profile.investissement||0));
-  set('v-tasks',  (profile.taches_jour||0)+' / '+MAX_TASKS);
-  set('v-solde-sub', (profile.solde||0)>0 ? '↑ Solde disponible' : '↑ Effectuez votre 1er dépôt');
-
-  // Charger taches completées aujourd'hui
-  const today = new Date().toISOString().slice(0,10);
-  const { data:tcToday } = await SB.from('taches_completees')
-    .select('id,completee_le')
-    .eq('user_id', user.id)
-    .gte('completee_le', today+'T00:00:00');
-
-  // On utilise l'index local pour les IDs libres
-  tasksDoneToday = (tcToday||[]).map((_,i) => TACHES_LIBRES[i]?.id).filter(Boolean);
-  // Ré-aligner avec le compteur réel
-  const realDone = Math.min(tcToday?.length||0, MAX_TASKS);
-  tasksDoneToday = TACHES_LIBRES.slice(0, realDone).map(t=>t.id);
-
-  const createdAt = profile.created_at || user.created_at;
-  const daysLeft  = updateStageBanner(createdAt);
-  renderTaches(daysLeft);
-}
-
 init();
 </script>
 </body>
