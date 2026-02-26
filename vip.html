@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VGN – Centre VIP</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --green:#16A34A;--green-dark:#15803D;
+  --orange:#F97316;--orange-dark:#EA580C;
+  --bg:#F2F5F2;--card:#fff;
+  --text:#111827;--muted:#6B7280;--border:#E5E7EB;
+  --top:56px;--bot:58px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+
+/* TOP */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--top);background:linear-gradient(135deg,var(--green-dark),#22C55E);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:999;box-shadow:0 2px 10px rgba(0,0,0,0.15)}
+.tb-back{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;text-decoration:none;color:#fff}
+.tb-title{font-size:1rem;font-weight:900;color:#fff;letter-spacing:0.03em}
+.tb-right{width:34px}
+
+/* BODY */
+.body{padding-top:calc(var(--top)+12px);padding-bottom:calc(var(--bot)+16px)}
+
+/* SOLDE BANNER */
+.solde-banner{
+  margin:0 12px 14px;
+  background:linear-gradient(135deg,var(--green-dark),#22C55E);
+  border-radius:16px;padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 14px rgba(22,163,74,0.22);
+}
+.sb-left .sl{font-size:0.68rem;color:rgba(255,255,255,0.72);font-weight:700}
+.sb-left .sv{font-size:1.25rem;font-weight:900;color:#fff;margin-top:2px}
+.sb-right{font-size:2rem}
+
+/* SECTION TITLE */
+.sec{padding:0 13px;margin-bottom:10px}
+.sec h3{font-size:0.88rem;font-weight:800;color:var(--text)}
+
+/* VIP CARDS */
+.cards{display:flex;flex-direction:column;gap:12px;padding:0 12px;margin-bottom:16px}
+
+.vip-card{
+  border-radius:20px;padding:18px 18px 16px;
+  position:relative;overflow:hidden;
+  cursor:pointer;
+  transition:transform .15s,box-shadow .2s;
+  box-shadow:0 4px 18px rgba(0,0,0,0.13);
+}
+.vip-card:active{transform:scale(0.97)}
+
+/* Gradients par niveau */
+.vip-card.v0{background:#1A1A2E;cursor:default}
+.vip-card.v1{background:linear-gradient(135deg,#667EEA,#48BB78)}
+.vip-card.v2{background:linear-gradient(135deg,#F6AD55,#ED8936,#ECC94B)}
+.vip-card.v3{background:linear-gradient(135deg,#4ECDC4,#44A3AA,#56AB2F)}
+.vip-card.v4{background:linear-gradient(135deg,#667EEA,#764BA2,#48BB78)}
+.vip-card.v5{background:linear-gradient(135deg,#2D3748,#4A5568,#718096)}
+.vip-card.v6{background:linear-gradient(135deg,#E91E8C,#9B59B6,#6C5CE7)}
+.vip-card.v7{background:linear-gradient(135deg,#F97316,#F59E0B,#84CC16)}
+.vip-card.v8{background:linear-gradient(135deg,#7C3AED,#9333EA,#4F46E5)}
+.vip-card.v9{background:linear-gradient(135deg,#06B6D4,#0891B2,#14B8A6)}
+
+/* Card header */
+.vc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.vc-job{font-size:1.2rem;font-weight:900;color:#fff}
+.vc-vip{font-size:1.3rem;font-weight:900;color:rgba(255,255,255,0.9);font-style:italic;letter-spacing:0.04em}
+
+/* Card body */
+.vc-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.vc-ico{font-size:0.85rem}
+.vc-txt{font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.9)}
+.vc-val{font-size:0.78rem;font-weight:900;color:#fff}
+
+/* Card footer */
+.vc-foot{
+  display:flex;align-items:center;justify-content:flex-end;
+  margin-top:12px;gap:6px;
+}
+.vc-btn{
+  background:rgba(255,255,255,0.22);
+  border:1.5px solid rgba(255,255,255,0.4);
+  border-radius:20px;padding:6px 16px;
+  font-size:0.78rem;font-weight:900;color:#fff;
+  font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:background .2s;
+}
+.vc-btn:hover{background:rgba(255,255,255,0.35)}
+.vc-btn.locked{opacity:0.7;cursor:not-allowed}
+.vc-badge-actif{
+  background:rgba(255,255,255,0.25);
+  border:1.5px solid rgba(255,255,255,0.5);
+  border-radius:20px;padding:4px 12px;
+  font-size:0.72rem;font-weight:900;color:#fff;
+}
+
+/* Shimmer deco */
+.vip-card::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:120px;height:120px;
+  background:rgba(255,255,255,0.07);
+  border-radius:50%;
+}
+
+/* BOTTOM NAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--bot);background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,0.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;cursor:pointer;padding:6px 0;text-decoration:none;position:relative}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px}
+.bn-ico{font-size:1.2rem}
+.bn-lbl{font-size:0.58rem;font-weight:800;color:var(--muted)}
+.bn.on .bn-lbl{color:var(--green)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;width:100%;max-width:430px;border-radius:24px 24px 0 0;padding:0 16px 32px;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.overlay.open .modal{transform:translateY(0)}
+.modal-handle{width:38px;height:4px;background:#E5E7EB;border-radius:2px;margin:14px auto 18px}
+.modal-title{font-size:1.1rem;font-weight:900;color:var(--text);text-align:center;margin-bottom:6px}
+.modal-sub{font-size:0.78rem;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.5}
+
+.modal-info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F3F4F6}
+.mir-lbl{font-size:0.78rem;color:var(--muted);font-weight:700}
+.mir-val{font-size:0.85rem;font-weight:900;color:var(--text)}
+
+.modal-solde-check{
+  margin:14px 0;background:#F0FDF4;border-radius:14px;padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.msc-lbl{font-size:0.75rem;color:var(--muted);font-weight:700}
+.msc-val{font-size:1rem;font-weight:900}
+.ok{color:var(--green)}.nok{color:#EF4444}
+
+.modal-confirm-btn{
+  width:100%;padding:13px;border:none;border-radius:14px;
+  font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:900;color:#fff;
+  cursor:pointer;margin-top:10px;
+  transition:transform .15s,box-shadow .2s;
+  box-shadow:0 4px 16px rgba(22,163,74,0.3);
+}
+.modal-confirm-btn:active{transform:scale(0.97)}
+.modal-confirm-btn.g{background:linear-gradient(135deg,var(--green),var(--green-dark))}
+.modal-confirm-btn.r{background:#EF4444;box-shadow:0 4px 16px rgba(239,68,68,0.25)}
+
+/* TOAST */
+.toast-bar{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-70px);background:#111;color:#fff;padding:7px 18px;border-radius:22px;font-size:0.78rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.toast-bar.show{transform:translateX(-50%) translateY(0)}
+
+/* LOADER */
+.ldot{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- TOP -->
+<div class="topbar">
+  <a class="tb-back" href="dashboard.html">‹</a>
+  <span class="tb-title">💎 Centre VIP</span>
+  <div class="tb-right"></div>
+</div>
+<div class="toast-bar" id="tb"></div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- SOLDE -->
+  <div class="solde-banner">
+    <div class="sb-left">
+      <div class="sl">Votre solde disponible</div>
+      <div class="sv" id="solde-display"><span class="ldot"></span></div>
+    </div>
+    <div class="sb-right">💰</div>
+  </div>
+
+  <div class="sec"><h3>Choisissez votre niveau VIP</h3></div>
+
+  <div class="cards" id="cards-container">
+    <!-- Générées par JS -->
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bn-ico">🏠</span><span class="bn-lbl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bn-ico">✅</span><span class="bn-lbl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bn-ico">📊</span><span class="bn-lbl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bn-ico">👤</span><span class="bn-lbl">Mon Compte</span></a>
+</nav>
+
+<!-- MODAL CONFIRMATION -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="m-title">—</div>
+    <div class="modal-sub" id="m-sub">—</div>
+
+    <div class="modal-info-row">
+      <span class="mir-lbl">💰 Gain par tâche</span>
+      <span class="mir-val" id="m-gain">—</span>
+    </div>
+    <div class="modal-info-row">
+      <span class="mir-lbl">✅ Tâches / jour</span>
+      <span class="mir-val" id="m-taches">—</span>
+    </div>
+    <div class="modal-info-row">
+      <span class="mir-lbl">📅 Gain journalier</span>
+      <span class="mir-val" id="m-jour">—</span>
+    </div>
+    <div class="modal-info-row">
+      <span class="mir-lbl">🏦 Dépôt requis</span>
+      <span class="mir-val" id="m-depot">—</span>
+    </div>
+
+    <div class="modal-solde-check">
+      <div>
+        <div class="msc-lbl">Votre solde</div>
+        <div class="msc-val" id="m-solde-val">—</div>
+      </div>
+      <div id="m-solde-status" style="font-size:1.4rem">—</div>
+    </div>
+
+    <button class="modal-confirm-btn g" id="m-confirm-btn" onclick="confirmInvestissement()">
+      🚀 Confirmer l'investissement
+    </button>
+    <button class="modal-confirm-btn r" style="margin-top:8px" onclick="closeModalDirect()">
+      Annuler
+    </button>
+  </div>
+</div>
+
+<script>
+const SB = supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
+);
+
+// ── PLANS VIP ──
+const PLANS = [
+  { niveau:0, job:'Intern',  label:'VIP 0', gain:70,    taches:3,  depot:0,          gradient:'v0', lock:false, gratuit:true },
+  { niveau:1, job:'Job 1',   label:'VIP 1', gain:70,    taches:5,  depot:10500,      gradient:'v1', lock:false },
+  { niveau:2, job:'Job 2',   label:'VIP 2', gain:175,   taches:8,  depot:42000,      gradient:'v2', lock:false },
+  { niveau:3, job:'Job 3',   label:'VIP 3', gain:560,   taches:10, depot:168000,     gradient:'v3', lock:false },
+  { niveau:4, job:'Job 4',   label:'VIP 4', gain:1300,  taches:15, depot:585000,     gradient:'v4', lock:true  },
+  { niveau:5, job:'Job 5',   label:'VIP 5', gain:2000,  taches:20, depot:1200000,    gradient:'v5', lock:true  },
+  { niveau:6, job:'Job 6',   label:'VIP 6', gain:3500,  taches:25, depot:2625000,    gradient:'v6', lock:true  },
+  { niveau:7, job:'Job 7',   label:'VIP 7', gain:6400,  taches:30, depot:5760000,    gradient:'v7', lock:true  },
+  { niveau:8, job:'Job 8',   label:'VIP 8', gain:11000, taches:35, depot:11550000,   gradient:'v8', lock:true  },
+  { niveau:9, job:'Job 9',   label:'VIP 9', gain:19000, taches:40, depot:22800000,   gradient:'v9', lock:true  },
+];
+
+let currentUser = null;
+let currentProfile = null;
+let selectedPlan = null;
+
+function fmt(n){ return Number(n).toLocaleString('fr-FR'); }
+function fmtF(n){ return fmt(n)+' FCFA'; }
+function showToast(msg){
+  const t=document.getElementById('tb');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── RENDER CARDS ──
+function renderCards(userNiveau){
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+
+  PLANS.forEach(p => {
+    const isActif = userNiveau === p.niveau;
+    const gainJour = p.gain * p.taches;
+
+    const card = document.createElement('div');
+    card.className = `vip-card ${p.gradient}`;
+
+    let footerHTML = '';
+    if(p.niveau === 0){
+      footerHTML = isActif
+        ? `<span class="vc-badge-actif">✅ Niveau actuel</span>`
+        : `<span class="vc-badge-actif">🆓 Gratuit</span>`;
+    } else if(isActif){
+      footerHTML = `<span class="vc-badge-actif">✅ Niveau actuel</span>`;
+    } else {
+      const lockIco = p.lock ? '🔒' : '';
+      footerHTML = `<button class="vc-btn ${p.lock?'locked':''}" onclick="openModal(${p.niveau})">Rejoindre maintenant ${lockIco}</button>`;
+    }
+
+    card.innerHTML = `
+      <div class="vc-head">
+        <div class="vc-job">${p.job}</div>
+        <div class="vc-vip">${p.label}</div>
+      </div>
+      ${p.niveau===0 ? `
+      <div class="vc-row">
+        <span class="vc-ico">🎯</span>
+        <span class="vc-txt">Tâches quotidiennes :</span>
+        <span class="vc-val">&nbsp;${p.taches} fois</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">💰</span>
+        <span class="vc-txt">Gain par tâche :</span>
+        <span class="vc-val">&nbsp;${fmt(p.gain)} FCFA</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">🎁</span>
+        <span class="vc-txt">Accès :</span>
+        <span class="vc-val">&nbsp;Gratuit sans dépôt</span>
+      </div>
+      ` : `
+      <div class="vc-row">
+        <span class="vc-ico">💵</span>
+        <span class="vc-txt">Gain / commande :</span>
+        <span class="vc-val">&nbsp;${fmt(p.gain)} FCFA</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">🎯</span>
+        <span class="vc-txt">Tâches quotidiennes :</span>
+        <span class="vc-val">&nbsp;${p.taches} fois</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">📅</span>
+        <span class="vc-txt">Gain journalier :</span>
+        <span class="vc-val">&nbsp;${fmtF(gainJour)}</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">🏦</span>
+        <span class="vc-txt">Dépôt de garantie :</span>
+        <span class="vc-val">&nbsp;${fmtF(p.depot)}</span>
+      </div>
+      `}
+      <div class="vc-foot">${footerHTML}</div>
+    `;
+
+    // Highlight niveau actuel
+    if(isActif){
+      card.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.6), 0 6px 24px rgba(0,0,0,0.2)';
+    }
+
+    container.appendChild(card);
+  });
+}
+
+// ── MODAL ──
+function openModal(niveau){
+  const plan = PLANS.find(p=>p.niveau===niveau);
+  if(!plan || plan.niveau===0) return;
+
+  selectedPlan = plan;
+  const solde = currentProfile?.solde || 0;
+  const peutPayer = solde >= plan.depot;
+  const gainJour = plan.gain * plan.taches;
+
+  document.getElementById('m-title').textContent = `${plan.job} — ${plan.label}`;
+  document.getElementById('m-sub').textContent =
+    `Investissez ${fmtF(plan.depot)} pour débloquer ce niveau et gagner ${fmtF(gainJour)} par jour.`;
+  document.getElementById('m-gain').textContent   = fmtF(plan.gain);
+  document.getElementById('m-taches').textContent = plan.taches+' tâches / jour';
+  document.getElementById('m-jour').textContent   = fmtF(gainJour);
+  document.getElementById('m-depot').textContent  = fmtF(plan.depot);
+  document.getElementById('m-solde-val').textContent = fmtF(solde);
+  document.getElementById('m-solde-val').className = 'msc-val '+(peutPayer?'ok':'nok');
+  document.getElementById('m-solde-status').textContent = peutPayer ? '✅' : '❌';
+
+  const btn = document.getElementById('m-confirm-btn');
+  if(!peutPayer){
+    btn.textContent = '❌ Solde insuffisant — Recharger';
+    btn.className = 'modal-confirm-btn r';
+  } else {
+    btn.textContent = '🚀 Confirmer l\'investissement';
+    btn.className = 'modal-confirm-btn g';
+  }
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(e){
+  if(e && e.target!==document.getElementById('overlay')) return;
+  document.getElementById('overlay').classList.remove('open');
+  selectedPlan=null;
+}
+function closeModalDirect(){
+  document.getElementById('overlay').classList.remove('open');
+  selectedPlan=null;
+}
+
+// ── CONFIRMER INVESTISSEMENT ──
+async function confirmInvestissement(){
+  if(!selectedPlan) return;
+  const plan = selectedPlan;
+  const solde = currentProfile?.solde || 0;
+
+  // Solde insuffisant → rediriger vers recharge
+  if(solde < plan.depot){
+    closeModalDirect();
+    window.location.href = 'recharge.html';
+    return;
+  }
+
+  const btn = document.getElementById('m-confirm-btn');
+  btn.textContent = '⏳ Traitement...';
+  btn.disabled = true;
+
+  try {
+    const nouveauSolde      = solde - plan.depot;
+    const nouvelInvest      = (currentProfile?.investissement||0) + plan.depot;
+    const beneficesJour     = plan.gain * plan.taches;
+
+    // 1. Mettre à jour le profil
+    const { error: errProfil } = await SB.from('profiles').update({
+      solde:          nouveauSolde,
+      investissement: nouvelInvest,
+      vip_niveau:     plan.label,
+      taches_total:   plan.taches,
+      taches_jour:    0,
+      benefices_jour: beneficesJour,
+      gains_hier:     currentProfile?.gains_jour || 0,
+      gains_jour:     0,
+    }).eq('id', currentUser.id);
+
+    if(errProfil) throw errProfil;
+
+    // 2. Enregistrer la transaction
+    await SB.from('transactions').insert({
+      user_id:  currentUser.id,
+      type:     'recharge',
+      montant:  plan.depot,
+      statut:   'confirme',
+      note:     `Investissement ${plan.label} — ${plan.job}`,
+    });
+
+    // Mettre à jour localement
+    currentProfile.solde          = nouveauSolde;
+    currentProfile.investissement = nouvelInvest;
+    currentProfile.vip_niveau     = plan.label;
+
+    closeModalDirect();
+    showToast(`🎉 Félicitations ! Vous êtes maintenant ${plan.label} !`);
+
+    // Rafraichir
+    document.getElementById('solde-display').textContent = fmtF(nouveauSolde);
+    const niveauNum = parseInt(plan.label.replace(/\D/g,'')) || 0;
+    renderCards(niveauNum);
+
+  } catch(e){
+    console.error(e);
+    showToast('❌ Erreur : '+e.message);
+    btn.textContent = '🚀 Confirmer l\'investissement';
+    btn.disabled = false;
+  }
+}
+
+// ── INIT ──
+async function init(){
+  const { data:{ user } } = await SB.auth.getUser();
+  if(!user){ window.location.href='index.html'; return; }
+  currentUser = user;
+
+  const { data:p } = await SB.from('profiles')
+    .select('solde,investissement,vip_niveau,gains_jour,taches_total,benefices_jour')
+    .eq('id', user.id).single();
+
+  currentProfile = p || { solde:0, investissement:0, vip_niveau:'VIP 0' };
+
+  const solde = currentProfile.solde || 0;
+  document.getElementById('solde-display').textContent = fmtF(solde);
+
+  // Déduire le niveau actuel
+  const vipStr = currentProfile.vip_niveau || 'VIP 0';
+  const match  = vipStr.match(/(\d+)/);
+  const niveauNum = match ? parseInt(match[1]) : 0;
+
+  renderCards(niveauNum);
+}
+
+init();
+</script>
+</body>
+</html>
