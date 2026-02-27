@@ -8,31 +8,37 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--green:#16A34A;--gd:#15803D;--orange:#F97316;--od:#EA580C;--bg:#F1F5F1;--card:#fff;--txt:#111827;--muted:#6B7280;--bdr:#E5E7EB}
-html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;overflow-x:hidden}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--od:#EA580C;--bg:#F1F5F1;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:56px;--B:58px}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 
-#shell{display:flex;flex-direction:column;height:100%}
-#topbar{flex:0 0 56px;background:linear-gradient(135deg,var(--gd),#22C55E);display:flex;align-items:center;justify-content:space-between;padding:0 14px;box-shadow:0 2px 10px rgba(0,0,0,.15);z-index:10}
-#content{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch}
-#botnav{flex:0 0 58px;background:#fff;border-top:1px solid var(--bdr);display:flex;align-items:center;box-shadow:0 -2px 10px rgba(0,0,0,.07);z-index:10}
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--H);background:linear-gradient(135deg,var(--gd),#22C55E);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:999;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none;cursor:pointer}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tbr{width:34px}
 
-.tb-back{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#fff;text-decoration:none;cursor:pointer}
-.tb-title{font-size:1rem;font-weight:900;color:#fff}
-.tb-right{width:34px}
+/* SCROLL */
+.scroll{
+  padding-top:var(--H);
+  padding-bottom:calc(var(--B) + 24px);
+  min-height:100svh;min-height:100vh;
+}
 
+/* TABS sticky sous topbar */
+.tabs{position:sticky;top:var(--H);z-index:50;background:#fff;display:flex;border-bottom:2px solid var(--bd)}
+.tab{flex:1;text-align:center;padding:13px 0;font-size:.85rem;font-weight:800;color:var(--mu);cursor:pointer;position:relative;transition:color .2s}
+.tab.on{color:var(--g)}
+.tab.on::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:var(--g);border-radius:2px}
+
+/* BOTNAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--B);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
 .bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative;cursor:pointer}
-.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px}
-.bn-i{font-size:1.2rem}
-.bn-l{font-size:.57rem;font-weight:800;color:var(--muted)}
-.bn.on .bn-l{color:var(--green)}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--g);border-radius:0 0 3px 3px}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.bn.on .bnl{color:var(--g)}
 
-/* ── TABS ── */
-.tabs{display:flex;background:#fff;border-bottom:2px solid var(--bdr);position:sticky;top:0;z-index:5}
-.tab{flex:1;text-align:center;padding:13px 0;font-size:.85rem;font-weight:800;color:var(--muted);cursor:pointer;position:relative;transition:color .2s}
-.tab.on{color:var(--green)}
-.tab.on::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:var(--green);border-radius:2px}
-
-/* ── SUMMARY BANNER ── */
+/* SUMMARY */
 .summary{margin:12px 12px 10px;background:linear-gradient(135deg,var(--gd),#22C55E);border-radius:16px;padding:13px 16px;box-shadow:0 4px 14px rgba(22,163,74,.22)}
 .sum-row{display:flex;justify-content:space-around;align-items:center}
 .sum-item{text-align:center}
@@ -40,135 +46,126 @@ html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);max-w
 .sum-val{font-size:1.1rem;font-weight:900;color:#fff}
 .sum-sep{width:1px;background:rgba(255,255,255,.25);height:36px}
 
-/* ── PROGRESS BAR JOURNALIÈRE ── */
-.day-prog{margin:0 12px 14px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 1px 7px rgba(0,0,0,.07)}
-.dp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.dp-title{font-size:.78rem;font-weight:800;color:var(--txt)}
-.dp-count{font-size:.75rem;font-weight:900;color:var(--green)}
-.dp-bar{background:#E5E7EB;border-radius:6px;height:8px;overflow:hidden}
-.dp-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green),#22C55E);transition:width .5s ease}
-.dp-msg{font-size:.65rem;color:var(--muted);font-weight:700;margin-top:6px;text-align:center}
+/* PROGRESS */
+.dayp{margin:0 12px 12px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 1px 7px rgba(0,0,0,.07)}
+.dp-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dp-t{font-size:.78rem;font-weight:800;color:var(--txt)}
+.dp-c{font-size:.75rem;font-weight:900;color:var(--g)}
+.dp-b{background:#E5E7EB;border-radius:6px;height:8px;overflow:hidden}
+.dp-f{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--g),#22C55E);transition:width .5s ease}
+.dp-m{font-size:.65rem;color:var(--mu);font-weight:700;margin-top:6px;text-align:center}
 
-/* ── TACHE ITEM (liste) ── */
-.tache-list{padding:0 12px;display:flex;flex-direction:column;gap:10px;padding-bottom:16px}
-
+/* TACHE ITEMS */
+.tlist{padding:0 12px;display:flex;flex-direction:column;gap:10px;padding-bottom:16px}
 .titem{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07);display:flex;align-items:stretch;position:relative}
-.titem.encours{border-left:4px solid var(--orange)}
-.titem.termine{border-left:4px solid var(--green)}
+.titem.enc{border-left:4px solid var(--o)}
+.titem.fin{border-left:4px solid var(--g)}
+.tiimg{width:82px;min-height:90px;object-fit:cover;display:block;flex-shrink:0}
+.tibody{flex:1;padding:10px 11px}
+.tiname{font-size:.78rem;font-weight:800;color:var(--txt);margin-bottom:4px}
+.timeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tibadge{font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:6px;color:#fff}
+.beo{background:var(--o)}.beg{background:var(--g)}.bemu{background:#6B7280}
+.tirew{font-size:.78rem;font-weight:900;color:var(--g);margin-top:5px}
+.titime{font-size:.6rem;color:var(--mu);font-weight:700;margin-top:3px}
+.tiright{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 12px;gap:6px;flex-shrink:0}
+.dobtn{background:linear-gradient(135deg,var(--o),var(--od));border:none;border-radius:10px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:.65rem;font-weight:800;color:#fff;cursor:pointer;text-align:center;line-height:1.3;transition:transform .15s;box-shadow:0 2px 8px rgba(249,115,22,.3)}
+.dobtn:active{transform:scale(.93)}
+.doneico{font-size:1.6rem}
 
-.ti-img{width:80px;flex-shrink:0;object-fit:cover;display:block}
-.ti-body{flex:1;padding:10px 12px}
-.ti-name{font-size:.78rem;font-weight:800;color:var(--txt);margin-bottom:4px}
-.ti-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ti-badge{font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:6px;color:#fff}
-.badge-encours{background:var(--orange)}
-.badge-fait{background:var(--green)}
-.ti-reward{font-size:.78rem;font-weight:900;color:var(--green);margin-top:4px}
-.ti-time{font-size:.6rem;color:var(--muted);font-weight:700;margin-top:3px}
-.ti-right{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 12px;gap:6px;flex-shrink:0}
+/* SEC TITLE */
+.sectitle{margin:4px 12px 8px;font-size:.75rem;font-weight:800;color:var(--mu);text-align:center;letter-spacing:.03em}
 
-/* bouton Faire la tâche */
-.do-btn{background:linear-gradient(135deg,var(--orange),var(--od));border:none;border-radius:10px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:.65rem;font-weight:800;color:#fff;cursor:pointer;text-align:center;line-height:1.3;transition:transform .15s}
-.do-btn:active{transform:scale(.93)}
-.done-ico{font-size:1.6rem}
-
-/* ── EMPTY ── */
+/* EMPTY */
 .empty{text-align:center;padding:50px 20px}
-.empty-ico{font-size:3.5rem;margin-bottom:12px}
-.empty-txt{font-size:.85rem;font-weight:800;color:var(--txt);margin-bottom:6px}
-.empty-sub{font-size:.75rem;color:var(--muted);line-height:1.5}
+.emico{font-size:3.5rem;margin-bottom:12px}
+.emtxt{font-size:.85rem;font-weight:800;color:var(--txt);margin-bottom:6px}
+.emsub{font-size:.75rem;color:var(--mu);line-height:1.5}
 
-/* ── TOAST ── */
-.tst{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-70px);background:#111;color:#fff;padding:8px 20px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:200;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.tst.show{transform:translateX(-50%) translateY(0)}
-.tst.err{background:#DC2626}
-
-/* ── AD OVERLAY ── */
-.adov{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+/* AD */
+.adov{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
 .adov.open{opacity:1;pointer-events:all}
-.ad-box{background:#111;border-radius:20px;width:calc(100% - 32px);max-width:398px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.6)}
-.ad-img{width:100%;height:190px;position:relative;background:#000;display:flex;align-items:center;justify-content:center}
-.ad-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.6}
-.ad-play{position:relative;z-index:2;font-size:3rem}
-.ad-bd{padding:13px 15px}
-.ad-br{font-size:.67rem;font-weight:700;color:#888;margin-bottom:3px}
-.ad-ti{font-size:.87rem;font-weight:900;color:#fff;margin-bottom:8px}
-.ad-bw{background:#333;border-radius:4px;height:6px;overflow:hidden;margin-bottom:8px}
-.ad-bar{height:100%;background:var(--orange);border-radius:4px;width:0%}
-.ad-tm{font-size:.72rem;font-weight:800;color:#bbb;text-align:center;margin-bottom:10px}
-.ad-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--green),var(--gd));border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;display:none;transition:transform .15s;box-shadow:0 3px 12px rgba(22,163,74,.3)}
-.ad-btn:active{transform:scale(.97)}
-.ad-btn.show{display:block}
+.adbox{background:#111;border-radius:20px;width:calc(100% - 32px);max-width:398px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+.adimg{width:100%;height:190px;position:relative;background:#000;display:flex;align-items:center;justify-content:center}
+.adimg img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.6}
+.adplay{position:relative;z-index:2;font-size:3rem}
+.adbd{padding:13px 15px}
+.adbr{font-size:.67rem;font-weight:700;color:#888;margin-bottom:3px}
+.adti{font-size:.87rem;font-weight:900;color:#fff;margin-bottom:8px}
+.adbw{background:#333;border-radius:4px;height:6px;overflow:hidden;margin-bottom:8px}
+.adbar{height:100%;background:var(--o);border-radius:4px;width:0%}
+.adtm{font-size:.72rem;font-weight:800;color:#bbb;text-align:center;margin-bottom:10px}
+.adbtn{width:100%;padding:12px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;display:none;transition:transform .15s;box-shadow:0 3px 12px rgba(22,163,74,.3)}
+.adbtn:active{transform:scale(.97)}.adbtn.show{display:block}
 
-.ld{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--green);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+/* TOAST */
+.tst{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:8px 20px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}
+
+.ld{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<div id="shell">
 
-  <div id="topbar">
-    <a class="tb-back" href="dashboard.html">‹</a>
-    <span class="tb-title">✅ Mes Tâches</span>
-    <div class="tb-right"></div>
-  </div>
-
-  <div id="content">
-
-    <!-- TABS -->
-    <div class="tabs">
-      <div class="tab on" id="tab-ec" onclick="switchTab('encours')">En cours</div>
-      <div class="tab" id="tab-tr" onclick="switchTab('termine')">Terminé</div>
-    </div>
-
-    <!-- SUMMARY -->
-    <div class="summary">
-      <div class="sum-row">
-        <div class="sum-item"><div class="sum-lbl">Tâches aujourd'hui</div><div class="sum-val" id="s-today">—</div></div>
-        <div class="sum-sep"></div>
-        <div class="sum-item"><div class="sum-lbl">Gains du jour</div><div class="sum-val" id="s-gains">—</div></div>
-        <div class="sum-sep"></div>
-        <div class="sum-item"><div class="sum-lbl">Jours de stage</div><div class="sum-val" id="s-stage">—</div></div>
-      </div>
-    </div>
-
-    <!-- PROGRESS JOURNALIÈRE -->
-    <div class="day-prog">
-      <div class="dp-head">
-        <span class="dp-title">📊 Progression journalière</span>
-        <span class="dp-count" id="dp-count">0 / 3</span>
-      </div>
-      <div class="dp-bar"><div class="dp-fill" id="dp-fill" style="width:0%"></div></div>
-      <div class="dp-msg" id="dp-msg">Aucune tâche complétée aujourd'hui</div>
-    </div>
-
-    <!-- LISTE -->
-    <div class="tache-list" id="tache-list">
-      <div style="text-align:center;padding:30px"><span class="ld"></span></div>
-    </div>
-
-  </div>
-
-  <nav id="botnav">
-    <a class="bn" href="dashboard.html"><span class="bn-i">🏠</span><span class="bn-l">Accueil</span></a>
-    <a class="bn on" href="taches.html"><span class="bn-i">✅</span><span class="bn-l">Tâches</span></a>
-    <a class="bn" href="rapport.html"><span class="bn-i">📊</span><span class="bn-l">Rapports</span></a>
-    <a class="bn" href="profil.html"><span class="bn-i">👤</span><span class="bn-l">Mon Compte</span></a>
-  </nav>
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">‹</a>
+  <span class="tbt">✅ Mes Tâches</span>
+  <div style="font-size:.68rem;font-weight:800;color:#fff;background:rgba(255,255,255,.15);padding:4px 9px;border-radius:16px;border:1px solid rgba(255,255,255,.25)">💰 <span id="tb-solde">—</span></div>
 </div>
 
 <div class="tst" id="tst"></div>
 
-<!-- AD -->
+<div class="scroll">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab on" id="tab-ec" onclick="switchTab('enc')">🔄 En cours</div>
+    <div class="tab" id="tab-fin" onclick="switchTab('fin')">✅ Terminé</div>
+  </div>
+
+  <!-- SUMMARY BANNER -->
+  <div class="summary">
+    <div class="sum-row">
+      <div class="sum-item"><div class="sum-lbl">Aujourd'hui</div><div class="sum-val" id="s-today">—</div></div>
+      <div class="sum-sep"></div>
+      <div class="sum-item"><div class="sum-lbl">Gains du jour</div><div class="sum-val" id="s-gains">—</div></div>
+      <div class="sum-sep"></div>
+      <div class="sum-item"><div class="sum-lbl">Jours de stage</div><div class="sum-val" id="s-stage">—</div></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS DU JOUR -->
+  <div class="dayp">
+    <div class="dp-hd"><span class="dp-t">📊 Progression du jour</span><span class="dp-c" id="dpc">0 / 3</span></div>
+    <div class="dp-b"><div class="dp-f" id="dpf" style="width:0%"></div></div>
+    <div class="dp-m" id="dpm">Aucune tâche complétée aujourd'hui</div>
+  </div>
+
+  <!-- LISTE TACHES -->
+  <div class="tlist" id="tlist">
+    <div style="text-align:center;padding:30px"><span class="ld"></span></div>
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn on" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<!-- AD OVERLAY -->
 <div class="adov" id="adov">
-  <div class="ad-box">
-    <div class="ad-img"><img id="ad-img" src="" alt=""><div class="ad-play">▶️</div></div>
-    <div class="ad-bd">
-      <div class="ad-br">VGN Agriculture</div>
-      <div class="ad-ti" id="ad-ti">Tâche en cours</div>
-      <div class="ad-bw"><div class="ad-bar" id="ad-bar"></div></div>
-      <div class="ad-tm" id="ad-tm">Patientez <b>15</b> secondes...</div>
-      <button class="ad-btn" id="ad-btn" onclick="finishAd()">✅ Réclamer +70 FCFA</button>
+  <div class="adbox">
+    <div class="adimg"><img id="adimg" src="" alt=""><div class="adplay">▶️</div></div>
+    <div class="adbd">
+      <div class="adbr">VGN Agriculture</div>
+      <div class="adti" id="adti">Tâche en cours</div>
+      <div class="adbw"><div class="adbar" id="adbar"></div></div>
+      <div class="adtm" id="adtm">Patientez <b>15</b> secondes...</div>
+      <button class="adbtn" id="adbtn" onclick="finishAd()">✅ Réclamer +70 FCFA</button>
     </div>
   </div>
 </div>
@@ -177,183 +174,166 @@ html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);max-w
 const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE');
 
 const MAX=3,GAIN=70,DAYS=4,SECS=15;
-const TACHES_DATA={
-  ag1:{nom:'Champs de Maïs VGN',img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=200&q=80'},
-  ag2:{nom:'Blé Doré Premium',img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=200&q=80'},
-  ag3:{nom:'Élevage Bovin VGN',img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=200&q=80'},
-  ag4:{nom:'Grande Récolte 2025',img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&q=80'},
-  ag5:{nom:'Ferme Bio Certifiée',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=200&q=80'},
-  ag6:{nom:'Irrigation Moderne',img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=200&q=80'},
+
+// Catalogue des tâches disponibles
+const CATALOG={
+  ag1:{nom:'Champs de Maïs VGN',img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=300&q=80'},
+  ag2:{nom:'Blé Doré Premium',img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&q=80'},
+  ag3:{nom:'Élevage Bovin VGN',img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=300&q=80'},
+  ag4:{nom:'Grande Récolte 2025',img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=300&q=80'},
+  ag5:{nom:'Ferme Bio Certifiée',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'},
+  ag6:{nom:'Irrigation Moderne',img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=300&q=80'},
 };
+const ALL_IDS=['ag1','ag2','ag3','ag4','ag5','ag6'];
 
-// Tâches disponibles qui n'ont PAS encore été faites aujourd'hui
-const ALL_TACHES=[
-  {id:'ag1',nom:'Champs de Maïs VGN',img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80'},
-  {id:'ag2',nom:'Blé Doré Premium',img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80'},
-  {id:'ag3',nom:'Élevage Bovin VGN',img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80'},
-  {id:'ag4',nom:'Grande Récolte 2025',img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80'},
-  {id:'ag5',nom:'Ferme Bio Certifiée',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80'},
-  {id:'ag6',nom:'Irrigation Moderne',img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&q=80'},
-];
-
-let authUser=null,profile=null,doneToday=[],allHistory=[],curTab='encours',curTask=null,adTimer=null,saving=false;
+let U=null,P=null,doneToday=[],history=[],curTab='enc',curT=null,adInt=null,saving=false;
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
-const today=()=>new Date().toISOString().slice(0,10);
+const td=()=>new Date().toISOString().slice(0,10);
 function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
-function toast(m,err=false){const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(err?' err':'');setTimeout(()=>t.className='tst',3500)}
-function timeAgo(iso){const d=new Date(iso),now=new Date();const diff=Math.floor((now-d)/60000);if(diff<1)return'À l\'instant';if(diff<60)return diff+'min';if(diff<1440)return Math.floor(diff/60)+'h';return d.toLocaleDateString('fr-FR')}
+function toast(m,e=false){const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(e?' err':'');setTimeout(()=>t.className='tst',3500)}
+function timeAgo(iso){const diff=Math.floor((Date.now()-new Date(iso))/60000);if(diff<1)return'À l\'instant';if(diff<60)return diff+'min';if(diff<1440)return Math.floor(diff/60)+'h';return new Date(iso).toLocaleDateString('fr-FR')}
 
 function switchTab(tab){
   curTab=tab;
-  document.getElementById('tab-ec').className='tab'+(tab==='encours'?' on':'');
-  document.getElementById('tab-tr').className='tab'+(tab==='termine'?' on':'');
+  document.getElementById('tab-ec').className='tab'+(tab==='enc'?' on':'');
+  document.getElementById('tab-fin').className='tab'+(tab==='fin'?' on':'');
   render();
 }
 
 function updateSummary(){
-  const doneCount=doneToday.length;
-  const gainsJour=doneCount*GAIN;
-  const ms=Date.now()-new Date(profile?.created_at||authUser?.created_at||Date.now()).getTime();
-  const jourStage=Math.min(Math.floor(ms/86400000)+1,DAYS);
-  set('s-today',doneCount+' / '+MAX);
-  set('s-gains',fmtF(gainsJour));
-  set('s-stage','Jour '+jourStage+' / '+DAYS);
-
-  // barre progression
-  const pct=Math.round(doneCount/MAX*100);
-  document.getElementById('dp-fill').style.width=pct+'%';
-  set('dp-count',doneCount+' / '+MAX);
-  let msg='';
-  if(doneCount===0)msg='Aucune tâche complétée aujourd\'hui';
-  else if(doneCount<MAX)msg=`Super ! ${MAX-doneCount} tâche${MAX-doneCount>1?'s':''} restante${MAX-doneCount>1?'s':''} pour aujourd'hui`;
-  else msg='🎉 Objectif du jour atteint ! Revenez demain.';
-  set('dp-msg',msg);
+  const n=doneToday.length;
+  const ms=Date.now()-new Date(P?.created_at||U?.created_at||Date.now()).getTime();
+  const jour=Math.min(Math.floor(ms/86400000)+1,DAYS);
+  set('s-today',n+' / '+MAX);
+  set('s-gains',fmtF(n*GAIN));
+  set('s-stage','Jour '+jour+' / '+DAYS);
+  document.getElementById('dpf').style.width=(n/MAX*100)+'%';
+  set('dpc',n+' / '+MAX);
+  set('dpm',n===0?'Aucune tâche complétée aujourd\'hui':n<MAX?`${MAX-n} tâche${MAX-n>1?'s':''} restante${MAX-n>1?'s':''} !`:'🎉 Objectif atteint ! Revenez demain.');
 }
 
 function render(){
-  const list=document.getElementById('tache-list');
+  const list=document.getElementById('tlist');
   list.innerHTML='';
 
-  if(curTab==='encours'){
-    // Tâches pas encore faites aujourd'hui ET dans la limite
-    const restantes=ALL_TACHES.filter(t=>!doneToday.includes(t.id));
-    const limiteAtteinte=doneToday.length>=MAX;
-
-    if(limiteAtteinte){
-      list.innerHTML=`<div class="empty"><div class="empty-ico">🌙</div><div class="empty-txt">Limite du jour atteinte !</div><div class="empty-sub">Vous avez complété vos 3 tâches aujourd'hui.<br>Revenez demain pour continuer.</div></div>`;
+  if(curTab==='enc'){
+    // Tâches disponibles = celles pas encore faites aujourd'hui
+    const restantes=ALL_IDS.filter(id=>!doneToday.includes(id));
+    if(doneToday.length>=MAX){
+      list.innerHTML=`<div class="empty"><div class="emico">🌙</div><div class="emtxt">Limite du jour atteinte !</div><div class="emsub">Vous avez fait vos 3 tâches.<br>Revenez demain pour continuer.</div></div>`;
       return;
     }
     if(restantes.length===0){
-      list.innerHTML=`<div class="empty"><div class="empty-ico">✅</div><div class="empty-txt">Toutes les tâches faites !</div><div class="empty-sub">Revenez demain pour de nouvelles tâches.</div></div>`;
+      list.innerHTML=`<div class="empty"><div class="emico">✅</div><div class="emtxt">Toutes les tâches faites !</div><div class="emsub">Revenez demain.</div></div>`;
       return;
     }
-
-    restantes.forEach(t=>{
+    restantes.forEach(id=>{
+      const t=CATALOG[id];
       const div=document.createElement('div');
-      div.className='titem encours';
+      div.className='titem enc';
       div.innerHTML=`
-        <img class="ti-img" src="${t.img}" alt="${t.nom}" loading="lazy">
-        <div class="ti-body">
-          <div class="ti-name">${t.nom}</div>
-          <div class="ti-meta"><span class="ti-badge badge-encours">En cours</span><span class="ti-badge" style="background:#6B7280">Gratuit</span></div>
-          <div class="ti-reward">+${GAIN} FCFA</div>
-          <div class="ti-time">⏱ Regardez une pub de 15 sec</div>
+        <img class="tiimg" src="${t.img}" alt="${t.nom}" loading="lazy">
+        <div class="tibody">
+          <div class="tiname">${t.nom}</div>
+          <div class="timeta">
+            <span class="tibadge beo">En cours</span>
+            <span class="tibadge bemu">Gratuit</span>
+          </div>
+          <div class="tirew">+${GAIN} FCFA</div>
+          <div class="titime">⏱ Pub de ${SECS} secondes</div>
         </div>
-        <div class="ti-right">
-          <button class="do-btn" onclick="startAd({id:'${t.id}',nom:'${t.nom}',img:'${t.img}'})">▶️ Faire<br>la tâche</button>
+        <div class="tiright">
+          <button class="dobtn" onclick="startAd('${id}')">▶️ Faire<br>la tâche</button>
         </div>`;
       list.appendChild(div);
     });
 
   } else {
-    // Terminé : tout l'historique de today
-    if(doneToday.length===0){
-      list.innerHTML=`<div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">Aucune tâche terminée</div><div class="empty-sub">Les tâches que vous complétez<br>apparaîtront ici.</div></div>`;
+    // Terminé : tâches faites aujourd'hui EN PREMIER, puis historique
+    const todayRecs=history.filter(r=>r.date_jour===td());
+    const oldRecs  =history.filter(r=>r.date_jour!==td());
+
+    if(history.length===0){
+      list.innerHTML=`<div class="empty"><div class="emico">📋</div><div class="emtxt">Aucune tâche terminée</div><div class="emsub">Les tâches complétées<br>apparaîtront ici.</div></div>`;
       return;
     }
 
-    // Afficher les tâches faites aujourd'hui (depuis allHistory)
-    const todayDone=allHistory.filter(r=>r.date_jour===today());
-    todayDone.forEach(r=>{
-      const td=TACHES_DATA[r.tache_ref]||{nom:r.tache_ref||'Tâche',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=200&q=80'};
-      const div=document.createElement('div');
-      div.className='titem termine';
-      div.innerHTML=`
-        <img class="ti-img" src="${td.img}" alt="${td.nom}" loading="lazy">
-        <div class="ti-body">
-          <div class="ti-name">${td.nom}</div>
-          <div class="ti-meta"><span class="ti-badge badge-fait">✅ Terminé</span></div>
-          <div class="ti-reward">+${r.reward||GAIN} FCFA crédités</div>
-          <div class="ti-time">🕐 ${timeAgo(r.completee_le)}</div>
-        </div>
-        <div class="ti-right"><div class="done-ico">✅</div></div>`;
-      list.appendChild(div);
-    });
-
-    // Aussi les anciens jours si présents
-    const anciens=allHistory.filter(r=>r.date_jour!==today());
-    if(anciens.length>0){
-      const sep=document.createElement('div');
-      sep.style.cssText='grid-column:1/-1;padding:8px 0;font-size:.72rem;font-weight:800;color:var(--muted);text-align:center';
-      sep.textContent='── Jours précédents ──';
-      list.appendChild(sep);
-      anciens.forEach(r=>{
-        const td=TACHES_DATA[r.tache_ref]||{nom:'Tâche de stage',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=200&q=80'};
-        const div=document.createElement('div');
-        div.className='titem termine';
-        div.style.opacity='.7';
+    if(todayRecs.length>0){
+      const sep=document.createElement('div');sep.className='sectitle';sep.textContent="── Aujourd'hui ──";list.appendChild(sep);
+      todayRecs.forEach(r=>{
+        const t=CATALOG[r.tache_ref]||{nom:'Tâche de stage',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'};
+        const div=document.createElement('div');div.className='titem fin';
         div.innerHTML=`
-          <img class="ti-img" src="${td.img}" alt="${td.nom}" loading="lazy">
-          <div class="ti-body">
-            <div class="ti-name">${td.nom}</div>
-            <div class="ti-meta"><span class="ti-badge badge-fait">✅ Terminé</span></div>
-            <div class="ti-reward">+${r.reward||GAIN} FCFA</div>
-            <div class="ti-time">📅 ${new Date(r.completee_le).toLocaleDateString('fr-FR')}</div>
+          <img class="tiimg" src="${t.img}" alt="${t.nom}" loading="lazy">
+          <div class="tibody">
+            <div class="tiname">${t.nom}</div>
+            <div class="timeta"><span class="tibadge beg">✅ Terminé</span></div>
+            <div class="tirew">+${r.reward||GAIN} FCFA crédités</div>
+            <div class="titime">🕐 ${timeAgo(r.completee_le)}</div>
           </div>
-          <div class="ti-right"><div class="done-ico">✅</div></div>`;
+          <div class="tiright"><div class="doneico">✅</div></div>`;
+        list.appendChild(div);
+      });
+    }
+
+    if(oldRecs.length>0){
+      const sep2=document.createElement('div');sep2.className='sectitle';sep2.textContent='── Jours précédents ──';list.appendChild(sep2);
+      oldRecs.forEach(r=>{
+        const t=CATALOG[r.tache_ref]||{nom:'Tâche de stage',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'};
+        const div=document.createElement('div');div.className='titem fin';div.style.opacity='.65';
+        div.innerHTML=`
+          <img class="tiimg" src="${t.img}" alt="${t.nom}" loading="lazy">
+          <div class="tibody">
+            <div class="tiname">${t.nom}</div>
+            <div class="timeta"><span class="tibadge beg">✅ Terminé</span></div>
+            <div class="tirew">+${r.reward||GAIN} FCFA</div>
+            <div class="titime">📅 ${new Date(r.completee_le).toLocaleDateString('fr-FR')}</div>
+          </div>
+          <div class="tiright"><div class="doneico">✅</div></div>`;
         list.appendChild(div);
       });
     }
   }
 }
 
-// ── AD ──
-function startAd(t){
+function startAd(id){
   if(saving)return;
-  curTask=t;
-  document.getElementById('ad-img').src=t.img;
-  document.getElementById('ad-ti').textContent=t.nom;
-  const bar=document.getElementById('ad-bar');bar.style.transition='none';bar.style.width='0%';
-  document.getElementById('ad-tm').innerHTML=`Patientez <b>${SECS}</b> secondes...`;
-  document.getElementById('ad-btn').classList.remove('show');
+  const t={id,nom:CATALOG[id].nom,img:CATALOG[id].img};
+  curT=t;
+  document.getElementById('adimg').src=t.img;
+  document.getElementById('adti').textContent=t.nom;
+  const bar=document.getElementById('adbar');bar.style.transition='none';bar.style.width='0%';
+  document.getElementById('adtm').innerHTML=`Patientez <b>${SECS}</b> secondes...`;
+  document.getElementById('adbtn').classList.remove('show');
   document.getElementById('adov').classList.add('open');
-  let el=0;clearInterval(adTimer);
-  adTimer=setInterval(()=>{el++;bar.style.transition='width 1s linear';bar.style.width=(el/SECS*100)+'%';const r=SECS-el;document.getElementById('ad-tm').innerHTML=r>0?`Patientez <b>${r}</b> sec...`:'🎉 Cliquez pour réclamer !';if(el>=SECS){clearInterval(adTimer);document.getElementById('ad-btn').classList.add('show')}},1000);
+  let el=0;clearInterval(adInt);
+  adInt=setInterval(()=>{el++;bar.style.transition='width 1s linear';bar.style.width=(el/SECS*100)+'%';const r=SECS-el;document.getElementById('adtm').innerHTML=r>0?`Patientez <b>${r}</b> sec...`:'🎉 Cliquez pour réclamer !';if(el>=SECS){clearInterval(adInt);document.getElementById('adbtn').classList.add('show')}},1000);
 }
 
 async function finishAd(){
-  if(!curTask||!authUser||saving)return;
-  if(doneToday.includes(curTask.id)){toast('⚠️ Déjà complétée');return}
+  if(!curT||!U||saving)return;
+  if(doneToday.includes(curT.id)){toast('⚠️ Déjà complétée');return}
   if(doneToday.length>=MAX){toast('⚠️ Max 3 tâches/jour');return}
-  clearInterval(adTimer);saving=true;
-  const btn=document.getElementById('ad-btn');btn.textContent='⏳ Enregistrement...';btn.disabled=true;
-  const t=curTask;curTask=null;
+  clearInterval(adInt);saving=true;
+  const btn=document.getElementById('adbtn');btn.textContent='⏳...';btn.disabled=true;
+  const t=curT;curT=null;
   try{
-    const dj=today();const now=new Date().toISOString();
-    const{error:e1}=await SB.from('taches_completees').insert({user_id:authUser.id,tache_ref:t.id,type_tache:'stage',reward:GAIN,date_jour:dj,completee_le:now});
+    const now=new Date().toISOString(),dj=td();
+    const{error:e1}=await SB.from('taches_completees').insert({user_id:U.id,tache_ref:t.id,type_tache:'stage',reward:GAIN,date_jour:dj,completee_le:now});
     if(e1)throw e1;
-    const ns=(profile.solde||0)+GAIN,ng=(profile.gains_totaux||0)+GAIN,ngj=(profile.gains_jour||0)+GAIN,ngs=(profile.gains_semaine||0)+GAIN,ngm=(profile.gains_mois||0)+GAIN,nt=(profile.taches_jour||0)+1;
-    const{error:e2}=await SB.from('profiles').update({solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:ngs,gains_mois:ngm,taches_jour:nt}).eq('id',authUser.id);
+    const ns=(P.solde||0)+GAIN,ng=(P.gains_totaux||0)+GAIN,ngj=(P.gains_jour||0)+GAIN,ngs=(P.gains_semaine||0)+GAIN,ngm=(P.gains_mois||0)+GAIN,nt=(P.taches_jour||0)+1;
+    const{error:e2}=await SB.from('profiles').update({solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:ngs,gains_mois:ngm,taches_jour:nt}).eq('id',U.id);
     if(e2)throw e2;
-    profile.solde=ns;profile.gains_totaux=ng;profile.gains_jour=ngj;profile.gains_semaine=ngs;profile.gains_mois=ngm;profile.taches_jour=nt;
+    P.solde=ns;P.gains_totaux=ng;P.gains_jour=ngj;P.taches_jour=nt;
     doneToday.push(t.id);
-    allHistory.unshift({tache_ref:t.id,reward:GAIN,date_jour:dj,completee_le:now});
+    history.unshift({tache_ref:t.id,reward:GAIN,date_jour:dj,completee_le:now});
     document.getElementById('adov').classList.remove('open');
     toast('🎉 +'+GAIN+' FCFA crédités !');
+    const soldeEl=document.getElementById('tb-solde');
+    if(soldeEl) soldeEl.textContent=fmtF(P.solde);
     updateSummary();render();
   }catch(err){
-    console.error(err);
     document.getElementById('adov').classList.remove('open');
     toast('❌ '+(err.message||JSON.stringify(err)),true);
   }finally{saving=false;btn.textContent='✅ Réclamer +70 FCFA';btn.disabled=false}
@@ -362,13 +342,16 @@ async function finishAd(){
 async function init(){
   const{data:{user}}=await SB.auth.getUser();
   if(!user){window.location.href='index.html';return}
-  authUser=user;
+  U=user;
   const{data:p}=await SB.from('profiles').select('*').eq('id',user.id).single();
-  profile=p||{solde:0,gains_totaux:0,gains_jour:0,investissement:0,taches_jour:0,created_at:user.created_at};
-  // Charger TOUTES les tâches complétées (today + historique)
+  P=p||{solde:0,gains_totaux:0,gains_jour:0,gains_semaine:0,gains_mois:0,investissement:0,taches_jour:0,created_at:user.created_at};
+  // Solde topbar
+  const soldeEl=document.getElementById('tb-solde');
+  if(soldeEl) soldeEl.textContent=fmtF(P.solde);
+  // Charger tout l'historique (today + passé)
   const{data:tc}=await SB.from('taches_completees').select('*').eq('user_id',user.id).eq('type_tache','stage').order('completee_le',{ascending:false});
-  allHistory=tc||[];
-  doneToday=allHistory.filter(r=>r.date_jour===today()).map(r=>r.tache_ref).filter(Boolean).slice(0,MAX);
+  history=tc||[];
+  doneToday=history.filter(r=>r.date_jour===td()).map(r=>r.tache_ref).filter(Boolean).slice(0,MAX);
   updateSummary();render();
 }
 init();
