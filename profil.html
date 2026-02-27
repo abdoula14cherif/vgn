@@ -236,75 +236,108 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 </nav>
 
 <script>
-const SB=supabase.createClient(
+const SB = supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
-  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+  { auth: { persistSession: true, storageKey: 'vgn-auth', storage: window.localStorage } }
 );
 
-const fmt=n=>Number(n||0).toLocaleString('fr-FR');
-const fmtF=n=>fmt(n)+' FCFA';
-const $s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-const toast=(m,err=false)=>{const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(err?' err':'');setTimeout(()=>t.className='tst',3500)};
-async function logout(){await SB.auth.signOut();window.location.href='index.html'}
+const fmt = n => Number(n || 0).toLocaleString('fr-FR');
+const fmtF = n => fmt(n) + ' FCFA';
+const $s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+const toast = (m, err = false) => {
+  const t = document.getElementById('tst');
+  t.textContent = m;
+  t.className = 'tst show' + (err ? ' err' : '');
+  setTimeout(() => t.className = 'tst', 3500);
+};
 
-async function init(){
-  const{data:{session}}=await SB.auth.getSession();
-  if(!session){window.location.href='index.html';return}
-  const U=session.user;
-
-  /* Nom + avatar */
-  const name=U.user_metadata?.full_name||U.email?.split('@')[0]||'Investisseur';
-  $s('u-phone',U.email||'—');
-  $s('u-name',name);
-  const ini=(name.split(' ').map(w=>w[0]||'').join('').toUpperCase()||'VG').slice(0,2);
-  $s('av-ini',ini);
-  const avImg=document.getElementById('av-img');
-  if(avImg){avImg.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(ini)}&background=15803D&color=fff&size=100&bold=true`;avImg.style.display='block';const ini2=document.getElementById('av-ini');if(ini2)ini2.style.display='none';}
-
-  /* Charger profil */
-  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
-  const P=p||{solde:0,gains_totaux:0,gains_jour:0,gains_hier:0,gains_semaine:0,gains_mois:0,investissement:0,taches_jour:0,vip_niveau:'VIP 0',benefices_jour:0,rabais_commission:0,commission_parrainage:0};
-
-  /* Tâches faites aujourd'hui */
-  const today=new Date().toISOString().slice(0,10);
-  const{data:tc}=await SB.from('taches_completees').select('id').eq('user_id',U.id).eq('type_tache','stage').eq('date_jour',today);
-  const tachesFaites=Math.min((tc||[]).length,3);
-  const tachesRestantes=Math.max(3-tachesFaites,0);
-
-  /* === AFFICHER TOUS LES SOLDES === */
-
-  /* Solde topbar */
-  $s('tb-solde',fmtF(P.solde));
-
-  /* Wallets hero */
-  $s('w-rev',fmtF(P.gains_totaux));
-  $s('w-solde',fmtF(P.solde));
-  $s('w-vip',(P.vip_niveau||'VIP 0').replace('VIP ',''));
-  $s('u-vip',P.vip_niveau||'VIP 0');
-
-  /* 4 grandes cards solde */
-  $s('big-solde',fmtF(P.solde));
-  $s('big-solde-sub',P.solde>0?'Disponible pour retrait':'Aucun dépôt encore');
-  $s('big-gains',fmtF(P.gains_totaux));
-  $s('big-invest',fmtF(P.investissement));
-  $s('big-tasks',tachesFaites+' / 3');
-
-  /* Trésor */
-  $s('t-tresor',fmtF(P.investissement));
-  $s('t-benef',fmtF(P.benefices_jour));
-
-  /* Stats 9 cases */
-  $s('s-hier',fmtF(P.gains_hier));
-  $s('s-jour',fmtF(P.gains_jour));
-  $s('s-total',fmtF(P.gains_totaux));
-  $s('s-sem',fmtF(P.gains_semaine));
-  $s('s-mois',fmtF(P.gains_mois));
-  $s('s-tok',tachesFaites);
-  $s('s-trest',tachesRestantes);
-  $s('s-rabais',fmtF(P.rabais_commission));
-  $s('s-commis',fmtF(P.commission_parrainage));
+async function logout() {
+  await SB.auth.signOut();
+  window.location.href = 'index.html';
 }
+
+async function init() {
+  // 1. Récupérer la session
+  const { data: { session } } = await SB.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  const U = session.user;
+
+  // 2. Nom + avatar
+  const name = U.user_metadata?.full_name || U.email?.split('@')[0] || 'Investisseur';
+  $s('u-phone', U.email || '—');
+  $s('u-name', name);
+  const ini = (name.split(' ').map(w => w[0] || '').join('').toUpperCase() || 'VG').slice(0, 2);
+  $s('av-ini', ini);
+
+  // FIX : gestion erreur image avatar
+  const avImg = document.getElementById('av-img');
+  const avIni = document.getElementById('av-ini');
+  if (avImg) {
+    avImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ini)}&background=15803D&color=fff&size=100&bold=true`;
+    avImg.onload = () => { avImg.style.display = 'block'; if (avIni) avIni.style.display = 'none'; };
+    avImg.onerror = () => { avImg.style.display = 'none'; if (avIni) avIni.style.display = 'block'; };
+  }
+
+  // 3. FIX principal : charger le profil avec gestion d'erreur explicite
+  let P = {
+    solde: 0, gains_totaux: 0, gains_jour: 0, gains_hier: 0,
+    gains_semaine: 0, gains_mois: 0, investissement: 0, taches_jour: 0,
+    vip_niveau: 'VIP 0', benefices_jour: 0, rabais_commission: 0, commission_parrainage: 0
+  };
+
+  const { data: p, error: pErr } = await SB.from('profiles').select('*').eq('id', U.id).single();
+
+  if (pErr) {
+    console.warn('Erreur chargement profil :', pErr.message);
+    toast('⚠️ Impossible de charger le profil', true);
+  } else if (p) {
+    // FIX : fusionner proprement les données reçues avec le fallback
+    P = { ...P, ...p };
+  }
+
+  // 4. Tâches faites aujourd'hui
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: tc, error: tcErr } = await SB.from('taches_completees')
+    .select('id').eq('user_id', U.id).eq('type_tache', 'stage').eq('date_jour', today);
+  if (tcErr) console.warn('Erreur tâches :', tcErr.message);
+  const tachesFaites = Math.min((tc || []).length, 3);
+  const tachesRestantes = Math.max(3 - tachesFaites, 0);
+
+  // 5. Afficher tous les soldes
+
+  // Solde topbar
+  $s('tb-solde', fmtF(P.solde));
+
+  // Wallets hero
+  $s('w-rev', fmtF(P.gains_totaux));
+  $s('w-solde', fmtF(P.solde));
+  $s('w-vip', (P.vip_niveau || 'VIP 0').replace('VIP ', ''));
+  $s('u-vip', P.vip_niveau || 'VIP 0');
+
+  // 4 grandes cards
+  $s('big-solde', fmtF(P.solde));
+  $s('big-solde-sub', P.solde > 0 ? 'Disponible pour retrait' : 'Aucun dépôt encore');
+  $s('big-gains', fmtF(P.gains_totaux));
+  $s('big-invest', fmtF(P.investissement));
+  $s('big-tasks', tachesFaites + ' / 3');
+
+  // Trésor
+  $s('t-tresor', fmtF(P.investissement));
+  $s('t-benef', fmtF(P.benefices_jour));
+
+  // Stats 9 cases
+  $s('s-hier', fmtF(P.gains_hier));
+  $s('s-jour', fmtF(P.gains_jour));
+  $s('s-total', fmtF(P.gains_totaux));
+  $s('s-sem', fmtF(P.gains_semaine));
+  $s('s-mois', fmtF(P.gains_mois));
+  $s('s-tok', tachesFaites);
+  $s('s-trest', tachesRestantes);
+  $s('s-rabais', fmtF(P.rabais_commission));
+  $s('s-commis', fmtF(P.commission_parrainage));
+}
+
 init();
 </script>
 </body>
