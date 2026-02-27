@@ -697,7 +697,8 @@
   const { createClient } = supabase;
   const sb = createClient(
     'https://tgrfzybemuwvhkbpuzmz.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+    { auth: { persistSession: true, storageKey: 'vgn-auth', storage: window.localStorage } }
   );
 
   // ── TABS ──
@@ -811,8 +812,7 @@
       const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
       if (error) throw error;
       showToast(`Bienvenue ${data.user.user_metadata?.full_name || ''} 🌿`, 'success');
-      // Redirect after 1.5s
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+      setTimeout(() => { window.location.replace('dashboard.html'); }, 1200);
     } catch (err) {
       let msg = err.message || 'Erreur de connexion.';
       if (msg.includes('Invalid login')) msg = 'Email ou mot de passe incorrect.';
