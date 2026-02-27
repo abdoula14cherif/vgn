@@ -7,279 +7,326 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  --green:#16A34A;--green-dark:#15803D;
-  --orange:#F97316;--orange-dark:#EA580C;
-  --bg:#F2F5F2;--card:#fff;
-  --text:#111827;--muted:#6B7280;--border:#E5E7EB;
-  --top:58px;--bot:58px;
-}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{height:100%}
-body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;min-height:100%;overflow-x:hidden}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--od:#EA580C;--bg:#F2F5F2;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:58px;--B:58px}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 
-/* ── TOP ── */
-.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--top);background:linear-gradient(135deg,var(--green-dark),#22C55E);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:500;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--H);background:linear-gradient(135deg,var(--gd),#22C55E);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:999;box-shadow:0 2px 10px rgba(0,0,0,.15)}
 .tl{display:flex;align-items:center;gap:8px}
-.tl-badge{width:32px;height:32px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 2px 8px rgba(249,115,22,.4)}
-.tl-name{font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:.07em}
-.tr{display:flex;gap:7px}
+.badge{width:32px;height:32px;background:var(--o);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.logo{font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:.07em}
 .ibtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer}
 
-/* ── PAGE ── */
-.page{padding-top:var(--top);padding-bottom:calc(var(--bot)+18px)}
+.scroll{padding-top:var(--H);padding-bottom:calc(var(--B)+18px);min-height:100vh}
 
-/* ── HERO PROFIL ── */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--B);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative;cursor:pointer}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--g);border-radius:0 0 3px 3px}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}.bn.on .bnl{color:var(--g)}
+
+/* ── HERO ── */
 .hero-profil{
-  background:linear-gradient(160deg,var(--green-dark) 0%,#22C55E 100%);
-  padding:24px 16px 36px;
+  background:linear-gradient(160deg,var(--gd) 0%,#22C55E 100%);
+  padding:20px 16px 38px;
   display:flex;flex-direction:column;align-items:center;
   position:relative;
 }
-.hero-profil::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:26px;background:var(--bg);border-radius:26px 26px 0 0}
+.hero-profil::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:28px;background:var(--bg);border-radius:28px 28px 0 0}
 
-.avatar-wrap{position:relative;margin-bottom:10px}
-.avatar{width:78px;height:78px;border-radius:50%;border:3px solid rgba(255,255,255,.5);overflow:hidden;background:#ccc}
-.avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.avatar-edit{position:absolute;bottom:2px;right:2px;width:22px;height:22px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.avatar{width:76px;height:76px;border-radius:50%;border:3px solid rgba(255,255,255,.5);background:#ccc;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;margin-bottom:10px;overflow:hidden;position:relative;flex-shrink:0}
+.avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.avatar-edit{position:absolute;bottom:2px;right:2px;width:20px;height:20px;background:var(--o);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;cursor:pointer}
 
-.u-phone{font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:3px;letter-spacing:.03em}
-.u-name-sub{font-size:.76rem;color:rgba(255,255,255,.75);margin-bottom:14px}
-.vip-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 14px;font-size:.73rem;font-weight:800;color:#fff}
+.u-phone{font-size:1rem;font-weight:900;color:#fff;margin-bottom:3px;letter-spacing:.03em}
+.u-name{font-size:.75rem;color:rgba(255,255,255,.75);margin-bottom:14px}
+.vip-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 14px;font-size:.72rem;font-weight:800;color:#fff}
 
-/* Wallets row */
-.wallets{display:flex;justify-content:space-around;width:100%;margin-top:18px}
-.wi{display:flex;flex-direction:column;align-items:center;gap:3px}
-.wi .wlbl{font-size:.62rem;color:rgba(255,255,255,.72);font-weight:700;text-align:center;line-height:1.3}
-.wi .wval{font-size:1.15rem;font-weight:900;color:#fff}
+/* ── 3 WALLETS ── */
+.wallets{display:flex;justify-content:space-around;width:100%;margin-top:16px}
+.wi{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.wlbl{font-size:.59rem;color:rgba(255,255,255,.72);font-weight:700;text-align:center;line-height:1.3}
+.wval{font-size:1.1rem;font-weight:900;color:#fff}
 .wsep{width:1px;background:rgba(255,255,255,.25);align-self:stretch;margin:4px 0}
 
+/* ── SOLDE HIGHLIGHTS ── */
+.solde-highlight{
+  margin:30px 12px 10px;
+  display:grid;grid-template-columns:1fr 1fr;gap:9px;
+}
+.sh-card{
+  background:var(--card);border-radius:16px;padding:13px 14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.09);position:relative;overflow:hidden;
+}
+.sh-card::after{content:attr(data-e);position:absolute;right:-4px;bottom:-4px;font-size:2.5rem;opacity:.08}
+.sh-card.green{border-left:4px solid var(--g)}
+.sh-card.orange{border-left:4px solid var(--o)}
+.shl{font-size:.62rem;color:var(--mu);font-weight:700;margin-bottom:4px}
+.shv{font-size:1.1rem;font-weight:900}
+.shv.g{color:var(--g)}.shv.o{color:var(--o)}
+.shs{font-size:.6rem;font-weight:700;margin-top:3px;color:var(--mu)}
+
 /* ── CODE ÉCHANGE ── */
-.code-bar{margin:28px 12px 10px;background:linear-gradient(135deg,var(--green),var(--green-dark));border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(22,163,74,.25);cursor:pointer;text-decoration:none}
-.code-bar span{font-size:.83rem;font-weight:800;color:#fff;flex:1}
+.code-bar{margin:0 12px 10px;background:linear-gradient(135deg,var(--g),var(--gd));border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(22,163,74,.25);cursor:pointer;text-decoration:none}
+.code-bar span{font-size:.82rem;font-weight:800;color:#fff;flex:1}
 .code-bar .arr{font-size:.9rem;color:rgba(255,255,255,.7)}
 
 /* ── TRÉSOR ── */
-.tresor-card{margin:0 12px 12px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));border-radius:16px;padding:13px 15px;box-shadow:0 4px 14px rgba(249,115,22,.25)}
+.tresor{margin:0 12px 12px;background:linear-gradient(135deg,var(--o),var(--od));border-radius:16px;padding:13px 15px;box-shadow:0 4px 14px rgba(249,115,22,.25)}
 .tr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
-.tr-head span{font-size:.76rem;font-weight:800;color:rgba(255,255,255,.85)}
+.tr-head span{font-size:.75rem;font-weight:800;color:rgba(255,255,255,.85)}
 .tr-btn{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 12px;font-size:.7rem;font-weight:800;color:#fff;text-decoration:none;white-space:nowrap}
 .tresor-row{display:flex;gap:10px}
 .ti{flex:1;background:rgba(255,255,255,.15);border-radius:10px;padding:9px 11px}
-.ti .ti-lbl{font-size:.6rem;color:rgba(255,255,255,.75);font-weight:700;margin-bottom:3px}
-.ti .ti-val{font-size:1.05rem;font-weight:900;color:#fff}
+.tilbl{font-size:.6rem;color:rgba(255,255,255,.75);font-weight:700;margin-bottom:3px}
+.tival{font-size:1rem;font-weight:900;color:#fff}
 
-/* ── STATS GRID 3 colonnes ── */
+/* ── STATS 3×3 ── */
 .sec{padding:0 13px;margin-bottom:9px}
-.sec h3{font-size:.88rem;font-weight:800;color:var(--text)}
+.sec h3{font-size:.87rem;font-weight:800;color:var(--txt)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 12px;margin-bottom:14px}
+.scard{background:var(--card);border-radius:14px;padding:10px 9px;box-shadow:0 1px 6px rgba(0,0,0,.07);text-align:center}
+.slbl{font-size:.59rem;color:var(--mu);font-weight:700;line-height:1.3;margin-bottom:5px}
+.sval{font-size:.92rem;font-weight:900;color:var(--txt)}
+.sval.g{color:var(--g)}.sval.o{color:var(--o)}
 
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 12px;margin-bottom:14px}
-.stat-card{background:var(--card);border-radius:14px;padding:10px 9px;box-shadow:0 1px 6px rgba(0,0,0,.07);text-align:center}
-.slbl{font-size:.59rem;color:var(--muted);font-weight:700;line-height:1.3;margin-bottom:5px}
-.sval{font-size:.95rem;font-weight:900;color:var(--text)}
-.sval.sg{color:var(--green)}
-.sval.so{color:var(--orange)}
-
-/* ── MENU LIST ── */
-.menu-list{background:var(--card);border-radius:18px;margin:0 12px 14px;box-shadow:0 1px 8px rgba(0,0,0,.07);overflow:hidden}
-.menu-item{display:flex;align-items:center;gap:11px;padding:13px 15px;text-decoration:none;border-bottom:1px solid #F3F4F6;transition:background .15s;cursor:pointer}
-.menu-item:last-child{border-bottom:none}
-.menu-item:active{background:#F0FDF4}
-.mi-icon{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.mi-text{flex:1}
-.mt-title{font-size:.81rem;font-weight:800;color:var(--text)}
-.mt-sub{font-size:.63rem;color:var(--muted);margin-top:1px}
-.mi-arr{font-size:.75rem;color:#C4C9D4;font-weight:700}
-.ico-a{background:#FEF3C7} .ico-b{background:#DCFCE7} .ico-c{background:#DBEAFE}
-.ico-d{background:#FCE7F3} .ico-e{background:#F3E8FF} .ico-f{background:#FEF3C7}
-.ico-g{background:#FEE2E2} .ico-h{background:#F3F4F6} .ico-i{background:#DCFCE7}
+/* ── MENU ── */
+.menu{background:var(--card);border-radius:18px;margin:0 12px 14px;box-shadow:0 1px 8px rgba(0,0,0,.07);overflow:hidden}
+.mi{display:flex;align-items:center;gap:11px;padding:13px 15px;text-decoration:none;border-bottom:1px solid #F3F4F6;cursor:pointer;transition:background .15s}
+.mi:last-child{border-bottom:none}
+.mi:active{background:#F0FDF4}
+.mic{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.mitxt{flex:1}
+.mtt{font-size:.8rem;font-weight:800;color:var(--txt)}
+.mts{font-size:.62rem;color:var(--mu);margin-top:1px}
+.marr{font-size:.75rem;color:#C4C9D4;font-weight:700}
 
 /* ── LOGOUT ── */
-.logout-btn{margin:0 12px 20px;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:#FEE2E2;border-radius:14px;font-size:.84rem;font-weight:800;color:#DC2626;cursor:pointer;border:none;width:calc(100% - 24px);transition:background .2s;font-family:'Nunito',sans-serif}
-.logout-btn:active{background:#FECACA}
-
-/* ── BOTTOM NAV ── */
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--bot);background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;z-index:500;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
-.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative;cursor:pointer}
-.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--green);border-radius:0 0 3px 3px}
-.bn-ico{font-size:1.2rem}
-.bn-lbl{font-size:.57rem;font-weight:800;color:var(--muted)}
-.bn.on .bn-lbl{color:var(--green)}
+.logout{margin:0 12px 20px;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:#FEE2E2;border-radius:14px;font-size:.84rem;font-weight:800;color:#DC2626;cursor:pointer;border:none;width:calc(100% - 24px);font-family:'Nunito',sans-serif;transition:background .2s}
+.logout:active{background:#FECACA}
 
 /* ── TOAST ── */
-.toast-bar{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-70px);background:#111;color:#fff;padding:7px 18px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.toast-bar.show{transform:translateX(-50%) translateY(0)}
-.ldot{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
+.tst{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:8px 20px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="tl"><div class="tl-badge">🌱</div><span class="tl-name">VGN</span></div>
-  <div class="tr">
+  <div class="tl"><div class="badge">🌱</div><span class="logo">VGN</span></div>
+  <div class="tl" style="gap:7px">
     <div class="ibtn" onclick="toast('🔔 Aucune notification')">🔔</div>
     <div class="ibtn" onclick="toast('💬 Support 24h/24')">💬</div>
   </div>
 </div>
-<div class="toast-bar" id="tb"></div>
+<div class="tst" id="tst"></div>
 
-<div class="page">
+<div class="scroll">
 
-  <!-- HERO -->
+  <!-- HERO PROFIL -->
   <div class="hero-profil">
-    <div class="avatar-wrap">
-      <div class="avatar"><img id="avatar-img" src="" alt="avatar"></div>
+    <div class="avatar" style="position:relative">
+      <img id="av-img" src="" alt="" style="display:none">
+      <span id="av-ini">VG</span>
       <div class="avatar-edit" onclick="toast('✏️ Bientôt disponible')">✏️</div>
     </div>
-    <div class="u-phone" id="u-phone"><span class="ldot"></span></div>
-    <div class="u-name-sub" id="u-name">Chargement...</div>
-    <div class="vip-badge">💎 <span id="u-vip">VIP Intern</span></div>
+    <div class="u-phone" id="u-phone"><span class="ld"></span></div>
+    <div class="u-name" id="u-name">Chargement...</div>
+    <div class="vip-badge">💎 <span id="u-vip">VIP 0</span></div>
+    <!-- 3 portefeuilles -->
     <div class="wallets">
       <div class="wi">
-        <span class="wlbl">Portefeuille<br>de revenus</span>
-        <span class="wval" id="w-revenus"><span class="ldot"></span></span>
+        <span class="wlbl">Portefeuille<br>revenus</span>
+        <span class="wval" id="w-rev"><span class="ld"></span></span>
       </div>
       <div class="wsep"></div>
       <div class="wi">
-        <span class="wlbl">Portefeuille<br>de recharge</span>
-        <span class="wval" id="w-recharge"><span class="ldot"></span></span>
+        <span class="wlbl">Solde<br>disponible</span>
+        <span class="wval" id="w-solde"><span class="ld"></span></span>
       </div>
       <div class="wsep"></div>
       <div class="wi">
         <span class="wlbl">Niveau<br>VIP</span>
-        <span class="wval" id="w-niveau"><span class="ldot"></span></span>
+        <span class="wval" id="w-vip"><span class="ld"></span></span>
       </div>
+    </div>
+  </div>
+
+  <!-- SOLDE + GAINS EN GROS -->
+  <div class="solde-highlight">
+    <div class="sh-card green" data-e="💰">
+      <div class="shl">💰 Solde disponible</div>
+      <div class="shv g" id="big-solde"><span class="ld"></span></div>
+      <div class="shs" id="big-solde-sub">—</div>
+    </div>
+    <div class="sh-card orange" data-e="📈">
+      <div class="shl">📈 Gains totaux</div>
+      <div class="shv o" id="big-gains"><span class="ld"></span></div>
+      <div class="shs">Depuis le début</div>
+    </div>
+    <div class="sh-card green" data-e="🌱">
+      <div class="shl">🌱 Investissement</div>
+      <div class="shv g" id="big-invest"><span class="ld"></span></div>
+      <div class="shs">En cours</div>
+    </div>
+    <div class="sh-card orange" data-e="✅">
+      <div class="shl">✅ Tâches du jour</div>
+      <div class="shv o" id="big-tasks"><span class="ld"></span></div>
+      <div class="shs">/ 3 max</div>
     </div>
   </div>
 
   <!-- CODE ÉCHANGE -->
   <a class="code-bar" href="code-echange.html">
-    <span>🎟️ &nbsp;Veuillez entrer le code d'échange</span>
+    <span>🎟️ &nbsp;Entrer un code d'échange</span>
     <span class="arr">›</span>
   </a>
 
   <!-- TRÉSOR -->
-  <div class="tresor-card">
+  <div class="tresor">
     <div class="tr-head">
       <span>💰 Trésor de Fonds & Bénéfices</span>
       <a class="tr-btn" href="transfert.html">Transférer →</a>
     </div>
     <div class="tresor-row">
-      <div class="ti"><div class="ti-lbl">Trésor de Fonds</div><div class="ti-val" id="t-tresor"><span class="ldot"></span></div></div>
-      <div class="ti"><div class="ti-lbl">Bénéfices attendus aujourd'hui</div><div class="ti-val" id="t-benef"><span class="ldot"></span></div></div>
+      <div class="ti"><div class="tilbl">Trésor de Fonds</div><div class="tival" id="t-tresor"><span class="ld"></span></div></div>
+      <div class="ti"><div class="tilbl">Bénéfices du jour</div><div class="tival" id="t-benef"><span class="ld"></span></div></div>
     </div>
   </div>
 
   <!-- STATS 9 cases -->
-  <div class="sec"><h3>📊 Statistiques détaillées</h3></div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="slbl">Gains d'hier</div><div class="sval" id="s-hier"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Gains du jour</div><div class="sval sg" id="s-jour"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Revenu total</div><div class="sval" id="s-total"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Gains semaine</div><div class="sval" id="s-semaine"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Tâches faites</div><div class="sval sg" id="s-taches-ok"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Tâches restantes</div><div class="sval so" id="s-taches-rest"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Gains du mois</div><div class="sval" id="s-mois"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Rabais commission</div><div class="sval" id="s-rabais"><span class="ldot"></span></div></div>
-    <div class="stat-card"><div class="slbl">Commission parrainage</div><div class="sval" id="s-commis"><span class="ldot"></span></div></div>
+  <div class="sec"><h3>📊 Statistiques</h3></div>
+  <div class="stats">
+    <div class="scard"><div class="slbl">Gains d'hier</div><div class="sval" id="s-hier"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Gains du jour</div><div class="sval g" id="s-jour"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Gains totaux</div><div class="sval" id="s-total"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Cette semaine</div><div class="sval" id="s-sem"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Ce mois</div><div class="sval" id="s-mois"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Tâches faites</div><div class="sval g" id="s-tok"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Tâches restantes</div><div class="sval o" id="s-trest"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Rabais comm.</div><div class="sval" id="s-rabais"><span class="ld"></span></div></div>
+    <div class="scard"><div class="slbl">Comm. parrainage</div><div class="sval" id="s-commis"><span class="ld"></span></div></div>
   </div>
 
   <!-- MENU -->
-  <div class="menu-list">
-    <a class="menu-item" href="info-personnelles.html"><div class="mi-icon ico-a">👤</div><div class="mi-text"><div class="mt-title">Informations personnelles</div><div class="mt-sub">Nom, email, téléphone</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="liste-taches.html"><div class="mi-icon ico-b">📋</div><div class="mi-text"><div class="mt-title">Liste des tâches</div><div class="mt-sub">Toutes les tâches disponibles</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="etat-quotidien.html"><div class="mi-icon ico-c">📅</div><div class="mi-text"><div class="mt-title">État quotidien</div><div class="mt-sub">Rapport de la journée</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="rapport-equipe.html"><div class="mi-icon ico-d">👥</div><div class="mi-text"><div class="mt-title">Rapport d'équipe</div><div class="mt-sub">Suivi de vos filleuls</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="historique.html"><div class="mi-icon ico-e">🕐</div><div class="mi-text"><div class="mt-title">Historique des modifications</div><div class="mt-sub">Toutes vos transactions</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="enregistrement-tresor.html"><div class="mi-icon ico-f">💰</div><div class="mi-text"><div class="mt-title">Enregistrement Trésor de Fonds</div><div class="mt-sub">Historique des fonds</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="inviter.html"><div class="mi-icon ico-g">🎁</div><div class="mi-text"><div class="mt-title">Inviter des amis</div><div class="mt-sub">Partagez et gagnez ensemble</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="aide.html"><div class="mi-icon ico-h">📖</div><div class="mi-text"><div class="mt-title">Manuel d'aide</div><div class="mt-sub">Guide et FAQ</div></div><span class="mi-arr">›</span></a>
-    <a class="menu-item" href="application.html"><div class="mi-icon ico-i">📲</div><div class="mi-text"><div class="mt-title">Télécharger l'application</div><div class="mt-sub">VGN sur Android & iOS</div></div><span class="mi-arr">›</span></a>
+  <div class="menu">
+    <a class="mi" href="info-personnelles.html"><div class="mic" style="background:#FEF3C7">👤</div><div class="mitxt"><div class="mtt">Informations personnelles</div><div class="mts">Nom, email, téléphone</div></div><span class="marr">›</span></a>
+    <a class="mi" href="liste-taches.html"><div class="mic" style="background:#DCFCE7">📋</div><div class="mitxt"><div class="mtt">Liste des tâches</div><div class="mts">Toutes les tâches disponibles</div></div><span class="marr">›</span></a>
+    <a class="mi" href="etat-quotidien.html"><div class="mic" style="background:#DBEAFE">📅</div><div class="mitxt"><div class="mtt">État quotidien</div><div class="mts">Rapport de la journée</div></div><span class="marr">›</span></a>
+    <a class="mi" href="rapport-equipe.html"><div class="mic" style="background:#FCE7F3">👥</div><div class="mitxt"><div class="mtt">Rapport d'équipe</div><div class="mts">Suivi de vos filleuls</div></div><span class="marr">›</span></a>
+    <a class="mi" href="historique.html"><div class="mic" style="background:#F3E8FF">🕐</div><div class="mitxt"><div class="mtt">Historique transactions</div><div class="mts">Toutes vos opérations</div></div><span class="marr">›</span></a>
+    <a class="mi" href="enregistrement-tresor.html"><div class="mic" style="background:#FEF3C7">💰</div><div class="mitxt"><div class="mtt">Enregistrement Trésor</div><div class="mts">Historique des fonds</div></div><span class="marr">›</span></a>
+    <a class="mi" href="inviter.html"><div class="mic" style="background:#FEE2E2">🎁</div><div class="mitxt"><div class="mtt">Inviter des amis</div><div class="mts">Partagez et gagnez</div></div><span class="marr">›</span></a>
+    <a class="mi" href="aide.html"><div class="mic" style="background:#F3F4F6">📖</div><div class="mitxt"><div class="mtt">Manuel d'aide</div><div class="mts">Guide et FAQ</div></div><span class="marr">›</span></a>
+    <a class="mi" href="application.html"><div class="mic" style="background:#DCFCE7">📲</div><div class="mitxt"><div class="mtt">Télécharger l'application</div><div class="mts">Android & iOS</div></div><span class="marr">›</span></a>
   </div>
 
-  <button class="logout-btn" onclick="logout()">🚪 Se déconnecter</button>
+  <button class="logout" onclick="logout()">🚪 Se déconnecter</button>
 
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="botnav">
-  <a class="bn" href="dashboard.html"><span class="bn-ico">🏠</span><span class="bn-lbl">Accueil</span></a>
-  <a class="bn" href="taches.html"><span class="bn-ico">✅</span><span class="bn-lbl">Tâches</span></a>
-  <a class="bn" href="rapport.html"><span class="bn-ico">📊</span><span class="bn-lbl">Rapports</span></a>
-  <a class="bn on" href="profil.html"><span class="bn-ico">👤</span><span class="bn-lbl">Mon Compte</span></a>
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn on" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
 </nav>
 
 <script>
-const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE');
+const SURL='https://tgrfzybemuwvhkbpuzmz.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE';
+const SB=supabase.createClient(SURL,SKEY);
 
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
-const fmtS=n=>n!=null?fmt(n)+' FCFA':'0 FCFA';
-function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
-function toast(m){const t=document.getElementById('tb');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
-
-const MAX_TASKS=3;
-
+const MAX=3;
+function $s(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
+function toast(m,e=false){const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(e?' err':'');setTimeout(()=>t.className='tst',3500)}
 async function logout(){await SB.auth.signOut();window.location.href='index.html'}
+
+// ── Créer ou récupérer le profil ──
+async function getOrCreateProfile(user){
+  const{data:p}=await SB.from('profiles').select('*').eq('id',user.id).single();
+  if(p) return p;
+  // Créer le profil
+  const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'Investisseur';
+  const code='VGN-'+Math.random().toString(36).slice(2,8).toUpperCase();
+  const{data:np}=await SB.from('profiles').upsert({
+    id:user.id, email:user.email||'', full_name:name,
+    vip_niveau:'VIP 0', solde:0, gains_totaux:0,
+    gains_jour:0, gains_hier:0, gains_semaine:0, gains_mois:0,
+    investissement:0, revenu_attendu:0, taches_jour:0,
+    benefices_jour:0, rabais_commission:0, commission_parrainage:0,
+    code_parrainage:code,
+  },{onConflict:'id'}).select().single();
+  return np||{id:user.id,solde:0,gains_totaux:0,gains_jour:0,investissement:0,taches_jour:0,created_at:user.created_at};
+}
+
+// ── Afficher toutes les données du profil ──
+function displayProfile(p, tasksDone){
+  const rest=Math.max(MAX-tasksDone,0);
+
+  // Header wallets
+  $s('w-rev',   fmtF(p.gains_totaux));
+  $s('w-solde', fmtF(p.solde));
+  $s('w-vip',   (p.vip_niveau||'VIP 0').replace('VIP ',''));
+  $s('u-vip',   p.vip_niveau||'VIP 0');
+
+  // Big cards solde
+  $s('big-solde',  fmtF(p.solde));
+  $s('big-solde-sub', p.solde>0 ? '↑ Disponible pour retrait' : '↑ Aucun dépôt encore');
+  $s('big-gains',  fmtF(p.gains_totaux));
+  $s('big-invest', fmtF(p.investissement));
+  $s('big-tasks',  tasksDone);
+
+  // Trésor
+  $s('t-tresor', fmtF(p.investissement));
+  $s('t-benef',  fmtF(p.benefices_jour));
+
+  // Stats 9 cases
+  $s('s-hier',   fmtF(p.gains_hier));
+  $s('s-jour',   fmtF(p.gains_jour));
+  $s('s-total',  fmtF(p.gains_totaux));
+  $s('s-sem',    fmtF(p.gains_semaine));
+  $s('s-mois',   fmtF(p.gains_mois));
+  $s('s-tok',    tasksDone);
+  $s('s-trest',  rest);
+  $s('s-rabais', fmtF(p.rabais_commission));
+  $s('s-commis', fmtF(p.commission_parrainage));
+}
 
 async function init(){
   const{data:{user}}=await SB.auth.getUser();
   if(!user){window.location.href='index.html';return}
 
-  const name=user.user_metadata?.full_name||'Investisseur VGN';
+  const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'Investisseur';
   const phone=user.user_metadata?.phone||user.email||'—';
+  $s('u-phone', phone);
+  $s('u-name', name);
 
-  set('u-name',name);
-  set('u-phone',phone);
+  // Avatar initiales
+  const ini=(name.split(' ').map(w=>w[0]||'').join('').toUpperCase()||'VG').slice(0,2);
+  $s('av-ini', ini);
+  const avImg=document.getElementById('av-img');
+  avImg.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(ini)}&background=15803D&color=fff&size=100&bold=true`;
+  avImg.style.display='block';
+  document.getElementById('av-ini').style.display='none';
 
-  // Avatar
-  const ini=(name.split(' ').map(w=>w[0]).join('').toUpperCase()||'VG').slice(0,2);
-  document.getElementById('avatar-img').src=`https://ui-avatars.com/api/?name=${encodeURIComponent(ini)}&background=15803D&color=fff&size=100&bold=true`;
+  // Charger / créer profil
+  const p=await getOrCreateProfile(user);
 
-  // Profil Supabase
-  const{data:p}=await SB.from('profiles')
-    .select('*').eq('id',user.id).single();
-
-  if(!p){
-    // Zéros partout
-    ['w-revenus','w-recharge','t-tresor','t-benef',
-     's-hier','s-jour','s-total','s-semaine','s-mois','s-rabais','s-commis']
-      .forEach(id=>set(id,'0 FCFA'));
-    set('w-niveau','Intern');set('u-vip','VIP Intern');
-    set('s-taches-ok','0');set('s-taches-rest',String(MAX_TASKS));
-    return;
-  }
-
-  // Wallets header
-  set('w-revenus',fmtS(p.gains_totaux));
-  set('w-recharge',fmtS(p.solde));
-  const niv=p.vip_niveau||'VIP 0';
-  set('w-niveau',niv.replace('VIP ','').trim()||'0');
-  set('u-vip',niv);
-
-  // Trésor
-  set('t-tresor',fmtS(p.investissement));
-  set('t-benef',fmtS(p.benefices_jour));
-
-  // Stats
-  set('s-hier',   fmtS(p.gains_hier));
-  set('s-jour',   fmtS(p.gains_jour));
-  set('s-total',  fmtS(p.gains_totaux));
-  set('s-semaine',fmtS(p.gains_semaine));
-  set('s-mois',   fmtS(p.gains_mois));
-  set('s-rabais', fmtS(p.rabais_commission));
-  set('s-commis', fmtS(p.commission_parrainage));
-
-  // Tâches du jour — compter depuis taches_completees
+  // Compter tâches faites aujourd'hui
   const today=new Date().toISOString().slice(0,10);
   const{data:tc}=await SB.from('taches_completees')
-    .select('id').eq('user_id',user.id).gte('completee_le',today+'T00:00:00');
-  const done=Math.min((tc||[]).length,MAX_TASKS);
-  const rest=Math.max(MAX_TASKS-done,0);
-  set('s-taches-ok',String(done));
-  set('s-taches-rest',String(rest));
+    .select('id').eq('user_id',user.id).eq('type_tache','stage').eq('date_jour',today);
+  const tasksDone=Math.min((tc||[]).length, MAX);
+
+  // Afficher tout
+  displayProfile(p, tasksDone);
 }
+
 init();
 </script>
 </body>
