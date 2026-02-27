@@ -24,7 +24,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .tb-right{width:34px}
 
 /* BODY */
-.body{padding-top:calc(var(--top)+12px);padding-bottom:calc(var(--bot)+16px)}
+.body{padding-top:calc(var(--top)+12px);padding-bottom:calc(var(--bot)+28px)}
 
 /* SOLDE BANNER */
 .solde-banner{
@@ -162,7 +162,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 <div class="topbar">
   <a class="tb-back" href="dashboard.html">‹</a>
   <span class="tb-title">💎 Centre VIP</span>
-  <div class="tb-right"></div>
+  <div style="font-size:.68rem;font-weight:800;color:#fff;background:rgba(255,255,255,.15);padding:4px 9px;border-radius:16px;border:1px solid rgba(255,255,255,.25)">💰 <span id="tb-solde">—</span></div>
 </div>
 <div class="toast-bar" id="tb"></div>
 
@@ -468,6 +468,9 @@ async function init(){
 
   const solde = currentProfile.solde || 0;
   document.getElementById('solde-display').textContent = fmtF(solde);
+  // Solde topbar
+  const soldeEl=document.getElementById('tb-solde');
+  if(soldeEl) soldeEl.textContent=fmtF(solde);
 
   // Déduire le niveau actuel
   const vipStr = currentProfile.vip_niveau || 'VIP 0';
