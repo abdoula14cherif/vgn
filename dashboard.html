@@ -237,70 +237,38 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 </div>
 
 <script>
-const SURL='https://tgrfzybemuwvhkbpuzmz.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE';
-const SB=supabase.createClient(SURL,SKEY,{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
 
 const MAX=3,GAIN=70,DAYS=4,SECS=15;
-const TK=[
-  {id:'ag1',nom:'Champs de Maïs VGN',img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80',desc:'Pub agricole VGN'},
-  {id:'ag2',nom:'Blé Doré Premium',img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',desc:'Découvrez nos cultures'},
-  {id:'ag3',nom:'Élevage Bovin VGN',img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80',desc:'Notre bétail primé'},
-  {id:'ag4',nom:'Grande Récolte 2025',img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80',desc:'Récolte record'},
-  {id:'ag5',nom:'Ferme Bio Certifiée',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',desc:'Agriculture durable'},
-  {id:'ag6',nom:'Irrigation Moderne',img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&q=80',desc:'Tech agricole VGN'},
+const TACHES=[
+  {id:'ag1',nom:'Champs de Maïs VGN',img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80'},
+  {id:'ag2',nom:'Blé Doré Premium',img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80'},
+  {id:'ag3',nom:'Élevage Bovin VGN',img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80'},
+  {id:'ag4',nom:'Grande Récolte 2025',img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80'},
+  {id:'ag5',nom:'Ferme Bio Certifiée',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80'},
+  {id:'ag6',nom:'Irrigation Moderne',img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&q=80'},
 ];
-
 let U=null,P=null,done=[],curT=null,adInt=null,saving=false;
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
 const td=()=>new Date().toISOString().slice(0,10);
-function $s(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
-function toast(m,e=false){const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(e?' err':'');setTimeout(()=>t.className='tst',3500)}
+const $s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+const toast=(m,err=false)=>{const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(err?' err':'');setTimeout(()=>t.className='tst',3500)};
 
-// ── Rafraîchir l'affichage du solde depuis P ──
-function refreshSolde(){
-  $s('v-solde', fmtF(P.solde));
-  $s('v-gains', fmtF(P.gains_totaux));
-  $s('v-invest', fmtF(P.investissement));
-  $s('v-tasks', (P.taches_jour||0)+' / '+MAX);
-  $s('v-sub', P.solde>0 ? '↑ '+fmtF(P.solde)+' disponible' : '↑ Aucun dépôt');
-}
+/* Slider */
+let sc=0;
+const slis=document.querySelectorAll('.sli'),dots=document.querySelectorAll('.dot');
+function goTo(n){slis[sc].classList.remove('on');dots[sc].classList.remove('on');sc=(n+slis.length)%slis.length;slis[sc].classList.add('on');dots[sc].classList.add('on')}
+setInterval(()=>goTo(sc+1),3800);
+dots.forEach((d,i)=>d.addEventListener('click',()=>goTo(i)));
 
-// ── Charger le profil depuis Supabase (+ créer si absent) ──
-async function loadProfile(userId, userEmail, userName){
-  const{data:p, error}=await SB.from('profiles').select('*').eq('id',userId).single();
-
-  if(!p){
-    // Profil absent → le créer via upsert
-    console.log('Profil absent, création...');
-    const code='VGN-'+Math.random().toString(36).slice(2,8).toUpperCase();
-    const{data:np, error:err2}=await SB.from('profiles').upsert({
-      id: userId,
-      email: userEmail||'',
-      full_name: userName||'Investisseur',
-      vip_niveau: 'VIP 0',
-      solde: 0, gains_totaux: 0, gains_jour: 0,
-      gains_hier: 0, gains_semaine: 0, gains_mois: 0,
-      investissement: 0, revenu_attendu: 0,
-      taches_jour: 0, benefices_jour: 0,
-      rabais_commission: 0, commission_parrainage: 0,
-      code_parrainage: code,
-    },{onConflict:'id'}).select().single();
-    if(err2) console.error('Erreur création profil:',err2);
-    return np || {id:userId,solde:0,gains_totaux:0,gains_jour:0,gains_semaine:0,gains_mois:0,investissement:0,taches_jour:0,created_at:new Date().toISOString()};
-  }
-  return p;
-}
-
-// slider
-let c=0;const slis=document.querySelectorAll('.sli'),dots=document.querySelectorAll('.dot');
-function goTo(n){slis[c].classList.remove('on');dots[c].classList.remove('on');c=(n+slis.length)%slis.length;slis[c].classList.add('on');dots[c].classList.add('on')}
-setInterval(()=>goTo(c+1),3800);dots.forEach((d,i)=>d.addEventListener('click',()=>goTo(i)));
-
+/* Stage */
 function stageLeft(ca){
-  const ms=Date.now()-new Date(ca||Date.now()).getTime();
-  const dd=Math.min(Math.floor(ms/86400000),DAYS);
+  const dd=Math.min(Math.floor((Date.now()-new Date(ca||Date.now()).getTime())/86400000),DAYS);
   const left=Math.max(DAYS-dd,0);
   $s('stgdays',left);$s('plbl',dd+' / '+DAYS+' jours');
   document.getElementById('pf').style.width=(dd/DAYS*100)+'%';
@@ -308,21 +276,32 @@ function stageLeft(ca){
   return left;
 }
 
+/* Afficher solde */
+function showSolde(){
+  $s('v-solde',fmtF(P.solde));
+  $s('v-gains',fmtF(P.gains_totaux));
+  $s('v-invest',fmtF(P.investissement));
+  $s('v-tasks',(P.taches_jour||0)+' / '+MAX);
+  $s('v-sub',P.solde>0?'↑ Disponible':'↑ 1er dépôt ?');
+}
+
+/* Tâches */
 function renderTaches(left){
   const g=document.getElementById('tg');g.innerHTML='';
   $s('tlbl',done.length+' / '+MAX);
-  if(left===0){g.innerHTML=`<div class="ended"><div style="font-size:2.2rem;margin-bottom:8px">🎓</div><div style="font-size:.84rem;font-weight:800;margin-bottom:4px">Stage terminé !</div><div style="font-size:.72rem;color:#6B7280;margin-bottom:12px">Investissez dans un plan VIP.</div><a href="vip.html" style="display:inline-block;background:linear-gradient(135deg,#16A34A,#15803D);color:#fff;padding:9px 20px;border-radius:11px;font-size:.8rem;font-weight:800;text-decoration:none">💎 Plans VIP</a></div>`;return}
-  TK.forEach(t=>{
+  if(left===0){g.innerHTML='<div class="ended"><div style="font-size:2.2rem">🎓</div><div style="font-size:.84rem;font-weight:800;margin:6px 0">Stage terminé !</div><a href="vip.html" style="display:inline-block;background:#16A34A;color:#fff;padding:9px 20px;border-radius:11px;font-size:.8rem;font-weight:800;text-decoration:none">💎 Plans VIP</a></div>';return}
+  TACHES.forEach(t=>{
     const isDone=done.includes(t.id),locked=!isDone&&done.length>=MAX;
-    const card=document.createElement('div');
-    card.className='tc'+(isDone?' done':locked?' locked':'');
-    if(!isDone&&!locked)card.onclick=()=>startAd(t);
-    card.innerHTML=`<div class="tctp"><img src="${t.img}" alt="${t.nom}" loading="lazy"><span class="tctag">Gratuit</span></div><div class="tcb"><div class="tcn">${t.nom}</div><div class="tcr">+${GAIN} FCFA</div><div class="tcd">${t.desc}</div></div>`;
-    g.appendChild(card);
+    const c=document.createElement('div');
+    c.className='tc'+(isDone?' done':locked?' locked':'');
+    if(!isDone&&!locked)c.onclick=()=>startAd(t);
+    c.innerHTML=`<div class="tctp"><img src="${t.img}" alt="${t.nom}" loading="lazy"><span class="tctag">Gratuit</span></div><div class="tcb"><div class="tcn">${t.nom}</div><div class="tcr">+${GAIN} FCFA</div></div>`;
+    g.appendChild(c);
   });
-  if(done.length>=MAX){const n=document.createElement('div');n.className='notice';n.textContent='✅ 3 tâches complétées ! Revenez demain.';g.appendChild(n)}
+  if(done.length>=MAX){const n=document.createElement('div');n.className='notice';n.textContent='✅ 3/3 tâches ! Revenez demain.';g.appendChild(n)}
 }
 
+/* Pub */
 function startAd(t){
   if(saving)return;curT=t;
   document.getElementById('adimg').src=t.img;
@@ -332,99 +311,48 @@ function startAd(t){
   document.getElementById('adbtn').classList.remove('show');
   document.getElementById('adov').classList.add('open');
   let el=0;clearInterval(adInt);
-  adInt=setInterval(()=>{el++;bar.style.transition='width 1s linear';bar.style.width=(el/SECS*100)+'%';const r=SECS-el;document.getElementById('adtm').innerHTML=r>0?`Patientez <b>${r}</b> sec...`:'🎉 Cliquez pour réclamer !';if(el>=SECS){clearInterval(adInt);document.getElementById('adbtn').classList.add('show')}},1000);
+  adInt=setInterval(()=>{el++;bar.style.transition='width 1s linear';bar.style.width=(el/SECS*100)+'%';const r=SECS-el;document.getElementById('adtm').innerHTML=r>0?`Patientez <b>${r}</b> sec...`:'🎉 Cliquez !';if(el>=SECS){clearInterval(adInt);document.getElementById('adbtn').classList.add('show')}},1000);
 }
 
 async function finishAd(){
   if(!curT||!U||saving)return;
-  if(done.includes(curT.id)){toast('⚠️ Déjà complétée');return}
-  if(done.length>=MAX){toast('⚠️ Max 3 tâches/jour');return}
+  if(done.includes(curT.id)||done.length>=MAX){toast('⚠️ Limite atteinte');return}
   clearInterval(adInt);saving=true;
   const btn=document.getElementById('adbtn');btn.textContent='⏳...';btn.disabled=true;
   const t=curT;curT=null;
-
   try{
-    // 1. Insérer la tâche complétée
-    const{error:e1}=await SB.from('taches_completees').insert({
-      user_id:   U.id,
-      tache_ref: t.id,
-      type_tache:'stage',
-      reward:    GAIN,
-      date_jour: td(),
-      completee_le: new Date().toISOString()
-    });
-    if(e1) throw new Error('Insert tache: '+e1.message+' ('+e1.code+')');
-
-    // 2. Recalculer les nouveaux montants
-    const ns  = (P.solde        || 0) + GAIN;
-    const ng  = (P.gains_totaux || 0) + GAIN;
-    const ngj = (P.gains_jour   || 0) + GAIN;
-    const ngs = (P.gains_semaine|| 0) + GAIN;
-    const ngm = (P.gains_mois   || 0) + GAIN;
-    const nt  = (P.taches_jour  || 0) + 1;
-
-    // 3. Mettre à jour le profil
-    const{error:e2}=await SB.from('profiles').update({
-      solde:         ns,
-      gains_totaux:  ng,
-      gains_jour:    ngj,
-      gains_semaine: ngs,
-      gains_mois:    ngm,
-      taches_jour:   nt,
-    }).eq('id', U.id);
-    if(e2) throw new Error('Update profil: '+e2.message+' ('+e2.code+')');
-
-    // 4. Mettre à jour le cache local
-    P.solde=ns; P.gains_totaux=ng; P.gains_jour=ngj;
-    P.gains_semaine=ngs; P.gains_mois=ngm; P.taches_jour=nt;
-
+    const{error:e1}=await SB.from('taches_completees').insert({user_id:U.id,tache_ref:t.id,type_tache:'stage',reward:GAIN,date_jour:td(),completee_le:new Date().toISOString()});
+    if(e1)throw new Error(e1.message);
+    const ns=(P.solde||0)+GAIN,ng=(P.gains_totaux||0)+GAIN,ngj=(P.gains_jour||0)+GAIN,ngs=(P.gains_semaine||0)+GAIN,ngm=(P.gains_mois||0)+GAIN,nt=(P.taches_jour||0)+1;
+    const{error:e2}=await SB.from('profiles').update({solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:ngs,gains_mois:ngm,taches_jour:nt}).eq('id',U.id);
+    if(e2)throw new Error(e2.message);
+    P.solde=ns;P.gains_totaux=ng;P.gains_jour=ngj;P.gains_semaine=ngs;P.gains_mois=ngm;P.taches_jour=nt;
     done.push(t.id);
-
-    // 5. Rafraîchir l'affichage
-    refreshSolde();
+    showSolde();
     document.getElementById('adov').classList.remove('open');
-    toast('🎉 +'+GAIN+' FCFA crédités ! Solde : '+fmtF(ns));
+    toast('🎉 +'+GAIN+' FCFA ! Solde : '+fmtF(ns));
     renderTaches(stageLeft(P.created_at||U.created_at));
-
-  }catch(err){
-    console.error('finishAd error:',err);
-    document.getElementById('adov').classList.remove('open');
-    toast('❌ '+err.message, true);
-  }finally{
-    saving=false;btn.textContent='✅ Réclamer +70 FCFA';btn.disabled=false;
-  }
+  }catch(err){document.getElementById('adov').classList.remove('open');toast('❌ '+err.message,true)}
+  finally{saving=false;btn.textContent='✅ Réclamer +70 FCFA';btn.disabled=false}
 }
 
+/* INIT */
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
-  const user=session?.user;
-  if(!user){window.location.href='index.html';return}
-  U=user;
-
-  const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'Investisseur';
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+  const name=U.user_metadata?.full_name||U.email?.split('@')[0]||'Investisseur';
   $s('uname','Bonjour, '+name+' 👋');
 
-  // Charger (ou créer) le profil
-  P=await loadProfile(user.id, user.email, name);
+  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
+  P=p||{solde:0,gains_totaux:0,gains_jour:0,gains_semaine:0,gains_mois:0,investissement:0,taches_jour:0,created_at:U.created_at};
+  showSolde();
 
-  // Afficher les données
-  refreshSolde();
-
-  // Charger les tâches faites aujourd'hui
-  const{data:tc}=await SB.from('taches_completees')
-    .select('tache_ref')
-    .eq('user_id', user.id)
-    .eq('type_tache','stage')
-    .eq('date_jour', td());
-
+  const{data:tc}=await SB.from('taches_completees').select('tache_ref').eq('user_id',U.id).eq('type_tache','stage').eq('date_jour',td());
   done=(tc||[]).map(r=>r.tache_ref).filter(Boolean).slice(0,MAX);
-  $s('v-tasks', done.length+' / '+MAX);
-
-  // Stage banner + tâches
-  const left=stageLeft(P.created_at||user.created_at);
-  renderTaches(left);
+  $s('v-tasks',done.length+' / '+MAX);
+  renderTaches(stageLeft(P.created_at||U.created_at));
 }
-
 init();
 </script>
 </body>
