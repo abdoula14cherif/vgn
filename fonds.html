@@ -51,7 +51,7 @@ html,body{
 /* ── BODY ── */
 .body{
   padding-top:calc(var(--top) + 12px);
-  padding-bottom:calc(var(--bot) + 16px);
+  padding-bottom:calc(var(--bot) + 28px);
 }
 
 /* ── STATS ── */
@@ -312,7 +312,7 @@ html,body{
 <div class="topbar">
   <a class="tb-back" href="dashboard.html">‹</a>
   <span class="tb-title">💰 Mes Fonds</span>
-  <a class="tb-hist" href="historique.html">📋</a>
+  <div style="font-size:.68rem;font-weight:800;color:#fff;background:rgba(255,255,255,.15);padding:4px 9px;border-radius:16px;border:1px solid rgba(255,255,255,.25)">💰 <span id="tb-solde">—</span></div>
 </div>
 <div class="toast-bar" id="tb"></div>
 
@@ -655,6 +655,10 @@ async function init(){
     .eq('id', u.id).single();
 
   profile = p || { solde:0, investissement:0, revenu_attendu:0 };
+
+  // Solde topbar
+  const soldeEl=document.getElementById('tb-solde');
+  if(soldeEl) soldeEl.textContent=fmtF(profile.solde);
 
   document.getElementById('total-fonds').textContent   = fmtF(profile.investissement||0);
   document.getElementById('total-attendu').textContent = fmtF(profile.revenu_attendu||0);
