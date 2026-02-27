@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>VGN – Mes Fonds</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,6 +13,7 @@
   --bg:#F2F5F2;--card:#fff;
   --text:#111827;--muted:#6B7280;--border:#E5E7EB;
   --top:56px;--bot:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{
@@ -27,10 +28,10 @@ html,body{
 /* ── TOP ── */
 .topbar{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:430px;height:var(--top);
+  width:100%;max-width:430px;height:calc(var(--top) + var(--sat));
   background:linear-gradient(135deg,var(--green-dark),#22C55E);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 14px;z-index:999;
+  padding:var(--sat) 14px 0;z-index:999;
   box-shadow:0 2px 10px rgba(0,0,0,0.15);
 }
 .tb-back{
@@ -50,8 +51,8 @@ html,body{
 
 /* ── BODY ── */
 .body{
-  padding-top:calc(var(--top) + 12px);
-  padding-bottom:calc(var(--bot) + 28px);
+  padding-top:calc(var(--top) + var(--sat) + 12px);
+  padding-bottom:calc(var(--bot) + var(--sab) + 28px);
 }
 
 /* ── STATS ── */
@@ -423,10 +424,7 @@ html,body{
 </div>
 
 <script>
-const SB = supabase.createClient(
-  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE'
-);
+const SB = supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
 
 // ── DONNÉES DES 5 FONDS ──
 const FONDS = [
@@ -646,7 +644,8 @@ async function acheter(){
 
 // ── INIT ──
 async function init(){
-  const { data:{ user: u } } = await SB.auth.getUser();
+  const{data:{session}}=await SB.auth.getSession();
+  const u=session?.user;
   if(!u){ window.location.href='index.html'; return; }
   user = u;
 
