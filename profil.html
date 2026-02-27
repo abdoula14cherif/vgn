@@ -236,103 +236,75 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 </nav>
 
 <script>
-const SURL='https://tgrfzybemuwvhkbpuzmz.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE';
-const SB=supabase.createClient(SURL,SKEY,{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
 
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
-const MAX=3;
-function $s(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
-function toast(m,e=false){const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(e?' err':'');setTimeout(()=>t.className='tst',3500)}
+const $s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+const toast=(m,err=false)=>{const t=document.getElementById('tst');t.textContent=m;t.className='tst show'+(err?' err':'');setTimeout(()=>t.className='tst',3500)};
 async function logout(){await SB.auth.signOut();window.location.href='index.html'}
-
-// ── Créer ou récupérer le profil ──
-async function getOrCreateProfile(user){
-  const{data:p}=await SB.from('profiles').select('*').eq('id',user.id).single();
-  if(p) return p;
-  // Créer le profil
-  const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'Investisseur';
-  const code='VGN-'+Math.random().toString(36).slice(2,8).toUpperCase();
-  const{data:np}=await SB.from('profiles').upsert({
-    id:user.id, email:user.email||'', full_name:name,
-    vip_niveau:'VIP 0', solde:0, gains_totaux:0,
-    gains_jour:0, gains_hier:0, gains_semaine:0, gains_mois:0,
-    investissement:0, revenu_attendu:0, taches_jour:0,
-    benefices_jour:0, rabais_commission:0, commission_parrainage:0,
-    code_parrainage:code,
-  },{onConflict:'id'}).select().single();
-  return np||{id:user.id,solde:0,gains_totaux:0,gains_jour:0,investissement:0,taches_jour:0,created_at:user.created_at};
-}
-
-// ── Afficher toutes les données du profil ──
-function displayProfile(p, tasksDone){
-  const rest=Math.max(MAX-tasksDone,0);
-
-  // Header wallets
-  $s('w-rev',   fmtF(p.gains_totaux));
-  $s('w-solde', fmtF(p.solde));
-  $s('w-vip',   (p.vip_niveau||'VIP 0').replace('VIP ',''));
-  $s('u-vip',   p.vip_niveau||'VIP 0');
-
-  // Big cards solde
-  $s('big-solde',  fmtF(p.solde));
-  $s('big-solde-sub', p.solde>0 ? '↑ Disponible pour retrait' : '↑ Aucun dépôt encore');
-  $s('big-gains',  fmtF(p.gains_totaux));
-  $s('big-invest', fmtF(p.investissement));
-  $s('big-tasks',  tasksDone);
-
-  // Trésor
-  $s('t-tresor', fmtF(p.investissement));
-  $s('t-benef',  fmtF(p.benefices_jour));
-
-  // Stats 9 cases
-  $s('s-hier',   fmtF(p.gains_hier));
-  $s('s-jour',   fmtF(p.gains_jour));
-  $s('s-total',  fmtF(p.gains_totaux));
-  $s('s-sem',    fmtF(p.gains_semaine));
-  $s('s-mois',   fmtF(p.gains_mois));
-  $s('s-tok',    tasksDone);
-  $s('s-trest',  rest);
-  $s('s-rabais', fmtF(p.rabais_commission));
-  $s('s-commis', fmtF(p.commission_parrainage));
-}
 
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
-  const user=session?.user;
-  if(!user){window.location.href='index.html';return}
+  if(!session){window.location.href='index.html';return}
+  const U=session.user;
 
-  const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'Investisseur';
-  const phone=user.user_metadata?.phone||user.email||'—';
-  $s('u-phone', phone);
-  $s('u-name', name);
-
-  // Avatar initiales
+  /* Nom + avatar */
+  const name=U.user_metadata?.full_name||U.email?.split('@')[0]||'Investisseur';
+  $s('u-phone',U.email||'—');
+  $s('u-name',name);
   const ini=(name.split(' ').map(w=>w[0]||'').join('').toUpperCase()||'VG').slice(0,2);
-  $s('av-ini', ini);
+  $s('av-ini',ini);
   const avImg=document.getElementById('av-img');
-  avImg.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(ini)}&background=15803D&color=fff&size=100&bold=true`;
-  avImg.style.display='block';
-  document.getElementById('av-ini').style.display='none';
+  if(avImg){avImg.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(ini)}&background=15803D&color=fff&size=100&bold=true`;avImg.style.display='block';const ini2=document.getElementById('av-ini');if(ini2)ini2.style.display='none';}
 
-  // Charger / créer profil
-  const p=await getOrCreateProfile(user);
+  /* Charger profil */
+  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
+  const P=p||{solde:0,gains_totaux:0,gains_jour:0,gains_hier:0,gains_semaine:0,gains_mois:0,investissement:0,taches_jour:0,vip_niveau:'VIP 0',benefices_jour:0,rabais_commission:0,commission_parrainage:0};
 
-  // Compter tâches faites aujourd'hui
+  /* Tâches faites aujourd'hui */
   const today=new Date().toISOString().slice(0,10);
-  const{data:tc}=await SB.from('taches_completees')
-    .select('id').eq('user_id',user.id).eq('type_tache','stage').eq('date_jour',today);
-  const tasksDone=Math.min((tc||[]).length, MAX);
+  const{data:tc}=await SB.from('taches_completees').select('id').eq('user_id',U.id).eq('type_tache','stage').eq('date_jour',today);
+  const tachesFaites=Math.min((tc||[]).length,3);
+  const tachesRestantes=Math.max(3-tachesFaites,0);
 
-  // Afficher tout
-  displayProfile(p, tasksDone);
+  /* === AFFICHER TOUS LES SOLDES === */
 
-  // Solde dans la topbar
-  const soldeEl = document.getElementById('tb-solde');
-  if(soldeEl) soldeEl.textContent = fmtF(p.solde);
+  /* Solde topbar */
+  $s('tb-solde',fmtF(P.solde));
+
+  /* Wallets hero */
+  $s('w-rev',fmtF(P.gains_totaux));
+  $s('w-solde',fmtF(P.solde));
+  $s('w-vip',(P.vip_niveau||'VIP 0').replace('VIP ',''));
+  $s('u-vip',P.vip_niveau||'VIP 0');
+
+  /* 4 grandes cards solde */
+  $s('big-solde',fmtF(P.solde));
+  $s('big-solde-sub',P.solde>0?'Disponible pour retrait':'Aucun dépôt encore');
+  $s('big-gains',fmtF(P.gains_totaux));
+  $s('big-invest',fmtF(P.investissement));
+  $s('big-tasks',tachesFaites+' / 3');
+
+  /* Trésor */
+  $s('t-tresor',fmtF(P.investissement));
+  $s('t-benef',fmtF(P.benefices_jour));
+
+  /* Stats 9 cases */
+  $s('s-hier',fmtF(P.gains_hier));
+  $s('s-jour',fmtF(P.gains_jour));
+  $s('s-total',fmtF(P.gains_totaux));
+  $s('s-sem',fmtF(P.gains_semaine));
+  $s('s-mois',fmtF(P.gains_mois));
+  $s('s-tok',tachesFaites);
+  $s('s-trest',tachesRestantes);
+  $s('s-rabais',fmtF(P.rabais_commission));
+  $s('s-commis',fmtF(P.commission_parrainage));
 }
-
 init();
 </script>
 </body>
