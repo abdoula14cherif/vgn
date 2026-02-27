@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VGN – Diagnostic</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:monospace;background:#0f0f0f;color:#00ff00;padding:16px;font-size:13px}
+h2{color:#fff;margin-bottom:12px;font-family:sans-serif}
+.ok{color:#22c55e}.err{color:#ef4444}.warn{color:#f97316}.info{color:#60a5fa}
+.line{padding:4px 0;border-bottom:1px solid #1a1a1a}
+.big{font-size:16px;font-weight:bold;margin:8px 0}
+button{margin-top:12px;padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:sans-serif}
+button:active{background:#15803d}
+#log{margin-top:12px}
+</style>
+</head>
+<body>
+<h2>🔍 VGN Diagnostic Supabase</h2>
+<div id="log"><div class="info line">⏳ Démarrage du diagnostic...</div></div>
+<button onclick="location.href='dashboard.html'">← Retour Dashboard</button>
+
+<script>
+const SURL='https://tgrfzybemuwvhkbpuzmz.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE';
+const SB = supabase.createClient(SURL, SKEY);
+
+const log = document.getElementById('log');
+function L(msg, cls='info'){
+  const d = document.createElement('div');
+  d.className = cls+' line';
+  d.textContent = msg;
+  log.appendChild(d);
+  console.log(msg);
+}
+
+async function run(){
+  log.innerHTML = '';
+
+  // 1. Auth
+  L('━━━ 1. AUTHENTIFICATION ━━━');
+  const {data:{user}, error:authErr} = await SB.auth.getUser();
+  if(authErr){ L('❌ Auth error: '+authErr.message, 'err'); return; }
+  if(!user){ L('❌ Pas connecté — retour index', 'err'); setTimeout(()=>location.href='index.html',2000); return; }
+  L('✅ Connecté : '+user.email, 'ok');
+  L('   user.id = '+user.id, 'info');
+  L('   created_at = '+user.created_at, 'info');
+
+  // 2. Lire le profil
+  L('━━━ 2. LECTURE PROFIL ━━━');
+  const {data:p, error:errP, status:stP} = await SB.from('profiles').select('*').eq('id',user.id).single();
+  L('   HTTP status: '+stP, stP===200?'ok':'warn');
+  if(errP){
+    L('❌ Erreur lecture: '+JSON.stringify(errP), 'err');
+    L('   code='+errP.code+' | hint='+errP.hint, 'err');
+  } else if(!p){
+    L('⚠️ Profil null — ligne absente dans profiles', 'warn');
+  } else {
+    L('✅ Profil trouvé !', 'ok');
+    L('   solde = '+p.solde, p.solde>0?'ok':'warn');
+    L('   gains_totaux = '+p.gains_totaux, 'info');
+    L('   gains_jour = '+p.gains_jour, 'info');
+    L('   taches_jour = '+p.taches_jour, 'info');
+    L('   vip_niveau = '+p.vip_niveau, 'info');
+  }
+
+  // 3. Si profil absent → tenter upsert
+  if(!p && !errP || (errP && errP.code==='PGRST116')){
+    L('━━━ 3. CRÉATION PROFIL (absent) ━━━');
+    const {data:np, error:errU} = await SB.from('profiles').upsert({
+      id: user.id,
+      email: user.email,
+      full_name: user.user_metadata?.full_name || user.email.split('@')[0],
+      solde:0, gains_totaux:0, gains_jour:0, gains_hier:0,
+      gains_semaine:0, gains_mois:0, investissement:0,
+      revenu_attendu:0, taches_jour:0, vip_niveau:'VIP 0',
+      benefices_jour:0, rabais_commission:0, commission_parrainage:0,
+    },{onConflict:'id'}).select().single();
+    if(errU) L('❌ Upsert échoué: '+JSON.stringify(errU), 'err');
+    else L('✅ Profil créé: solde='+np?.solde, 'ok');
+  }
+
+  // 4. Test UPDATE solde (+1 FCFA de test)
+  L('━━━ 4. TEST UPDATE PROFIL ━━━');
+  const soldeActuel = p?.solde || 0;
+  const {error:errUpd, status:stUpd} = await SB.from('profiles')
+    .update({ solde: soldeActuel }) // même valeur, juste pour tester
+    .eq('id', user.id);
+  L('   HTTP status: '+stUpd, stUpd===204?'ok':'err');
+  if(errUpd) L('❌ UPDATE bloqué: '+JSON.stringify(errUpd), 'err');
+  else L('✅ UPDATE fonctionne !', 'ok');
+
+  // 5. Lire taches_completees
+  L('━━━ 5. TACHES COMPLETEES ━━━');
+  const today = new Date().toISOString().slice(0,10);
+  const {data:tc, error:errTc, status:stTc} = await SB.from('taches_completees')
+    .select('*').eq('user_id',user.id).eq('date_jour',today);
+  L('   HTTP status: '+stTc, stTc===200?'ok':'err');
+  if(errTc) L('❌ Erreur: '+JSON.stringify(errTc), 'err');
+  else L('✅ Tâches aujourd\'hui: '+(tc?.length||0), 'ok');
+
+  // 6. Test INSERT taches_completees
+  L('━━━ 6. TEST INSERT TACHE ━━━');
+  const {error:errIns, status:stIns} = await SB.from('taches_completees').insert({
+    user_id: user.id,
+    tache_ref: 'TEST',
+    type_tache: 'stage',
+    reward: 0,
+    date_jour: '2000-01-01', // date passée pour ne pas polluer
+    completee_le: new Date().toISOString()
+  });
+  L('   HTTP status: '+stIns, stIns===201?'ok':'err');
+  if(errIns) L('❌ INSERT bloqué: '+JSON.stringify(errIns), 'err');
+  else L('✅ INSERT fonctionne !', 'ok');
+
+  // 7. Politiques actives (via count trick)
+  L('━━━ 7. RÉSUMÉ ━━━');
+  L(errP ? '❌ SELECT profiles : BLOQUÉ ('+errP.code+')' : '✅ SELECT profiles : OK', errP?'err':'ok');
+  L(errUpd ? '❌ UPDATE profiles : BLOQUÉ' : '✅ UPDATE profiles : OK', errUpd?'err':'ok');
+  L(errTc ? '❌ SELECT taches : BLOQUÉ' : '✅ SELECT taches : OK', errTc?'err':'ok');
+  L(errIns ? '❌ INSERT taches : BLOQUÉ ('+errIns.code+')' : '✅ INSERT taches : OK', errIns?'err':'ok');
+  L('━━━ FIN DIAGNOSTIC ━━━', 'info');
+}
+
+run();
+</script>
+</body>
+</html>
