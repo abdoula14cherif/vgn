@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>VGN – Roue de Chance</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--od:#EA580C;--bg:#0D1117;--card:#161B22;--card2:#21262D;--txt:#F0F6FC;--mu:#8B949E;--bd:#30363D;--H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;border-bottom:1px solid #2d2d4e}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;text-decoration:none;color:#fff;font-weight:900}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tbsolde{font-size:.68rem;font-weight:800;color:#fff;background:rgba(249,115,22,.2);padding:4px 10px;border-radius:16px;border:1px solid rgba(249,115,22,.4)}
+
+.scroll{padding-top:calc(var(--H) + var(--sat) + 12px);padding-bottom:calc(var(--B) + var(--sab) + 24px);min-height:100svh;min-height:100vh}
+
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#161B22;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+
+/* ── LOCK VIP ── */
+.vip-lock{margin:16px 14px;background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:20px;padding:24px 20px;text-align:center;border:1px solid #4338ca;box-shadow:0 0 40px rgba(99,102,241,.2)}
+.lock-ico{font-size:3.5rem;margin-bottom:12px}
+.lock-title{font-size:1.1rem;font-weight:900;color:#fff;margin-bottom:6px}
+.lock-sub{font-size:.78rem;color:#a5b4fc;line-height:1.5;margin-bottom:16px}
+.lock-btn{display:inline-block;background:linear-gradient(135deg,#6366f1,#4338ca);color:#fff;padding:11px 24px;border-radius:14px;font-size:.88rem;font-weight:900;text-decoration:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif}
+
+/* ── INFO CARD ── */
+.info-strip{margin:0 14px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.icard{background:var(--card);border-radius:14px;padding:10px;text-align:center;border:1px solid var(--bd)}
+.icard-v{font-size:.95rem;font-weight:900;color:var(--o)}
+.icard-l{font-size:.6rem;color:var(--mu);font-weight:700;margin-top:2px}
+
+/* ── WHEEL CONTAINER ── */
+.wheel-wrap{position:relative;margin:10px auto;width:300px;height:300px;display:flex;align-items:center;justify-content:center}
+.wheel-glow{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.25) 0%,transparent 70%);animation:glow 2s ease-in-out infinite alternate}
+@keyframes glow{from{opacity:.5;transform:scale(.95)}to{opacity:1;transform:scale(1.05)}}
+canvas#roue{border-radius:50%;box-shadow:0 0 40px rgba(249,115,22,.4),0 0 80px rgba(249,115,22,.15);position:relative;z-index:2}
+
+/* Aiguille */
+.aiguille{position:absolute;top:-10px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:36px solid #F97316;filter:drop-shadow(0 4px 8px rgba(249,115,22,.6))}
+
+/* ── BOUTON SPIN ── */
+.spin-btn{display:block;margin:14px auto;width:180px;padding:14px;background:linear-gradient(135deg,var(--o),var(--od));border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 20px rgba(249,115,22,.5);transition:transform .15s,box-shadow .15s;text-align:center}
+.spin-btn:active{transform:scale(.96)}
+.spin-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ── RÉSULTAT ── */
+.result-box{margin:0 14px 14px;background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--bd);text-align:center;display:none}
+.result-box.show{display:block;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.res-ico{font-size:2.5rem;margin-bottom:8px}
+.res-titre{font-size:.85rem;color:var(--mu);font-weight:700;margin-bottom:4px}
+.res-val{font-size:1.6rem;font-weight:900;color:var(--o)}
+.res-msg{font-size:.72rem;color:var(--mu);margin-top:6px}
+
+/* ── HISTORIQUE ── */
+.sec-h{padding:0 14px;margin-bottom:10px;font-size:.85rem;font-weight:900;color:var(--txt)}
+.hist-list{padding:0 14px;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.hitem{background:var(--card);border-radius:13px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--bd)}
+.hitem-l{font-size:.72rem;font-weight:700;color:var(--mu)}
+.hitem-r{font-size:.82rem;font-weight:900;color:var(--o)}
+.vide{text-align:center;padding:24px;color:var(--mu);font-size:.78rem;font-weight:700}
+
+/* ── TOAST ── */
+.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}.tst.ok{background:var(--g)}
+.ld{display:inline-block;width:10px;height:10px;border:2px solid #444;border-top-color:var(--o);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">‹</a>
+  <span class="tbt">🎡 Roue de Chance</span>
+  <div class="tbsolde">💰 <span id="tb-solde">—</span></div>
+</div>
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- VIP LOCK (affiché si VIP < 2) -->
+  <div class="vip-lock" id="vip-lock" style="display:none">
+    <div class="lock-ico">🔒</div>
+    <div class="lock-title">VIP 2 requis</div>
+    <div class="lock-sub">La Roue de Chance est réservée aux membres <b>VIP 2 et plus</b>.<br>Passez au niveau supérieur pour débloquer cette fonctionnalité et multiplier vos gains !</div>
+    <a href="vip.html" class="lock-btn">💎 Passer VIP 2</a>
+  </div>
+
+  <!-- CONTENU ROUE (affiché si VIP >= 2) -->
+  <div id="roue-content" style="display:none">
+
+    <!-- Stats -->
+    <div class="info-strip">
+      <div class="icard"><div class="icard-v" id="ic-vip">—</div><div class="icard-l">Niveau VIP</div></div>
+      <div class="icard"><div class="icard-v" id="ic-inv">—</div><div class="icard-l">Investissement</div></div>
+      <div class="icard"><div class="icard-v" id="ic-spin">1</div><div class="icard-l">Spin/jour</div></div>
+    </div>
+
+    <!-- Roue -->
+    <div class="wheel-wrap">
+      <div class="wheel-glow"></div>
+      <div class="aiguille"></div>
+      <canvas id="roue" width="280" height="280"></canvas>
+    </div>
+
+    <button class="spin-btn" id="spin-btn" onclick="lancer()">🎡 Lancer la roue</button>
+
+    <!-- Résultat -->
+    <div class="result-box" id="result-box">
+      <div class="res-ico" id="res-ico">🎉</div>
+      <div class="res-titre">Vous gagnez</div>
+      <div class="res-val" id="res-val">—</div>
+      <div class="res-msg" id="res-msg">Crédit ajouté à votre solde</div>
+    </div>
+
+    <!-- Historique -->
+    <div class="sec-h">Historique des tours</div>
+    <div class="hist-list" id="hist-list">
+      <div style="text-align:center;padding:16px"><span class="ld"></span></div>
+    </div>
+
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const toast=(m,type='')=>{const t=$('tst');t.textContent=m;t.className='tst show'+(type?' '+type:'');setTimeout(()=>t.className='tst',3500)};
+
+let U=null,P=null,spinning=false,currentAngle=0;
+
+/* ── Segments de la roue selon investissement ── */
+function getSegments(investissement){
+  const inv=investissement||0;
+  // Plus l'investissement est élevé, plus les gains sont grands
+  const base=Math.max(Math.floor(inv*0.01),100); // 1% de l'investissement minimum 100
+  return [
+    {label:'×0.5',mult:.5,color:'#EF4444'},
+    {label:'×1',mult:1,color:'#F97316'},
+    {label:'×1.5',mult:1.5,color:'#EAB308'},
+    {label:'×2',mult:2,color:'#22C55E'},
+    {label:'×0.5',mult:.5,color:'#EF4444'},
+    {label:'×1',mult:1,color:'#3B82F6'},
+    {label:'×3',mult:3,color:'#8B5CF6'},
+    {label:'×1',mult:1,color:'#F97316'},
+  ].map(s=>({...s,gain:Math.round(base*s.mult),base}));
+}
+
+/* ── Dessiner la roue ── */
+function drawWheel(segs,angle=0){
+  const canvas=$('roue');
+  const ctx=canvas.getContext('2d');
+  const cx=140,cy=140,r=135;
+  const n=segs.length;
+  const arc=(2*Math.PI)/n;
+  ctx.clearRect(0,0,280,280);
+
+  segs.forEach((s,i)=>{
+    const start=angle+i*arc;
+    const end=start+arc;
+    // Secteur
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,end);
+    ctx.closePath();
+    ctx.fillStyle=s.color;
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.15)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+    // Texte gain
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(start+arc/2);
+    ctx.textAlign='right';
+    ctx.fillStyle='#fff';
+    ctx.font='bold 11px Nunito, sans-serif';
+    ctx.fillText(fmtF(s.gain),r-10,4);
+    ctx.font='bold 9px Nunito, sans-serif';
+    ctx.fillStyle='rgba(255,255,255,.75)';
+    ctx.fillText(s.label,r-10,14);
+    ctx.restore();
+  });
+
+  // Centre
+  ctx.beginPath();
+  ctx.arc(cx,cy,22,0,2*Math.PI);
+  ctx.fillStyle='#0D1117';
+  ctx.fill();
+  ctx.strokeStyle='rgba(249,115,22,.6)';
+  ctx.lineWidth=3;
+  ctx.stroke();
+  ctx.fillStyle='#fff';
+  ctx.font='bold 14px Nunito';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('VGN',cx,cy);
+}
+
+/* ── Animation spin ── */
+function lancer(){
+  if(spinning)return;
+  if(!P){toast('Chargement...','');return}
+
+  // Vérifier si déjà joué aujourd'hui
+  const today=new Date().toISOString().slice(0,10);
+  const lastSpin=localStorage.getItem('vgn-last-spin-'+U.id);
+  if(lastSpin===today){toast('⚠️ 1 tour par jour — revenez demain !','err');return}
+
+  spinning=true;
+  $('spin-btn').disabled=true;
+  $('result-box').classList.remove('show');
+
+  const segs=getSegments(P.investissement);
+  const n=segs.length;
+  const arc=(2*Math.PI)/n;
+
+  // Choisir le segment gagnant (pondéré vers les bons gains si investissement élevé)
+  const inv=P.investissement||0;
+  const weights=segs.map(s=>{
+    if(s.mult>=2&&inv>=500000) return 25; // VIP élevé → plus de chances de ×2 ou ×3
+    if(s.mult>=1.5&&inv>=100000) return 20;
+    if(s.mult>=1) return 15;
+    return 10; // ×0.5 moins probable
+  });
+  const totalW=weights.reduce((a,b)=>a+b,0);
+  let rand=Math.random()*totalW,winner=0;
+  for(let i=0;i<weights.length;i++){rand-=weights[i];if(rand<=0){winner=i;break}}
+
+  // Calculer angle cible (segment gagnant centré sous l'aiguille en haut)
+  const targetAngle=-(winner*arc+arc/2)+(2*Math.PI*8)-Math.PI/2;
+  const totalRotation=currentAngle+targetAngle+(Math.PI*2*8);
+  const duration=4000;
+  const start=performance.now();
+  const startAngle=currentAngle;
+
+  function animate(now){
+    const elapsed=now-start;
+    const progress=Math.min(elapsed/duration,1);
+    // Easing easeOutCubic
+    const ease=1-Math.pow(1-progress,3);
+    const angle=startAngle+(totalRotation-startAngle)*ease;
+    drawWheel(segs,angle);
+    if(progress<1){requestAnimationFrame(animate)}
+    else{
+      currentAngle=totalRotation%(2*Math.PI);
+      const seg=segs[winner];
+      créditerGain(seg);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+async function créditerGain(seg){
+  try{
+    const aujourd=new Date().toISOString().slice(0,10);
+    // Enregistrer le tour
+    await SB.from('roue_historique').insert({
+      user_id:U.id,
+      gain:seg.gain,
+      multiplicateur:seg.mult,
+      investissement_base:seg.base,
+      date_tour:aujourd,
+      created_at:new Date().toISOString()
+    });
+
+    // Créditer le solde
+    const ns=(P.solde||0)+seg.gain;
+    const ng=(P.gains_totaux||0)+seg.gain;
+    await SB.from('profiles').update({
+      solde:ns,gains_totaux:ng
+    }).eq('id',U.id);
+    P.solde=ns;P.gains_totaux=ng;
+
+    // Sauvegarder la date du dernier spin
+    localStorage.setItem('vgn-last-spin-'+U.id, aujourd);
+
+    // Afficher résultat
+    const icos={0.5:'😬',1:'🙂',1.5:'😃',2:'🤩',3:'🎊'};
+    $s('res-ico',icos[seg.mult]||'🎉');
+    $s('res-val',fmtF(seg.gain));
+    $s('res-msg','×'+seg.mult+' — Crédit ajouté à votre solde');
+    $('result-box').classList.add('show');
+    $s('tb-solde',fmtF(ns));
+
+    if(seg.gain>0) toast('🎉 +'+fmtF(seg.gain)+' FCFA !','ok');
+    else toast('Pas de chance aujourd\'hui...','');
+
+    chargerHistorique();
+  }catch(err){
+    toast('❌ '+err.message,'err');
+    console.error(err);
+  }finally{
+    spinning=false;
+    $('spin-btn').disabled=false;
+    $('spin-btn').textContent='✅ Tour utilisé — Revenez demain';
+    $('spin-btn').disabled=true;
+  }
+}
+
+async function chargerHistorique(){
+  const{data:hist}=await SB.from('roue_historique')
+    .select('*').eq('user_id',U.id)
+    .order('created_at',{ascending:false}).limit(10);
+  const list=$('hist-list');
+  if(!hist||hist.length===0){list.innerHTML='<div class="vide">Aucun tour effectué</div>';return}
+  list.innerHTML=hist.map(h=>{
+    const dt=new Date(h.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    return `<div class="hitem">
+      <span class="hitem-l">${dt} &nbsp;·&nbsp; ×${h.multiplicateur}</span>
+      <span class="hitem-r">+${fmtF(h.gain)}</span>
+    </div>`;
+  }).join('');
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+
+  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
+  P=p||{solde:0,investissement:0,vip_niveau:'VIP 0'};
+
+  $s('tb-solde',fmtF(P.solde));
+
+  // Vérifier niveau VIP
+  const vipNum=parseInt((P.vip_niveau||'VIP 0').replace('VIP ',''))||0;
+
+  if(vipNum<2){
+    // Afficher le verrou
+    $('vip-lock').style.display='block';
+    $('roue-content').style.display='none';
+    return;
+  }
+
+  // Débloqué
+  $('vip-lock').style.display='none';
+  $('roue-content').style.display='block';
+
+  $s('ic-vip',P.vip_niveau||'VIP 0');
+  $s('ic-inv',fmt(Math.round(P.investissement||0))+' F');
+
+  // Dessiner la roue
+  const segs=getSegments(P.investissement);
+  drawWheel(segs,currentAngle);
+
+  // Vérifier si déjà joué aujourd'hui
+  const today=new Date().toISOString().slice(0,10);
+  const lastSpin=localStorage.getItem('vgn-last-spin-'+U.id);
+  if(lastSpin===today){
+    $('spin-btn').textContent='✅ Tour utilisé — Revenez demain';
+    $('spin-btn').disabled=true;
+  }
+
+  await chargerHistorique();
+}
+
+init();
+</script>
+</body>
+</html>
