@@ -133,7 +133,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
   <div class="solde-card">
     <div class="sc-lbl">Solde disponible</div>
     <div class="sc-val" id="sc-solde"><span class="ld"></span></div>
-    <div class="sc-sub" id="sc-sub">Minimum de retrait : <b>1 000 FCFA</b></div>
+    <div class="sc-sub" id="sc-sub"></div>
     <div class="sc-chips">
       <div class="chip" onclick="setMontant(1000)">1 000</div>
       <div class="chip" onclick="setMontant(2000)">2 000</div>
@@ -174,10 +174,10 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="field">
       <label>Montant à retirer</label>
       <div class="montant-wrap">
-        <input type="number" id="inp-montant" placeholder="0" min="1000" inputmode="numeric" oninput="calcFrais()">
+        <input type="number" id="inp-montant" placeholder="0" min="0" inputmode="numeric" oninput="calcFrais()">
         <span class="cur">FCFA</span>
       </div>
-      <div class="hint" id="hint-montant">Minimum 1 000 FCFA</div>
+      <div class="hint" id="hint-montant"></div>
     </div>
 
     <!-- Numéro / Compte (Mobile Money) -->
@@ -278,7 +278,19 @@ const SB=supabase.createClient(
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
 
-const MIN=1000, FRAIS_PCT=0.02;
+const FRAIS_PCT=0.02;
+let MIN=1000; // dynamique : 0 pendant le stage, 1000 après
+
+// Calculer le vrai minimum selon le statut stage
+function calcMin(profile, userCreatedAt){
+  const vipNum=parseInt((profile?.vip_niveau||'VIP 0').replace('VIP ',''))||0;
+  if(vipNum>0) return 1000; // a un plan VIP payant → min 1000
+  // Stage : 4 jours depuis la création du compte
+  const ca=profile?.created_at||userCreatedAt||new Date().toISOString();
+  const joursEcoules=Math.floor((Date.now()-new Date(ca).getTime())/86400000);
+  if(joursEcoules<=4) return 0; // pendant le stage → pas de minimum
+  return 1000; // stage terminé → min 1000
+}
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
 const $=id=>document.getElementById(id);
@@ -318,7 +330,7 @@ function setMontant(v){
 function setMontantMax(){
   if(!P){toast('Chargement...','');return}
   const max=Math.floor(P.solde||0);
-  if(max<MIN){toast('⚠️ Solde insuffisant (min 1 000 FCFA)','err');return}
+  if(max<MIN){toast('⚠️ Solde insuffisant','err');return}
   $('inp-montant').value=max;
   calcFrais();
 }
@@ -335,7 +347,7 @@ function calcFrais(){
   if(v<=0){fraisBox.style.display='none';return}
 
   if(v<MIN){
-    hint.textContent='⚠️ Minimum 1 000 FCFA';
+    hint.textContent='⚠️ Montant insuffisant';
     hint.className='hint err-txt';
     $('inp-montant').classList.add('err-input');
     fraisBox.style.display='none';return;
@@ -361,7 +373,7 @@ function calcFrais(){
 function validerChamps(){
   const v=parseInt($('inp-montant').value)||0;
   const solde=P?.solde||0;
-  if(v<MIN){toast('⚠️ Montant minimum : 1 000 FCFA','err');return false}
+  if(v<MIN){toast('⚠️ Montant insuffisant','err');return false}
   if(v>solde){toast('⚠️ Solde insuffisant','err');return false}
 
   if(methode==='momo'||methode==='wave'){
@@ -449,7 +461,8 @@ async function validerRetrait(){
     toast('✅ Demande envoyée ! Traitement sous 24h','ok');
     $('inp-montant').value='';
     $('frais-box').style.display='none';
-    $('hint-montant').textContent='Minimum 1 000 FCFA';
+    MIN=calcMin(P, U.created_at); // recalculer après chaque retrait
+    $('hint-montant').textContent='';
     $('hint-montant').className='hint';
     chargerHistorique();
   }catch(err){
@@ -500,17 +513,20 @@ async function init(){
   const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
   P=p||{solde:0};
 
+  // Calculer le minimum dynamique (silencieux)
+  MIN=calcMin(P, U.created_at);
+
   $s('sc-solde',fmtF(P.solde));
   $s('tb-solde',fmtF(P.solde));
-  $s('sc-sub','Minimum de retrait : 1 000 FCFA');
+  $s('sc-sub',''); // texte du sous-titre vide — pas d'indication du minimum
 
   // Initialiser réseau Mobile Money
   $('inp-reseau').value=reseaux[0];
 
-  // Désactiver bouton si solde insuffisant
-  if((P.solde||0)<MIN){
+  // Désactiver bouton si solde insuffisant ou zéro
+  if((P.solde||0)<=0){
     $('btn-retrait').disabled=true;
-    $('btn-retrait').textContent='Solde insuffisant (min 1 000 FCFA)';
+    $('btn-retrait').textContent='Solde insuffisant';
   }
 
   await chargerHistorique();
