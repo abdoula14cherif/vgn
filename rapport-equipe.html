@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Rapport d'équipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--gl:#22C55E;--o:#F97316;--od:#EA580C;--r:#EF4444;--b:#3B82F6;--bg:#F0F2F5;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;text-decoration:none;font-weight:900}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
+
+/* SCROLL */
+.scroll{padding-top:calc(var(--H)+var(--sat));padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+
+/* TABS RAPPORT / MON ÉQUIPE */
+.main-tabs{background:var(--card);display:flex;border-bottom:2px solid var(--bd)}
+.mt{flex:1;text-align:center;padding:13px 0;font-size:.83rem;font-weight:800;color:var(--mu);cursor:pointer;position:relative;transition:color .2s}
+.mt.on{color:var(--g)}
+.mt.on::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:var(--g);border-radius:2px}
+
+/* FILTRE DATES */
+.date-bar{background:var(--card);border-bottom:1px solid var(--bd);padding:10px 12px;display:flex;align-items:center;gap:8px}
+.date-inp{flex:1;padding:8px 10px;border:1.5px solid var(--bd);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;color:var(--txt);background:#F8FAFC;outline:none;-webkit-appearance:none}
+.date-inp:focus{border-color:var(--g)}
+.date-sep{font-size:.7rem;color:var(--mu);font-weight:700;flex-shrink:0}
+.btn-search{padding:9px 16px;background:var(--g);border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:900;color:#fff;cursor:pointer;flex-shrink:0;transition:transform .15s}
+.btn-search:active{transform:scale(.94)}
+
+/* STATS GLOBALES */
+.stats-global{padding:12px 12px 8px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sg{background:var(--card);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.sg-v{font-size:1.3rem;font-weight:900;margin-bottom:4px}
+.sg-v.gc{color:var(--gl)}.sg-v.oc{color:var(--o)}.sg-v.bc{color:var(--b)}
+.sg-l{font-size:.59rem;font-weight:700;color:var(--mu);line-height:1.3}
+
+/* NIVEAU TABS A/B/C */
+.niv-tabs{padding:10px 12px 0;display:flex;gap:8px}
+.nt{flex:1;padding:10px 0;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:900;cursor:pointer;transition:all .2s}
+.nt.on-a{background:var(--g);color:#fff;box-shadow:0 3px 12px rgba(22,163,74,.3)}
+.nt.on-b{background:var(--b);color:#fff;box-shadow:0 3px 12px rgba(59,130,246,.3)}
+.nt.on-c{background:var(--o);color:#fff;box-shadow:0 3px 12px rgba(249,115,22,.3)}
+.nt:not(.on-a):not(.on-b):not(.on-c){background:#F3F4F6;color:var(--mu)}
+
+/* NIVEAU STATS */
+.niv-stats{margin:10px 12px;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.07)}
+.ns-header{padding:12px 14px;display:flex;align-items:center;gap:10px}
+.ns-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ns-ico.ia{background:#F0FDF4}.ns-ico.ib{background:#EFF6FF}.ns-ico.ic{background:#FFF7ED}
+.ns-t{font-size:.85rem;font-weight:900;color:var(--txt)}
+.ns-s{font-size:.63rem;color:var(--mu);margin-top:1px}
+.ns-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bd)}
+.ns-cell{padding:11px 14px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.ns-cell:nth-child(even){border-right:none}
+.ns-cell:nth-last-child(-n+2){border-bottom:none}
+.nsc-l{font-size:.6rem;font-weight:700;color:var(--mu);margin-bottom:4px}
+.nsc-v{font-size:.95rem;font-weight:900;color:var(--txt)}
+.nsc-v.gv{color:var(--g)}.nsc-v.ov{color:var(--o)}.nsc-v.bv{color:var(--b)}
+
+/* LISTE MEMBRES */
+.mem-title{padding:10px 14px 8px;font-size:.82rem;font-weight:900;color:var(--txt)}
+.mem-list{padding:0 12px;display:flex;flex-direction:column;gap:7px;padding-bottom:14px}
+.m-item{background:var(--card);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-left:4px solid var(--bd)}
+.m-item.lv-a{border-left-color:var(--g)}
+.m-item.lv-b{border-left-color:var(--b)}
+.m-item.lv-c{border-left-color:var(--o)}
+.m-av{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:900;color:#fff;flex-shrink:0}
+.av-a{background:linear-gradient(135deg,var(--g),var(--gd))}
+.av-b{background:linear-gradient(135deg,var(--b),#1D4ED8)}
+.av-c{background:linear-gradient(135deg,var(--o),var(--od))}
+.m-info{flex:1;min-width:0}
+.m-nom{font-size:.77rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-sub{font-size:.61rem;color:var(--mu);margin-top:2px}
+.m-right{text-align:right;flex-shrink:0}
+.m-gain{font-size:.82rem;font-weight:900;color:var(--g)}
+.m-badge{font-size:.57rem;font-weight:800;padding:2px 8px;border-radius:8px;margin-top:3px;display:inline-block}
+.bd-a{background:#F0FDF4;color:var(--g)}.bd-b{background:#EFF6FF;color:var(--b)}.bd-c{background:#FFF7ED;color:var(--od)}
+
+/* MON ÉQUIPE TAB */
+.equipe-section{padding:0 12px 12px}
+.eq-hero{background:linear-gradient(135deg,var(--gd),var(--gl));border-radius:18px;padding:16px 18px;margin-bottom:12px;box-shadow:0 4px 18px rgba(22,163,74,.25)}
+.eq-hero h3{font-size:.9rem;font-weight:900;color:#fff;margin-bottom:11px}
+.eq-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.eq-stat{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:10px 8px;text-align:center}
+.eq-v{font-size:1.1rem;font-weight:900;color:#fff}
+.eq-l{font-size:.57rem;color:rgba(255,255,255,.75);font-weight:700;margin-top:2px}
+.comm-preview{background:var(--card);border-radius:16px;padding:13px 14px;margin-bottom:12px;box-shadow:0 1px 7px rgba(0,0,0,.07)}
+.cp-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F8FAFC}
+.cp-row:last-child{border-bottom:none}
+.cp-l{font-size:.72rem;font-weight:700;color:var(--mu)}
+.cp-v{font-size:.82rem;font-weight:900;color:var(--txt)}
+.cp-v.gv{color:var(--g)}
+.lien-box{background:#F0FDF4;border:1.5px dashed var(--g);border-radius:14px;padding:12px 14px;margin-bottom:12px;text-align:center}
+.lien-lbl{font-size:.62rem;font-weight:800;color:var(--mu);margin-bottom:6px}
+.lien-val{font-size:.72rem;font-weight:700;color:var(--gd);word-break:break-all;font-family:'Courier New',monospace;background:#fff;padding:8px 10px;border-radius:9px;border:1px solid #BBF7D0;margin-bottom:8px}
+.lien-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.lbtn{padding:10px;border:none;border-radius:11px;font-family:'Nunito',sans-serif;font-size:.74rem;font-weight:800;cursor:pointer}
+.lbtn-copy{background:#F0FDF4;color:var(--g);border:1.5px solid var(--g)}
+.lbtn-wa{background:#25D366;color:#fff}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px}
+.em-ico{font-size:3rem;margin-bottom:10px}
+.em-t{font-size:.82rem;font-weight:800;color:var(--txt);margin-bottom:5px}
+.em-s{font-size:.7rem;color:var(--mu);line-height:1.5}
+
+/* BOTNAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+
+/* TOAST */
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+8px);left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:11px;height:11px;border:2px solid #ccc;border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="profil.html">‹</a>
+  <span class="tbt">📊 Rapport d'équipe</span>
+  <div class="tb-pill" id="tb-vip">—</div>
+</div>
+
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- MAIN TABS -->
+  <div class="main-tabs">
+    <div class="mt on" id="mt-rapport" onclick="switchMain('rapport')">📊 Rapport d'équipe</div>
+    <div class="mt" id="mt-equipe" onclick="switchMain('equipe')">👥 Mon équipe</div>
+  </div>
+
+  <!-- ════════════ RAPPORT D'ÉQUIPE ════════════ -->
+  <div id="section-rapport">
+
+    <!-- FILTRE DATES -->
+    <div class="date-bar">
+      <input class="date-inp" type="date" id="date-debut" placeholder="Date début">
+      <span class="date-sep">→</span>
+      <input class="date-inp" type="date" id="date-fin" placeholder="Date fin">
+      <button class="btn-search" onclick="rechercher()">🔍 Rechercher</button>
+    </div>
+
+    <!-- STATS GLOBALES -->
+    <div class="stats-global">
+      <div class="sg">
+        <div class="sg-v gc" id="stat-total">—</div>
+        <div class="sg-l">Membres totaux</div>
+      </div>
+      <div class="sg">
+        <div class="sg-v oc" id="stat-nouveaux">—</div>
+        <div class="sg-l">Nouveaux membres</div>
+      </div>
+      <div class="sg">
+        <div class="sg-v bc" id="stat-gains">—</div>
+        <div class="sg-l">Bénéfices équipe</div>
+      </div>
+    </div>
+
+    <!-- NIVEAU TABS A / B / C -->
+    <div class="niv-tabs">
+      <button class="nt on-a" id="nt-a" onclick="switchNiv('A')">🅰 Niveau A</button>
+      <button class="nt" id="nt-b" onclick="switchNiv('B')">🅱 Niveau B</button>
+      <button class="nt" id="nt-c" onclick="switchNiv('C')">🅲 Niveau C</button>
+    </div>
+
+    <!-- STATS NIVEAU -->
+    <div class="niv-stats" id="niv-stats">
+      <div class="ns-header">
+        <div class="ns-ico ia" id="ns-ico">🟢</div>
+        <div>
+          <div class="ns-t" id="ns-titre">Niveau A — Filleuls directs</div>
+          <div class="ns-s" id="ns-sub">Personnes invitées directement par vous</div>
+        </div>
+      </div>
+      <div class="ns-grid">
+        <div class="ns-cell"><div class="nsc-l">👥 Membres</div><div class="nsc-v bv" id="nsc-membres">—</div></div>
+        <div class="ns-cell"><div class="nsc-l">🆕 Nouveaux</div><div class="nsc-v ov" id="nsc-nouveaux">—</div></div>
+        <div class="ns-cell"><div class="nsc-l">💰 Rechargements</div><div class="nsc-v ov" id="nsc-recharge-amt">—</div></div>
+        <div class="ns-cell"><div class="nsc-l">🔋 Ayant rechargé</div><div class="nsc-v gv" id="nsc-recharge-nb">—</div></div>
+      </div>
+    </div>
+
+    <!-- LISTE MEMBRES DU NIVEAU -->
+    <div class="mem-title" id="mem-title">Membres Niveau A</div>
+    <div class="mem-list" id="mem-list">
+      <div style="text-align:center;padding:28px"><span class="ld"></span></div>
+    </div>
+
+  </div>
+
+  <!-- ════════════ MON ÉQUIPE ════════════ -->
+  <div id="section-equipe" style="display:none">
+    <div class="equipe-section">
+
+      <!-- HERO ÉQUIPE -->
+      <div class="eq-hero" style="margin-top:12px">
+        <h3>👥 Mon équipe au complet</h3>
+        <div class="eq-grid">
+          <div class="eq-stat"><div class="eq-v" id="eq-total">—</div><div class="eq-l">Total membres</div></div>
+          <div class="eq-stat"><div class="eq-v" id="eq-actifs">—</div><div class="eq-l">Niv. A directs</div></div>
+          <div class="eq-stat"><div class="eq-v" id="eq-comm">—</div><div class="eq-l">Commissions</div></div>
+        </div>
+      </div>
+
+      <!-- RÉSUMÉ COMMISSIONS -->
+      <div class="comm-preview">
+        <div class="cp-row"><span class="cp-l">💰 Commission totale reçue</span><span class="cp-v gv" id="cp-total">—</span></div>
+        <div class="cp-row"><span class="cp-l">📅 Ce mois-ci</span><span class="cp-v gv" id="cp-mois">—</span></div>
+        <div class="cp-row"><span class="cp-l">📆 Aujourd'hui</span><span class="cp-v gv" id="cp-jour">—</span></div>
+        <div class="cp-row"><span class="cp-l">📊 Taux commission</span><span class="cp-v">10% / gain filleul</span></div>
+      </div>
+
+      <!-- MON LIEN -->
+      <div class="lien-box">
+        <div class="lien-lbl">🔗 Mon lien de parrainage</div>
+        <div class="lien-val" id="eq-lien">Chargement...</div>
+        <div class="lien-btns">
+          <button class="lbtn lbtn-copy" onclick="copierLien()">📋 Copier</button>
+          <button class="lbtn lbtn-wa" onclick="shareWA()">🟢 WhatsApp</button>
+        </div>
+      </div>
+
+      <!-- LISTE FILLEULS DIRECTS -->
+      <div style="font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:9px">Mes filleuls directs (Niveau A)</div>
+      <div id="eq-list">
+        <div style="text-align:center;padding:24px"><span class="ld"></span></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)}
+
+const BASE_URL='https://vgn-two.vercel.app';
+let U=null,P=null,monCode='',curNiv='A';
+let filleulsA=[],filleulsB=[],filleulsC=[];
+let dateDebut='',dateFin='';
+
+// ── Helpers date ──
+const today=()=>new Date().toISOString().slice(0,10);
+const startOfMonth=()=>{const d=new Date();d.setDate(1);return d.toISOString().slice(0,10)};
+
+// ── Partage ──
+function getLien(){return `${BASE_URL}/index.html?ref=${monCode}`}
+function copierLien(){
+  const lien=getLien();
+  const fb=()=>{const t=document.createElement('textarea');t.value=lien;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('✅ Lien copié !','ok')};
+  if(navigator.clipboard)navigator.clipboard.writeText(lien).then(()=>toast('✅ Lien copié !','ok')).catch(fb);else fb();
+}
+function shareWA(){
+  const msg=`🌱 Rejoignez VGN Agriculture !\n🔗 Mon lien : ${getLien()}\n🎟️ Code : ${monCode}`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ── Switch main tab ──
+function switchMain(tab){
+  $('mt-rapport').className='mt'+(tab==='rapport'?' on':'');
+  $('mt-equipe').className='mt'+(tab==='equipe'?' on':'');
+  $('section-rapport').style.display=tab==='rapport'?'block':'none';
+  $('section-equipe').style.display=tab==='equipe'?'block':'none';
+}
+
+// ── Switch niveau A/B/C ──
+const NIV_META={
+  A:{ico:'ia',emoij:'🟢',titre:'Niveau A — Filleuls directs',sub:'Personnes invitées directement par vous',cls:'lv-a',av:'av-a',bd:'bd-a',ntCls:'on-a'},
+  B:{ico:'ib',emoij:'🔵',titre:'Niveau B — Filleuls indirects',sub:'Filleuls de vos filleuls (2e rang)',cls:'lv-b',av:'av-b',bd:'bd-b',ntCls:'on-b'},
+  C:{ico:'ic',emoij:'🟠',titre:'Niveau C — 3e génération',sub:'Filleuls des filleuls de vos filleuls',cls:'lv-c',av:'av-c',bd:'bd-c',ntCls:'on-c'},
+};
+
+function switchNiv(niv){
+  curNiv=niv;
+  const m=NIV_META[niv];
+  ['A','B','C'].forEach(n=>{
+    const btn=$('nt-'+n.toLowerCase());
+    btn.className='nt'+(n===niv?' '+NIV_META[n].ntCls:'');
+  });
+  const ico=$('ns-ico');ico.className='ns-ico '+m.ico;ico.textContent=m.emoij;
+  $s('ns-titre',m.titre);$s('ns-sub',m.sub);
+  $s('mem-title','Membres '+m.titre.split('—')[0].trim());
+  const data=niv==='A'?filleulsA:niv==='B'?filleulsB:filleulsC;
+  renderStats(data,niv);
+  renderMembres(data,niv);
+}
+
+// ── RECHERCHER ──
+async function rechercher(){
+  const dd=$('date-debut').value;
+  const df=$('date-fin').value;
+  dateDebut=dd;dateFin=df;
+  await chargerDonnees();
+}
+
+// ── CHARGER DONNÉES ──
+async function chargerDonnees(){
+  if(!monCode)return;
+  $('mem-list').innerHTML=`<div style="text-align:center;padding:28px"><span class="ld"></span></div>`;
+
+  // Filleuls A : ceux dont code_parrain = mon code
+  let qA=SB.from('profiles').select('id,full_name,email,created_at,gains_totaux,vip_niveau,investissement').eq('code_parrain',monCode).order('created_at',{ascending:false});
+  if(dateDebut) qA=qA.gte('created_at',dateDebut+'T00:00:00');
+  if(dateFin)   qA=qA.lte('created_at',dateFin+'T23:59:59');
+  const{data:A}=await qA;
+  filleulsA=A||[];
+
+  // Filleuls B : ceux dont code_parrain = code_parrainage d'un filleul A
+  const codesA=filleulsA.map(f=>f.id); // on cherche par parrain_id si disponible
+  let filleulsB_arr=[];
+  if(filleulsA.length>0){
+    // Charger codes parrainage des filleuls A
+    const{data:profA}=await SB.from('profiles').select('id,code_parrainage').in('id',codesA);
+    const codesParrainA=(profA||[]).map(f=>f.code_parrainage).filter(Boolean);
+    if(codesParrainA.length>0){
+      let qB=SB.from('profiles').select('id,full_name,email,created_at,gains_totaux,vip_niveau').in('code_parrain',codesParrainA).order('created_at',{ascending:false});
+      if(dateDebut) qB=qB.gte('created_at',dateDebut+'T00:00:00');
+      if(dateFin)   qB=qB.lte('created_at',dateFin+'T23:59:59');
+      const{data:B}=await qB;
+      filleulsB_arr=B||[];
+    }
+  }
+  filleulsB=filleulsB_arr;
+
+  // Filleuls C : filleuls des filleuls B
+  let filleulsC_arr=[];
+  if(filleulsB.length>0){
+    const codesB=filleulsB.map(f=>f.id);
+    const{data:profB}=await SB.from('profiles').select('id,code_parrainage').in('id',codesB);
+    const codesParrainB=(profB||[]).map(f=>f.code_parrainage).filter(Boolean);
+    if(codesParrainB.length>0){
+      let qC=SB.from('profiles').select('id,full_name,email,created_at,gains_totaux,vip_niveau').in('code_parrain',codesParrainB).order('created_at',{ascending:false});
+      if(dateDebut) qC=qC.gte('created_at',dateDebut+'T00:00:00');
+      if(dateFin)   qC=qC.lte('created_at',dateFin+'T23:59:59');
+      const{data:C}=await qC;
+      filleulsC_arr=C||[];
+    }
+  }
+  filleulsC=filleulsC_arr;
+
+  const total=filleulsA.length+filleulsB.length+filleulsC.length;
+  const gainsTotaux=[...filleulsA,...filleulsB,...filleulsC].reduce((s,f)=>s+(f.gains_totaux||0),0);
+  const commTotal=P?.commission_parrainage||0;
+
+  $s('stat-total',total);
+  // Calcul nouveaux selon filtre date
+  const dd=dateDebut||'2000-01-01';const df=dateFin||today();
+  const nbNew=[...filleulsA,...filleulsB,...filleulsC].filter(f=>{const d=f.created_at?.slice(0,10)||'';return d>=dd&&d<=df}).length;
+  $s('stat-nouveaux',nbNew);
+  $s('stat-gains',fmtF(gainsTotaux));
+
+  // Render niveau actuel
+  switchNiv(curNiv);
+
+  // Section mon équipe
+  renderEquipe();
+}
+
+function renderStats(data,niv){
+  const total=data.length;
+  const dd=dateDebut||'2000-01-01';const df=dateFin||today();
+  const nouveaux=data.filter(f=>(f.created_at?.slice(0,10)||'')>=dd&&(f.created_at?.slice(0,10)||'')<=df).length;
+  const ayantRecharge=data.filter(f=>(f.investissement||0)>0).length;
+  const totalRecharge=data.reduce((s,f)=>s+(f.investissement||0),0);
+  $s('nsc-membres',total);
+  $s('nsc-nouveaux',nouveaux);
+  $s('nsc-recharge-amt',fmtF(totalRecharge));
+  $s('nsc-recharge-nb',ayantRecharge+' / '+total);
+}
+
+function renderMembres(data,niv){
+  const list=$('mem-list');
+  if(!data.length){
+    list.innerHTML=`<div class="empty"><div class="em-ico">👥</div><div class="em-t">Aucun membre en Niveau ${niv}</div><div class="em-s">Invitez des amis pour remplir votre équipe !</div></div>`;
+    return;
+  }
+  const m=NIV_META[niv];
+  list.innerHTML=data.map(f=>{
+    const ini=(f.full_name||f.email||'?')[0].toUpperCase();
+    const d=new Date(f.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    const vip=f.vip_niveau||'VIP 0';
+    const gains=f.gains_totaux||0;
+    const rechg=f.investissement||0;
+    return `<div class="m-item ${m.cls}">
+      <div class="m-av ${m.av}">${ini}</div>
+      <div class="m-info">
+        <div class="m-nom">${f.full_name||f.email||'Membre VGN'}</div>
+        <div class="m-sub">${vip} · Inscrit le ${d}${rechg>0?' · 🔋 Rechargé':''}</div>
+      </div>
+      <div class="m-right">
+        <div class="m-gain">${fmtF(gains)}</div>
+        <span class="m-badge ${m.bd}">Niv. ${niv}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderEquipe(){
+  // Stats globales équipe
+  const total=filleulsA.length+filleulsB.length+filleulsC.length;
+  $s('eq-total',total);
+  $s('eq-actifs',filleulsA.length);
+  $s('eq-comm',fmtF(P?.commission_parrainage||0));
+
+  // Commissions
+  const comm=P?.commission_parrainage||0;
+  $s('cp-total',fmtF(comm));
+  // Estimation mois & jour (simulée depuis transactions)
+  chargerCommMoisJour();
+
+  // Lien
+  const lien=getLien();
+  $('eq-lien').textContent=lien;
+
+  // Liste filleuls directs
+  const eqList=$('eq-list');
+  if(!filleulsA.length){
+    eqList.innerHTML=`<div class="empty"><div class="em-ico">👥</div><div class="em-t">Aucun filleul direct</div><div class="em-s">Partagez votre lien pour commencer à recruter !</div></div>`;
+    return;
+  }
+  eqList.innerHTML=filleulsA.map(f=>{
+    const ini=(f.full_name||f.email||'?')[0].toUpperCase();
+    const d=new Date(f.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    const vip=f.vip_niveau||'VIP 0';
+    const g=f.gains_totaux||0;
+    return `<div class="m-item lv-a" style="margin-bottom:7px">
+      <div class="m-av av-a">${ini}</div>
+      <div class="m-info">
+        <div class="m-nom">${f.full_name||f.email||'Membre VGN'}</div>
+        <div class="m-sub">${vip} · ${d}</div>
+      </div>
+      <div class="m-right">
+        <div class="m-gain">+${fmtF(Math.floor(g*.1))}</div>
+        <span class="m-badge bd-a">Commission</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function chargerCommMoisJour(){
+  const mois=startOfMonth();const jour=today();
+  const{data:tm}=await SB.from('transactions').select('montant,created_at').eq('user_id',U.id).eq('type','commission').gte('created_at',mois+'T00:00:00');
+  const{data:tj}=await SB.from('transactions').select('montant').eq('user_id',U.id).eq('type','commission').gte('created_at',jour+'T00:00:00');
+  const cm=(tm||[]).reduce((s,t)=>s+(t.montant||0),0);
+  const cj=(tj||[]).reduce((s,t)=>s+(t.montant||0),0);
+  $s('cp-mois',fmtF(cm));
+  $s('cp-jour',fmtF(cj));
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
+  P=p||{};
+  monCode=P.code_parrainage||(U.id.slice(0,8).toUpperCase());
+  $s('tb-vip',P.vip_niveau||'VIP 0');
+
+  // Dates par défaut : ce mois
+  const debut=startOfMonth();const fin=today();
+  $('date-debut').value=debut;
+  $('date-fin').value=fin;
+  dateDebut=debut;dateFin=fin;
+
+  await chargerDonnees();
+}
+init();
+</script>
+</body>
+</html>
