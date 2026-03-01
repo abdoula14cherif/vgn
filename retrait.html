@@ -135,8 +135,8 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="sc-val" id="sc-solde"><span class="ld"></span></div>
     <div class="sc-sub" id="sc-sub"></div>
     <div class="sc-chips">
+      <div class="chip" onclick="setMontant(600)">600</div>
       <div class="chip" onclick="setMontant(1000)">1 000</div>
-      <div class="chip" onclick="setMontant(2000)">2 000</div>
       <div class="chip" onclick="setMontant(5000)">5 000</div>
       <div class="chip" onclick="setMontantMax()">Max</div>
     </div>
@@ -222,7 +222,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
       <span class="frais-val" id="f-montant">—</span>
     </div>
     <div class="frais-row">
-      <span class="frais-lbl">Frais de traitement (2%)</span>
+      <span class="frais-lbl">Frais de traitement (5%)</span>
       <span class="frais-val" id="f-frais">—</span>
     </div>
     <div class="frais-row total">
@@ -278,18 +278,12 @@ const SB=supabase.createClient(
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
 
-const FRAIS_PCT=0.02;
-let MIN=1000; // dynamique : 0 pendant le stage, 1000 après
+const FRAIS_PCT=0.05; // 5%
+let MIN=600; // minimum fixe 600 FCFA
 
 // Calculer le vrai minimum selon le statut stage
 function calcMin(profile, userCreatedAt){
-  const vipNum=parseInt((profile?.vip_niveau||'VIP 0').replace('VIP ',''))||0;
-  if(vipNum>0) return 1000; // a un plan VIP payant → min 1000
-  // Stage : 4 jours depuis la création du compte
-  const ca=profile?.created_at||userCreatedAt||new Date().toISOString();
-  const joursEcoules=Math.floor((Date.now()-new Date(ca).getTime())/86400000);
-  if(joursEcoules<=4) return 0; // pendant le stage → pas de minimum
-  return 1000; // stage terminé → min 1000
+  return 600; // minimum fixe 600 FCFA pour tous
 }
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
