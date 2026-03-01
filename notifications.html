@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Notifications</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--od:#EA580C;
+  --r:#EF4444;--b:#3B82F6;--p:#8B5CF6;
+  --bg:#F0F2F5;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;
+  justify-content:center;font-size:1.2rem;color:#fff;text-decoration:none;font-weight:900}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tb-lire{font-size:.7rem;font-weight:800;color:var(--g);background:#fff;
+  padding:6px 13px;border-radius:20px;border:none;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:transform .15s}
+.tb-lire:active{transform:scale(.93)}
+
+/* ── SCROLL ── */
+.scroll{padding-top:calc(var(--H)+var(--sat));padding-bottom:calc(var(--B)+var(--sab)+20px);min-height:100svh}
+
+/* ── FILTRE TABS ── */
+.filter-bar{background:var(--card);border-bottom:1px solid var(--bd);
+  padding:10px 12px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.ftab{flex-shrink:0;padding:7px 14px;border-radius:20px;border:none;
+  font-family:'Nunito',sans-serif;font-size:.74rem;font-weight:800;
+  cursor:pointer;transition:all .18s;background:#F3F4F6;color:var(--mu)}
+.ftab.on{background:var(--g);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+
+/* ── STATS RAPIDES ── */
+.quick-stats{margin:12px 12px 8px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.qs{background:var(--card);border-radius:14px;padding:11px 10px;text-align:center;
+  box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.qs-v{font-size:1.25rem;font-weight:900;margin-bottom:3px}
+.qs-l{font-size:.58rem;font-weight:700;color:var(--mu)}
+
+/* ── NOUVELLE NOTIF BANNER ── */
+.new-banner{margin:0 12px 10px;background:linear-gradient(135deg,var(--o),var(--od));
+  border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;box-shadow:0 3px 14px rgba(249,115,22,.25);display:none}
+.new-banner.show{display:flex}
+.nb-ico{font-size:1.4rem;flex-shrink:0;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.nb-txt{flex:1;font-size:.75rem;font-weight:800;color:#fff}
+.nb-btn{font-size:.65rem;font-weight:900;color:var(--o);background:#fff;
+  padding:5px 12px;border-radius:20px;flex-shrink:0}
+
+/* ── NOTIF ITEMS ── */
+.notif-list{padding:0 12px;display:flex;flex-direction:column;gap:8px;padding-bottom:14px}
+
+.n-item{background:var(--card);border-radius:16px;padding:13px 14px;
+  display:flex;align-items:flex-start;gap:11px;box-shadow:0 1px 7px rgba(0,0,0,.07);
+  cursor:pointer;transition:all .18s;position:relative;overflow:hidden;
+  border-left:5px solid var(--bd)}
+.n-item:active{transform:scale(.985);background:#F8FAFB}
+.n-item.unread{border-left-color:var(--o)}
+.n-item.unread::before{content:'';position:absolute;top:0;right:0;
+  width:8px;height:8px;border-radius:50%;background:var(--o);margin:10px 10px 0 0}
+
+/* Couleurs par type */
+.n-item.t-success{border-left-color:var(--g)}
+.n-item.t-success.unread{border-left-color:var(--g)}
+.n-item.t-success.unread::before{background:var(--g)}
+.n-item.t-warning{border-left-color:var(--o)}
+.n-item.t-info{border-left-color:var(--b)}
+.n-item.t-info.unread::before{background:var(--b)}
+.n-item.t-promo{border-left-color:var(--p)}
+.n-item.t-promo.unread::before{background:var(--p)}
+.n-item.t-urgent{border-left-color:var(--r)}
+.n-item.t-urgent.unread::before{background:var(--r)}
+
+/* Icône type */
+.n-ico{width:44px;height:44px;border-radius:13px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.ico-success{background:#F0FDF4}.ico-warning{background:#FFF7ED}
+.ico-info{background:#EFF6FF}.ico-promo{background:#F5F3FF}
+.ico-urgent{background:#FEF2F2}.ico-default{background:#F3F4F6}
+
+.n-body{flex:1;min-width:0}
+.n-titre{font-size:.82rem;font-weight:900;color:var(--txt);line-height:1.3;margin-bottom:4px}
+.n-msg{font-size:.7rem;color:var(--mu);line-height:1.55;font-weight:600}
+.n-item.unread .n-msg{color:#374151}
+.n-time{font-size:.6rem;color:var(--mu);font-weight:700;margin-top:6px;display:flex;align-items:center;gap:4px}
+.n-time-tag{font-size:.57rem;font-weight:800;padding:2px 8px;border-radius:8px;margin-left:auto}
+.tag-lu{background:#F3F4F6;color:var(--mu)}.tag-new{background:#FFF7ED;color:var(--od)}
+
+/* ── EXPANDED (detail) ── */
+.n-expand{display:none;margin-top:8px;padding:10px;background:#F8FAFC;
+  border-radius:10px;font-size:.69rem;color:var(--txt);font-weight:600;line-height:1.6}
+.n-item.open .n-expand{display:block}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:52px 20px}
+.em-ico{font-size:4rem;margin-bottom:14px}
+.em-t{font-size:.9rem;font-weight:900;color:var(--txt);margin-bottom:7px}
+.em-s{font-size:.74rem;color:var(--mu);line-height:1.6}
+
+/* ── BOTNAV ── */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;
+  padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+
+/* ── TOAST ── */
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+8px);left:50%;
+  transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;
+  padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;
+  white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}
+.ld{display:inline-block;width:11px;height:11px;border:2px solid #ccc;
+  border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">‹</a>
+  <span class="tbt">🔔 Notifications</span>
+  <button class="tb-lire" onclick="toutMarquerLu()">✓ Tout lire</button>
+</div>
+
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- FILTRE -->
+  <div class="filter-bar">
+    <button class="ftab on" data-f="all"    onclick="setFilter('all',this)">🔔 Toutes</button>
+    <button class="ftab"    data-f="unread" onclick="setFilter('unread',this)">🔴 Non lues</button>
+    <button class="ftab"    data-f="success" onclick="setFilter('success',this)">✅ Gains</button>
+    <button class="ftab"    data-f="warning" onclick="setFilter('warning',this)">⚠️ Alertes</button>
+    <button class="ftab"    data-f="info"    onclick="setFilter('info',this)">ℹ️ Infos</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="quick-stats">
+    <div class="qs"><div class="qs-v" id="qs-total">—</div><div class="qs-l">Total</div></div>
+    <div class="qs"><div class="qs-v" style="color:var(--o)" id="qs-unread">—</div><div class="qs-l">Non lues</div></div>
+    <div class="qs"><div class="qs-v" style="color:var(--g)" id="qs-today">—</div><div class="qs-l">Aujourd'hui</div></div>
+  </div>
+
+  <!-- BANNER NOUVELLES NOTIFS (temps réel) -->
+  <div class="new-banner" id="new-banner" onclick="recharger()">
+    <span class="nb-ico">🔔</span>
+    <span class="nb-txt" id="new-banner-txt">Nouvelles notifications disponibles</span>
+    <span class="nb-btn">Actualiser</span>
+  </div>
+
+  <!-- LISTE -->
+  <div class="notif-list" id="notif-list">
+    <div style="text-align:center;padding:40px"><span class="ld"></span></div>
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)}
+const today=()=>new Date().toISOString().slice(0,10);
+function timeAgo(iso){
+  const d=Math.floor((Date.now()-new Date(iso))/1000);
+  if(d<60)return 'À l\'instant';
+  if(d<3600)return Math.floor(d/60)+'min';
+  if(d<86400)return Math.floor(d/3600)+'h';
+  if(d<604800)return Math.floor(d/86400)+'j';
+  return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+}
+
+const TYPE_META={
+  success:{ico:'✅',cls:'ico-success',label:'Gain'},
+  warning:{ico:'⚠️',cls:'ico-warning',label:'Alerte'},
+  info:   {ico:'ℹ️',cls:'ico-info',   label:'Info'},
+  promo:  {ico:'🎁',cls:'ico-promo',  label:'Promo'},
+  urgent: {ico:'🚨',cls:'ico-urgent', label:'Urgent'},
+  payment:{ico:'💳',cls:'ico-success',label:'Paiement'},
+};
+function getMeta(type){return TYPE_META[type]||{ico:'🔔',cls:'ico-default',label:'Info'}}
+
+let U=null,allNotifs=[],curFilter='all',newCount=0;
+
+/* ── CHARGER NOTIFS ── */
+async function charger(){
+  $('notif-list').innerHTML=`<div style="text-align:center;padding:40px"><span class="ld"></span></div>`;
+  const{data,error}=await SB.from('notifications')
+    .select('*').eq('user_id',U.id)
+    .order('created_at',{ascending:false}).limit(100);
+  allNotifs=data||[];
+  newCount=0;
+  $('new-banner').classList.remove('show');
+  updateStats();
+  render();
+}
+
+function updateStats(){
+  const nb=allNotifs.length;
+  const unread=allNotifs.filter(n=>!n.lue).length;
+  const tod=allNotifs.filter(n=>n.created_at?.slice(0,10)===today()).length;
+  $s('qs-total',nb);$s('qs-unread',unread);$s('qs-today',tod);
+}
+
+/* ── RENDER ── */
+function render(){
+  let list=allNotifs;
+  if(curFilter==='unread') list=allNotifs.filter(n=>!n.lue);
+  else if(curFilter!=='all') list=allNotifs.filter(n=>n.type===curFilter);
+
+  const el=$('notif-list');
+  if(!list.length){
+    el.innerHTML=`<div class="empty">
+      <div class="em-ico">${curFilter==='unread'?'✅':'🔔'}</div>
+      <div class="em-t">${curFilter==='unread'?'Tout est lu !':'Aucune notification'}</div>
+      <div class="em-s">${curFilter==='unread'?'Vous êtes à jour, bravo !':'Les notifications apparaîtront ici dès qu\'il y a une activité sur votre compte.'}</div>
+    </div>`;
+    return;
+  }
+
+  // Grouper par date
+  const groups={};
+  list.forEach(n=>{
+    const d=n.created_at?.slice(0,10)||'';
+    const label=d===today()?'Aujourd\'hui':d===getPrev()?'Hier':
+      new Date(d).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+    if(!groups[label])groups[label]=[];
+    groups[label].push(n);
+  });
+
+  let html='';
+  Object.entries(groups).forEach(([label,items])=>{
+    html+=`<div style="font-size:.67rem;font-weight:800;color:var(--mu);margin:10px 0 6px;text-align:center;text-transform:uppercase;letter-spacing:.06em">── ${label} ──</div>`;
+    items.forEach(n=>{
+      const m=getMeta(n.type);
+      const unreadCls=n.lue?'':'unread';
+      const typeCls='t-'+(n.type||'info');
+      const tag=n.lue?'<span class="n-time-tag tag-lu">Lu</span>':'<span class="n-time-tag tag-new">Nouveau</span>';
+      html+=`<div class="n-item ${unreadCls} ${typeCls}" id="ni-${n.id}" onclick="toggleItem('${n.id}')">
+        <div class="n-ico ${m.cls}">${m.ico}</div>
+        <div class="n-body">
+          <div class="n-titre">${escHtml(n.titre)}</div>
+          <div class="n-msg">${escHtml(truncate(n.message,90))}</div>
+          <div class="n-expand">${escHtml(n.message)}</div>
+          <div class="n-time">🕐 ${timeAgo(n.created_at)} ${tag}</div>
+        </div>
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+}
+
+function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function truncate(s,n){if(!s)return '';if(s.length<=n)return s;return s.slice(0,n)+'...'}
+function getPrev(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10)}
+
+/* ── TOGGLE ITEM (expand + marquer lu) ── */
+async function toggleItem(id){
+  const el=$('ni-'+id);if(!el)return;
+  el.classList.toggle('open');
+  const n=allNotifs.find(x=>x.id===id);
+  if(!n)return;
+  if(!n.lue){
+    n.lue=true;
+    el.classList.remove('unread');
+    el.querySelector('.n-time-tag')?.classList.replace('tag-new','tag-lu');
+    el.querySelector('.n-time-tag').textContent='Lu';
+    el.style.removeProperty('border-left-color');
+    // Supprimer le point rouge
+    const before=el.querySelector('::before');
+    await SB.from('notifications').update({lue:true}).eq('id',id);
+    updateStats();
+  }
+}
+
+/* ── TOUT MARQUER LU ── */
+async function toutMarquerLu(){
+  const ids=allNotifs.filter(n=>!n.lue).map(n=>n.id);
+  if(!ids.length){toast('✅ Tout est déjà lu','ok');return}
+  await SB.from('notifications').update({lue:true}).eq('user_id',U.id).eq('lue',false);
+  allNotifs.forEach(n=>n.lue=true);
+  toast('✅ '+ids.length+' notification'+(ids.length>1?'s':'')+' marquée'+(ids.length>1?'s':'')+' comme lues','ok');
+  updateStats();
+  render();
+}
+
+/* ── FILTRE ── */
+function setFilter(f,btn){
+  curFilter=f;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+/* ── RELOAD depuis banner ── */
+function recharger(){charger()}
+
+/* ── TEMPS RÉEL : nouvelles notifications ── */
+function ecouterTempsReel(){
+  SB.channel('notifs-rt-'+U.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${U.id}`},
+    payload=>{
+      const n=payload.new;
+      // Ajouter en tête
+      allNotifs.unshift(n);
+      newCount++;
+      const banner=$('new-banner');
+      $s('new-banner-txt',newCount+' nouvelle'+(newCount>1?'s':'')+' notification'+(newCount>1?'s':'')+' !');
+      banner.classList.add('show');
+      updateStats();
+      // Si filtre "unread" ou "all", render direct
+      if(curFilter==='all'||curFilter==='unread'){
+        newCount=0;banner.classList.remove('show');
+        render();
+      }
+      // Toast discret
+      const m=getMeta(n.type);
+      toast(m.ico+' '+n.titre,'ok');
+    })
+    .subscribe();
+}
+
+/* ── INIT ── */
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+  await charger();
+  ecouterTempsReel();
+  // Marquer comme lues les notifs "info" de bienvenue après 3s
+  setTimeout(async()=>{
+    const welcome=allNotifs.filter(n=>!n.lue&&n.type==='info'&&n.titre.includes('Bienvenue'));
+    if(welcome.length){
+      await SB.from('notifications').update({lue:true}).in('id',welcome.map(n=>n.id));
+      welcome.forEach(n=>{n.lue=true});
+    }
+  },3000);
+}
+
+init();
+</script>
+</body>
+</html>
