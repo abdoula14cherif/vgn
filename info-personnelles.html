@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Informations personnelles</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--gl:#22C55E;--o:#F97316;--od:#EA580C;--bg:#F0F2F5;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;text-decoration:none;font-weight:900}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tb-save{font-size:.72rem;font-weight:800;color:var(--g);background:#fff;padding:6px 14px;border-radius:20px;border:none;font-family:'Nunito',sans-serif;cursor:pointer;transition:transform .15s}
+.tb-save:active{transform:scale(.94)}
+
+/* SCROLL */
+.scroll{padding-top:calc(var(--H)+var(--sat)+12px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+
+/* AVATAR HERO */
+.avatar-section{margin:0 12px 14px;background:linear-gradient(135deg,var(--gd),var(--gl));border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(22,163,74,.28)}
+.avatar-section::before{content:'👤';position:absolute;right:-10px;top:-10px;font-size:6rem;opacity:.08}
+.avatar-wrap{width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin-bottom:10px;position:relative;cursor:pointer;overflow:hidden}
+.avatar-wrap img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%}
+.avatar-edit-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff;opacity:0;transition:opacity .2s}
+.avatar-wrap:active .avatar-edit-overlay{opacity:1}
+.av-name{font-size:1rem;font-weight:900;color:#fff;margin-bottom:2px}
+.av-email{font-size:.7rem;color:rgba(255,255,255,.75);font-weight:600}
+.av-badge{margin-top:8px;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;font-size:.65rem;font-weight:800;color:#fff}
+
+/* SECTION */
+.section{margin:0 12px 14px;background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.07)}
+.sec-header{padding:14px 16px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd)}
+.sec-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.ico-g{background:#F0FDF4}.ico-b{background:#EFF6FF}.ico-o{background:#FFF7ED}
+.sec-lbl{font-size:.84rem;font-weight:900;color:var(--txt)}
+.sec-sub{font-size:.62rem;color:var(--mu);margin-top:1px}
+
+/* CHAMPS */
+.field{padding:13px 16px;border-bottom:1px solid #F8FAFC;position:relative}
+.field:last-child{border-bottom:none}
+.field-label{font-size:.63rem;font-weight:800;color:var(--mu);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:5px}
+.field-input{width:100%;padding:12px 14px;border:1.5px solid var(--bd);border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;color:var(--txt);background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
+.field-input:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(22,163,74,.1)}
+.field-input:disabled{background:#F8FAFC;color:var(--mu);cursor:not-allowed}
+.field-input.readonly{background:#F8FAFC;color:#94A3B8;border-style:dashed}
+.field-hint{font-size:.61rem;color:var(--mu);margin-top:5px;font-weight:600;padding-left:2px}
+.field-tag{font-size:.57rem;font-weight:800;padding:2px 8px;border-radius:8px;background:#FEF3C7;color:#92400E;margin-left:auto}
+
+/* SELECT */
+select.field-input{cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236B7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+
+/* CHANGED INDICATOR */
+.field-input.changed{border-color:var(--o);background:#FFFBF5}
+
+/* BOUTON SAUVEGARDER */
+.btn-save{display:block;margin:0 12px 12px;width:calc(100%-24px);padding:15px;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--g),var(--gd));box-shadow:0 4px 18px rgba(22,163,74,.35);cursor:pointer;transition:transform .15s;width:calc(100% - 24px)}
+.btn-save:active{transform:scale(.97)}.btn-save:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* DANGER ZONE */
+.danger-zone{margin:0 12px 14px;background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.07);border:1.5px solid #FEE2E2}
+.dz-header{padding:13px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #FEE2E2}
+.dz-ico{width:34px;height:34px;border-radius:10px;background:#FEF2F2;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.dz-lbl{font-size:.84rem;font-weight:900;color:#DC2626}
+.dz-action{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.dz-action:active{background:#FEF2F2}
+.dza-txt{font-size:.78rem;font-weight:700;color:#DC2626}
+.dza-arr{font-size:1rem;color:#DC2626}
+
+/* MODAL CONFIRMATION */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;max-width:430px;left:50%;transform:translateX(-50%)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + var(--sab));width:100%;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.56,1)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-size:.95rem;font-weight:900;color:var(--txt);margin-bottom:6px}
+.modal-sub{font-size:.74rem;color:var(--mu);line-height:1.5;margin-bottom:16px}
+.modal-btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;cursor:pointer;margin-bottom:9px}
+.modal-btn.danger{background:#DC2626;color:#fff}
+.modal-btn.ghost{background:#F3F4F6;color:var(--mu)}
+
+/* BOTNAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+
+/* TOAST */
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+8px);left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="profil.html">‹</a>
+  <span class="tbt">👤 Infos personnelles</span>
+  <button class="tb-save" id="tb-save-btn" onclick="sauvegarder()">💾 Sauvegarder</button>
+</div>
+
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- AVATAR / HERO -->
+  <div class="avatar-section">
+    <div class="avatar-wrap" onclick="changerAvatar()">
+      <span id="av-initiale">?</span>
+      <img id="av-img" src="" alt="" style="display:none">
+      <div class="avatar-edit-overlay">✏️ Modifier</div>
+    </div>
+    <div class="av-name" id="av-name">—</div>
+    <div class="av-email" id="av-email">—</div>
+    <div class="av-badge" id="av-badge">🌱 VIP 0</div>
+  </div>
+
+  <!-- INFOS PRINCIPALES -->
+  <div class="section">
+    <div class="sec-header">
+      <div class="sec-ico ico-g">👤</div>
+      <div><div class="sec-lbl">Informations de base</div><div class="sec-sub">Nom, téléphone, pays</div></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">📝 Prénom et Nom</div>
+      <input class="field-input" type="text" id="inp-nom" placeholder="Ex: Jean Dupont" autocomplete="name" oninput="markChanged(this)">
+    </div>
+
+    <div class="field">
+      <div class="field-label">📱 Numéro de téléphone</div>
+      <input class="field-input" type="tel" id="inp-phone" placeholder="Ex: 6XX XX XX XX" inputmode="tel" autocomplete="tel" oninput="markChanged(this)">
+      <div class="field-hint">Utilisé pour les paiements Mobile Money</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">🌍 Pays</div>
+      <select class="field-input" id="inp-pays" onchange="markChanged(this)">
+        <option value="">-- Sélectionner --</option>
+        <option value="CM">🇨🇲 Cameroun</option>
+        <option value="SN">🇸🇳 Sénégal</option>
+        <option value="CI">🇨🇮 Côte d'Ivoire</option>
+        <option value="ML">🇲🇱 Mali</option>
+        <option value="BF">🇧🇫 Burkina Faso</option>
+        <option value="GN">🇬🇳 Guinée</option>
+        <option value="CD">🇨🇩 RD Congo</option>
+        <option value="GA">🇬🇦 Gabon</option>
+        <option value="CG">🇨🇬 Congo</option>
+        <option value="TG">🇹🇬 Togo</option>
+        <option value="BJ">🇧🇯 Bénin</option>
+        <option value="NE">🇳🇪 Niger</option>
+        <option value="TD">🇹🇩 Tchad</option>
+        <option value="MG">🇲🇬 Madagascar</option>
+        <option value="FR">🇫🇷 France</option>
+        <option value="BE">🇧🇪 Belgique</option>
+        <option value="CH">🇨🇭 Suisse</option>
+        <option value="autre">🌍 Autre</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div class="field-label">🏙️ Ville</div>
+      <input class="field-input" type="text" id="inp-ville" placeholder="Ex: Yaoundé, Douala..." oninput="markChanged(this)">
+    </div>
+  </div>
+
+  <!-- COMPTE -->
+  <div class="section">
+    <div class="sec-header">
+      <div class="sec-ico ico-b">🔐</div>
+      <div><div class="sec-lbl">Compte</div><div class="sec-sub">Email et mot de passe</div></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">📧 Adresse email <span class="field-tag">Non modifiable</span></div>
+      <input class="field-input readonly" type="email" id="inp-email" disabled>
+      <div class="field-hint">L'email ne peut pas être modifié pour des raisons de sécurité</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">🔑 Nouveau mot de passe</div>
+      <input class="field-input" type="password" id="inp-pwd" placeholder="Laisser vide = pas de changement" autocomplete="new-password" oninput="markChanged(this)">
+      <div class="field-hint">Minimum 8 caractères</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">🔑 Confirmer le mot de passe</div>
+      <input class="field-input" type="password" id="inp-pwd2" placeholder="Répéter le nouveau mot de passe" autocomplete="new-password" oninput="markChanged(this)">
+    </div>
+  </div>
+
+  <!-- PAIEMENT -->
+  <div class="section">
+    <div class="sec-header">
+      <div class="sec-ico ico-o">💳</div>
+      <div><div class="sec-lbl">Compte de retrait</div><div class="sec-sub">Pour recevoir vos gains</div></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">📲 Opérateur Mobile Money</div>
+      <select class="field-input" id="inp-operateur" onchange="markChanged(this)">
+        <option value="">-- Sélectionner --</option>
+        <option value="orange">🍊 Orange Money</option>
+        <option value="mtn">📱 MTN MoMo</option>
+        <option value="moov">🔵 Moov Money</option>
+        <option value="wave">🌊 Wave</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div class="field-label">📱 Numéro Mobile Money</div>
+      <input class="field-input" type="tel" id="inp-mm-num" placeholder="Ex: 6XX XX XX XX" inputmode="tel" oninput="markChanged(this)">
+      <div class="field-hint">Numéro sur lequel vous recevrez vos retraits</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">👤 Nom du titulaire du compte</div>
+      <input class="field-input" type="text" id="inp-mm-nom" placeholder="Nom complet enregistré" oninput="markChanged(this)">
+    </div>
+  </div>
+
+  <!-- BOUTON SAUVEGARDER -->
+  <button class="btn-save" id="btn-save" onclick="sauvegarder()">
+    💾 Sauvegarder les modifications
+  </button>
+
+  <!-- DANGER ZONE -->
+  <div class="danger-zone">
+    <div class="dz-header">
+      <div class="dz-ico">⚠️</div>
+      <div><div class="dz-lbl">Zone de danger</div></div>
+    </div>
+    <div class="dz-action" onclick="openModal()">
+      <span class="dza-txt">🚪 Se déconnecter</span>
+      <span class="dza-arr">›</span>
+    </div>
+  </div>
+
+  <div style="height:8px"></div>
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<!-- MODAL DÉCONNEXION -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">🚪 Se déconnecter ?</div>
+    <div class="modal-sub">Vous devrez vous reconnecter pour accéder à votre compte VGN.</div>
+    <button class="modal-btn danger" onclick="deconnecter()">Confirmer la déconnexion</button>
+    <button class="modal-btn ghost" onclick="closeModal()">Annuler</button>
+  </div>
+</div>
+
+<script>
+const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)}
+let U=null,P=null,hasChanges=false;
+
+function markChanged(el){el.classList.add('changed');hasChanges=true}
+function openModal(){$('modal').classList.add('open')}
+function closeModal(){$('modal').classList.remove('open')}
+async function deconnecter(){await SB.auth.signOut();window.location.href='index.html'}
+
+function changerAvatar(){
+  // Input file caché
+  let fi=document.createElement('input');fi.type='file';fi.accept='image/*';
+  fi.onchange=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    // Preview locale
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=$('av-img');img.src=ev.target.result;img.style.display='block';
+      $('av-initiale').style.display='none';
+    };
+    reader.readAsDataURL(file);
+    toast('📷 Photo mise à jour localement','ok');
+  };
+  fi.click();
+}
+
+async function sauvegarder(){
+  if(!U)return;
+  const btn=$('btn-save');btn.textContent='⏳ Sauvegarde...';btn.disabled=true;
+
+  const nom=($('inp-nom').value||'').trim();
+  const phone=($('inp-phone').value||'').trim();
+  const pays=$('inp-pays').value;
+  const ville=($('inp-ville').value||'').trim();
+  const pwd=($('inp-pwd').value||'');
+  const pwd2=($('inp-pwd2').value||'');
+  const operateur=$('inp-operateur').value;
+  const mmNum=($('inp-mm-num').value||'').trim();
+  const mmNom=($('inp-mm-nom').value||'').trim();
+
+  // Validation
+  if(pwd && pwd!==pwd2){toast('❌ Les mots de passe ne correspondent pas','err');btn.textContent='💾 Sauvegarder les modifications';btn.disabled=false;return}
+  if(pwd && pwd.length<8){toast('❌ Mot de passe trop court (8 caractères min)','err');btn.textContent='💾 Sauvegarder les modifications';btn.disabled=false;return}
+
+  try{
+    // Mettre à jour le profil Supabase
+    const{error:pe}=await SB.from('profiles').update({
+      full_name:nom||null,
+      phone:phone||null,
+      pays:pays||null,
+      ville:ville||null,
+      operateur_retrait:operateur||null,
+      num_retrait:mmNum||null,
+      nom_retrait:mmNom||null,
+      updated_at:new Date().toISOString()
+    }).eq('id',U.id);
+    if(pe)throw pe;
+
+    // Mettre à jour les métadonnées auth
+    if(nom){await SB.auth.updateUser({data:{full_name:nom}})}
+
+    // Changer mot de passe si renseigné
+    if(pwd){
+      const{error:pwe}=await SB.auth.updateUser({password:pwd});
+      if(pwe)throw pwe;
+      $('inp-pwd').value='';$('inp-pwd2').value='';
+    }
+
+    // Mettre à jour l'avatar hero
+    $s('av-name',nom||U.email?.split('@')[0]||'—');
+    document.querySelectorAll('.changed').forEach(el=>el.classList.remove('changed'));
+    hasChanges=false;
+    toast('✅ Profil mis à jour avec succès !','ok');
+  }catch(err){
+    toast('❌ '+(err.message||'Erreur lors de la sauvegarde'),'err');
+  }finally{
+    btn.textContent='💾 Sauvegarder les modifications';btn.disabled=false;
+  }
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
+  P=p||{};
+
+  // Remplir les champs
+  const nom=P.full_name||U.user_metadata?.full_name||'';
+  $('inp-nom').value=nom;
+  $('inp-phone').value=P.phone||U.phone||'';
+  $('inp-email').value=U.email||'';
+  $('inp-pays').value=P.pays||'CM';
+  $('inp-ville').value=P.ville||'';
+  $('inp-operateur').value=P.operateur_retrait||'';
+  $('inp-mm-num').value=P.num_retrait||'';
+  $('inp-mm-nom').value=P.nom_retrait||nom;
+
+  // Avatar hero
+  const initiale=(nom||U.email||'?')[0].toUpperCase();
+  $s('av-initiale',initiale);
+  $s('av-name',nom||U.email?.split('@')[0]||'Investisseur');
+  $s('av-email',U.email||'—');
+  $s('av-badge',(P.vip_niveau||'VIP 0'));
+
+  // Réinitialiser les indicateurs de changement
+  document.querySelectorAll('.field-input').forEach(el=>el.addEventListener('input',()=>{}));
+}
+init();
+</script>
+</body>
+</html>
