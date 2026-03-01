@@ -555,7 +555,7 @@ const SB=supabase.createClient(
   {auth:{persistSession:true,storageKey:'vgn-admin',storage:window.localStorage}}
 );
 
-const ADMINS=['abdoula13cherif@gmail.com']; // ← ajouter les emails admin ici
+const ADMINS=['abdoula13cherif@gmail.com'];
 
 const PLANS_VIP={
   'VIP 1':{gain:70,taches:5},'VIP 2':{gain:175,taches:8},'VIP 3':{gain:560,taches:10},
@@ -591,7 +591,6 @@ async function login(){
 function showErr(m){$('l-err').textContent=m;$('l-err').style.display='block'}
 async function logout(){await SB.auth.signOut();location.reload()}
 
-// Vérifier session existante
 (async()=>{
   const{data:{session}}=await SB.auth.getSession();
   if(session&&ADMINS.includes(session.user?.email)){
@@ -644,7 +643,6 @@ async function loadDash(){
   $s('kpi-invest',fmtF(totalInvest));
   $s('kpi-soldes','Soldes: '+fmtF(totalSolde));
 
-  // Mini listes urgentes sur dashboard
   renderCardList($('d-rech'),rechPend.slice(0,4),'rech',true);
   renderCardList($('d-retr'),retrPend.slice(0,4),'retr',true);
 }
@@ -683,22 +681,13 @@ async function validerRecharge(id,uid,planLabel,planGain,planTaches){
 
 /* ══ RETRAITS ══ */
 async function loadRetraits(){
-  // On sélectionne id,user_id,type,montant,statut,created_at en sûr
-  // Les colonnes methode/frais/montant_net/compte/note peuvent manquer → on les récupère avec try
-  let data=[];
-  try{
-    const res=await SB.from('transactions')
-      .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at, profiles(full_name,email)')
-      .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
-    data=res.data||[];
-  }catch(e){
-    // Fallback si colonnes manquantes
-    const res=await SB.from('transactions')
-      .select('id,user_id,type,montant,statut,created_at, profiles(full_name,email)')
-      .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
-    data=res.data||[];
-  }
-  RETRAITS=data;renderRetr();
+  const{data,error}=await SB.from('transactions')
+    .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at,profiles(full_name,email)')
+    .eq('type','retrait')
+    .order('created_at',{ascending:false})
+    .limit(200);
+  RETRAITS=data||[];
+  renderRetr();
 }
 
 function filtRetr(f,el){
@@ -731,7 +720,6 @@ function renderCardList(container,data,type,mini=false){
   if(!data||!data.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucun élément</div></div>';return}
   const isRech=type==='rech';
   const stMap={en_attente:{lbl:'En attente',cls:'cs-w',ico:'ci-w',em:'⏳'},valide:{lbl:isRech?'Validé':'Payé',cls:'cs-g',ico:'ci-g',em:'✅'},rejete:{lbl:'Rejeté',cls:'cs-r',ico:'ci-r',em:'❌'}};
-  const methIco={mtn:'📱',orange:'🍊',wave:'🌊',crypto:'₿',momo:'📱',bank:'🏦'};
 
   container.innerHTML=data.map(r=>{
     const st=r.statut||'en_attente';
@@ -741,6 +729,9 @@ function renderCardList(container,data,type,mini=false){
     const methLabel=isRech?(r.operateur||r.methode||'—'):(r.methode||'—');
     const uid=r.user_id||'';
     const planLabel=isRech?(r.plan_label||'—'):'';
+
+    // Échapper les apostrophes pour l'injection dans les attributs onclick
+    const nomEsc=nom.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 
     let detailRows='';
     if(isRech){
@@ -763,11 +754,24 @@ function renderCardList(container,data,type,mini=false){
         <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
     }
 
+    /* ─── CORRECTION PRINCIPALE : data-* attributes au lieu de fonctions inline avec params complexes ─── */
     const actionsHTML=st==='en_attente'?`<div class="actions">
-      ${isRech?`<button class="abtn a-valider" onclick="event.stopPropagation();validerRecharge('${r.id}','${uid}','${planLabel}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
-               :`<button class="abtn a-valider" onclick="event.stopPropagation();validerRetrait('${r.id}','${uid}',${r.montant||0},${r.frais||0},${r.montant_net||r.montant||0})">✅ Marquer payé</button>`}
-      <button class="abtn a-rejeter" onclick="event.stopPropagation();openReject('${r.id}','${type}','${nom.replace(/'/g,'`')}','${isRech?'':'retrait'}')">❌ Rejeter</button>
-      <button class="abtn a-notif" onclick="event.stopPropagation();openQNotif('${uid}','${nom.replace(/'/g,'`')}')">🔔 Notifier</button>
+      ${isRech
+        ? `<button class="abtn a-valider"
+              data-id="${r.id}" data-uid="${uid}"
+              data-plan="${planLabel}" data-gain="${r.plan_gain||0}" data-taches="${r.plan_taches||0}"
+              onclick="event.stopPropagation();btnValiderRecharge(this)">✅ Valider</button>`
+        : `<button class="abtn a-valider"
+              data-id="${r.id}" data-uid="${uid}"
+              data-montant="${r.montant||0}" data-frais="${r.frais||0}" data-net="${r.montant_net||r.montant||0}"
+              onclick="event.stopPropagation();btnValiderRetrait(this)">✅ Marquer payé</button>`
+      }
+      <button class="abtn a-rejeter"
+              data-id="${r.id}" data-type="${type}" data-nom="${nomEsc}"
+              onclick="event.stopPropagation();btnReject(this)">❌ Rejeter</button>
+      <button class="abtn a-notif"
+              data-uid="${uid}" data-nom="${nomEsc}"
+              onclick="event.stopPropagation();btnQNotif(this)">🔔 Notifier</button>
     </div>`:'';
 
     return `<div class="card" id="card-${r.id}">
@@ -792,6 +796,20 @@ function renderCardList(container,data,type,mini=false){
   }).join('');
 }
 
+/* ─── Wrappers boutons via data-attributes (évite les problèmes de quotes dans onclick) ─── */
+function btnValiderRecharge(el){
+  validerRecharge(el.dataset.id,el.dataset.uid,el.dataset.plan,Number(el.dataset.gain),Number(el.dataset.taches));
+}
+function btnValiderRetrait(el){
+  validerRetrait(el.dataset.id,el.dataset.uid,Number(el.dataset.montant),Number(el.dataset.frais),Number(el.dataset.net));
+}
+function btnReject(el){
+  openReject(el.dataset.id,el.dataset.type,el.dataset.nom);
+}
+function btnQNotif(el){
+  openQNotif(el.dataset.uid,el.dataset.nom);
+}
+
 /* ══ UTILISATEURS ══ */
 async function loadUsers(){
   const{data}=await SB.from('profiles').select('*').order('created_at',{ascending:false}).limit(300);
@@ -814,7 +832,7 @@ function renderUsers(){
   container.innerHTML=d.map(u=>{
     const ini=(u.full_name||u.email||'?').charAt(0).toUpperCase();
     const vip=u.vip_niveau||'VIP 0';
-    const vipN=parseInt(vip.replace('VIP ',''))||0;
+    const nomEsc=(u.full_name||u.email||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     return `<div class="ucard" id="uc-${u.id}">
       <div class="uc-head" onclick="toggleCard('uc-${u.id}',event)">
         <div class="uc-av">${ini}</div>
@@ -839,13 +857,27 @@ function renderUsers(){
           <div class="uc-cell"><div class="uc-cl">PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrain||'—'}</div></div>
         </div>
         <div class="actions">
-          <button class="abtn a-edit" onclick="openEdit('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}',${u.solde||0},'${vip}',${u.gains_totaux||0})">✏️ Modifier</button>
-          <button class="abtn a-notif" onclick="openQNotif('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🔔 Notifier</button>
-          <button class="abtn a-del" onclick="delUser('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🗑️ Supprimer</button>
+          <button class="abtn a-edit"
+            data-id="${u.id}" data-nom="${nomEsc}"
+            data-solde="${u.solde||0}" data-vip="${vip}" data-gains="${u.gains_totaux||0}"
+            onclick="btnEditUser(this)">✏️ Modifier</button>
+          <button class="abtn a-notif"
+            data-uid="${u.id}" data-nom="${nomEsc}"
+            onclick="btnQNotif(this)">🔔 Notifier</button>
+          <button class="abtn a-del"
+            data-id="${u.id}" data-nom="${nomEsc}"
+            onclick="btnDelUser(this)">🗑️ Supprimer</button>
         </div>
       </div>
     </div>`;
   }).join('');
+}
+
+function btnEditUser(el){
+  openEdit(el.dataset.id,el.dataset.nom,Number(el.dataset.solde),el.dataset.vip,Number(el.dataset.gains));
+}
+function btnDelUser(el){
+  delUser(el.dataset.id,el.dataset.nom);
 }
 
 /* ══ MODIFIER PROFIL ══ */
@@ -875,29 +907,39 @@ async function delUser(id,nom){
 }
 
 /* ══ REJETER ══ */
-let REJECT_EXTRA='';
-function openReject(id,type,nom,extra=''){
-  REJECT_ID=id;REJECT_TYPE=type;REJECT_EXTRA=extra;
-  $s('mr-sub',nom);$('mr-note').value='';openM('m-reject');
+function openReject(id,type,nom){
+  REJECT_ID=id;
+  REJECT_TYPE=type;
+  $s('mr-sub',nom);
+  $('mr-note').value='';
+  openM('m-reject');
 }
+
 async function doReject(){
   const note=$('mr-note').value.trim();
-  const btn=$('mr-ok');btn.disabled=true;btn.textContent='⏳...';
+  const btn=$('mr-ok');
+  btn.disabled=true;btn.textContent='⏳...';
+
   const table=REJECT_TYPE==='rech'?'recharges':'transactions';
   const{error}=await SB.from(table).update({statut:'rejete',admin_note:note||null}).eq('id',REJECT_ID);
-  if(error){toast('❌ '+error.message,'err');btn.disabled=false;btn.textContent='❌ Confirmer';return}
 
-  // Si rejet d'un retrait → rembourser le solde
-  if(REJECT_TYPE==='retr'||REJECT_EXTRA==='retrait'){
+  if(error){
+    toast('❌ '+error.message,'err');
+    btn.disabled=false;btn.textContent='❌ Confirmer';
+    return;
+  }
+
+  /* ─── CORRECTION : remboursement du solde en cas de rejet de retrait ─── */
+  if(REJECT_TYPE==='retr'){
     const tr=RETRAITS.find(r=>r.id===REJECT_ID);
     if(tr&&tr.user_id&&tr.montant){
-      await SB.from('profiles').update({
-        solde:SB.rpc('increment_solde',{user_id_input:tr.user_id,amount:tr.montant})
-      }).eq('id',tr.user_id);
-      // Simple update si rpc non dispo
+      // Récupérer le solde actuel puis l'incrémenter (pas de SB.rpc imbriqué)
       const{data:prof}=await SB.from('profiles').select('solde').eq('id',tr.user_id).single();
       if(prof){
-        await SB.from('profiles').update({solde:(prof.solde||0)+tr.montant}).eq('id',tr.user_id);
+        const nouveauSolde=(prof.solde||0)+Number(tr.montant);
+        await SB.from('profiles').update({solde:nouveauSolde}).eq('id',tr.user_id);
+        await insertNotif(tr.user_id,'warning','Retrait annule',
+          'Votre demande de retrait de '+fmtF(tr.montant)+' FCFA a ete rejetee. Votre solde a ete restitue.');
       }
     }
   }
@@ -936,7 +978,6 @@ async function sendNotif(){
   }
   if(!uids.length){toast('⚠️ Aucun destinataire','err');btn.disabled=false;btn.textContent='📤 Envoyer';return}
   const rows=uids.map(id=>({user_id:id,type:NTYPE,titre,message:msg,lue:false,created_at:new Date().toISOString()}));
-  // Insérer par batch de 50
   for(let i=0;i<rows.length;i+=50) await SB.from('notifications').insert(rows.slice(i,i+50));
   toast('✅ '+uids.length+' notification(s) envoyée(s) !','ok');
   $('n-titre').value='';$('n-msg').value='';
@@ -944,12 +985,10 @@ async function sendNotif(){
   await loadNotifHist();
 }
 
-/* Notif auto après action */
 async function insertNotif(uid,type,titre,message){
   await SB.from('notifications').insert({user_id:uid,type,titre,message,lue:false,created_at:new Date().toISOString()}).catch(()=>{});
 }
 
-/* Notif rapide depuis profil user */
 function openQNotif(uid,nom){
   QNOTIF_UID=uid;$s('qn-sub',nom);$('qn-titre').value='';$('qn-msg').value='';openM('m-qnotif');
 }
@@ -968,7 +1007,6 @@ async function loadNotifHist(){
   if(!NOTIFS.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune notification envoyée</div></div>';return}
   const tIco={info:'ℹ️',success:'✅',warning:'⚠️',promo:'🎁',payment:'💰',urgent:'🚨'};
   const tBg={info:'ci-b',success:'ci-g',warning:'ci-w',promo:'ci-o',payment:'ci-g',urgent:'ci-r'};
-  // Grouper par titre + date
   const grouped={};
   NOTIFS.forEach(n=>{const k=n.titre+'||'+n.created_at?.slice(0,16);if(!grouped[k])grouped[k]={...n,count:0};grouped[k].count++});
   container.innerHTML=Object.values(grouped).slice(0,30).map(n=>{
@@ -1001,11 +1039,9 @@ async function loadStats(){
   $s('s-notifs',(nAll||[]).length);
   $s('s-roue',(roue||[]).length);
 
-  // Parrainage : users avec code_parrain rempli
   const filleuls=(prf||[]).filter(p=>p.code_parrain).length;
   $s('s-fil',filleuls);
 
-  // Répartition VIP
   const vipCount={};
   (prf||[]).forEach(p=>{const v=p.vip_niveau||'VIP 0';vipCount[v]=(vipCount[v]||0)+1});
   const sorted=Object.entries(vipCount).sort((a,b)=>parseInt(a[0].replace('VIP ',''))-parseInt(b[0].replace('VIP ','')));
@@ -1023,10 +1059,8 @@ async function loadStats(){
     </div>`;
   }).join('');
 
-  // Top investisseurs
   const topInv=(prf||[]).filter(p=>p.investissement>0).slice(0,8);
   $('top-users').innerHTML=topInv.map((p,i)=>{
-    const u=USERS.find(x=>true)||{}; // just show data we have
     return `<div class="card"><div class="card-head" style="cursor:default">
       <div class="card-ico ci-p">${['🥇','🥈','🥉'][i]||'🏅'}</div>
       <div class="card-info"><div class="card-name">${p.vip_niveau||'VIP 0'}</div><div class="card-meta">Investissement</div></div>
@@ -1037,7 +1071,6 @@ async function loadStats(){
 
 /* ══ UI HELPERS ══ */
 function toggleCard(id,event){
-  // Ne pas toggle si clic sur un bouton ou lien enfant
   if(event&&event.target&&(event.target.closest('.abtn')||event.target.closest('button')||event.target.closest('a')))return;
   const el=$(id);if(!el)return;
   const was=el.classList.contains('open');
