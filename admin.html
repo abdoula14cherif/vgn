@@ -671,11 +671,12 @@ function renderRech(){
 }
 
 async function validerRecharge(id,uid,planLabel,planGain,planTaches){
+  if(!confirm('Valider et activer '+planLabel+' pour cet utilisateur ?'))return;
   toast('⏳ Validation...');
   const{error}=await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString()}).eq('id',id);
   if(error){toast('❌ '+error.message,'err');return}
-  await insertNotif(uid,'payment','✅ Plan '+planLabel+' activé !',
-    'Votre recharge a été validée. Vous pouvez maintenant effectuer vos tâches et gagner '+fmtF(planGain*planTaches)+' FCFA/jour.');
+  await insertNotif(uid,'payment','Plan '+planLabel+' active !',
+    'Votre recharge a ete validee. Vous pouvez maintenant effectuer vos taches et gagner '+fmtF(planGain*planTaches)+' FCFA/jour.');
   toast('✅ Validé et VIP activé !','ok');
   await loadAll();
 }
@@ -713,11 +714,13 @@ function renderRetr(){
   renderCardList($('list-retr'),d,'retr');
 }
 
-async function validerRetrait(id,uid,montant){
+async function validerRetrait(id,uid,montant,frais,montantNet){
+  if(!confirm('Confirmer le paiement de '+fmtF(montantNet||montant)+' FCFA ?'))return;
   toast('⏳ Traitement...');
   const{error}=await SB.from('transactions').update({statut:'valide'}).eq('id',id);
   if(error){toast('❌ '+error.message,'err');return}
-  await insertNotif(uid,'payment','💸 Retrait effectué','Votre retrait de '+fmtF(montant)+' a été traité avec succès. Les fonds sont en route vers votre compte.');
+  await insertNotif(uid,'payment','Retrait effectue',
+    'Votre retrait de '+fmtF(montant)+' FCFA a ete traite. Montant net : '+fmtF(montantNet||montant)+' FCFA. Les fonds sont en route.');
   toast('✅ Retrait validé !','ok');
   await loadAll();
 }
@@ -761,14 +764,14 @@ function renderCardList(container,data,type,mini=false){
     }
 
     const actionsHTML=st==='en_attente'?`<div class="actions">
-      ${isRech?`<button class="abtn a-valider" onclick="validerRecharge('${r.id}','${uid}','${planLabel}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
-               :`<button class="abtn a-valider" onclick="validerRetrait('${r.id}','${uid}',${r.montant||0})">✅ Marquer payé</button>`}
-      <button class="abtn a-rejeter" onclick="openReject('${r.id}','${type}','${nom.replace(/'/g,'`')}')">❌ Rejeter</button>
-      <button class="abtn a-notif" onclick="openQNotif('${uid}','${nom.replace(/'/g,'`')}')">🔔 Notifier</button>
+      ${isRech?`<button class="abtn a-valider" onclick="event.stopPropagation();validerRecharge('${r.id}','${uid}','${planLabel}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
+               :`<button class="abtn a-valider" onclick="event.stopPropagation();validerRetrait('${r.id}','${uid}',${r.montant||0},${r.frais||0},${r.montant_net||r.montant||0})">✅ Marquer payé</button>`}
+      <button class="abtn a-rejeter" onclick="event.stopPropagation();openReject('${r.id}','${type}','${nom.replace(/'/g,'`')}','${isRech?'':'retrait'}')">❌ Rejeter</button>
+      <button class="abtn a-notif" onclick="event.stopPropagation();openQNotif('${uid}','${nom.replace(/'/g,'`')}')">🔔 Notifier</button>
     </div>`:'';
 
     return `<div class="card" id="card-${r.id}">
-      <div class="card-head" onclick="toggleCard('card-${r.id}')">
+      <div class="card-head" onclick="toggleCard('card-${r.id}',event)">
         <div class="card-ico ${sm.ico}">${sm.em}</div>
         <div class="card-info">
           <div class="card-name">${nom}</div>
@@ -813,7 +816,7 @@ function renderUsers(){
     const vip=u.vip_niveau||'VIP 0';
     const vipN=parseInt(vip.replace('VIP ',''))||0;
     return `<div class="ucard" id="uc-${u.id}">
-      <div class="uc-head" onclick="toggleCard('uc-${u.id}')">
+      <div class="uc-head" onclick="toggleCard('uc-${u.id}',event)">
         <div class="uc-av">${ini}</div>
         <div class="uc-info">
           <div class="uc-name">${u.full_name||'Sans nom'}</div>
@@ -872,8 +875,9 @@ async function delUser(id,nom){
 }
 
 /* ══ REJETER ══ */
-function openReject(id,type,nom){
-  REJECT_ID=id;REJECT_TYPE=type;
+let REJECT_EXTRA='';
+function openReject(id,type,nom,extra=''){
+  REJECT_ID=id;REJECT_TYPE=type;REJECT_EXTRA=extra;
   $s('mr-sub',nom);$('mr-note').value='';openM('m-reject');
 }
 async function doReject(){
@@ -881,8 +885,26 @@ async function doReject(){
   const btn=$('mr-ok');btn.disabled=true;btn.textContent='⏳...';
   const table=REJECT_TYPE==='rech'?'recharges':'transactions';
   const{error}=await SB.from(table).update({statut:'rejete',admin_note:note||null}).eq('id',REJECT_ID);
-  if(error)toast('❌ '+error.message,'err');
-  else{closeM('m-reject');toast('Demande rejetée','ok');await loadAll()}
+  if(error){toast('❌ '+error.message,'err');btn.disabled=false;btn.textContent='❌ Confirmer';return}
+
+  // Si rejet d'un retrait → rembourser le solde
+  if(REJECT_TYPE==='retr'||REJECT_EXTRA==='retrait'){
+    const tr=RETRAITS.find(r=>r.id===REJECT_ID);
+    if(tr&&tr.user_id&&tr.montant){
+      await SB.from('profiles').update({
+        solde:SB.rpc('increment_solde',{user_id_input:tr.user_id,amount:tr.montant})
+      }).eq('id',tr.user_id);
+      // Simple update si rpc non dispo
+      const{data:prof}=await SB.from('profiles').select('solde').eq('id',tr.user_id).single();
+      if(prof){
+        await SB.from('profiles').update({solde:(prof.solde||0)+tr.montant}).eq('id',tr.user_id);
+      }
+    }
+  }
+
+  closeM('m-reject');
+  toast('Demande rejetée','ok');
+  await loadAll();
   btn.disabled=false;btn.textContent='❌ Confirmer';
 }
 
@@ -1014,7 +1036,9 @@ async function loadStats(){
 }
 
 /* ══ UI HELPERS ══ */
-function toggleCard(id){
+function toggleCard(id,event){
+  // Ne pas toggle si clic sur un bouton ou lien enfant
+  if(event&&event.target&&(event.target.closest('.abtn')||event.target.closest('button')||event.target.closest('a')))return;
   const el=$(id);if(!el)return;
   const was=el.classList.contains('open');
   document.querySelectorAll('.card.open,.ucard.open').forEach(e=>e.classList.remove('open'));
