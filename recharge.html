@@ -4,396 +4,657 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>VGN – Recharge</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --g:#16A34A;--gd:#15803D;--o:#F97316;--od:#EA580C;
-  --bg:#F0F2F5;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--od:#EA580C;
+  --bg:#F2F4F7;--card:#ffffff;
+  --txt:#0F172A;--mu:#64748B;--bd:#E2E8F0;
   --H:56px;--B:62px;
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
 }
-html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;overflow-x:hidden}
+html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;overflow-x:hidden;min-height:100svh}
 
-/* TOPBAR */
-.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
-  height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),#22C55E);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:var(--sat) 16px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
-.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);
-  border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;
-  font-size:1.3rem;text-decoration:none;color:#fff;font-weight:900;line-height:1}
-.tbt{font-size:1rem;font-weight:900;color:#fff;letter-spacing:.02em}
-.tb-right{font-size:.67rem;font-weight:800;color:#fff;
-  background:rgba(255,255,255,.18);padding:5px 11px;border-radius:20px;
-  border:1px solid rgba(255,255,255,.28)}
+/* ─── TOPBAR ─── */
+.topbar{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;z-index:900;
+  height:calc(var(--H) + var(--sat));
+  background:linear-gradient(135deg,var(--gd) 0%,var(--gl) 100%);
+  display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 16px 12px;box-shadow:0 2px 16px rgba(21,128,61,.35)
+}
+.back-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);
+  border:1.5px solid rgba(255,255,255,.4);display:flex;align-items:center;
+  justify-content:center;font-size:1.3rem;color:#fff;text-decoration:none;
+  font-weight:900;line-height:1;transition:background .2s}
+.back-btn:active{background:rgba(255,255,255,.35)}
+.top-title{font-size:1rem;font-weight:900;color:#fff;letter-spacing:.02em}
+.top-vip{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);
+  color:#fff;font-size:.68rem;font-weight:800;padding:5px 12px;border-radius:20px}
 
-/* SCROLL */
-.scroll{padding-top:calc(var(--H) + var(--sat) + 0px);
-  padding-bottom:calc(var(--B) + var(--sab) + 20px);min-height:100svh}
+/* ─── SCROLL WRAPPER ─── */
+.scroll{
+  padding-top:calc(var(--H) + var(--sat));
+  padding-bottom:calc(var(--B) + var(--sab) + 20px);
+  min-height:100svh
+}
 
-/* BOTNAV */
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
-  height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);
-  background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;
-  z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
-.bn{display:flex;flex-direction:column;align-items:center;gap:2px;
-  flex:1;padding:6px 0;text-decoration:none}
-.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+/* ─── STEP INDICATOR ─── */
+.step-bar{
+  display:flex;align-items:center;justify-content:center;
+  gap:0;padding:14px 20px 10px;background:var(--card);
+  border-bottom:1px solid var(--bd);
+}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;position:relative}
+.step-item:not(:last-child)::after{
+  content:'';position:absolute;top:11px;left:calc(50% + 14px);
+  width:calc(100% - 28px);height:2px;background:var(--bd)
+}
+.step-item.done:not(:last-child)::after{background:var(--g)}
+.step-circle{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--bd);display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:900;color:var(--mu);transition:all .3s;z-index:1
+}
+.step-item.active .step-circle{background:var(--o);color:#fff;box-shadow:0 2px 10px rgba(249,115,22,.4)}
+.step-item.done .step-circle{background:var(--g);color:#fff}
+.step-lbl{font-size:.55rem;font-weight:700;color:var(--mu);text-align:center;line-height:1.3;white-space:nowrap}
+.step-item.active .step-lbl{color:var(--o)}
+.step-item.done .step-lbl{color:var(--g)}
 
-/* ═══ PAGE 1 — CHOIX PLAN ═══ */
+/* ─── PLAN SELECTOR ─── */
+.section-head{padding:16px 14px 10px;display:flex;align-items:center;gap:10px}
+.sec-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gd));
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.sec-texts .sec-title{font-size:.95rem;font-weight:900;color:var(--txt)}
+.sec-texts .sec-sub{font-size:.65rem;color:var(--mu);margin-top:1px}
 
-/* Catégorie header */
-.cat-header{padding:16px 14px 10px;display:flex;align-items:center;gap:8px}
-.cat-title{font-size:.95rem;font-weight:900;color:var(--txt)}
+.plans{display:flex;flex-direction:column;gap:8px;padding:0 12px 14px}
+.p-card{
+  background:var(--card);border-radius:18px;overflow:hidden;
+  border:2.5px solid transparent;cursor:pointer;user-select:none;
+  box-shadow:0 1px 8px rgba(0,0,0,.06);transition:all .18s
+}
+.p-card:active{transform:scale(.985)}
+.p-card.sel{border-color:var(--g);box-shadow:0 4px 22px rgba(22,163,74,.18)}
 
-/* Carte plan grande — référence de l'image */
-.plan-list{display:flex;flex-direction:column;gap:10px;padding:0 12px 16px}
-.plan-card{background:var(--card);border-radius:18px;overflow:hidden;
-  box-shadow:0 2px 10px rgba(0,0,0,.07);cursor:pointer;
-  border:2.5px solid transparent;transition:all .2s;user-select:none}
-.plan-card:active{transform:scale(.98)}
-.plan-card.sel{border-color:var(--g);box-shadow:0 4px 20px rgba(22,163,74,.2)}
-.plan-top{padding:14px 15px 12px;display:flex;align-items:center;gap:12px}
-.plan-badge{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;
-  justify-content:center;font-size:1.5rem;flex-shrink:0}
+.p-top{padding:13px 14px;display:flex;align-items:center;gap:12px}
+.p-badge{width:50px;height:50px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.45rem}
 .b1{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}
-.b2{background:linear-gradient(135deg,#8B5CF6,#6D28D9)}
-.b3{background:linear-gradient(135deg,#F97316,#EA580C)}
-.b4{background:linear-gradient(135deg,#EF4444,#B91C1C)}
-.b5{background:linear-gradient(135deg,#EC4899,#BE185D)}
-.b6{background:linear-gradient(135deg,#14B8A6,#0F766E)}
-.b7{background:linear-gradient(135deg,#EAB308,#A16207)}
-.b8{background:linear-gradient(135deg,#6366F1,#4338CA)}
-.b9{background:linear-gradient(135deg,#0EA5E9,#0369A1)}
-.plan-meta{flex:1;min-width:0}
-.plan-name{font-size:.9rem;font-weight:900;color:var(--txt)}
-.plan-desc{font-size:.65rem;color:var(--mu);margin-top:2px;line-height:1.35}
-.plan-right{text-align:right;flex-shrink:0}
-.plan-price{font-size:1.05rem;font-weight:900;color:var(--g)}
-.plan-radio{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--bd);
-  display:flex;align-items:center;justify-content:center;margin-top:5px;
-  margin-left:auto;transition:all .2s}
-.plan-card.sel .plan-radio{background:var(--g);border-color:var(--g)}
-.plan-card.sel .plan-radio::after{content:'✓';color:#fff;font-size:.75rem;font-weight:900}
+.b2{background:linear-gradient(135deg,#7C3AED,#4C1D95)}
+.b3{background:linear-gradient(135deg,#F97316,#C2410C)}
+.b4{background:linear-gradient(135deg,#EF4444,#991B1B)}
+.b5{background:linear-gradient(135deg,#EC4899,#9D174D)}
+.b6{background:linear-gradient(135deg,#0D9488,#065F46)}
+.b7{background:linear-gradient(135deg,#D97706,#78350F)}
+.b8{background:linear-gradient(135deg,#6366F1,#3730A3)}
+.b9{background:linear-gradient(135deg,#0284C7,#0C4A6E)}
 
-/* Stats sous la carte plan */
-.plan-stats{border-top:1px solid #F3F4F6;padding:10px 15px;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:#FAFAFA;display:none}
-.plan-card.sel .plan-stats{display:grid}
-.ps-item{text-align:center}
-.ps-val{font-size:.78rem;font-weight:900;color:var(--g)}
-.ps-lbl{font-size:.57rem;color:var(--mu);font-weight:700;margin-top:1px}
+.p-meta{flex:1;min-width:0}
+.p-name{font-size:.88rem;font-weight:900;color:var(--txt)}
+.p-desc{font-size:.63rem;color:var(--mu);margin-top:2px;line-height:1.4}
+.p-right{flex-shrink:0;text-align:right}
+.p-price{font-size:1rem;font-weight:900;color:var(--g)}
+.p-radio{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--bd);
+  margin:5px 0 0 auto;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.p-card.sel .p-radio{background:var(--g);border-color:var(--g)}
+.p-card.sel .p-radio::after{content:'✓';color:#fff;font-size:.75rem;font-weight:900}
 
-/* Bouton continuer */
-.btn-main{display:block;margin:0 12px 6px;padding:15px;
-  background:linear-gradient(135deg,var(--o),var(--od));border:none;border-radius:14px;
-  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;
-  cursor:pointer;box-shadow:0 4px 16px rgba(249,115,22,.35);
-  transition:transform .15s;text-align:center;width:calc(100% - 24px)}
-.btn-main:active{transform:scale(.97)}.btn-main:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn-sec{background:#F3F4F6;color:var(--mu);box-shadow:none;border:1.5px solid var(--bd)}
+/* Stats expandables */
+.p-stats{display:none;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid #F1F5F9;padding:10px 14px;background:#F8FAFB}
+.p-card.sel .p-stats{display:grid}
+.ps{text-align:center}
+.ps-v{font-size:.8rem;font-weight:900;color:var(--g)}
+.ps-l{font-size:.57rem;color:var(--mu);font-weight:700;margin-top:1px}
 
-/* ═══ PAGE 2 — PAIEMENT ═══ */
+/* Btn principal */
+.btn-cta{
+  display:block;margin:0 12px 10px;width:calc(100% - 24px);
+  padding:15px;border:none;border-radius:14px;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;
+  color:#fff;letter-spacing:.02em;transition:transform .15s;
+  background:linear-gradient(135deg,var(--o),var(--od));
+  box-shadow:0 4px 18px rgba(249,115,22,.38)
+}
+.btn-cta:active{transform:scale(.97)}.btn-cta:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{background:#EFF2F7;color:var(--mu);box-shadow:none;border:1.5px solid var(--bd)}
 
-/* Bloc montant en haut (style image de ref) */
-.amount-hero{background:linear-gradient(135deg,var(--gd),#166534);
-  margin:0;padding:20px 18px 18px;text-align:left;position:relative;overflow:hidden}
-.amount-hero::after{content:'💰';position:absolute;right:-8px;top:-8px;font-size:5rem;opacity:.1}
-.ah-tag{display:inline-block;background:var(--o);color:#fff;
-  font-size:.68rem;font-weight:900;padding:4px 12px;border-radius:20px;
-  margin-bottom:10px;letter-spacing:.04em}
-.ah-plan{font-size:.78rem;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:4px}
-.ah-amount{font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:.02em}
-.ah-xaf{font-size:.85rem;color:rgba(255,255,255,.6);margin-top:3px}
+/* ─── PAGE 2 : PAIEMENT ─── */
+
+/* Hero montant - fidèle à la capture */
+.amount-hero{
+  background:linear-gradient(160deg,#14532D 0%,#16A34A 60%,#22C55E 100%);
+  padding:20px 18px 24px;position:relative;overflow:hidden
+}
+.amount-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:150px;height:150px;border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+.amount-hero::after{
+  content:'';position:absolute;bottom:-30px;left:-20px;
+  width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,.04);
+}
+.ah-label{
+  display:inline-block;background:var(--o);color:#fff;
+  font-size:.7rem;font-weight:900;padding:5px 16px;
+  border-radius:30px;margin-bottom:12px;letter-spacing:.06em;
+  text-transform:uppercase;font-family:'Space Grotesk',sans-serif
+}
+.ah-plan-name{font-size:.78rem;color:rgba(255,255,255,.65);font-weight:700;margin-bottom:5px}
+.ah-amount{
+  font-size:2.8rem;font-weight:900;color:#fff;
+  letter-spacing:.01em;line-height:1;
+  font-family:'Space Grotesk',sans-serif
+}
+.ah-currency{font-size:.82rem;color:rgba(255,255,255,.5);margin-top:5px;font-weight:600}
+.ah-timer{
+  position:absolute;top:16px;right:16px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  color:#fff;font-size:.72rem;font-weight:800;padding:5px 12px;
+  border-radius:20px;display:flex;align-items:center;gap:5px;
+  font-family:'Space Grotesk',sans-serif
+}
 
 /* Sélection opérateur */
 .op-section{padding:14px 14px 6px}
-.op-title{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:12px}
-.op-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.op-card{background:var(--card);border-radius:14px;padding:14px 16px;
-  display:flex;align-items:center;gap:14px;cursor:pointer;
-  border:2px solid var(--bd);transition:all .2s;box-shadow:0 1px 6px rgba(0,0,0,.06)}
-.op-card:active{transform:scale(.98)}
-.op-card.sel{border-color:var(--g);background:#F0FDF4}
-.op-ico{width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:1.6rem}
-/* logos opérateurs en emoji/couleur */
-.op-mtn{background:#FFCC02;color:#000;font-size:.75rem;font-weight:900;letter-spacing:-.02em}
-.op-orange{background:#FF6600;color:#fff}
-.op-wave{background:#1194D8;color:#fff}
-.op-crypto{background:#26A17B;color:#fff}
-.op-info{flex:1}
-.op-name{font-size:.88rem;font-weight:900;color:var(--txt)}
-.op-sub{font-size:.66rem;color:var(--mu);margin-top:2px}
-.op-radio{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--bd);
-  flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center}
-.op-card.sel .op-radio{background:var(--o);border-color:var(--o)}
-.op-card.sel .op-radio::after{content:'✓';color:#fff;font-size:.72rem;font-weight:900}
-.op-default{font-size:.6rem;font-weight:800;color:#fff;background:var(--o);
-  padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:3px}
+.op-title{
+  font-size:.82rem;font-weight:900;color:var(--txt);
+  margin-bottom:12px;display:flex;align-items:center;gap:7px
+}
 
-/* Champ numéro */
-.num-section{padding:0 14px 14px}
-.num-box{background:var(--card);border-radius:14px;overflow:hidden;
-  border:2px solid var(--bd);display:flex;align-items:center;gap:0;
-  box-shadow:0 1px 6px rgba(0,0,0,.06)}
-.num-flag{width:54px;height:54px;display:flex;align-items:center;justify-content:center;
-  font-size:1.5rem;border-right:1px solid var(--bd);flex-shrink:0;background:#F9FAFB}
-.num-input{flex:1;padding:14px;border:none;outline:none;font-family:'Nunito',sans-serif;
-  font-size:1rem;font-weight:800;color:var(--txt);background:transparent}
-.num-input::placeholder{color:#D1D5DB;font-weight:600}
+/* ─ Carte opérateur ─ */
+.op-card{
+  background:var(--card);border-radius:16px;
+  border:2px solid var(--bd);margin-bottom:9px;
+  cursor:pointer;user-select:none;overflow:hidden;
+  transition:all .18s;box-shadow:0 1px 6px rgba(0,0,0,.05)
+}
+.op-card:active{transform:scale(.985)}
+.op-card.sel{border-color:var(--g);box-shadow:0 3px 18px rgba(22,163,74,.16)}
+.op-card.sel-orange{border-color:#FF6600;box-shadow:0 3px 18px rgba(255,102,0,.16)}
+.op-card.sel-mtn{border-color:#FFCC00;box-shadow:0 3px 18px rgba(255,204,0,.2)}
+.op-card.sel-bsc{border-color:#F3BA2F;box-shadow:0 3px 18px rgba(243,186,47,.2)}
+.op-card.sel-sol{border-color:#9945FF;box-shadow:0 3px 18px rgba(153,69,255,.2)}
 
-/* Bloc info paiement */
-.pay-info{margin:0 14px 14px;background:#F0FDF4;border:1px solid #BBF7D0;
-  border-radius:14px;padding:12px 14px}
-.pi-title{font-size:.72rem;font-weight:800;color:var(--g);margin-bottom:8px}
-.pi-row{display:flex;justify-content:space-between;margin-bottom:5px}
-.pi-row:last-child{margin-bottom:0}
-.pi-lbl{font-size:.68rem;color:var(--mu);font-weight:700}
-.pi-val{font-size:.75rem;font-weight:900;color:var(--txt)}
+.op-head{padding:14px 14px;display:flex;align-items:center;gap:12px}
+.op-logo{
+  width:54px;height:54px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative
+}
 
-/* Adresse crypto */
-.crypto-block{margin:0 14px 14px;background:#F0FDF4;border:1.5px solid var(--g);
-  border-radius:14px;padding:13px 14px;display:none}
-.cb-lbl{font-size:.65rem;font-weight:700;color:var(--mu);margin-bottom:5px}
-.cb-addr{font-size:.8rem;font-weight:900;color:var(--g);word-break:break-all;margin-bottom:8px}
-.cb-copy{display:flex;align-items:center;gap:5px;background:var(--g);color:#fff;
-  border:none;font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;
-  padding:7px 14px;border-radius:9px;cursor:pointer;width:100%;justify-content:center}
+/* Orange Money */
+.logo-orange{background:#FF6600}
+.logo-orange-inner{width:42px;height:42px;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center}
+.logo-orange-dot{width:28px;height:28px;border-radius:50%;background:#FF6600;
+  display:flex;align-items:center;justify-content:center}
+.logo-orange-star{color:#fff;font-size:1rem;font-weight:900}
 
-/* ═══ PAGE 3 — PREUVE ═══ */
-.proof-card{margin:12px 12px 0;background:var(--card);border-radius:18px;
-  padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
-.pc-title{font-size:.88rem;font-weight:900;color:var(--txt);margin-bottom:14px}
-.field{margin-bottom:13px}
-.field label{display:block;font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:6px}
-.field input,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--bd);
-  border-radius:12px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;
-  color:var(--txt);background:#fff;outline:none;transition:border .2s}
-.field input:focus,.field textarea:focus{border-color:var(--g)}
-.field textarea{resize:none;height:65px}
-.field .hint{font-size:.62rem;color:var(--mu);margin-top:5px;font-weight:600}
+/* MTN */
+.logo-mtn{background:#FFCC00;flex-direction:column;gap:1px;padding:4px}
+.mtn-bar1{width:36px;height:8px;background:#003087;border-radius:2px}
+.mtn-text{font-size:.65rem;font-weight:900;color:#003087;letter-spacing:.02em}
+.mtn-bar2{width:36px;height:4px;background:#003087;border-radius:2px}
 
-.info-note{margin:12px 12px 14px;background:#EFF6FF;border:1px solid #BFDBFE;
-  border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
-.in-ico{font-size:1.2rem;flex-shrink:0}
-.in-txt{font-size:.7rem;color:#1E40AF;font-weight:700;line-height:1.5}
+/* BSC */
+.logo-bsc{background:linear-gradient(135deg,#F3BA2F,#D68E00)}
+.bsc-hex{color:#fff;font-size:1.8rem;font-weight:900;line-height:1}
 
-/* ═══ PAGE 4 — SUCCÈS ═══ */
-.success-wrap{padding:40px 20px;text-align:center}
-.success-ico{font-size:5rem;margin-bottom:16px;display:block;
-  animation:bounceIn .6s cubic-bezier(.34,1.56,.64,1)}
-@keyframes bounceIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
-.success-title{font-size:1.15rem;font-weight:900;color:var(--txt);margin-bottom:8px}
-.success-sub{font-size:.78rem;color:var(--mu);line-height:1.6;margin-bottom:8px}
-.success-plan{font-size:.9rem;font-weight:900;color:var(--g);
-  background:#F0FDF4;padding:10px 20px;border-radius:12px;margin:12px 0 20px;
-  border:1px solid #BBF7D0;display:inline-block}
-.btn-home{display:inline-block;background:linear-gradient(135deg,var(--g),var(--gd));
-  color:#fff;padding:13px 32px;border-radius:14px;font-size:.92rem;
-  font-weight:900;text-decoration:none;box-shadow:0 4px 16px rgba(22,163,74,.3)}
+/* SOL */
+.logo-sol{background:linear-gradient(135deg,#9945FF,#14F195)}
+.sol-circle{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center}
+.sol-inner{font-size:1.1rem;color:#fff}
 
-/* ═══ HISTORIQUE ═══ */
-.hist-section{padding:16px 14px 8px}
-.hist-title{font-size:.88rem;font-weight:900;color:var(--txt);margin-bottom:10px}
-.hist-list{display:flex;flex-direction:column;gap:7px;padding:0 12px 16px}
-.hitem{background:var(--card);border-radius:14px;padding:12px 14px;
-  display:flex;align-items:center;gap:10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
-.hico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;
-  justify-content:center;font-size:1rem;flex-shrink:0}
-.ico-w{background:#FFF7ED}.ico-v{background:#F0FDF4}.ico-r{background:#FEF2F2}
-.hinfo{flex:1;min-width:0}
-.hnom{font-size:.77rem;font-weight:800;color:var(--txt)}
-.hdate{font-size:.61rem;color:var(--mu);margin-top:2px}
-.hright{text-align:right;flex-shrink:0}
-.hmount{font-size:.85rem;font-weight:900;color:var(--g)}
-.hstat{font-size:.59rem;font-weight:800;padding:2px 8px;border-radius:9px;margin-top:3px;display:inline-block}
-.sw{background:#FFF7ED;color:#D97706}.sv{background:#F0FDF4;color:var(--g)}.sr{background:#FEF2F2;color:#DC2626}
-.vide{text-align:center;padding:20px;color:var(--mu);font-size:.75rem;font-weight:700}
+.op-info{flex:1;min-width:0}
+.op-tag{
+  font-size:.58rem;font-weight:900;padding:2px 9px;border-radius:8px;
+  display:inline-block;margin-bottom:4px;letter-spacing:.03em
+}
+.tag-default{background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA}
+.tag-crypto{background:#F3E8FF;color:#7C3AED;border:1px solid #E9D5FF}
+.op-name{font-size:.9rem;font-weight:900;color:var(--txt)}
+.op-sub{font-size:.63rem;color:var(--mu);margin-top:2px;line-height:1.4}
+.op-radio{width:24px;height:24px;border-radius:50%;border:2.5px solid var(--bd);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.op-card.sel-orange .op-radio,.op-card.sel .op-radio{background:var(--g);border-color:var(--g)}
+.op-card.sel-orange .op-radio::after,.op-card.sel .op-radio::after{content:'✓';color:#fff;font-size:.8rem;font-weight:900}
 
-/* TOAST */
-.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;
-  transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;
-  padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;
-  white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-  pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}.tst.ok{background:var(--g)}
-.ld{display:inline-block;width:10px;height:10px;border:2px solid #ccc;
-  border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+/* Détail paiement (expanded) */
+.op-detail{display:none;padding:0 14px 14px}
+.op-card[data-op="orange"].sel-orange .op-detail,
+.op-card[data-op="mtn"].sel .op-detail,
+.op-card[data-op="bsc"].sel .op-detail,
+.op-card[data-op="sol"].sel .op-detail{display:block}
+
+/* Box infos destinataire */
+.dest-box{
+  background:linear-gradient(135deg,#F0FDF4,#DCFCE7);
+  border:1.5px solid #BBF7D0;border-radius:14px;
+  padding:14px;margin-bottom:12px
+}
+.dest-label{font-size:.62rem;font-weight:800;color:var(--g);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.dest-num{
+  font-size:1.6rem;font-weight:900;color:#14532D;
+  letter-spacing:.06em;font-family:'Space Grotesk',sans-serif;margin-bottom:3px
+}
+.dest-name{font-size:.78rem;font-weight:800;color:#166534;display:flex;align-items:center;gap:5px}
+.dest-copy-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;margin-top:10px;padding:9px;
+  background:#fff;border:1.5px solid var(--g);border-radius:10px;
+  font-family:'Nunito',sans-serif;font-size:.74rem;font-weight:800;
+  color:var(--g);cursor:pointer;transition:background .15s
+}
+.dest-copy-btn:active{background:#F0FDF4}
+
+/* Box adresse crypto */
+.crypto-box{
+  background:linear-gradient(135deg,#FAF5FF,#EDE9FE);
+  border:1.5px solid #C4B5FD;border-radius:14px;
+  padding:14px;margin-bottom:12px
+}
+.crypto-net{
+  display:inline-block;font-size:.62rem;font-weight:900;
+  padding:3px 10px;border-radius:8px;margin-bottom:8px;letter-spacing:.04em
+}
+.net-bsc{background:#F3BA2F;color:#4A2E00}
+.net-sol{background:linear-gradient(135deg,#9945FF,#14F195);color:#fff}
+.crypto-label{font-size:.62rem;font-weight:800;color:#5B21B6;
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.crypto-addr{
+  font-size:.72rem;font-weight:700;color:#3730A3;
+  font-family:'Space Grotesk',monospace;word-break:break-all;
+  line-height:1.5;background:#fff;border-radius:9px;padding:10px 12px;
+  border:1px solid #DDD6FE;margin-bottom:8px
+}
+.crypto-copy-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;padding:9px;background:#fff;border:1.5px solid #8B5CF6;
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.74rem;
+  font-weight:800;color:#7C3AED;cursor:pointer;transition:background .15s
+}
+.crypto-copy-btn:active{background:#F5F3FF}
+.crypto-warn{
+  background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;
+  padding:9px 12px;font-size:.65rem;font-weight:700;
+  color:#991B1B;line-height:1.6;text-align:center;margin-top:10px
+}
+
+/* Montant affiché dans la méthode */
+.pay-amount-hint{
+  text-align:center;font-size:.74rem;font-weight:700;color:var(--mu);
+  margin-bottom:12px;padding:8px;background:#F8FAFC;border-radius:9px
+}
+.pay-amount-hint b{color:var(--g);font-size:.85rem}
+
+/* Champ numéro expéditeur */
+.num-field{margin-top:2px}
+.num-field-label{font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:7px;display:block}
+.num-input-wrap{
+  display:flex;align-items:center;background:var(--card);
+  border:2px solid var(--bd);border-radius:13px;overflow:hidden;transition:border .2s
+}
+.num-input-wrap:focus-within{border-color:var(--g)}
+.num-flag{
+  width:56px;height:56px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;border-right:1px solid var(--bd);flex-shrink:0;background:#F8FAFC
+}
+.num-inp{
+  flex:1;padding:15px;border:none;outline:none;
+  font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;color:var(--txt);
+  background:transparent
+}
+.num-inp::placeholder{color:#CBD5E1;font-weight:600}
+
+/* ─── PAGE 3 : PREUVE ─── */
+.proof-card{margin:14px 12px 0;background:var(--card);border-radius:18px;padding:16px;box-shadow:0 1px 10px rgba(0,0,0,.07)}
+.proof-title{font-size:.9rem;font-weight:900;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pf{margin-bottom:12px}
+.pf label{display:block;font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:6px}
+.pf input,.pf textarea{
+  width:100%;padding:13px 14px;border:1.5px solid var(--bd);border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;color:var(--txt);
+  background:#fff;outline:none;transition:border .2s
+}
+.pf input:focus,.pf textarea:focus{border-color:var(--g)}
+.pf textarea{resize:none;height:65px}
+.pf .fhint{font-size:.62rem;color:var(--mu);margin-top:5px;font-weight:600}
+.alert-info{
+  margin:12px 12px 14px;background:#EFF6FF;border:1px solid #BFDBFE;
+  border-radius:13px;padding:12px 13px;display:flex;gap:9px;align-items:flex-start
+}
+.ai-ico{font-size:1.1rem;flex-shrink:0}
+.ai-txt{font-size:.69rem;color:#1E40AF;font-weight:700;line-height:1.55}
+
+/* ─── PAGE 4 : SUCCÈS ─── */
+.success-page{padding:44px 20px 20px;text-align:center}
+.suc-emoji{font-size:5.5rem;display:block;margin-bottom:18px;animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.suc-title{font-size:1.2rem;font-weight:900;color:var(--txt);margin-bottom:8px}
+.suc-sub{font-size:.78rem;color:var(--mu);line-height:1.65;margin-bottom:10px}
+.suc-badge{
+  display:inline-block;font-size:.9rem;font-weight:900;color:var(--g);
+  background:#F0FDF4;padding:11px 24px;border-radius:14px;
+  margin:14px 0 22px;border:1.5px solid #BBF7D0
+}
+.suc-home{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;
+  padding:14px 32px;border-radius:14px;font-size:.92rem;font-weight:900;
+  text-decoration:none;box-shadow:0 4px 18px rgba(22,163,74,.3)
+}
+
+/* ─── HISTORIQUE ─── */
+.hist-section{padding:18px 14px 8px}
+.hist-title{font-size:.88rem;font-weight:900;color:var(--txt)}
+.hist-list{padding:0 12px 20px;display:flex;flex-direction:column;gap:8px}
+.h-item{
+  background:var(--card);border-radius:14px;padding:12px 14px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 1px 6px rgba(0,0,0,.06)
+}
+.h-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ic-w{background:#FFF7ED}.ic-v{background:#F0FDF4}.ic-r{background:#FEF2F2}
+.h-info{flex:1;min-width:0}
+.h-name{font-size:.78rem;font-weight:800;color:var(--txt)}
+.h-date{font-size:.62rem;color:var(--mu);margin-top:2px}
+.h-right{text-align:right;flex-shrink:0}
+.h-amt{font-size:.88rem;font-weight:900;color:var(--g)}
+.h-stat{font-size:.6rem;font-weight:800;padding:2px 9px;border-radius:9px;margin-top:3px;display:inline-block}
+.s-w{background:#FFF7ED;color:#D97706}
+.s-v{background:#F0FDF4;color:var(--g)}
+.s-r{background:#FEF2F2;color:#DC2626}
+.empty-hist{text-align:center;padding:22px;color:var(--mu);font-size:.76rem;font-weight:700}
+
+/* ─── BOTNAV ─── */
+.botnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);
+  background:#fff;border-top:1px solid var(--bd);
+  display:flex;align-items:center;z-index:900;
+  box-shadow:0 -3px 16px rgba(0,0,0,.07)
+}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
+.bni{font-size:1.22rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+
+/* ─── TOAST & LOADER ─── */
+.tst{
+  position:fixed;top:calc(var(--H) + var(--sat) + 10px);left:50%;
+  transform:translateX(-50%) translateY(-90px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;
+  font-size:.77rem;font-weight:700;z-index:9999;white-space:nowrap;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+  box-shadow:0 4px 20px rgba(0,0,0,.25)
+}
+.tst.show{transform:translateX(-50%) translateY(0)}
+.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+.ld-g{border-color:var(--bd);border-top-color:var(--g)}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
-  <a class="tbk" href="dashboard.html">‹</a>
-  <span class="tbt">💰 Recharge</span>
-  <div class="tb-right">💼 <span id="tb-vip">—</span></div>
+  <a class="back-btn" href="dashboard.html">‹</a>
+  <span class="top-title">💰 Recharge</span>
+  <div class="top-vip" id="tb-vip">—</div>
 </div>
+
 <div class="tst" id="tst"></div>
 
 <div class="scroll">
 
-<!-- ════════════════════════════════════
-     PAGE 1 — CHOISIR LE PLAN
-════════════════════════════════════ -->
-<div id="page1">
-  <div class="cat-header">
-    <span style="font-size:1.3rem">📱</span>
-    <span class="cat-title">Rechargement en ligne</span>
-  </div>
-  <div class="plan-list" id="plan-list">
-    <div style="text-align:center;padding:24px"><span class="ld"></span></div>
-  </div>
-  <button class="btn-main" id="btn-p1" disabled onclick="goPage(2)">Continuer →</button>
-</div>
-
-<!-- ════════════════════════════════════
-     PAGE 2 — OPÉRATEUR + NUMÉRO
-════════════════════════════════════ -->
-<div id="page2" style="display:none">
-
-  <!-- Bloc montant style référence -->
-  <div class="amount-hero">
-    <div class="ah-tag">MONTANT DU PAIEMENT</div>
-    <div class="ah-plan" id="ah-plan">—</div>
-    <div class="ah-amount" id="ah-amount">—</div>
-    <div class="ah-xaf">Francs CFA (XAF)</div>
+  <!-- STEP BAR -->
+  <div class="step-bar" id="step-bar">
+    <div class="step-item active" id="stp1"><div class="step-circle">1</div><div class="step-lbl">Choisir<br>le plan</div></div>
+    <div class="step-item" id="stp2"><div class="step-circle">2</div><div class="step-lbl">Méthode<br>paiement</div></div>
+    <div class="step-item" id="stp3"><div class="step-circle">3</div><div class="step-lbl">Envoyer<br>preuve</div></div>
+    <div class="step-item" id="stp4"><div class="step-circle">4</div><div class="step-lbl">Confirmation</div></div>
   </div>
 
-  <!-- Choix opérateur -->
-  <div class="op-section">
-    <div class="op-title">Veuillez sélectionner votre opérateur</div>
-    <div class="op-list">
-      <div class="op-card sel" id="op-mtn" onclick="selOp('mtn')">
-        <div class="op-ico op-mtn">MoMo</div>
-        <div class="op-info">
-          <div class="op-default">PAR DÉFAUT</div>
-          <div class="op-name">MTN MoMo</div>
-          <div class="op-sub">Compatible avec les portefeuilles MTN Money</div>
-        </div>
-        <div class="op-radio"></div>
-      </div>
-      <div class="op-card" id="op-orange" onclick="selOp('orange')">
-        <div class="op-ico op-orange">🍊</div>
-        <div class="op-info">
-          <div class="op-name">Orange Money</div>
-          <div class="op-sub">Compatible avec Orange Money</div>
-        </div>
-        <div class="op-radio"></div>
-      </div>
-      <div class="op-card" id="op-wave" onclick="selOp('wave')">
-        <div class="op-ico op-wave">🌊</div>
-        <div class="op-info">
-          <div class="op-name">Wave</div>
-          <div class="op-sub">Transfert instantané</div>
-        </div>
-        <div class="op-radio"></div>
-      </div>
-      <div class="op-card" id="op-crypto" onclick="selOp('crypto')">
-        <div class="op-ico op-crypto">₮</div>
-        <div class="op-info">
-          <div class="op-name">USDT (Crypto)</div>
-          <div class="op-sub">TRC-20 / ERC-20</div>
-        </div>
-        <div class="op-radio"></div>
+  <!-- ══════════ PAGE 1 — CHOISIR LE PLAN ══════════ -->
+  <div id="page1">
+    <div class="section-head">
+      <div class="sec-icon">💎</div>
+      <div class="sec-texts">
+        <div class="sec-title">Choisissez votre plan VIP</div>
+        <div class="sec-sub">Sélectionnez le niveau que vous souhaitez activer</div>
       </div>
     </div>
+
+    <div class="plans" id="plan-list">
+      <div style="text-align:center;padding:30px"><span class="ld ld-g"></span></div>
+    </div>
+
+    <button class="btn-cta" id="btn-p1" onclick="goPage(2)" disabled>Continuer →</button>
   </div>
 
-  <!-- Numéro destinataire (Mobile Money) -->
-  <div class="pay-info" id="pay-info">
-    <div class="pi-title">📲 Envoyez le paiement à ce numéro</div>
-    <div class="pi-row"><span class="pi-lbl">Numéro VGN</span><span class="pi-val" id="pi-num" style="color:var(--g);font-size:.9rem">+237 6XX XX XX XX</span></div>
-    <div class="pi-row"><span class="pi-lbl">Nom du bénéficiaire</span><span class="pi-val">VGN Agriculture</span></div>
-    <div class="pi-row"><span class="pi-lbl">Motif</span><span class="pi-val" id="pi-motif">Recharge VIP 2</span></div>
-    <div class="pi-row"><span class="pi-lbl">Montant exact</span><span class="pi-val" id="pi-mont" style="color:var(--o);font-weight:900">—</span></div>
-  </div>
+  <!-- ══════════ PAGE 2 — MÉTHODE DE PAIEMENT ══════════ -->
+  <div id="page2" style="display:none">
 
-  <!-- Adresse crypto -->
-  <div class="crypto-block" id="crypto-block">
-    <div class="cb-lbl">Adresse USDT TRC-20 — Envoyez exactement le montant ci-dessus</div>
-    <div class="cb-addr" id="crypto-addr">TXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
-    <button class="cb-copy" onclick="copierAddr()">📋 Copier l'adresse</button>
-  </div>
+    <!-- Hero montant style capture -->
+    <div class="amount-hero">
+      <div class="ah-timer">⏱️ <span id="timer-display">20:00</span></div>
+      <div class="ah-label">MONTANT DU PAIEMENT</div>
+      <div class="ah-plan-name" id="ah-plan">—</div>
+      <div class="ah-amount" id="ah-amount">—</div>
+      <div class="ah-currency">Francs CFA · XAF</div>
+    </div>
 
-  <!-- Saisie numéro de l'utilisateur -->
-  <div class="num-section" id="num-section">
-    <div style="font-size:.78rem;font-weight:800;color:var(--txt);margin-bottom:8px">Entrez votre numéro expéditeur</div>
-    <div class="num-box">
-      <div class="num-flag">🇨🇲</div>
-      <input class="num-input" type="tel" id="inp-num" placeholder="+237 6XX XX XX XX" inputmode="tel">
+    <!-- Sélection opérateur -->
+    <div class="op-section">
+      <div class="op-title">📲 Veuillez sélectionner votre opérateur</div>
+
+      <!-- ─── ORANGE MONEY ─── -->
+      <div class="op-card sel-orange" id="op-orange" data-op="orange" onclick="selOp('orange')">
+        <div class="op-head">
+          <div class="op-logo logo-orange">
+            <div class="logo-orange-inner">
+              <div class="logo-orange-dot"><span class="logo-orange-star">✦</span></div>
+            </div>
+          </div>
+          <div class="op-info">
+            <div class="op-tag tag-default">PAR DÉFAUT</div>
+            <div class="op-name">Orange Money</div>
+            <div class="op-sub">Compatible avec les portefeuilles Orange Money · Cameroun 🇨🇲</div>
+          </div>
+          <div class="op-radio"></div>
+        </div>
+        <div class="op-detail">
+          <div class="dest-box">
+            <div class="dest-label">📱 Numéro à créditer</div>
+            <div class="dest-num">658 033 690</div>
+            <div class="dest-name">👤 Alirou Moun</div>
+            <button class="dest-copy-btn" onclick="event.stopPropagation();copier('658033690','✅ Numéro Orange copié !')">
+              📋 Copier le numéro
+            </button>
+          </div>
+          <div class="pay-amount-hint">Envoyez exactement <b id="orange-hint">—</b> à ce numéro</div>
+          <div class="num-field">
+            <label class="num-field-label">Votre numéro Orange Money (expéditeur)</label>
+            <div class="num-input-wrap">
+              <div class="num-flag">🇨🇲</div>
+              <input class="num-inp" type="tel" id="num-orange" placeholder="6XX XX XX XX" inputmode="tel">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── MTN MONEY ─── -->
+      <div class="op-card" id="op-mtn" data-op="mtn" onclick="selOp('mtn')">
+        <div class="op-head">
+          <div class="op-logo logo-mtn">
+            <div class="mtn-bar1"></div>
+            <div class="mtn-text">MoMo</div>
+            <div class="mtn-bar2"></div>
+          </div>
+          <div class="op-info">
+            <div class="op-name">MTN MoMo</div>
+            <div class="op-sub">Compatible avec les portefeuilles MTN Mobile Money · Cameroun 🇨🇲</div>
+          </div>
+          <div class="op-radio"></div>
+        </div>
+        <div class="op-detail">
+          <div class="dest-box">
+            <div class="dest-label">📱 Numéro à créditer</div>
+            <div class="dest-num">651 461 777</div>
+            <div class="dest-name">👤 Jean Jacques Rousseau</div>
+            <button class="dest-copy-btn" onclick="event.stopPropagation();copier('651461777','✅ Numéro MTN copié !')">
+              📋 Copier le numéro
+            </button>
+          </div>
+          <div class="pay-amount-hint">Envoyez exactement <b id="mtn-hint">—</b> à ce numéro</div>
+          <div class="num-field">
+            <label class="num-field-label">Votre numéro MTN MoMo (expéditeur)</label>
+            <div class="num-input-wrap">
+              <div class="num-flag">🇨🇲</div>
+              <input class="num-inp" type="tel" id="num-mtn" placeholder="6XX XX XX XX" inputmode="tel">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── BSC / BNB Chain ─── -->
+      <div class="op-card" id="op-bsc" data-op="bsc" onclick="selOp('bsc')">
+        <div class="op-head">
+          <div class="op-logo logo-bsc">
+            <div class="bsc-hex">⬡</div>
+          </div>
+          <div class="op-info">
+            <div class="op-tag tag-crypto">BSC-1 · BNB Chain</div>
+            <div class="op-name">Crypto USDT</div>
+            <div class="op-sub">BEP-20 · Binance Smart Chain · Frais réseau ultra faibles</div>
+          </div>
+          <div class="op-radio"></div>
+        </div>
+        <div class="op-detail">
+          <div class="crypto-box">
+            <span class="crypto-net net-bsc">⬡ BSC-1 · BNB Chain · BEP-20</span>
+            <div class="crypto-label">Adresse de dépôt USDT</div>
+            <div class="crypto-addr">0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB</div>
+            <button class="crypto-copy-btn" onclick="event.stopPropagation();copier('0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB','✅ Adresse BSC copiée !')">
+              📋 Copier l'adresse
+            </button>
+            <div class="crypto-warn">
+              ⚠️ Réseau obligatoire : <b>BSC / BEP-20 uniquement</b><br>
+              Tout envoi sur un autre réseau entraîne une perte définitive de fonds.
+            </div>
+          </div>
+          <div class="pay-amount-hint">Envoyez l'équivalent de <b id="bsc-hint">—</b> en USDT</div>
+        </div>
+      </div>
+
+      <!-- ─── SOLANA ─── -->
+      <div class="op-card" id="op-sol" data-op="sol" onclick="selOp('sol')">
+        <div class="op-head">
+          <div class="op-logo logo-sol">
+            <div class="sol-circle">
+              <span class="sol-inner">◎</span>
+            </div>
+          </div>
+          <div class="op-info">
+            <div class="op-tag tag-crypto">SOL-1 · Solana</div>
+            <div class="op-name">Crypto USDT / SOL</div>
+            <div class="op-sub">SPL Token · Réseau Solana · Transactions instantanées</div>
+          </div>
+          <div class="op-radio"></div>
+        </div>
+        <div class="op-detail">
+          <div class="crypto-box">
+            <span class="crypto-net net-sol">◎ SOL-1 · Solana · SPL Token</span>
+            <div class="crypto-label">Adresse de dépôt USDT-SPL</div>
+            <div class="crypto-addr">JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ</div>
+            <button class="crypto-copy-btn" onclick="event.stopPropagation();copier('JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ','✅ Adresse Solana copiée !')">
+              📋 Copier l'adresse
+            </button>
+            <div class="crypto-warn">
+              ⚠️ Réseau obligatoire : <b>Solana (SPL) uniquement</b><br>
+              Tout envoi sur un autre réseau entraîne une perte définitive de fonds.
+            </div>
+          </div>
+          <div class="pay-amount-hint">Envoyez l'équivalent de <b id="sol-hint">—</b> en USDT</div>
+        </div>
+      </div>
+
+    </div><!-- /op-section -->
+
+    <div style="display:flex;gap:8px;padding:4px 12px 20px">
+      <button class="btn-cta btn-ghost" style="margin:0;flex:1;width:auto;padding:13px" onclick="goPage(1)">← Retour</button>
+      <button class="btn-cta" style="margin:0;flex:2;width:auto;padding:13px" onclick="goPage(3)">J'ai payé →</button>
     </div>
   </div>
 
-  <div style="display:flex;gap:8px;padding:0 12px 16px">
-    <button class="btn-main btn-sec" style="flex:1;margin:0" onclick="goPage(1)">← Retour</button>
-    <button class="btn-main" style="flex:2;margin:0" onclick="goPage(3)">J'ai payé →</button>
-  </div>
-</div>
+  <!-- ══════════ PAGE 3 — PREUVE DE PAIEMENT ══════════ -->
+  <div id="page3" style="display:none">
+    <div class="proof-card">
+      <div class="proof-title">📤 Confirmer votre paiement</div>
 
-<!-- ════════════════════════════════════
-     PAGE 3 — PREUVE DE PAIEMENT
-════════════════════════════════════ -->
-<div id="page3" style="display:none">
-  <div class="proof-card">
-    <div class="pc-title">📤 Confirmer votre paiement</div>
+      <div class="pf">
+        <label>Référence / ID de transaction</label>
+        <input type="text" id="inp-ref" placeholder="Ex: MP241231XXXXXX ou TxHash…">
+        <div class="fhint">Visible sur votre SMS ou reçu de confirmation</div>
+      </div>
 
-    <div class="field">
-      <label>Référence / ID de transaction</label>
-      <input type="text" id="inp-ref" placeholder="Ex: MP241231XXXX · TxHash...">
-      <div class="hint">Visible sur votre SMS ou reçu de confirmation</div>
+      <div class="pf">
+        <label>Montant envoyé</label>
+        <input type="number" id="inp-montant" placeholder="0" inputmode="numeric">
+        <div class="fhint">En FCFA pour Mobile Money, en USDT pour Crypto</div>
+      </div>
+
+      <div class="pf">
+        <label>Note (optionnel)</label>
+        <textarea id="inp-note" placeholder="Informations complémentaires…"></textarea>
+      </div>
     </div>
 
-    <div class="field">
-      <label>Montant envoyé (FCFA)</label>
-      <input type="number" id="inp-montant" placeholder="0" inputmode="numeric">
+    <div class="alert-info">
+      <span class="ai-ico">⏱️</span>
+      <div class="ai-txt">
+        Votre demande sera vérifiée par notre équipe sous <b>24h ouvrées</b>.<br>
+        Votre plan <b id="note-plan">—</b> s'activera automatiquement dès validation et vous recevrez une notification.
+      </div>
     </div>
 
-    <div class="field">
-      <label>Note (optionnel)</label>
-      <textarea id="inp-note" placeholder="Informations supplémentaires..."></textarea>
+    <div style="display:flex;gap:8px;padding:0 12px 20px">
+      <button class="btn-cta btn-ghost" style="margin:0;flex:1;width:auto;padding:13px" onclick="goPage(2)">← Retour</button>
+      <button class="btn-cta" id="btn-submit" style="margin:0;flex:2;width:auto;padding:13px" onclick="soumettre()">✅ Envoyer</button>
     </div>
   </div>
 
-  <div class="info-note">
-    <span class="in-ico">⏱️</span>
-    <div class="in-txt">Votre demande sera examinée par notre équipe.<br>
-    Dès validation par l'admin, votre plan <b id="note-plan">—</b> s'activera <b>automatiquement</b> et votre solde sera mis à jour.</div>
+  <!-- ══════════ PAGE 4 — CONFIRMATION ══════════ -->
+  <div id="page4" style="display:none">
+    <div class="success-page">
+      <span class="suc-emoji">⏳</span>
+      <div class="suc-title">Demande envoyée !</div>
+      <div class="suc-sub">Votre paiement est bien reçu et en cours de vérification par notre équipe admin.</div>
+      <div class="suc-badge" id="suc-plan">— en attente</div>
+      <div class="suc-sub">Vous recevrez une notification dès l'activation de votre plan VIP.</div>
+      <br>
+      <a href="dashboard.html" class="suc-home">🏠 Retour à l'accueil</a>
+    </div>
   </div>
 
-  <div style="display:flex;gap:8px;padding:0 12px 16px">
-    <button class="btn-main btn-sec" style="flex:1;margin:0" onclick="goPage(2)">← Retour</button>
-    <button class="btn-main" id="btn-submit" style="flex:2;margin:0" onclick="soumettre()">✅ Envoyer la demande</button>
+  <!-- ══════════ HISTORIQUE ══════════ -->
+  <div id="hist-wrap">
+    <div class="hist-section"><div class="hist-title">📋 Mes demandes de recharge</div></div>
+    <div class="hist-list" id="hist-list">
+      <div style="text-align:center;padding:20px"><span class="ld ld-g"></span></div>
+    </div>
   </div>
-</div>
-
-<!-- ════════════════════════════════════
-     PAGE 4 — CONFIRMATION
-════════════════════════════════════ -->
-<div id="page4" style="display:none">
-  <div class="success-wrap">
-    <span class="success-ico">⏳</span>
-    <div class="success-title">Demande envoyée !</div>
-    <div class="success-sub">Votre demande de recharge est bien reçue et en cours d'examen.</div>
-    <div class="success-plan" id="success-plan">—</div>
-    <div class="success-sub">L'admin validera votre paiement. Votre plan s'activera automatiquement dès approbation.</div>
-    <br>
-    <a href="dashboard.html" class="btn-home">🏠 Retour à l'accueil</a>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════
-     HISTORIQUE
-════════════════════════════════════ -->
-<div class="hist-section" id="hist-section">
-  <div class="hist-title">📋 Mes demandes de recharge</div>
-</div>
-<div class="hist-list" id="hist-list">
-  <div style="text-align:center;padding:16px"><span class="ld"></span></div>
-</div>
 
 </div><!-- /scroll -->
 
@@ -405,143 +666,170 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 </nav>
 
 <script>
+/* ─── SUPABASE ─── */
 const SB=supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
 
-/* ══ PLANS VIP (même données que vip.html) ══ */
+/* ─── PLANS VIP ─── */
 const PLANS=[
-  {niveau:1,label:'VIP 1',job:'Job 1',gain:70,   taches:5, depot:10500,   ico:'💼',badge:'b1'},
-  {niveau:2,label:'VIP 2',job:'Job 2',gain:175,  taches:8, depot:42000,   ico:'🚀',badge:'b2'},
-  {niveau:3,label:'VIP 3',job:'Job 3',gain:560,  taches:10,depot:168000,  ico:'⭐',badge:'b3'},
-  {niveau:4,label:'VIP 4',job:'Job 4',gain:1300, taches:15,depot:585000,  ico:'💎',badge:'b4'},
-  {niveau:5,label:'VIP 5',job:'Job 5',gain:2000, taches:20,depot:1200000, ico:'🏆',badge:'b5'},
-  {niveau:6,label:'VIP 6',job:'Job 6',gain:3500, taches:25,depot:2625000, ico:'👑',badge:'b6'},
-  {niveau:7,label:'VIP 7',job:'Job 7',gain:6400, taches:30,depot:5760000, ico:'🌟',badge:'b7'},
-  {niveau:8,label:'VIP 8',job:'Job 8',gain:11000,taches:35,depot:11550000,ico:'💫',badge:'b8'},
-  {niveau:9,label:'VIP 9',job:'Job 9',gain:19000,taches:40,depot:22800000,ico:'🎯',badge:'b9'},
+  {n:1,label:'VIP 1',job:'Job 1',gain:70,   taches:5, depot:10500,   ico:'💼',b:'b1'},
+  {n:2,label:'VIP 2',job:'Job 2',gain:175,  taches:8, depot:42000,   ico:'🚀',b:'b2'},
+  {n:3,label:'VIP 3',job:'Job 3',gain:560,  taches:10,depot:168000,  ico:'⭐',b:'b3'},
+  {n:4,label:'VIP 4',job:'Job 4',gain:1300, taches:15,depot:585000,  ico:'💎',b:'b4'},
+  {n:5,label:'VIP 5',job:'Job 5',gain:2000, taches:20,depot:1200000, ico:'🏆',b:'b5'},
+  {n:6,label:'VIP 6',job:'Job 6',gain:3500, taches:25,depot:2625000, ico:'👑',b:'b6'},
+  {n:7,label:'VIP 7',job:'Job 7',gain:6400, taches:30,depot:5760000, ico:'🌟',b:'b7'},
+  {n:8,label:'VIP 8',job:'Job 8',gain:11000,taches:35,depot:11550000,ico:'💫',b:'b8'},
+  {n:9,label:'VIP 9',job:'Job 9',gain:19000,taches:40,depot:22800000,ico:'🎯',b:'b9'},
 ];
 
-/* ══ Config paiement — à mettre à jour ══ */
-const PAY={
-  mtn:    '+237 6XX XX XX XX',
-  orange: '+237 6XX XX XX XX',
-  wave:   '+237 6XX XX XX XX',
-  crypto: 'TXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-};
-
-const fmt=n=>Number(n||0).toLocaleString('fr-FR');
-const fmtF=n=>fmt(n)+' FCFA';
+/* ─── HELPERS ─── */
 const $=id=>document.getElementById(id);
 const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
 const toast=(m,t='')=>{const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)};
 
-let U=null,P=null,planSel=null,opSel='mtn';
+let U=null, planSel=null, opSel='orange';
 
-/* ══ Rendu des plans ══ */
+/* ─── TIMER (20 min) ─── */
+let timerSec=20*60, timerInt=null;
+function startTimer(){
+  clearInterval(timerInt);timerSec=20*60;
+  timerInt=setInterval(()=>{
+    if(timerSec<=0){clearInterval(timerInt);$s('timer-display','Expiré');return}
+    timerSec--;
+    const m=String(Math.floor(timerSec/60)).padStart(2,'0');
+    const s=String(timerSec%60).padStart(2,'0');
+    $s('timer-display',m+':'+s);
+  },1000);
+}
+
+/* ─── COPIER ─── */
+function copier(txt,msg){
+  const fb=()=>{const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast(msg,'ok')};
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>toast(msg,'ok')).catch(fb);
+  else fb();
+}
+
+/* ─── RENDU PLANS ─── */
 function renderPlans(){
   $('plan-list').innerHTML=PLANS.map(p=>{
-    const revJour=p.gain*p.taches;
-    return `<div class="plan-card" id="pc${p.niveau}" onclick="selPlan(${p.niveau})">
-      <div class="plan-top">
-        <div class="plan-badge ${p.badge}">${p.ico}</div>
-        <div class="plan-meta">
-          <div class="plan-name">${p.label} — ${p.job}</div>
-          <div class="plan-desc">${p.taches} tâches/jour · +${fmt(p.gain)} FCFA/tâche</div>
+    const rev=p.gain*p.taches;
+    return `<div class="p-card" id="pc${p.n}" onclick="selPlan(${p.n})">
+      <div class="p-top">
+        <div class="p-badge ${p.b}">${p.ico}</div>
+        <div class="p-meta">
+          <div class="p-name">${p.label} — ${p.job}</div>
+          <div class="p-desc">${p.taches} tâches/jour · +${fmt(p.gain)} FCFA/tâche · ${fmtF(rev)}/jour</div>
         </div>
-        <div class="plan-right">
-          <div class="plan-price">${fmtF(p.depot)}</div>
-          <div class="plan-radio" id="rd${p.niveau}"></div>
+        <div class="p-right">
+          <div class="p-price">${fmtF(p.depot)}</div>
+          <div class="p-radio" id="rd${p.n}"></div>
         </div>
       </div>
-      <div class="plan-stats" id="ps${p.niveau}">
-        <div class="ps-item"><div class="ps-val">${fmt(p.gain)} F</div><div class="ps-lbl">/ tâche</div></div>
-        <div class="ps-item"><div class="ps-val">${fmtF(revJour)}</div><div class="ps-lbl">/ jour</div></div>
-        <div class="ps-item"><div class="ps-val">${fmtF(revJour*30)}</div><div class="ps-lbl">/ mois est.</div></div>
+      <div class="p-stats">
+        <div class="ps"><div class="ps-v">${fmt(p.gain)} F</div><div class="ps-l">/ tâche</div></div>
+        <div class="ps"><div class="ps-v">${fmtF(rev)}</div><div class="ps-l">/ jour</div></div>
+        <div class="ps"><div class="ps-v">${fmtF(rev*30)}</div><div class="ps-l">/ mois est.</div></div>
       </div>
     </div>`;
   }).join('');
 }
 
-function selPlan(niv){
-  PLANS.forEach(p=>$('pc'+p.niveau)?.classList.remove('sel'));
-  $('pc'+niv)?.classList.add('sel');
-  planSel=PLANS.find(p=>p.niveau===niv);
+function selPlan(n){
+  PLANS.forEach(p=>$('pc'+p.n)?.classList.remove('sel'));
+  $('pc'+n)?.classList.add('sel');
+  planSel=PLANS.find(p=>p.n===n);
   $('btn-p1').disabled=false;
 }
 
-/* ══ Navigation pages ══ */
-function goPage(n){
-  if(n===2){
-    if(!planSel){toast('⚠️ Sélectionnez un plan','err');return}
-    // Remplir le bloc montant
-    $s('ah-plan',planSel.label+' — '+planSel.job);
-    $s('ah-amount','XAF '+fmt(planSel.depot));
-    $s('pi-motif','Recharge '+planSel.label);
-    $s('pi-mont',fmtF(planSel.depot));
-    updateOp();
-  }
-  if(n===3){
-    const num=$('inp-num').value.trim();
-    if(opSel!=='crypto'&&num.length<8){toast('⚠️ Entrez votre numéro expéditeur','err');return}
-    $s('note-plan',planSel?.label||'—');
-  }
-
-  [1,2,3,4].forEach(i=>$('page'+i).style.display=i===n?'block':'none');
-  $('hist-section').style.display=n===4?'none':'block';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* ══ Opérateur ══ */
+/* ─── OPÉRATEUR ─── */
 function selOp(op){
   opSel=op;
-  ['mtn','orange','wave','crypto'].forEach(k=>$('op-'+k)?.classList.remove('sel'));
-  $('op-'+op)?.classList.add('sel');
-  updateOp();
+  // Retirer toutes les classes sel
+  ['orange','mtn','bsc','sol'].forEach(k=>{
+    const el=$('op-'+k);
+    if(el) el.className='op-card';
+  });
+  // Appliquer la classe sel selon opérateur
+  const clsMap={orange:'sel-orange',mtn:'sel',bsc:'sel',sol:'sel'};
+  $('op-'+op)?.classList.add(clsMap[op]);
+  // Afficher les .op-detail du bon opérateur
+  // (géré via CSS avec data-op + sel)
 }
 
-function updateOp(){
-  const isCrypto=opSel==='crypto';
-  $('crypto-block').style.display=isCrypto?'block':'none';
-  $('pay-info').style.display=isCrypto?'none':'block';
-  $('num-section').style.display=isCrypto?'none':'block';
-  if(!isCrypto){
-    $s('pi-num',PAY[opSel]||PAY.mtn);
-  }
-  $('crypto-addr').textContent=PAY.crypto;
-}
-
-function copierAddr(){
-  navigator.clipboard?.writeText(PAY.crypto).then(()=>toast('✅ Adresse copiée !','ok')).catch(()=>{
-    const t=document.createElement('textarea');t.value=PAY.crypto;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('✅ Adresse copiée !','ok');
+/* ─── STEP BAR ─── */
+function setStep(n){
+  [1,2,3,4].forEach(i=>{
+    const el=$('stp'+i);
+    el.classList.remove('active','done');
+    if(i<n) el.classList.add('done');
+    else if(i===n) el.classList.add('active');
   });
 }
 
-/* ══ Soumettre la demande ══ */
+/* ─── NAVIGATION PAGES ─── */
+function goPage(n){
+  // Validation avant passage
+  if(n===2){
+    if(!planSel){toast('⚠️ Veuillez sélectionner un plan','err');return}
+    const amt=fmtF(planSel.depot);
+    $s('ah-plan',planSel.label+' — '+planSel.job);
+    $s('ah-amount','XAF '+fmt(planSel.depot));
+    // Hints montant dans chaque méthode
+    ['orange-hint','mtn-hint','bsc-hint','sol-hint'].forEach(id=>$s(id,amt));
+    startTimer();
+  }
+  if(n===3){
+    // Vérif numéro si mobile money
+    if(opSel==='orange'){
+      const num=($('num-orange')?.value||'').replace(/\s/g,'');
+      if(num.length<8){toast('⚠️ Entrez votre numéro Orange Money expéditeur','err');return}
+    }
+    if(opSel==='mtn'){
+      const num=($('num-mtn')?.value||'').replace(/\s/g,'');
+      if(num.length<8){toast('⚠️ Entrez votre numéro MTN MoMo expéditeur','err');return}
+    }
+    $s('note-plan',planSel?.label||'—');
+  }
+
+  [1,2,3,4].forEach(i=>{
+    const p=$('page'+i);
+    if(p) p.style.display=i===n?'block':'none';
+  });
+  $('hist-wrap').style.display=n===4?'none':'block';
+  setStep(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ─── SOUMETTRE ─── */
 async function soumettre(){
-  const ref=$('inp-ref').value.trim();
-  const mont=parseFloat($('inp-montant').value)||0;
-  const note=$('inp-note').value.trim();
-  const num=$('inp-num').value.trim();
+  const ref=($('inp-ref')?.value||'').trim();
+  const mont=parseFloat($('inp-montant')?.value)||0;
+  const note=($('inp-note')?.value||'').trim();
+  const numExp=opSel==='orange'?($('num-orange')?.value||'').trim():
+                opSel==='mtn'  ?($('num-mtn')?.value||'').trim():'';
 
   if(!ref){toast('⚠️ Référence de transaction requise','err');return}
   if(mont<=0){toast('⚠️ Indiquez le montant envoyé','err');return}
 
   const btn=$('btn-submit');
-  btn.textContent='⏳ Envoi...';btn.disabled=true;
+  btn.textContent='⏳ Envoi en cours...';btn.disabled=true;
 
   try{
     const{error}=await SB.from('recharges').insert({
       user_id:         U.id,
-      plan_niveau:     planSel.niveau,
+      plan_niveau:     planSel.n,
       plan_label:      planSel.label,
       plan_depot:      planSel.depot,
       plan_gain:       planSel.gain,
       plan_taches:     planSel.taches,
       operateur:       opSel,
-      num_expediteur:  num||null,
+      num_expediteur:  numExp||null,
       ref_transaction: ref,
       montant_envoye:  mont,
       note:            note||null,
@@ -550,64 +838,99 @@ async function soumettre(){
     });
     if(error) throw new Error(error.message);
 
-    $s('success-plan','✅ '+planSel.label+' en cours de validation');
+    clearInterval(timerInt);
+    $s('suc-plan','✅ '+planSel.label+' — En attente de validation');
     goPage(4);
     await chargerHistorique();
-    toast('✅ Demande envoyée !','ok');
+    toast('✅ Demande envoyée avec succès !','ok');
   }catch(err){
-    toast('❌ '+err.message,'err');
-    console.error(err);
+    toast('❌ '+err.message,'err');console.error(err);
   }finally{
-    btn.textContent='✅ Envoyer la demande';btn.disabled=false;
+    btn.textContent='✅ Envoyer';btn.disabled=false;
   }
 }
 
-/* ══ Historique ══ */
+/* ─── HISTORIQUE ─── */
 async function chargerHistorique(){
   const{data:h}=await SB.from('recharges')
     .select('*').eq('user_id',U.id)
     .order('created_at',{ascending:false}).limit(20);
 
   const list=$('hist-list');
-  if(!h||!h.length){list.innerHTML='<div class="vide">Aucune demande de recharge</div>';return}
+  if(!h||!h.length){list.innerHTML='<div class="empty-hist">Aucune demande de recharge pour le moment</div>';return}
 
-  const slbl={en_attente:'En attente',valide:'Validé ✓',rejete:'Rejeté'};
-  const scls={en_attente:'sw',valide:'sv',rejete:'sr'};
-  const sico={en_attente:'ico-w',valide:'ico-v',rejete:'ico-r'};
-  const oico={mtn:'📱',orange:'🍊',wave:'🌊',crypto:'₿'};
+  const stl={en_attente:'En attente',valide:'Validé ✓',rejete:'Rejeté'};
+  const stc={en_attente:'s-w',valide:'s-v',rejete:'s-r'};
+  const stic={en_attente:'ic-w',valide:'ic-v',rejete:'ic-r'};
+  const oico={orange:'🍊',mtn:'📱',bsc:'⬡',sol:'◎'};
 
   list.innerHTML=h.map(r=>{
-    const dt=new Date(r.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
     const st=r.statut||'en_attente';
-    return `<div class="hitem">
-      <div class="hico ${sico[st]}">${oico[r.operateur]||'💰'}</div>
-      <div class="hinfo">
-        <div class="hnom">${r.plan_label||'—'} — ${r.operateur||'—'}</div>
-        <div class="hdate">${dt} · ${r.ref_transaction||'—'}</div>
+    const d=new Date(r.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    const opLabel={orange:'Orange Money',mtn:'MTN MoMo',bsc:'BSC-1 USDT',sol:'SOL-1 USDT'}[r.operateur]||r.operateur||'—';
+    return `<div class="h-item">
+      <div class="h-ico ${stic[st]}">${oico[r.operateur]||'💰'}</div>
+      <div class="h-info">
+        <div class="h-name">${r.plan_label||'—'} · ${opLabel}</div>
+        <div class="h-date">${d} · Réf: ${r.ref_transaction||'—'}</div>
       </div>
-      <div class="hright">
-        <div class="hmount">${fmtF(r.montant_envoye)}</div>
-        <span class="hstat ${scls[st]}">${slbl[st]||st}</span>
+      <div class="h-right">
+        <div class="h-amt">${fmtF(r.montant_envoye)}</div>
+        <span class="h-stat ${stc[st]}">${stl[st]||st}</span>
       </div>
     </div>`;
   }).join('');
 }
 
-/* ══ INIT ══ */
+/* ─── INIT ─── */
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session){window.location.href='index.html';return}
   U=session.user;
-
-  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
-  P=p||{solde:0,vip_niveau:'VIP 0'};
-  $s('tb-vip',P.vip_niveau||'VIP 0');
-
+  const{data:p}=await SB.from('profiles').select('vip_niveau,solde').eq('id',U.id).single();
+  $s('tb-vip',(p?.vip_niveau)||'VIP 0');
   renderPlans();
   await chargerHistorique();
 }
 
-init();
+/* Fix CSS pour op-detail visible selon sélection — override via JS */
+function updateOpDetailVisibility(){
+  // Reset all op-detail
+  document.querySelectorAll('.op-detail').forEach(el=>el.style.display='none');
+  // Show only selected
+  const activeCard=$('.op-card.sel-orange')||$('.op-card.sel');
+  if(activeCard){
+    const detail=activeCard.querySelector('.op-detail');
+    if(detail) detail.style.display='block';
+  }
+}
+
+// Override selOp pour gérer la visibility
+const _selOpOrig=selOp;
+window.selOp=function(op){
+  opSel=op;
+  ['orange','mtn','bsc','sol'].forEach(k=>{
+    const el=$('op-'+k);
+    if(!el) return;
+    el.className='op-card';
+    const detail=el.querySelector('.op-detail');
+    if(detail) detail.style.display='none';
+  });
+  const clsMap={orange:'sel-orange',mtn:'sel',bsc:'sel',sol:'sel'};
+  const selectedEl=$('op-'+op);
+  if(selectedEl){
+    selectedEl.classList.add(clsMap[op]);
+    const detail=selectedEl.querySelector('.op-detail');
+    if(detail) detail.style.display='block';
+  }
+};
+
+init().then(()=>{
+  // Afficher le détail Orange par défaut
+  const orangeDetail=$('#op-orange .op-detail')||$('op-orange')?.querySelector('.op-detail');
+  if(orangeDetail) orangeDetail.style.display='block';
+  $('op-orange').querySelector('.op-detail').style.display='block';
+});
 </script>
 </body>
 </html>
