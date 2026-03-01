@@ -618,7 +618,7 @@ async function loadDash(){
   const[{count:nu},{data:rp},{data:tp},{data:prf}]=await Promise.all([
     SB.from('profiles').select('*',{count:'exact',head:true}),
     SB.from('recharges').select('*').eq('statut','en_attente'),
-    SB.from('transactions').select('*').eq('type','retrait').eq('statut','en_attente'),
+    SB.from('transactions').select('id,user_id,montant,statut').eq('type','retrait').eq('statut','en_attente'),
     SB.from('profiles').select('solde,investissement,gains_totaux,created_at'),
   ]);
 
@@ -682,10 +682,22 @@ async function validerRecharge(id,uid,planLabel,planGain,planTaches){
 
 /* ══ RETRAITS ══ */
 async function loadRetraits(){
-  const{data}=await SB.from('transactions')
-    .select('*, profiles(full_name,email)')
-    .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
-  RETRAITS=data||[];renderRetr();
+  // On sélectionne id,user_id,type,montant,statut,created_at en sûr
+  // Les colonnes methode/frais/montant_net/compte/note peuvent manquer → on les récupère avec try
+  let data=[];
+  try{
+    const res=await SB.from('transactions')
+      .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at, profiles(full_name,email)')
+      .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
+    data=res.data||[];
+  }catch(e){
+    // Fallback si colonnes manquantes
+    const res=await SB.from('transactions')
+      .select('id,user_id,type,montant,statut,created_at, profiles(full_name,email)')
+      .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
+    data=res.data||[];
+  }
+  RETRAITS=data;renderRetr();
 }
 
 function filtRetr(f,el){
@@ -697,7 +709,7 @@ function renderRetr(){
   const q=($('q-retr')?.value||'').toLowerCase();
   let d=RETRAITS;
   if(FILT_RETR!=='all') d=d.filter(r=>r.statut===FILT_RETR);
-  if(q) d=d.filter(r=>(r.profiles?.full_name+r.profiles?.email+r.methode).toLowerCase().includes(q));
+  if(q) d=d.filter(r=>((r.profiles?.full_name||'')+(r.profiles?.email||'')+(r.methode||'')).toLowerCase().includes(q));
   renderCardList($('list-retr'),d,'retr');
 }
 
@@ -955,7 +967,7 @@ async function loadStats(){
   const[{data:rVal},{data:rRej},{data:tVal},{data:nAll},{data:roue},{data:prf}]=await Promise.all([
     SB.from('recharges').select('id').eq('statut','valide'),
     SB.from('recharges').select('id').eq('statut','rejete'),
-    SB.from('transactions').select('id').eq('type','retrait').eq('statut','valide'),
+    SB.from('transactions').select('id').eq('type','retrait').eq('statut','valide').catch(()=>({data:[]})),
     SB.from('notifications').select('id'),
     SB.from('roue_historique').select('id').catch(()=>({data:[]})),
     SB.from('profiles').select('vip_niveau,investissement').order('investissement',{ascending:false}),
