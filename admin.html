@@ -612,12 +612,23 @@ async function loadAll(){
   await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats()]);
 }
 
+/* Utilitaire : enrichit les rows avec .profiles depuis la table profiles */
+async function enrichWithProfiles(rows,uidField='user_id'){
+  if(!rows||!rows.length)return;
+  const uids=[...new Set(rows.map(r=>r[uidField]).filter(Boolean))];
+  if(!uids.length)return;
+  const{data:profs}=await SB.from('profiles').select('id,full_name,email').in('id',uids);
+  const profMap={};
+  (profs||[]).forEach(p=>profMap[p.id]=p);
+  rows.forEach(r=>{r.profiles=profMap[r[uidField]]||null});
+}
+
 /* ══ DASHBOARD ══ */
 async function loadDash(){
   const[{count:nu},{data:rp},{data:tp},{data:prf}]=await Promise.all([
     SB.from('profiles').select('*',{count:'exact',head:true}),
     SB.from('recharges').select('*').eq('statut','en_attente'),
-    SB.from('transactions').select('id,user_id,montant,statut').eq('type','retrait').eq('statut','en_attente'),
+    SB.from('transactions').select('id,user_id,montant,statut,methode,created_at').eq('type','retrait').eq('statut','en_attente'),
     SB.from('profiles').select('solde,investissement,gains_totaux,created_at'),
   ]);
 
@@ -643,6 +654,9 @@ async function loadDash(){
   $s('kpi-invest',fmtF(totalInvest));
   $s('kpi-soldes','Soldes: '+fmtF(totalSolde));
 
+  await enrichWithProfiles(rechPend,'user_id');
+  await enrichWithProfiles(retrPend,'user_id');
+
   renderCardList($('d-rech'),rechPend.slice(0,4),'rech',true);
   renderCardList($('d-retr'),retrPend.slice(0,4),'retr',true);
 }
@@ -650,9 +664,11 @@ async function loadDash(){
 /* ══ RECHARGES ══ */
 async function loadRecharges(){
   const{data}=await SB.from('recharges')
-    .select('*, profiles(full_name,email)')
+    .select('*')
     .order('created_at',{ascending:false}).limit(200);
-  RECHARGES=data||[];renderRech();
+  const rows=data||[];
+  await enrichWithProfiles(rows,'user_id');
+  RECHARGES=rows;renderRech();
 }
 
 function filtRech(f,el){
@@ -681,12 +697,25 @@ async function validerRecharge(id,uid,planLabel,planGain,planTaches){
 
 /* ══ RETRAITS ══ */
 async function loadRetraits(){
+  // Requête sans jointure pour éviter l'échec si FK non configurée
   const{data,error}=await SB.from('transactions')
-    .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at,profiles(full_name,email)')
+    .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at')
     .eq('type','retrait')
     .order('created_at',{ascending:false})
     .limit(200);
-  RETRAITS=data||[];
+
+  const rows=data||[];
+
+  // Enrichir avec les profils séparément
+  if(rows.length>0){
+    const uids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];
+    const{data:profs}=await SB.from('profiles').select('id,full_name,email').in('id',uids);
+    const profMap={};
+    (profs||[]).forEach(p=>profMap[p.id]=p);
+    rows.forEach(r=>{r.profiles=profMap[r.user_id]||null});
+  }
+
+  RETRAITS=rows;
   renderRetr();
 }
 
