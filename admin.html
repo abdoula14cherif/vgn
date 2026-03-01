@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN · Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080A0D;--s1:#0F1117;--s2:#14171F;--s3:#1A1E28;--s4:#21263300;
+  --bd:#252A36;--bd2:#2E3546;
+  --g:#00D97E;--gd:#00B468;--g2:rgba(0,217,126,.1);--g3:rgba(0,217,126,.06);
+  --o:#FF6B35;--od:#D95528;--o2:rgba(255,107,53,.1);
+  --b:#4F8EF7;--b2:rgba(79,142,247,.1);
+  --y:#F0B429;--y2:rgba(240,180,41,.1);
+  --r:#EF4444;--r2:rgba(239,68,68,.1);
+  --p:#9B6DFF;--p2:rgba(155,109,255,.1);
+  --txt:#E8EBF2;--mu:#7A8499;--mu2:#4E5669;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100%}
+body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:relative}
+
+/* ════════════════════════════════════
+   ÉCRAN DE CONNEXION
+════════════════════════════════════ */
+#lock{
+  position:fixed;inset:0;background:var(--bg);z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;max-width:430px;left:50%;transform:translateX(-50%)
+}
+.lock-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,217,126,.15) 0%,transparent 70%);pointer-events:none}
+.lock-shield{font-size:3.5rem;margin-bottom:8px;position:relative;z-index:1;
+  filter:drop-shadow(0 0 20px rgba(0,217,126,.4))}
+.lock-t{font-size:1.3rem;font-weight:800;color:var(--txt);margin-bottom:4px;position:relative;z-index:1}
+.lock-s{font-size:.78rem;color:var(--mu);margin-bottom:36px;position:relative;z-index:1}
+.lock-form{width:100%;display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.lock-inp{width:100%;padding:14px 16px;background:var(--s2);border:1.5px solid var(--bd);
+  border-radius:14px;font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--txt);outline:none;transition:border .2s}
+.lock-inp:focus{border-color:var(--g)}
+.lock-btn{padding:14px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;
+  border-radius:14px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;
+  color:#000;cursor:pointer;letter-spacing:.02em}
+.lock-err{font-size:.73rem;color:var(--r);text-align:center;display:none;padding:2px}
+
+/* ════════════════════════════════════
+   TOPBAR
+════════════════════════════════════ */
+.topbar{
+  position:sticky;top:0;width:100%;z-index:200;
+  background:var(--s1);border-bottom:1px solid var(--bd);
+  padding:calc(var(--sat) + 11px) 14px 11px;
+  display:flex;align-items:center;justify-content:space-between
+}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-pulse{width:7px;height:7px;border-radius:50%;background:var(--g);
+  box-shadow:0 0 8px var(--g);animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.logo-name{font-size:.95rem;font-weight:800;color:var(--txt);letter-spacing:.03em}
+.logo-pill{font-size:.6rem;font-weight:700;background:var(--g2);color:var(--g);
+  padding:2px 8px;border-radius:20px;border:1px solid rgba(0,217,126,.2)}
+.topbar-r{display:flex;align-items:center;gap:6px}
+.icon-btn{width:32px;height:32px;border-radius:9px;background:var(--s3);
+  border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.95rem;position:relative;transition:background .2s}
+.icon-btn:active{background:var(--s2)}
+.icon-dot{position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;
+  background:var(--o);border:1.5px solid var(--s1);display:none}
+.logout{font-size:.7rem;font-weight:600;color:var(--mu);background:var(--s3);
+  border:1px solid var(--bd);padding:6px 11px;border-radius:9px;cursor:pointer}
+.logout:active{background:var(--s2)}
+
+/* ════════════════════════════════════
+   TABS
+════════════════════════════════════ */
+.tabs-bar{overflow-x:auto;scrollbar-width:none;background:var(--s1);border-bottom:1px solid var(--bd)}
+.tabs-bar::-webkit-scrollbar{display:none}
+.tabs{display:flex;padding:0 10px;min-width:max-content}
+.tab{padding:10px 13px;font-size:.7rem;font-weight:600;color:var(--mu);cursor:pointer;
+  border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;
+  gap:5px;transition:color .2s,border-color .2s;letter-spacing:.01em}
+.tab.on{color:var(--g);border-bottom-color:var(--g)}
+.tbadge{font-size:.57rem;font-weight:800;background:var(--o);color:#fff;
+  padding:1px 5px;border-radius:7px;min-width:15px;text-align:center;line-height:1.4}
+
+/* ════════════════════════════════════
+   PAGES
+════════════════════════════════════ */
+.page{display:none;padding:12px;padding-bottom:calc(var(--sab)+28px)}
+.page.on{display:block}
+
+/* ════════════════════════════════════
+   STAT GRID
+════════════════════════════════════ */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.kpi{background:var(--s2);border-radius:16px;padding:14px 14px 12px;
+  border:1px solid var(--bd);position:relative;overflow:hidden;cursor:default}
+.kpi-glow{position:absolute;inset:-40px;border-radius:50%;opacity:.06}
+.kpi-ico{font-size:.85rem;margin-bottom:8px;display:inline-block;
+  padding:5px 9px;border-radius:8px;font-size:1rem}
+.kpi-val{font-size:1.35rem;font-weight:800;color:var(--txt);line-height:1;margin-bottom:3px;font-family:'DM Mono',monospace}
+.kpi-lbl{font-size:.61rem;color:var(--mu);font-weight:500}
+.kpi-sub{font-size:.6rem;font-weight:600;margin-top:5px}
+.cg{color:var(--g)}.co{color:var(--o)}.cb{color:var(--b)}.cy{color:var(--y)}.cr{color:var(--r)}.cp{color:var(--p)}
+
+/* ════════════════════════════════════
+   SECTION HEADER
+════════════════════════════════════ */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:4px}
+.sh h3{font-size:.8rem;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:6px}
+.sh-link{font-size:.67rem;color:var(--g);font-weight:600;cursor:pointer}
+.sh-count{font-size:.6rem;background:var(--b2);color:var(--b);padding:2px 8px;
+  border-radius:8px;font-weight:600;border:1px solid rgba(79,142,247,.2)}
+
+/* ════════════════════════════════════
+   LIST ITEMS — RECHARGES / RETRAITS
+════════════════════════════════════ */
+.list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.card{background:var(--s2);border-radius:14px;border:1px solid var(--bd);
+  overflow:hidden;transition:border-color .2s}
+.card.open{border-color:var(--bd2)}
+.card-head{padding:11px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none}
+.card-head:active{background:rgba(255,255,255,.02)}
+.card-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:1rem;flex-shrink:0}
+.ci-w{background:var(--y2)}.ci-g{background:var(--g2)}.ci-r{background:var(--r2)}
+.ci-b{background:var(--b2)}.ci-o{background:var(--o2)}.ci-p{background:var(--p2)}
+.card-info{flex:1;min-width:0}
+.card-name{font-size:.77rem;font-weight:600;color:var(--txt);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-meta{font-size:.61rem;color:var(--mu);margin-top:2px}
+.card-right{text-align:right;flex-shrink:0}
+.card-amount{font-size:.88rem;font-weight:700;color:var(--txt);font-family:'DM Mono',monospace}
+.card-stat{font-size:.59rem;font-weight:700;padding:2px 7px;border-radius:7px;
+  margin-top:3px;display:inline-block}
+.cs-w{background:var(--y2);color:var(--y)}.cs-g{background:var(--g2);color:var(--g)}.cs-r{background:var(--r2);color:var(--r)}
+
+.card-body{display:none;border-top:1px solid var(--bd);padding:11px 13px}
+.card.open .card-body{display:block}
+.detail-row{display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.detail-row:last-of-type{border-bottom:none}
+.dl{font-size:.65rem;color:var(--mu);font-weight:500}
+.dv{font-size:.7rem;font-weight:600;color:var(--txt);text-align:right;word-break:break-all;max-width:55%}
+.admin-note-box{background:var(--s3);border-radius:9px;padding:8px 10px;margin:8px 0;
+  font-size:.68rem;color:var(--mu);font-family:'DM Mono',monospace;border:1px solid var(--bd)}
+.actions{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
+.abtn{flex:1;min-width:calc(33% - 4px);padding:8px 6px;border-radius:9px;border:none;
+  font-family:'DM Sans',sans-serif;font-size:.69rem;font-weight:600;
+  cursor:pointer;transition:opacity .15s;text-align:center;letter-spacing:.01em}
+.abtn:active{opacity:.7}
+.a-valider{background:var(--g);color:#000}
+.a-rejeter{background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.25)}
+.a-notif{background:var(--o2);color:var(--o);border:1px solid rgba(255,107,53,.25)}
+.a-edit{background:var(--b2);color:var(--b);border:1px solid rgba(79,142,247,.25)}
+.a-del{background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.25)}
+
+/* ════════════════════════════════════
+   USER CARDS
+════════════════════════════════════ */
+.ucard{background:var(--s2);border-radius:14px;border:1px solid var(--bd);margin-bottom:6px;overflow:hidden}
+.ucard.open{border-color:var(--bd2)}
+.uc-head{padding:11px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none}
+.uc-av{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--g),var(--gd));
+  display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:800;
+  color:#000;flex-shrink:0}
+.uc-info{flex:1;min-width:0}
+.uc-name{font-size:.77rem;font-weight:600;color:var(--txt)}
+.uc-mail{font-size:.61rem;color:var(--mu);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uc-right{text-align:right;flex-shrink:0}
+.uc-vip{font-size:.62rem;font-weight:700;background:var(--g2);color:var(--g);
+  padding:2px 7px;border-radius:7px;display:inline-block;margin-bottom:3px;border:1px solid rgba(0,217,126,.2)}
+.uc-bal{font-size:.65rem;color:var(--mu);font-family:'DM Mono',monospace}
+.uc-body{display:none;border-top:1px solid var(--bd);padding:12px 13px}
+.ucard.open .uc-body{display:block}
+.uc-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px}
+.uc-cell{background:var(--s3);border-radius:9px;padding:8px 9px;border:1px solid var(--bd)}
+.uc-cl{font-size:.57rem;color:var(--mu);font-weight:500;margin-bottom:2px}
+.uc-cv{font-size:.73rem;font-weight:700;color:var(--txt);font-family:'DM Mono',monospace}
+
+/* ════════════════════════════════════
+   NOTIFICATION COMPOSER
+════════════════════════════════════ */
+.notif-compose{background:var(--s2);border-radius:16px;border:1px solid var(--bd);
+  padding:14px;margin-bottom:14px}
+.nc-title{font-size:.82rem;font-weight:700;color:var(--txt);margin-bottom:13px;
+  display:flex;align-items:center;gap:7px}
+.ntype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.ntype{background:var(--s3);border:1.5px solid var(--bd);border-radius:10px;
+  padding:9px 6px;text-align:center;cursor:pointer;transition:all .2s;user-select:none}
+.ntype.sel{border-color:var(--g);background:var(--g3)}
+.ntype-ico{font-size:1.1rem;margin-bottom:3px}
+.ntype-lbl{font-size:.59rem;font-weight:600;color:var(--mu)}
+.ntype.sel .ntype-lbl{color:var(--g)}
+.nf{margin-bottom:10px}
+.nf label{display:block;font-size:.67rem;font-weight:600;color:var(--mu);margin-bottom:5px;letter-spacing:.02em}
+.nf input,.nf textarea,.nf select{
+  width:100%;padding:10px 12px;background:var(--s3);border:1.5px solid var(--bd);
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--txt);
+  outline:none;transition:border .2s}
+.nf input:focus,.nf textarea:focus,.nf select:focus{border-color:var(--g)}
+.nf textarea{resize:none;height:68px}
+.nf select option{background:var(--s2)}
+.send-btn{width:100%;padding:11px;background:linear-gradient(135deg,var(--o),var(--od));border:none;
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;
+  color:#fff;cursor:pointer;transition:opacity .15s;letter-spacing:.02em}
+.send-btn:active{opacity:.8}.send-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Historique notifs */
+.ni{background:var(--s2);border-radius:13px;border:1px solid var(--bd);
+  padding:10px 12px;margin-bottom:6px;display:flex;gap:9px;align-items:flex-start}
+.ni-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:.9rem;flex-shrink:0}
+.ni-info{flex:1;min-width:0}
+.ni-t{font-size:.74rem;font-weight:600;color:var(--txt)}
+.ni-b{font-size:.63rem;color:var(--mu);margin-top:2px;line-height:1.4}
+.ni-m{font-size:.58rem;color:var(--mu2);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+
+/* ════════════════════════════════════
+   FILTERS & SEARCH
+════════════════════════════════════ */
+.filters{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px;padding-bottom:1px}
+.filters::-webkit-scrollbar{display:none}
+.chip{padding:5px 11px;border-radius:20px;font-size:.66rem;font-weight:600;
+  cursor:pointer;border:1.5px solid var(--bd);color:var(--mu);
+  background:var(--s2);white-space:nowrap;transition:all .2s;user-select:none}
+.chip.on{border-color:var(--g);color:var(--g);background:var(--g3)}
+.search{background:var(--s2);border:1.5px solid var(--bd);border-radius:11px;
+  padding:9px 13px;display:flex;align-items:center;gap:7px;margin-bottom:10px;transition:border .2s}
+.search:focus-within{border-color:var(--g)}
+.search-ico{font-size:.85rem;color:var(--mu)}
+.search input{flex:1;background:transparent;border:none;outline:none;
+  font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--txt)}
+.search input::placeholder{color:var(--mu2)}
+
+/* ════════════════════════════════════
+   MODAL
+════════════════════════════════════ */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;max-width:430px;margin:0 auto}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--s1);border-radius:22px 22px 0 0;width:100%;max-width:430px;
+  padding:14px 16px calc(var(--sab)+24px);transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.22,1,.36,1);max-height:88vh;overflow-y:auto}
+.modal-ov.open .modal{transform:translateY(0)}
+.mhandle{width:32px;height:3px;border-radius:2px;background:var(--bd2);margin:0 auto 14px}
+.mtitle{font-size:.9rem;font-weight:700;color:var(--txt);margin-bottom:3px}
+.msub{font-size:.7rem;color:var(--mu);margin-bottom:15px;font-family:'DM Mono',monospace}
+.mf{margin-bottom:11px}
+.mf label{display:block;font-size:.66rem;font-weight:600;color:var(--mu);margin-bottom:5px;letter-spacing:.02em}
+.mf input,.mf textarea,.mf select{width:100%;padding:10px 12px;background:var(--s3);
+  border:1.5px solid var(--bd);border-radius:10px;font-family:'DM Sans',sans-serif;
+  font-size:.85rem;color:var(--txt);outline:none;transition:border .2s}
+.mf input:focus,.mf textarea:focus,.mf select:focus{border-color:var(--g)}
+.mf textarea{resize:none;height:62px}
+.mf select option{background:var(--s2)}
+.mbtns{display:flex;gap:7px;margin-top:14px}
+.m-cancel{flex:1;padding:11px;background:var(--s3);border:1px solid var(--bd);
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--mu);cursor:pointer}
+.m-confirm{flex:2;padding:11px;background:var(--g);border:none;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;color:#000;cursor:pointer}
+.m-confirm.danger{background:var(--r);color:#fff}
+
+/* ════════════════════════════════════
+   MISC
+════════════════════════════════════ */
+.empty{text-align:center;padding:28px 16px;color:var(--mu)}
+.empty-ico{font-size:2.2rem;margin-bottom:8px}
+.empty-t{font-size:.78rem;font-weight:600;color:var(--mu2);margin-bottom:3px}
+.divider{height:1px;background:var(--bd);margin:14px 0}
+.tst{position:fixed;bottom:calc(var(--sab)+14px);left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--s2);color:var(--txt);padding:9px 18px;border-radius:20px;
+  font-size:.74rem;font-weight:600;z-index:9999;white-space:nowrap;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+  border:1px solid var(--bd);box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.tst.show{transform:translateX(-50%) translateY(0)}
+.tst.ok{border-color:var(--g);color:var(--g)}.tst.err{border-color:var(--r);color:var(--r)}
+.ld{display:inline-block;width:9px;height:9px;border:2px solid var(--bd);
+  border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.tag{font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:6px;display:inline-block}
+.tag-g{background:var(--g2);color:var(--g);border:1px solid rgba(0,217,126,.2)}
+.tag-o{background:var(--o2);color:var(--o);border:1px solid rgba(255,107,53,.2)}
+.tag-r{background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.2)}
+.tag-b{background:var(--b2);color:var(--b);border:1px solid rgba(79,142,247,.2)}
+.tag-y{background:var(--y2);color:var(--y);border:1px solid rgba(240,180,41,.2)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="lock">
+  <div class="lock-glow"></div>
+  <div class="lock-shield">🛡️</div>
+  <div class="lock-t">VGN Administration</div>
+  <div class="lock-s">Accès réservé aux administrateurs</div>
+  <div class="lock-form">
+    <input class="lock-inp" type="email" id="l-email" placeholder="Email administrateur" autocomplete="email">
+    <input class="lock-inp" type="password" id="l-pass" placeholder="Mot de passe" autocomplete="current-password">
+    <div class="lock-err" id="l-err">Identifiants incorrects</div>
+    <button class="lock-btn" onclick="login()">Connexion sécurisée →</button>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app" style="display:none">
+
+<div class="tst" id="tst"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-pulse"></div>
+    <span class="logo-name">VGN</span>
+    <span class="logo-pill">Admin</span>
+  </div>
+  <div class="topbar-r">
+    <div class="icon-btn" onclick="goTab('notifs')" title="Notifications">🔔<div class="icon-dot" id="notif-dot"></div></div>
+    <div class="icon-btn" onclick="loadAll()" title="Rafraîchir">🔄</div>
+    <div class="logout" onclick="logout()">Déconnexion</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <div class="tabs">
+    <div class="tab on" id="tb-dash" onclick="goTab('dash')">📊 Dashboard</div>
+    <div class="tab" id="tb-rech" onclick="goTab('rech')">💰 Recharges <span class="tbadge" id="b-rech">0</span></div>
+    <div class="tab" id="tb-retr" onclick="goTab('retr')">💳 Retraits <span class="tbadge" id="b-retr">0</span></div>
+    <div class="tab" id="tb-users" onclick="goTab('users')">👥 Utilisateurs</div>
+    <div class="tab" id="tb-notifs" onclick="goTab('notifs')">🔔 Notifs</div>
+    <div class="tab" id="tb-stats" onclick="goTab('stats')">📈 Statistiques</div>
+  </div>
+</div>
+
+<!-- ════════════════ DASHBOARD ════════════════ -->
+<div class="page on" id="p-dash">
+
+  <div class="kpi-grid" style="margin-top:4px">
+    <div class="kpi">
+      <div class="kpi-glow" style="background:radial-gradient(var(--g),transparent)"></div>
+      <div class="kpi-ico" style="background:var(--g2)">👥</div>
+      <div class="kpi-val cg" id="kpi-users">—</div>
+      <div class="kpi-lbl">Utilisateurs inscrits</div>
+      <div class="kpi-sub cg" id="kpi-users-new"></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-glow" style="background:radial-gradient(var(--o),transparent)"></div>
+      <div class="kpi-ico" style="background:var(--o2)">💰</div>
+      <div class="kpi-val co" id="kpi-rech-pend">—</div>
+      <div class="kpi-lbl">Recharges en attente</div>
+      <div class="kpi-sub co" id="kpi-rech-amt"></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-glow" style="background:radial-gradient(var(--y),transparent)"></div>
+      <div class="kpi-ico" style="background:var(--y2)">💳</div>
+      <div class="kpi-val cy" id="kpi-retr-pend">—</div>
+      <div class="kpi-lbl">Retraits en attente</div>
+      <div class="kpi-sub cy" id="kpi-retr-amt"></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-glow" style="background:radial-gradient(var(--p),transparent)"></div>
+      <div class="kpi-ico" style="background:var(--p2)">📈</div>
+      <div class="kpi-val cp" id="kpi-invest">—</div>
+      <div class="kpi-lbl">Total investi</div>
+      <div class="kpi-sub cp" id="kpi-soldes"></div>
+    </div>
+  </div>
+
+  <!-- Recharges urgentes -->
+  <div class="sh"><h3>⏳ Recharges urgentes</h3><span class="sh-link" onclick="goTab('rech')">Tout voir →</span></div>
+  <div class="list" id="d-rech"></div>
+
+  <!-- Retraits urgents -->
+  <div class="sh"><h3>💸 Retraits urgents</h3><span class="sh-link" onclick="goTab('retr')">Tout voir →</span></div>
+  <div class="list" id="d-retr"></div>
+
+</div>
+
+<!-- ════════════════ RECHARGES ════════════════ -->
+<div class="page" id="p-rech">
+  <div class="filters" style="margin-top:4px" id="f-rech">
+    <div class="chip on" onclick="filtRech('en_attente',this)">⏳ En attente</div>
+    <div class="chip" onclick="filtRech('valide',this)">✅ Validés</div>
+    <div class="chip" onclick="filtRech('rejete',this)">❌ Rejetés</div>
+    <div class="chip" onclick="filtRech('all',this)">Tout</div>
+  </div>
+  <div class="search"><span class="search-ico">🔍</span><input id="q-rech" placeholder="Nom, email, référence..." oninput="renderRech()"></div>
+  <div class="list" id="list-rech"></div>
+</div>
+
+<!-- ════════════════ RETRAITS ════════════════ -->
+<div class="page" id="p-retr">
+  <div class="filters" style="margin-top:4px" id="f-retr">
+    <div class="chip on" onclick="filtRetr('en_attente',this)">⏳ En attente</div>
+    <div class="chip" onclick="filtRetr('valide',this)">✅ Payés</div>
+    <div class="chip" onclick="filtRetr('rejete',this)">❌ Rejetés</div>
+    <div class="chip" onclick="filtRetr('all',this)">Tout</div>
+  </div>
+  <div class="search"><span class="search-ico">🔍</span><input id="q-retr" placeholder="Nom, email, méthode..." oninput="renderRetr()"></div>
+  <div class="list" id="list-retr"></div>
+</div>
+
+<!-- ════════════════ UTILISATEURS ════════════════ -->
+<div class="page" id="p-users">
+  <div class="search" style="margin-top:4px"><span class="search-ico">🔍</span><input id="q-users" placeholder="Nom, email..." oninput="renderUsers()"></div>
+  <div class="filters" id="f-users">
+    <div class="chip on" onclick="filtUsers('all',this)">Tous</div>
+    <div class="chip" onclick="filtUsers('VIP 0',this)">VIP 0</div>
+    <div class="chip" onclick="filtUsers('VIP 1',this)">VIP 1</div>
+    <div class="chip" onclick="filtUsers('vip2',this)">VIP 2+</div>
+  </div>
+  <div id="list-users"></div>
+</div>
+
+<!-- ════════════════ NOTIFICATIONS ════════════════ -->
+<div class="page" id="p-notifs">
+
+  <div class="notif-compose">
+    <div class="nc-title">📢 Nouvelle notification</div>
+
+    <!-- Types -->
+    <div style="font-size:.65rem;font-weight:600;color:var(--mu);margin-bottom:6px;letter-spacing:.04em">TYPE</div>
+    <div class="ntype-grid">
+      <div class="ntype sel" id="nt-info" onclick="setNType('info')"><div class="ntype-ico">ℹ️</div><div class="ntype-lbl">Info</div></div>
+      <div class="ntype" id="nt-success" onclick="setNType('success')"><div class="ntype-ico">✅</div><div class="ntype-lbl">Succès</div></div>
+      <div class="ntype" id="nt-warning" onclick="setNType('warning')"><div class="ntype-ico">⚠️</div><div class="ntype-lbl">Alerte</div></div>
+      <div class="ntype" id="nt-promo" onclick="setNType('promo')"><div class="ntype-ico">🎁</div><div class="ntype-lbl">Promo</div></div>
+      <div class="ntype" id="nt-payment" onclick="setNType('payment')"><div class="ntype-ico">💰</div><div class="ntype-lbl">Paiement</div></div>
+      <div class="ntype" id="nt-urgent" onclick="setNType('urgent')"><div class="ntype-ico">🚨</div><div class="ntype-lbl">Urgent</div></div>
+    </div>
+
+    <div class="nf">
+      <label>DESTINATAIRES</label>
+      <select id="n-dest" onchange="onDestChange()">
+        <option value="all">📢 Tous les utilisateurs</option>
+        <option value="stage">🌱 En cours de stage (VIP 0)</option>
+        <option value="vip1p">💎 VIP 1 et plus</option>
+        <option value="vip2p">🏆 VIP 2 et plus</option>
+        <option value="one">👤 Un utilisateur précis</option>
+      </select>
+    </div>
+    <div class="nf" id="n-one-field" style="display:none">
+      <label>EMAIL DE L'UTILISATEUR</label>
+      <input type="text" id="n-one-val" placeholder="email@exemple.com">
+    </div>
+    <div class="nf">
+      <label>TITRE</label>
+      <input type="text" id="n-titre" placeholder="Ex: Votre plan VIP 2 est actif !">
+    </div>
+    <div class="nf">
+      <label>MESSAGE</label>
+      <textarea id="n-msg" placeholder="Contenu de la notification..."></textarea>
+    </div>
+    <button class="send-btn" id="n-send" onclick="sendNotif()">📤 Envoyer</button>
+  </div>
+
+  <div class="sh"><h3>📋 Historique des envois</h3></div>
+  <div id="notif-hist"><div style="text-align:center;padding:16px"><span class="ld"></span></div></div>
+
+</div>
+
+<!-- ════════════════ STATISTIQUES ════════════════ -->
+<div class="page" id="p-stats">
+  <div class="kpi-grid" style="margin-top:4px">
+    <div class="kpi"><div class="kpi-ico" style="background:var(--g2)">✅</div><div class="kpi-val cg" id="s-rech-val">—</div><div class="kpi-lbl">Recharges validées</div></div>
+    <div class="kpi"><div class="kpi-ico" style="background:var(--r2)">❌</div><div class="kpi-val cr" id="s-rech-rej">—</div><div class="kpi-lbl">Recharges rejetées</div></div>
+    <div class="kpi"><div class="kpi-ico" style="background:var(--g2)">💳</div><div class="kpi-val cg" id="s-retr-val">—</div><div class="kpi-lbl">Retraits payés</div></div>
+    <div class="kpi"><div class="kpi-ico" style="background:var(--b2)">📬</div><div class="kpi-val cb" id="s-notifs">—</div><div class="kpi-lbl">Notifications envoyées</div></div>
+    <div class="kpi"><div class="kpi-ico" style="background:var(--p2)">🎡</div><div class="kpi-val cp" id="s-roue">—</div><div class="kpi-lbl">Tours de roue</div></div>
+    <div class="kpi"><div class="kpi-ico" style="background:var(--y2)">👥</div><div class="kpi-val cy" id="s-fil">—</div><div class="kpi-lbl">Parrainages actifs</div></div>
+  </div>
+
+  <!-- Répartition VIP -->
+  <div class="sh"><h3>📊 Répartition par niveau VIP</h3></div>
+  <div id="vip-breakdown" class="list"></div>
+
+  <!-- Top utilisateurs -->
+  <div class="sh"><h3>🏆 Top investisseurs</h3></div>
+  <div id="top-users" class="list"></div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- Modal : Modifier profil -->
+<div class="modal-ov" id="m-edit">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">✏️ Modifier le profil</div>
+    <div class="msub" id="me-sub">—</div>
+    <div class="mf"><label>SOLDE (FCFA)</label><input type="number" id="me-solde" placeholder="0"></div>
+    <div class="mf"><label>NIVEAU VIP</label>
+      <select id="me-vip">
+        <option>VIP 0</option><option>VIP 1</option><option>VIP 2</option><option>VIP 3</option>
+        <option>VIP 4</option><option>VIP 5</option><option>VIP 6</option><option>VIP 7</option>
+        <option>VIP 8</option><option>VIP 9</option>
+      </select>
+    </div>
+    <div class="mf"><label>GAINS TOTAUX (FCFA)</label><input type="number" id="me-gains" placeholder="0"></div>
+    <div class="mf"><label>NOTE ADMIN</label><textarea id="me-note" placeholder="Raison de la modification..."></textarea></div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-edit')">Annuler</button>
+      <button class="m-confirm" id="me-save" onclick="saveEdit()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : Rejeter -->
+<div class="modal-ov" id="m-reject">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">❌ Rejeter la demande</div>
+    <div class="msub" id="mr-sub">—</div>
+    <div class="mf"><label>RAISON DU REJET</label><textarea id="mr-note" placeholder="Ex: Référence introuvable, montant incorrect..."></textarea></div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-reject')">Annuler</button>
+      <button class="m-confirm danger" id="mr-ok" onclick="doReject()">❌ Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : Notif rapide -->
+<div class="modal-ov" id="m-qnotif">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">🔔 Notification rapide</div>
+    <div class="msub" id="qn-sub">—</div>
+    <div class="mf"><label>TITRE</label><input type="text" id="qn-titre" placeholder="Titre..."></div>
+    <div class="mf"><label>MESSAGE</label><textarea id="qn-msg" placeholder="Message..."></textarea></div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-qnotif')">Annuler</button>
+      <button class="m-confirm" id="qn-ok" onclick="sendQNotif()">📤 Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   SUPABASE + CONFIG
+══════════════════════════════════════ */
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-admin',storage:window.localStorage}}
+);
+
+const ADMINS=['admin@vgn.com']; // ← ajouter les emails admin ici
+
+const PLANS_VIP={
+  'VIP 1':{gain:70,taches:5},'VIP 2':{gain:175,taches:8},'VIP 3':{gain:560,taches:10},
+  'VIP 4':{gain:1300,taches:15},'VIP 5':{gain:2000,taches:20},'VIP 6':{gain:3500,taches:25},
+  'VIP 7':{gain:6400,taches:30},'VIP 8':{gain:11000,taches:35},'VIP 9':{gain:19000,taches:40}
+};
+
+/* ── HELPERS ── */
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+const dtf=s=>new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+const dtfh=s=>new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+const toast=(m,t='')=>{const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)};
+
+/* ── STATE ── */
+let ME=null;
+let RECHARGES=[],RETRAITS=[],USERS=[],NOTIFS=[];
+let FILT_RECH='en_attente',FILT_RETR='en_attente',FILT_USERS='all';
+let EDIT_ID=null,REJECT_ID=null,REJECT_TYPE=null,QNOTIF_UID=null;
+let NTYPE='info';
+
+/* ══ LOGIN / LOGOUT ══ */
+async function login(){
+  const email=$('l-email').value.trim(), pass=$('l-pass').value;
+  if(!email||!pass){showErr('Champs requis');return}
+  const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
+  if(error){showErr('Identifiants incorrects');return}
+  if(!ADMINS.includes(data.user.email)){await SB.auth.signOut();showErr('Accès non autorisé');return}
+  ME=data.user;$('lock').style.display='none';$('app').style.display='block';loadAll();
+}
+function showErr(m){$('l-err').textContent=m;$('l-err').style.display='block'}
+async function logout(){await SB.auth.signOut();location.reload()}
+
+// Vérifier session existante
+(async()=>{
+  const{data:{session}}=await SB.auth.getSession();
+  if(session&&ADMINS.includes(session.user?.email)){
+    ME=session.user;$('lock').style.display='none';$('app').style.display='block';loadAll();
+  }
+})();
+
+/* ══ TABS ══ */
+function goTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  $('tb-'+name)?.classList.add('on');
+  $('p-'+name)?.classList.add('on');
+  if(name==='notifs') $('notif-dot').style.display='none';
+}
+
+/* ══ LOAD ALL ══ */
+async function loadAll(){
+  await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats()]);
+}
+
+/* ══ DASHBOARD ══ */
+async function loadDash(){
+  const[{count:nu},{data:rp},{data:tp},{data:prf}]=await Promise.all([
+    SB.from('profiles').select('*',{count:'exact',head:true}),
+    SB.from('recharges').select('*').eq('statut','en_attente'),
+    SB.from('transactions').select('*').eq('type','retrait').eq('statut','en_attente'),
+    SB.from('profiles').select('solde,investissement,gains_totaux,created_at'),
+  ]);
+
+  $s('kpi-users',nu||0);
+  const today=new Date().toISOString().slice(0,10);
+  const newToday=(prf||[]).filter(p=>p.created_at?.slice(0,10)===today).length;
+  $s('kpi-users-new',newToday>0?'+'+newToday+' aujourd\'hui':'—');
+
+  const rechPend=rp||[];
+  $s('kpi-rech-pend',rechPend.length);
+  $s('kpi-rech-amt',rechPend.length?fmtF(rechPend.reduce((a,r)=>a+(r.montant_envoye||0),0)):'');
+  $s('b-rech',rechPend.length);
+
+  const retrPend=tp||[];
+  $s('kpi-retr-pend',retrPend.length);
+  $s('kpi-retr-amt',retrPend.length?fmtF(retrPend.reduce((a,r)=>a+(r.montant||0),0)):'');
+  $s('b-retr',retrPend.length);
+
+  if(rechPend.length>0||retrPend.length>0) $('notif-dot').style.display='block';
+
+  const totalInvest=(prf||[]).reduce((a,p)=>a+(p.investissement||0),0);
+  const totalSolde=(prf||[]).reduce((a,p)=>a+(p.solde||0),0);
+  $s('kpi-invest',fmtF(totalInvest));
+  $s('kpi-soldes','Soldes: '+fmtF(totalSolde));
+
+  // Mini listes urgentes sur dashboard
+  renderCardList($('d-rech'),rechPend.slice(0,4),'rech',true);
+  renderCardList($('d-retr'),retrPend.slice(0,4),'retr',true);
+}
+
+/* ══ RECHARGES ══ */
+async function loadRecharges(){
+  const{data}=await SB.from('recharges')
+    .select('*, profiles(full_name,email)')
+    .order('created_at',{ascending:false}).limit(200);
+  RECHARGES=data||[];renderRech();
+}
+
+function filtRech(f,el){
+  FILT_RECH=f;
+  $('f-rech').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderRech();
+}
+function renderRech(){
+  const q=($('q-rech')?.value||'').toLowerCase();
+  let d=RECHARGES;
+  if(FILT_RECH!=='all') d=d.filter(r=>r.statut===FILT_RECH);
+  if(q) d=d.filter(r=>(r.profiles?.full_name+r.profiles?.email+r.ref_transaction).toLowerCase().includes(q));
+  renderCardList($('list-rech'),d,'rech');
+}
+
+async function validerRecharge(id,uid,planLabel,planGain,planTaches){
+  toast('⏳ Validation...');
+  const{error}=await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString()}).eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
+  await insertNotif(uid,'payment','✅ Plan '+planLabel+' activé !',
+    'Votre recharge a été validée. Vous pouvez maintenant effectuer vos tâches et gagner '+fmtF(planGain*planTaches)+' FCFA/jour.');
+  toast('✅ Validé et VIP activé !','ok');
+  await loadAll();
+}
+
+/* ══ RETRAITS ══ */
+async function loadRetraits(){
+  const{data}=await SB.from('transactions')
+    .select('*, profiles(full_name,email)')
+    .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
+  RETRAITS=data||[];renderRetr();
+}
+
+function filtRetr(f,el){
+  FILT_RETR=f;
+  $('f-retr').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderRetr();
+}
+function renderRetr(){
+  const q=($('q-retr')?.value||'').toLowerCase();
+  let d=RETRAITS;
+  if(FILT_RETR!=='all') d=d.filter(r=>r.statut===FILT_RETR);
+  if(q) d=d.filter(r=>(r.profiles?.full_name+r.profiles?.email+r.methode).toLowerCase().includes(q));
+  renderCardList($('list-retr'),d,'retr');
+}
+
+async function validerRetrait(id,uid,montant){
+  toast('⏳ Traitement...');
+  const{error}=await SB.from('transactions').update({statut:'valide'}).eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
+  await insertNotif(uid,'payment','💸 Retrait effectué','Votre retrait de '+fmtF(montant)+' a été traité avec succès. Les fonds sont en route vers votre compte.');
+  toast('✅ Retrait validé !','ok');
+  await loadAll();
+}
+
+/* ══ RENDER CARDS (recharges et retraits) ══ */
+function renderCardList(container,data,type,mini=false){
+  if(!container)return;
+  if(!data||!data.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucun élément</div></div>';return}
+  const isRech=type==='rech';
+  const stMap={en_attente:{lbl:'En attente',cls:'cs-w',ico:'ci-w',em:'⏳'},valide:{lbl:isRech?'Validé':'Payé',cls:'cs-g',ico:'ci-g',em:'✅'},rejete:{lbl:'Rejeté',cls:'cs-r',ico:'ci-r',em:'❌'}};
+  const methIco={mtn:'📱',orange:'🍊',wave:'🌊',crypto:'₿',momo:'📱',bank:'🏦'};
+
+  container.innerHTML=data.map(r=>{
+    const st=r.statut||'en_attente';
+    const sm=stMap[st]||stMap.en_attente;
+    const nom=r.profiles?.full_name||r.profiles?.email||r.user_id?.slice(0,12)||'—';
+    const amt=isRech?r.montant_envoye:r.montant;
+    const methLabel=isRech?(r.operateur||r.methode||'—'):(r.methode||'—');
+    const uid=r.user_id||'';
+    const planLabel=isRech?(r.plan_label||'—'):'';
+
+    let detailRows='';
+    if(isRech){
+      detailRows=`
+        <div class="detail-row"><span class="dl">Email</span><span class="dv">${r.profiles?.email||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Plan</span><span class="dv">${r.plan_label||'—'} — ${fmtF(r.plan_depot)}</span></div>
+        <div class="detail-row"><span class="dl">Opérateur</span><span class="dv">${r.operateur||'—'}</span></div>
+        <div class="detail-row"><span class="dl">N° expéditeur</span><span class="dv">${r.num_expediteur||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Référence</span><span class="dv">${r.ref_transaction||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Montant envoyé</span><span class="dv cg">${fmtF(r.montant_envoye)}</span></div>
+        <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
+    } else {
+      detailRows=`
+        <div class="detail-row"><span class="dl">Email</span><span class="dv">${r.profiles?.email||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Méthode</span><span class="dv">${r.methode||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Compte</span><span class="dv">${r.compte||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Montant demandé</span><span class="dv">${fmtF(r.montant)}</span></div>
+        <div class="detail-row"><span class="dl">Frais (2%)</span><span class="dv">${fmtF(r.frais||0)}</span></div>
+        <div class="detail-row"><span class="dl">Net à payer</span><span class="dv cg">${fmtF(r.montant_net||r.montant)}</span></div>
+        <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
+    }
+
+    const actionsHTML=st==='en_attente'?`<div class="actions">
+      ${isRech?`<button class="abtn a-valider" onclick="validerRecharge('${r.id}','${uid}','${planLabel}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
+               :`<button class="abtn a-valider" onclick="validerRetrait('${r.id}','${uid}',${r.montant||0})">✅ Marquer payé</button>`}
+      <button class="abtn a-rejeter" onclick="openReject('${r.id}','${type}','${nom.replace(/'/g,'`')}')">❌ Rejeter</button>
+      <button class="abtn a-notif" onclick="openQNotif('${uid}','${nom.replace(/'/g,'`')}')">🔔 Notifier</button>
+    </div>`:'';
+
+    return `<div class="card" id="card-${r.id}">
+      <div class="card-head" onclick="toggleCard('card-${r.id}')">
+        <div class="card-ico ${sm.ico}">${sm.em}</div>
+        <div class="card-info">
+          <div class="card-name">${nom}</div>
+          <div class="card-meta">${planLabel?planLabel+' · ':''}${methLabel} · ${dtf(r.created_at)}</div>
+        </div>
+        <div class="card-right">
+          <div class="card-amount">${fmtF(amt)}</div>
+          <span class="card-stat ${sm.cls}">${sm.lbl}</span>
+        </div>
+      </div>
+      <div class="card-body">
+        ${detailRows}
+        ${r.note?`<div class="admin-note-box">📝 ${r.note}</div>`:''}
+        ${r.admin_note?`<div class="admin-note-box" style="color:var(--r)">❌ Admin: ${r.admin_note}</div>`:''}
+        ${actionsHTML}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ══ UTILISATEURS ══ */
+async function loadUsers(){
+  const{data}=await SB.from('profiles').select('*').order('created_at',{ascending:false}).limit(300);
+  USERS=data||[];renderUsers();
+}
+
+function filtUsers(f,el){
+  FILT_USERS=f;
+  $('f-users').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderUsers();
+}
+function renderUsers(){
+  const q=($('q-users')?.value||'').toLowerCase();
+  let d=USERS;
+  if(FILT_USERS==='vip2') d=d.filter(u=>parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=2);
+  else if(FILT_USERS!=='all') d=d.filter(u=>(u.vip_niveau||'VIP 0')===FILT_USERS);
+  if(q) d=d.filter(u=>((u.full_name||'')+(u.email||'')).toLowerCase().includes(q));
+  const container=$('list-users');
+  if(!d.length){container.innerHTML='<div class="empty"><div class="empty-ico">👥</div><div class="empty-t">Aucun utilisateur</div></div>';return}
+  container.innerHTML=d.map(u=>{
+    const ini=(u.full_name||u.email||'?').charAt(0).toUpperCase();
+    const vip=u.vip_niveau||'VIP 0';
+    const vipN=parseInt(vip.replace('VIP ',''))||0;
+    return `<div class="ucard" id="uc-${u.id}">
+      <div class="uc-head" onclick="toggleCard('uc-${u.id}')">
+        <div class="uc-av">${ini}</div>
+        <div class="uc-info">
+          <div class="uc-name">${u.full_name||'Sans nom'}</div>
+          <div class="uc-mail">${u.email||'—'}</div>
+        </div>
+        <div class="uc-right">
+          <div class="uc-vip">${vip}</div>
+          <div class="uc-bal">${fmtF(u.solde)}</div>
+        </div>
+      </div>
+      <div class="uc-body">
+        <div class="uc-grid">
+          <div class="uc-cell"><div class="uc-cl">SOLDE</div><div class="uc-cv cg">${fmtF(u.solde)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">GAINS TOTAUX</div><div class="uc-cv cp">${fmtF(u.gains_totaux)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">INVESTISSEMENT</div><div class="uc-cv cy">${fmtF(u.investissement)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">TÂCHES/JOUR</div><div class="uc-cv">${u.taches_total||0}</div></div>
+          <div class="uc-cell"><div class="uc-cl">CODE PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrainage||'—'}</div></div>
+          <div class="uc-cell"><div class="uc-cl">INSCRIT LE</div><div class="uc-cv" style="font-size:.65rem">${dtf(u.created_at)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">COMMISSIONS</div><div class="uc-cv cb">${fmtF(u.commission_parrainage)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrain||'—'}</div></div>
+        </div>
+        <div class="actions">
+          <button class="abtn a-edit" onclick="openEdit('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}',${u.solde||0},'${vip}',${u.gains_totaux||0})">✏️ Modifier</button>
+          <button class="abtn a-notif" onclick="openQNotif('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🔔 Notifier</button>
+          <button class="abtn a-del" onclick="delUser('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🗑️ Supprimer</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ══ MODIFIER PROFIL ══ */
+function openEdit(id,nom,solde,vip,gains){
+  EDIT_ID=id;$s('me-sub',nom);
+  $('me-solde').value=solde;$('me-vip').value=vip;$('me-gains').value=gains;$('me-note').value='';
+  openM('m-edit');
+}
+async function saveEdit(){
+  const solde=parseFloat($('me-solde').value)||0;
+  const vip=$('me-vip').value;
+  const gains=parseFloat($('me-gains').value)||0;
+  const btn=$('me-save');btn.disabled=true;btn.textContent='⏳...';
+  const plan=PLANS_VIP[vip]||null;
+  const upd={solde,vip_niveau:vip,gains_totaux:gains};
+  if(plan){upd.taches_total=plan.taches;upd.benefices_jour=plan.gain*plan.taches}
+  const{error}=await SB.from('profiles').update(upd).eq('id',EDIT_ID);
+  if(error){toast('❌ '+error.message,'err')}
+  else{closeM('m-edit');toast('✅ Profil mis à jour','ok');await loadUsers()}
+  btn.disabled=false;btn.textContent='💾 Sauvegarder';
+}
+async function delUser(id,nom){
+  if(!confirm('Supprimer le compte de '+nom+' ? Irréversible.'))return;
+  const{error}=await SB.from('profiles').delete().eq('id',id);
+  if(error)toast('❌ '+error.message,'err');
+  else{toast('Supprimé','ok');await loadUsers()}
+}
+
+/* ══ REJETER ══ */
+function openReject(id,type,nom){
+  REJECT_ID=id;REJECT_TYPE=type;
+  $s('mr-sub',nom);$('mr-note').value='';openM('m-reject');
+}
+async function doReject(){
+  const note=$('mr-note').value.trim();
+  const btn=$('mr-ok');btn.disabled=true;btn.textContent='⏳...';
+  const table=REJECT_TYPE==='rech'?'recharges':'transactions';
+  const{error}=await SB.from(table).update({statut:'rejete',admin_note:note||null}).eq('id',REJECT_ID);
+  if(error)toast('❌ '+error.message,'err');
+  else{closeM('m-reject');toast('Demande rejetée','ok');await loadAll()}
+  btn.disabled=false;btn.textContent='❌ Confirmer';
+}
+
+/* ══ NOTIFICATIONS ══ */
+function setNType(t){
+  NTYPE=t;
+  document.querySelectorAll('.ntype').forEach(el=>el.classList.remove('sel'));
+  $('nt-'+t)?.classList.add('sel');
+}
+function onDestChange(){
+  $('n-one-field').style.display=$('n-dest').value==='one'?'block':'none';
+}
+async function sendNotif(){
+  const dest=$('n-dest').value;
+  const titre=$('n-titre').value.trim();
+  const msg=$('n-msg').value.trim();
+  if(!titre||!msg){toast('⚠️ Titre et message requis','err');return}
+  const btn=$('n-send');btn.disabled=true;btn.textContent='⏳ Envoi...';
+  let uids=[];
+  if(dest==='all') uids=USERS.map(u=>u.id);
+  else if(dest==='stage') uids=USERS.filter(u=>(u.vip_niveau||'VIP 0')==='VIP 0').map(u=>u.id);
+  else if(dest==='vip1p') uids=USERS.filter(u=>parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=1).map(u=>u.id);
+  else if(dest==='vip2p') uids=USERS.filter(u=>parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=2).map(u=>u.id);
+  else if(dest==='one'){
+    const v=$('n-one-val').value.trim();
+    const found=USERS.find(u=>u.email===v||u.id===v);
+    if(!found){toast('⚠️ Utilisateur introuvable','err');btn.disabled=false;btn.textContent='📤 Envoyer';return}
+    uids=[found.id];
+  }
+  if(!uids.length){toast('⚠️ Aucun destinataire','err');btn.disabled=false;btn.textContent='📤 Envoyer';return}
+  const rows=uids.map(id=>({user_id:id,type:NTYPE,titre,message:msg,lue:false,created_at:new Date().toISOString()}));
+  // Insérer par batch de 50
+  for(let i=0;i<rows.length;i+=50) await SB.from('notifications').insert(rows.slice(i,i+50));
+  toast('✅ '+uids.length+' notification(s) envoyée(s) !','ok');
+  $('n-titre').value='';$('n-msg').value='';
+  btn.disabled=false;btn.textContent='📤 Envoyer';
+  await loadNotifHist();
+}
+
+/* Notif auto après action */
+async function insertNotif(uid,type,titre,message){
+  await SB.from('notifications').insert({user_id:uid,type,titre,message,lue:false,created_at:new Date().toISOString()}).catch(()=>{});
+}
+
+/* Notif rapide depuis profil user */
+function openQNotif(uid,nom){
+  QNOTIF_UID=uid;$s('qn-sub',nom);$('qn-titre').value='';$('qn-msg').value='';openM('m-qnotif');
+}
+async function sendQNotif(){
+  const titre=$('qn-titre').value.trim(),msg=$('qn-msg').value.trim();
+  if(!titre||!msg){toast('⚠️ Requis','err');return}
+  await insertNotif(QNOTIF_UID,'info',titre,msg);
+  closeM('m-qnotif');toast('🔔 Notification envoyée !','ok');
+  await loadNotifHist();
+}
+
+async function loadNotifHist(){
+  const{data}=await SB.from('notifications').select('*').order('created_at',{ascending:false}).limit(80);
+  NOTIFS=data||[];
+  const container=$('notif-hist');
+  if(!NOTIFS.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune notification envoyée</div></div>';return}
+  const tIco={info:'ℹ️',success:'✅',warning:'⚠️',promo:'🎁',payment:'💰',urgent:'🚨'};
+  const tBg={info:'ci-b',success:'ci-g',warning:'ci-w',promo:'ci-o',payment:'ci-g',urgent:'ci-r'};
+  // Grouper par titre + date
+  const grouped={};
+  NOTIFS.forEach(n=>{const k=n.titre+'||'+n.created_at?.slice(0,16);if(!grouped[k])grouped[k]={...n,count:0};grouped[k].count++});
+  container.innerHTML=Object.values(grouped).slice(0,30).map(n=>{
+    const t=n.type||'info';
+    return `<div class="ni">
+      <div class="ni-ico ${tBg[t]||'ci-b'}">${tIco[t]||'📢'}</div>
+      <div class="ni-info">
+        <div class="ni-t">${n.titre}</div>
+        <div class="ni-b">${n.message}</div>
+        <div class="ni-m"><span>${dtfh(n.created_at)}</span><span>📬 ${n.count} dest.</span><span class="tag tag-b">${t}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ══ STATISTIQUES ══ */
+async function loadStats(){
+  const[{data:rVal},{data:rRej},{data:tVal},{data:nAll},{data:roue},{data:prf}]=await Promise.all([
+    SB.from('recharges').select('id').eq('statut','valide'),
+    SB.from('recharges').select('id').eq('statut','rejete'),
+    SB.from('transactions').select('id').eq('type','retrait').eq('statut','valide'),
+    SB.from('notifications').select('id'),
+    SB.from('roue_historique').select('id').catch(()=>({data:[]})),
+    SB.from('profiles').select('vip_niveau,investissement').order('investissement',{ascending:false}),
+  ]);
+
+  $s('s-rech-val',(rVal||[]).length);
+  $s('s-rech-rej',(rRej||[]).length);
+  $s('s-retr-val',(tVal||[]).length);
+  $s('s-notifs',(nAll||[]).length);
+  $s('s-roue',(roue||[]).length);
+
+  // Parrainage : users avec code_parrain rempli
+  const filleuls=(prf||[]).filter(p=>p.code_parrain).length;
+  $s('s-fil',filleuls);
+
+  // Répartition VIP
+  const vipCount={};
+  (prf||[]).forEach(p=>{const v=p.vip_niveau||'VIP 0';vipCount[v]=(vipCount[v]||0)+1});
+  const sorted=Object.entries(vipCount).sort((a,b)=>parseInt(a[0].replace('VIP ',''))-parseInt(b[0].replace('VIP ','')));
+  const total=(prf||[]).length||1;
+  $('vip-breakdown').innerHTML=sorted.map(([vip,count])=>{
+    const pct=Math.round(count/total*100);
+    return `<div class="card">
+      <div class="card-head" style="cursor:default">
+        <div class="card-ico ci-g">${vip.replace('VIP ','')}</div>
+        <div class="card-info"><div class="card-name">${vip}</div>
+          <div style="height:4px;background:var(--bd);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--g);border-radius:2px"></div></div>
+        </div>
+        <div class="card-right"><div class="card-amount">${count}</div><div class="card-meta">${pct}%</div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Top investisseurs
+  const topInv=(prf||[]).filter(p=>p.investissement>0).slice(0,8);
+  $('top-users').innerHTML=topInv.map((p,i)=>{
+    const u=USERS.find(x=>true)||{}; // just show data we have
+    return `<div class="card"><div class="card-head" style="cursor:default">
+      <div class="card-ico ci-p">${['🥇','🥈','🥉'][i]||'🏅'}</div>
+      <div class="card-info"><div class="card-name">${p.vip_niveau||'VIP 0'}</div><div class="card-meta">Investissement</div></div>
+      <div class="card-right"><div class="card-amount cy">${fmtF(p.investissement)}</div></div>
+    </div></div>`;
+  }).join('')||'<div class="empty"><div class="empty-t">Aucune donnée</div></div>';
+}
+
+/* ══ UI HELPERS ══ */
+function toggleCard(id){
+  const el=$(id);if(!el)return;
+  const was=el.classList.contains('open');
+  document.querySelectorAll('.card.open,.ucard.open').forEach(e=>e.classList.remove('open'));
+  if(!was)el.classList.add('open');
+}
+function openM(id){$(id)?.classList.add('open')}
+function closeM(id){$(id)?.classList.remove('open')}
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+</script>
+</body>
+</html>
