@@ -130,7 +130,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 <div class="topbar">
   <div class="tl"><div class="badge">🌱</div><span class="logo">VGN</span></div>
   <div class="tl" style="gap:7px">
-    <div class="ibtn" onclick="toast('🔔 Aucune notification')">🔔</div>
+    <a href="notifications.html" class="ibtn" id="notif-bell" style="position:relative;text-decoration:none;color:inherit">🔔<span id="notif-badge" style="display:none;position:absolute;top:0px;right:0px;min-width:16px;height:16px;background:#EF4444;color:#fff;border-radius:50%;font-size:.55rem;font-weight:900;line-height:16px;text-align:center;padding:0 3px;border:2px solid #fff"></span></a>
     <div class="ibtn" onclick="toast('💬 Support 24h/24')">💬</div>
   </div>
 </div>
@@ -352,6 +352,20 @@ async function init(){
   done=(tc||[]).map(r=>r.tache_ref).filter(Boolean).slice(0,MAX);
   $s('v-tasks',done.length+' / '+MAX);
   renderTaches(stageLeft(P.created_at||U.created_at));
+
+  // Badge notifications non lues
+  const{data:notifs}=await SB.from('notifications').select('id').eq('user_id',U.id).eq('lue',false);
+  const nb=(notifs||[]).length;
+  const badge=$('notif-badge');
+  if(badge&&nb>0){badge.style.display='inline';badge.textContent=nb>9?'9+':nb}
+
+  // Temps réel : mise à jour badge quand nouvelle notif arrive
+  SB.channel('dash-notif-'+U.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${U.id}`},
+    ()=>{
+      const cur=parseInt(badge?.textContent)||0;
+      if(badge){badge.style.display='inline';badge.textContent=cur+1>9?'9+':cur+1}
+    }).subscribe();
 }
 init();
 </script>
