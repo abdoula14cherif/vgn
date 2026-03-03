@@ -18,24 +18,50 @@
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
 }
 html{font-family:'Nunito',sans-serif;background:var(--bg)}
-body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+body{
+  max-width:430px;
+  margin:0 auto;
+  background:var(--bg);
+  overflow-x:hidden;
+  /* Utiliser padding plutôt que des éléments fixed qui cachent le contenu */
+  padding-top:calc(var(--H) + var(--sat));
+  padding-bottom:calc(var(--B) + var(--sab));
+}
 
 /* ── TOPBAR ── */
-.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
-  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
-  display:flex;align-items:center;justify-content:space-between;
-  padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.topbar{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:430px;
+  height:calc(var(--H) + var(--sat));
+  background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  padding:0 14px calc((var(--H) - 24px) / 2);
+  z-index:999;
+  box-shadow:0 2px 12px rgba(0,0,0,.18)
+}
 .tbt{font-size:1rem;font-weight:900;color:#fff}
 .tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);
   padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
 
 /* ── SCROLL ── */
-.scroll{padding-top:calc(var(--H)+var(--sat)+42px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+.scroll{min-height:100vh}
 
 /* ── TABS PRINCIPALES ── */
-.main-tabs{background:var(--card);display:flex;border-bottom:2px solid var(--bd);position:fixed;
-  top:calc(var(--H)+var(--sat));left:50%;transform:translateX(-50%);
-  width:100%;max-width:430px;z-index:98;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.main-tabs{
+  background:var(--card);
+  display:flex;
+  border-bottom:2px solid var(--bd);
+  position:sticky;
+  top:0;
+  z-index:98;
+  box-shadow:0 1px 4px rgba(0,0,0,.06)
+}
 .mt{flex:1;text-align:center;padding:13px 0 11px;font-size:.82rem;font-weight:800;
   color:var(--mu);cursor:pointer;position:relative;transition:color .2s;touch-action:manipulation}
 .mt.on{color:var(--g)}
@@ -208,17 +234,29 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .mcat.r{border-color:#EF4444;color:#DC2626;background:#FEF2F2}
 
 /* ── BOTNAV ── */
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
-  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;
-  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
-  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.botnav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:430px;
+  height:calc(var(--B) + var(--sab));
+  padding-bottom:var(--sab);
+  background:#fff;
+  border-top:1px solid var(--bd);
+  display:flex;
+  align-items:center;
+  z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)
+}
 .bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;
   padding:6px 0;text-decoration:none}
 .bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
 .bn.on .bnl{color:var(--g)}
 
 /* ── TOAST ── */
-.tst{position:fixed;top:calc(var(--H)+var(--sat)+8px);left:50%;
+.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;
   transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;
   padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;
   white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
@@ -461,7 +499,6 @@ function timeAgo(iso){
 }
 
 async function chargerRapport(){
-  // Profil
   const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
   P=p||{};
   const vip=P.vip_niveau||'VIP 0';
@@ -475,16 +512,12 @@ async function chargerRapport(){
   $s('r-invest',fmtK(P.investissement||0));
   $s('r-commissions',fmtK(P.commission_parrainage||0));
 
-  // Filleuls
   if(P.code_parrainage){
     const{count}=await SB.from('profiles').select('id',{count:'exact'}).eq('code_parrain',P.code_parrainage);
     $s('r-filleuls',count||0);
   }
 
-  // Transactions récentes
   await chargerTransactions();
-
-  // Graphique 7 jours
   await chargerGraphique();
 }
 
@@ -524,7 +557,6 @@ async function chargerTransactions(){
 }
 
 async function chargerGraphique(){
-  // Récupérer les 7 derniers jours de tâches
   const jours=[];
   for(let i=6;i>=0;i--){
     const d=new Date();d.setDate(d.getDate()-i);
@@ -620,7 +652,6 @@ function prefillMsg(txt){
   const inp=$('chat-inp');if(!inp)return;
   inp.value=txt;autoResize(inp);checkSendBtn();inp.focus();
   switchTab('support');
-  // Scroll au chat
   setTimeout(()=>inp.scrollIntoView({behavior:'smooth',block:'center'}),200);
 }
 
@@ -653,10 +684,8 @@ async function envoyerMsg(){
   const now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   const nom=P?.full_name||U?.email?.split('@')[0]||'Moi';
 
-  // Afficher le message de l'utilisateur
   addMsg(txt,'mine',nom,now);
 
-  // Sauvegarder dans Supabase
   try{
     await SB.from('support_messages').insert({
       user_id: U.id,
@@ -666,14 +695,12 @@ async function envoyerMsg(){
       lu_admin: false,
       created_at: new Date().toISOString()
     });
-  }catch(e){/* Table peut ne pas exister encore */}
+  }catch(e){}
 
-  // Simuler typing de l'admin
   const typing=$('typing');
   if(typing)typing.classList.add('show');
   scrollChatBottom();
 
-  // Réponse automatique après délai réaliste
   const delai=1500+Math.random()*1500;
   setTimeout(async()=>{
     if(typing)typing.classList.remove('show');
@@ -707,7 +734,6 @@ async function clearChat(){
   </div>`;
 }
 
-// Écouter les réponses admin en temps réel
 function ecouterSupport(){
   SB.channel('support-'+U.id)
     .on('postgres_changes',{
@@ -715,7 +741,6 @@ function ecouterSupport(){
       filter:`user_id=eq.${U.id}`
     }, payload=>{
       const msg=payload.new;
-      // N'afficher que les messages de l'admin (pas nos propres messages)
       if(msg.direction==='admin'&&!msg.is_auto){
         addMsg(msg.message,'admin',msg.user_nom||'Support VGN',null);
         if(curTab!=='support') toast('💬 Nouveau message du support','ok');
@@ -723,13 +748,11 @@ function ecouterSupport(){
     }).subscribe();
 }
 
-/* ══ INIT ══ */
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session){window.location.href='index.html';return}
   U=session.user;
   await chargerRapport();
-  // Charger historique chat depuis Supabase
   await chargerHistoChat();
   ecouterSupport();
 }
@@ -741,7 +764,6 @@ async function chargerHistoChat(){
       .order('created_at',{ascending:true}).limit(50);
     if(!msgs||msgs.length===0)return;
     const cb=$('chat-body');if(!cb)return;
-    // Effacer le message auto de bienvenue si on a un historique
     cb.innerHTML='<div class="msg-sys">Historique</div>';
     msgs.forEach(m=>{
       const side=m.direction==='user'?'mine':'admin';
@@ -749,7 +771,7 @@ async function chargerHistoChat(){
       const time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
       addMsg(m.message,side,nom,time);
     });
-  }catch(e){/* table pas encore créée */}
+  }catch(e){}
 }
 
 init();
