@@ -279,11 +279,17 @@ const SB=supabase.createClient(
 );
 
 const FRAIS_PCT=0.05; // 5%
-let MIN=600; // minimum fixe 600 FCFA
+let MIN=600; // 600 pour le 1er retrait, 1000 ensuite
 
-// Calculer le vrai minimum selon le statut stage
-function calcMin(profile, userCreatedAt){
-  return 600; // minimum fixe 600 FCFA pour tous
+// Calculer le minimum selon l'historique de retraits
+async function calcMin(userId){
+  const{data,count}=await SB.from('transactions')
+    .select('id',{count:'exact',head:true})
+    .eq('user_id',userId)
+    .eq('type','retrait')
+    .in('statut',['valide','en_attente']); // compter validés + en attente
+  const nb=count||0;
+  return nb===0 ? 600 : 1000; // 1er retrait = 600, ensuite 1000
 }
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
@@ -341,7 +347,7 @@ function calcFrais(){
   if(v<=0){fraisBox.style.display='none';return}
 
   if(v<MIN){
-    hint.textContent='⚠️ Montant insuffisant';
+    hint.textContent='⚠️ Minimum : '+fmtF(MIN);
     hint.className='hint err-txt';
     $('inp-montant').classList.add('err-input');
     fraisBox.style.display='none';return;
@@ -455,7 +461,7 @@ async function validerRetrait(){
     toast('✅ Demande envoyée ! Traitement sous 24h','ok');
     $('inp-montant').value='';
     $('frais-box').style.display='none';
-    MIN=calcMin(P, U.created_at); // recalculer après chaque retrait
+    MIN=await calcMin(U.id); // recalculer après chaque retrait
     $('hint-montant').textContent='';
     $('hint-montant').className='hint';
     chargerHistorique();
@@ -508,11 +514,11 @@ async function init(){
   P=p||{solde:0};
 
   // Calculer le minimum dynamique (silencieux)
-  MIN=calcMin(P, U.created_at);
+  MIN=await calcMin(U.id);
 
   $s('sc-solde',fmtF(P.solde));
   $s('tb-solde',fmtF(P.solde));
-  $s('sc-sub',''); // texte du sous-titre vide — pas d'indication du minimum
+  $s('sc-sub','Minimum : '+fmtF(MIN)+' · Frais : 5%');
 
   // Initialiser réseau Mobile Money
   $('inp-reseau').value=reseaux[0];
