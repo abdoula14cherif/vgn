@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Rapport & Support</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--od:#EA580C;
+  --b:#3B82F6;--bd2:#1D4ED8;
+  --tg:#229ED9;
+  --bg:#F0F2F5;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);
+  padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
+
+/* ── SCROLL ── */
+.scroll{padding-top:calc(var(--H)+var(--sat));padding-bottom:calc(var(--B)+var(--sab)+20px);min-height:100svh}
+
+/* ── TABS PRINCIPALES ── */
+.main-tabs{background:var(--card);display:flex;border-bottom:2px solid var(--bd);position:sticky;
+  top:calc(var(--H)+var(--sat));z-index:98}
+.mt{flex:1;text-align:center;padding:13px 0 11px;font-size:.82rem;font-weight:800;
+  color:var(--mu);cursor:pointer;position:relative;transition:color .2s;touch-action:manipulation}
+.mt.on{color:var(--g)}
+.mt.on::after{content:'';position:absolute;bottom:-2px;left:20%;right:20%;height:3px;
+  background:var(--g);border-radius:2px}
+
+/* ════════════════════════════
+   SECTION RAPPORT
+════════════════════════════ */
+
+/* HERO SOLDE */
+.hero-solde{margin:12px 12px 10px;background:linear-gradient(135deg,var(--gd),var(--gl));
+  border-radius:20px;padding:18px 18px 16px;position:relative;overflow:hidden;
+  box-shadow:0 6px 24px rgba(22,163,74,.28)}
+.hs-bg{position:absolute;right:-18px;bottom:-18px;font-size:6rem;opacity:.08;line-height:1}
+.hs-lbl{font-size:.68rem;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.hs-amount{font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:.01em;line-height:1}
+.hs-sub{font-size:.7rem;color:rgba(255,255,255,.65);margin-top:5px;font-weight:600}
+.hs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.hsg{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:9px 8px;text-align:center}
+.hsg-v{font-size:.95rem;font-weight:900;color:#fff}
+.hsg-l{font-size:.57rem;color:rgba(255,255,255,.7);font-weight:700;margin-top:2px}
+
+/* STATS CARDS */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px 10px}
+.sc{background:var(--card);border-radius:16px;padding:13px 14px;box-shadow:0 1px 7px rgba(0,0,0,.07);position:relative;overflow:hidden}
+.sc-ico{font-size:1.5rem;margin-bottom:6px}
+.sc-v{font-size:1.3rem;font-weight:900;color:var(--txt)}
+.sc-l{font-size:.62rem;color:var(--mu);font-weight:700;margin-top:2px}
+.sc-bar{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 16px 16px}
+.bar-g{background:linear-gradient(90deg,var(--g),var(--gl))}
+.bar-o{background:linear-gradient(90deg,var(--o),var(--od))}
+.bar-b{background:linear-gradient(90deg,var(--b),var(--bd2))}
+.bar-p{background:linear-gradient(90deg,#8B5CF6,#6D28D9)}
+
+/* HISTORIQUE TRANSACTIONS */
+.sec-title{padding:12px 14px 8px;font-size:.86rem;font-weight:900;color:var(--txt);display:flex;align-items:center;justify-content:space-between}
+.sec-title span{font-size:.67rem;font-weight:700;color:var(--mu);cursor:pointer}
+.tx-list{padding:0 12px;display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.tx{background:var(--card);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.tx-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.ti-g{background:#F0FDF4}.ti-r{background:#FEF2F2}.ti-o{background:#FFF7ED}.ti-b{background:#EFF6FF}
+.tx-info{flex:1;min-width:0}
+.tx-nom{font-size:.77rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-date{font-size:.61rem;color:var(--mu);margin-top:2px}
+.tx-right{text-align:right;flex-shrink:0}
+.tx-amt{font-size:.86rem;font-weight:900}
+.amt-g{color:var(--g)}.amt-r{color:#DC2626}.amt-o{color:var(--o)}
+.tx-stat{font-size:.57rem;font-weight:800;padding:2px 8px;border-radius:8px;margin-top:3px;display:inline-block}
+.ts-v{background:#F0FDF4;color:var(--g)}.ts-w{background:#FFF7ED;color:var(--od)}.ts-r{background:#FEF2F2;color:#DC2626}
+
+/* GRAPHIQUE GAINS */
+.chart-card{margin:0 12px 10px;background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:0 1px 8px rgba(0,0,0,.07)}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.chart-title{font-size:.86rem;font-weight:900;color:var(--txt)}
+.chart-badge{font-size:.62rem;font-weight:800;background:#F0FDF4;color:var(--g);padding:3px 10px;border-radius:10px}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(to top,var(--g),var(--gl));min-height:4px;transition:height .4s cubic-bezier(.34,1.56,.64,1)}
+.bar-day{font-size:.55rem;color:var(--mu);font-weight:700}
+
+/* ════════════════════════════
+   SECTION SUPPORT
+════════════════════════════ */
+
+/* BOUTON TELEGRAM */
+.tg-banner{margin:12px 12px 10px;background:linear-gradient(135deg,#1A6FA0,var(--tg),#47C0FE);
+  border-radius:20px;padding:16px 18px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;text-decoration:none;box-shadow:0 6px 24px rgba(34,158,217,.35);
+  transition:transform .15s;touch-action:manipulation;position:relative;overflow:hidden}
+.tg-banner::before{content:'';position:absolute;right:-20px;top:-20px;width:100px;height:100px;
+  border-radius:50%;background:rgba(255,255,255,.08)}
+.tg-banner:active{transform:scale(.97)}
+.tg-ico{width:54px;height:54px;background:rgba(255,255,255,.22);border-radius:15px;
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.tg-txt{flex:1}
+.tg-txt h3{font-size:.92rem;font-weight:900;color:#fff;margin-bottom:4px}
+.tg-txt p{font-size:.68rem;color:rgba(255,255,255,.8);line-height:1.4;font-weight:600}
+.tg-arr{font-size:1.4rem;color:rgba(255,255,255,.7);flex-shrink:0;font-weight:900}
+
+/* FAQ RAPIDE */
+.faq-card{margin:0 12px 10px;background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.07)}
+.faq-head{padding:13px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd)}
+.faq-ico{width:34px;height:34px;background:#FFF7ED;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.faq-lbl{font-size:.84rem;font-weight:900;color:var(--txt)}
+.faq-item{padding:12px 16px;border-bottom:1px solid #F8FAFC;cursor:pointer;touch-action:manipulation}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:.77rem;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:8px}
+.faq-q::before{content:'❓';font-size:.8rem;flex-shrink:0}
+.faq-a{display:none;font-size:.7rem;color:var(--mu);line-height:1.6;margin-top:7px;padding-left:22px;font-weight:600}
+.faq-item.open .faq-a{display:block}
+.faq-item.open .faq-q{color:var(--g)}
+
+/* ════════════════════════════
+   CHAT SUPPORT INTÉGRÉ
+════════════════════════════ */
+.chat-section{margin:0 12px 10px}
+.chat-header{background:linear-gradient(135deg,var(--gd),var(--gl));border-radius:18px 18px 0 0;
+  padding:13px 16px;display:flex;align-items:center;gap:10px}
+.ch-av{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.ch-info{flex:1}
+.ch-name{font-size:.86rem;font-weight:900;color:#fff}
+.ch-status{font-size:.62rem;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:4px;margin-top:2px}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.ch-actions{display:flex;gap:6px}
+.ch-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;touch-action:manipulation}
+
+/* Zone messages */
+.chat-body{background:var(--card);min-height:320px;max-height:420px;overflow-y:auto;padding:12px;
+  display:flex;flex-direction:column;gap:10px;border-left:1px solid var(--bd);border-right:1px solid var(--bd)}
+.chat-body::-webkit-scrollbar{width:3px}
+.chat-body::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+
+/* Messages */
+.msg{display:flex;flex-direction:column;max-width:82%}
+.msg.mine{align-self:flex-end;align-items:flex-end}
+.msg.admin{align-self:flex-start;align-items:flex-start}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0;margin-bottom:3px}
+.av-admin{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff}
+.av-me{background:linear-gradient(135deg,var(--b),var(--bd2));color:#fff}
+.msg-bubble{padding:9px 12px;border-radius:14px;font-size:.76rem;line-height:1.55;font-weight:600;word-break:break-word}
+.msg.mine .msg-bubble{background:linear-gradient(135deg,var(--b),var(--bd2));color:#fff;border-radius:14px 14px 4px 14px}
+.msg.admin .msg-bubble{background:#F3F4F6;color:var(--txt);border-radius:14px 14px 14px 4px}
+.msg-time{font-size:.55rem;color:var(--mu);font-weight:600;margin-top:3px}
+.msg.mine .msg-time{color:rgba(255,255,255,.6)}
+
+/* Message système */
+.msg-sys{text-align:center;font-size:.63rem;color:var(--mu);font-weight:700;
+  padding:5px 14px;background:#F8FAFC;border-radius:20px;align-self:center;margin:4px 0}
+
+/* Typing indicator */
+.typing{align-self:flex-start;display:none}
+.typing.show{display:flex}
+.typing-bubble{background:#F3F4F6;border-radius:14px 14px 14px 4px;padding:10px 14px;display:flex;gap:4px;align-items:center}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--mu);animation:td .8s ease-in-out infinite}
+.typing-dot:nth-child(2){animation-delay:.15s}
+.typing-dot:nth-child(3){animation-delay:.3s}
+@keyframes td{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* Zone saisie */
+.chat-input-bar{background:var(--card);border-radius:0 0 18px 18px;
+  border:1px solid var(--bd);border-top:1px solid var(--bd);padding:10px 12px;
+  display:flex;align-items:flex-end;gap:8px}
+.chat-inp-wrap{flex:1;background:#F3F4F6;border-radius:20px;padding:2px 14px;
+  border:1.5px solid transparent;transition:border .2s;display:flex;align-items:center}
+.chat-inp-wrap:focus-within{border-color:var(--g);background:#fff}
+.chat-inp{flex:1;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:.82rem;
+  font-weight:600;color:var(--txt);background:transparent;resize:none;max-height:90px;
+  min-height:36px;line-height:1.4;padding:8px 0}
+.chat-inp::placeholder{color:#CBD5E1}
+.chat-send{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;transition:transform .15s;touch-action:manipulation;
+  box-shadow:0 3px 10px rgba(22,163,74,.35)}
+.chat-send:active{transform:scale(.9)}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* Catégories de message */
+.msg-cats{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--card);
+  border-left:1px solid var(--bd);border-right:1px solid var(--bd)}
+.mcat{font-size:.66rem;font-weight:800;padding:5px 11px;border-radius:20px;border:1.5px solid var(--bd);
+  color:var(--mu);background:#F8FAFC;cursor:pointer;touch-action:manipulation;transition:all .15s;white-space:nowrap}
+.mcat:active{transform:scale(.94)}
+.mcat.g{border-color:var(--g);color:var(--g);background:#F0FDF4}
+.mcat.o{border-color:var(--o);color:var(--od);background:#FFF7ED}
+.mcat.b{border-color:var(--b);color:var(--bd2);background:#EFF6FF}
+.mcat.r{border-color:#EF4444;color:#DC2626;background:#FEF2F2}
+
+/* ── BOTNAV ── */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;
+  padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.bn.on .bnl{color:var(--g)}
+
+/* ── TOAST ── */
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+8px);left:50%;
+  transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;
+  padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;
+  white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:11px;height:11px;border:2px solid #ccc;border-top-color:var(--g);
+  border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="tbt">📊 Rapport & Support</span>
+  <div class="tb-pill" id="tb-vip">VIP 0</div>
+</div>
+
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- TABS -->
+  <div class="main-tabs">
+    <div class="mt on" id="mt-rapport" onclick="switchTab('rapport')">📊 Mon rapport</div>
+    <div class="mt" id="mt-support" onclick="switchTab('support')">💬 Support</div>
+  </div>
+
+  <!-- ══════════════════════════════
+       ONGLET RAPPORT
+  ══════════════════════════════ -->
+  <div id="tab-rapport">
+
+    <!-- HERO SOLDE -->
+    <div class="hero-solde">
+      <div class="hs-bg">💰</div>
+      <div class="hs-lbl">Mon solde disponible</div>
+      <div class="hs-amount" id="r-solde"><span class="ld"></span></div>
+      <div class="hs-sub" id="r-sub">Chargement...</div>
+      <div class="hs-grid">
+        <div class="hsg"><div class="hsg-v" id="r-gains-jour">—</div><div class="hsg-l">Gains aujourd'hui</div></div>
+        <div class="hsg"><div class="hsg-v" id="r-gains-mois">—</div><div class="hsg-l">Ce mois</div></div>
+        <div class="hsg"><div class="hsg-v" id="r-gains-tot">—</div><div class="hsg-l">Total cumulé</div></div>
+      </div>
+    </div>
+
+    <!-- STATS 4 CARTES -->
+    <div class="stats-row">
+      <div class="sc">
+        <div class="sc-ico">✅</div>
+        <div class="sc-v" id="r-taches-jour">—</div>
+        <div class="sc-l">Tâches aujourd'hui</div>
+        <div class="sc-bar bar-g"></div>
+      </div>
+      <div class="sc">
+        <div class="sc-ico">📈</div>
+        <div class="sc-v" id="r-invest">—</div>
+        <div class="sc-l">Investissement</div>
+        <div class="sc-bar bar-o"></div>
+      </div>
+      <div class="sc">
+        <div class="sc-ico">👥</div>
+        <div class="sc-v" id="r-filleuls">—</div>
+        <div class="sc-l">Filleuls</div>
+        <div class="sc-bar bar-b"></div>
+      </div>
+      <div class="sc">
+        <div class="sc-ico">💸</div>
+        <div class="sc-v" id="r-commissions">—</div>
+        <div class="sc-l">Commissions</div>
+        <div class="sc-bar bar-p"></div>
+      </div>
+    </div>
+
+    <!-- GRAPHIQUE 7 JOURS -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <div class="chart-title">📅 Gains — 7 derniers jours</div>
+        <div class="chart-badge" id="chart-total">— FCFA</div>
+      </div>
+      <div class="chart-bars" id="chart-bars">
+        <div style="text-align:center;width:100%;padding:20px"><span class="ld"></span></div>
+      </div>
+    </div>
+
+    <!-- HISTORIQUE TRANSACTIONS -->
+    <div class="sec-title">
+      📋 Historique récent
+      <span onclick="voirTout()">Tout voir →</span>
+    </div>
+    <div class="tx-list" id="tx-list">
+      <div style="text-align:center;padding:20px"><span class="ld"></span></div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════
+       ONGLET SUPPORT
+  ══════════════════════════════ -->
+  <div id="tab-support" style="display:none">
+
+    <!-- BOUTON TELEGRAM -->
+    <a class="tg-banner" href="https://t.me/VGNAgriculture" target="_blank">
+      <div class="tg-ico">✈️</div>
+      <div class="tg-txt">
+        <h3>Rejoindre notre canal Telegram</h3>
+        <p>Actualités VGN, annonces officielles, offres spéciales et mises à jour en temps réel</p>
+      </div>
+      <div class="tg-arr">›</div>
+    </a>
+
+    <!-- FAQ -->
+    <div class="faq-card">
+      <div class="faq-head">
+        <div class="faq-ico">❓</div>
+        <div class="faq-lbl">Questions fréquentes</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Comment retirer mes gains ?</div>
+        <div class="faq-a">Allez dans la section "Retrait", entrez le montant (min. 600 FCFA), choisissez votre méthode (Orange Money, MTN, etc.) et soumettez. Le traitement prend 24h ouvrées.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Mon recharge n'est pas validée</div>
+        <div class="faq-a">La validation prend jusqu'à 24h ouvrées. Assurez-vous d'avoir soumis la bonne référence de transaction. Si aucune réponse après 24h, contactez le support ci-dessous.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Comment fonctionne le parrainage ?</div>
+        <div class="faq-a">Partagez votre code ou lien unique. À chaque gain de votre filleul (tâches, investissement), 10% vous sont crédités automatiquement sur votre solde, à vie.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Combien de tâches puis-je faire par jour ?</div>
+        <div class="faq-a">Stage gratuit (VIP 0) : 3 tâches/jour pendant 4 jours. VIP 1 : 5 tâches, VIP 2 : 8 tâches, jusqu'à VIP 9 : 40 tâches/jour. Passez à un plan supérieur pour plus de gains.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Quand reçois-je mes intérêts de fonds ?</div>
+        <div class="faq-a">Les intérêts sont versés à l'échéance du fonds (7, 15, 30, 90 ou 95 jours selon le fonds choisi). Le capital + intérêts sont crédités automatiquement sur votre solde.</div>
+      </div>
+    </div>
+
+    <!-- CHAT SUPPORT -->
+    <div class="chat-section">
+
+      <!-- Header chat -->
+      <div class="chat-header">
+        <div class="ch-av">🌱</div>
+        <div class="ch-info">
+          <div class="ch-name">Support VGN Agriculture</div>
+          <div class="ch-status"><span class="ch-dot"></span>En ligne — répond en &lt; 24h</div>
+        </div>
+        <div class="ch-actions">
+          <div class="ch-btn" onclick="clearChat()" title="Effacer">🗑️</div>
+        </div>
+      </div>
+
+      <!-- Catégories rapides -->
+      <div class="msg-cats">
+        <div class="mcat g" onclick="prefillMsg('Mon recharge nest pas validee apres 24h')">⏳ Recharge</div>
+        <div class="mcat o" onclick="prefillMsg('Je ne parviens pas a retirer mes gains')">💸 Retrait</div>
+        <div class="mcat b" onclick="prefillMsg('Probleme avec mes taches du jour')">✅ Tâches</div>
+        <div class="mcat r" onclick="prefillMsg('Probleme avec mon compte')">🔐 Compte</div>
+      </div>
+
+      <!-- Zone messages -->
+      <div class="chat-body" id="chat-body">
+        <!-- Message de bienvenue admin -->
+        <div class="msg-sys">Aujourd'hui</div>
+        <div class="msg admin">
+          <div class="msg-av av-admin">🌱</div>
+          <div class="msg-bubble">Bonjour ! 👋 Bienvenue sur le support VGN Agriculture. Comment pouvons-nous vous aider aujourd'hui ?</div>
+          <div class="msg-time">Support VGN · Automatique</div>
+        </div>
+      </div>
+
+      <!-- Indicateur typing -->
+      <div class="typing" id="typing" style="padding:6px 12px;background:var(--card);border-left:1px solid var(--bd);border-right:1px solid var(--bd)">
+        <div class="typing-bubble">
+          <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+        </div>
+      </div>
+
+      <!-- Zone de saisie -->
+      <div class="chat-input-bar">
+        <div class="chat-inp-wrap">
+          <textarea class="chat-inp" id="chat-inp" placeholder="Décrivez votre problème..." rows="1"
+            oninput="autoResize(this);checkSendBtn()"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();envoyerMsg()}"></textarea>
+        </div>
+        <button class="chat-send" id="chat-send" onclick="envoyerMsg()" disabled>➤</button>
+      </div>
+
+    </div><!-- /chat-section -->
+
+    <div style="height:6px"></div>
+  </div><!-- /tab-support -->
+
+</div><!-- /scroll -->
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn on" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+
+const fmt  = n => Number(n||0).toLocaleString('fr-FR');
+const fmtF = n => fmt(n)+' FCFA';
+const fmtK = n => n>=1000000 ? (n/1000000).toFixed(1)+'M' : n>=1000 ? (n/1000).toFixed(0)+'k' : String(n);
+const $    = id => document.getElementById(id);
+const $s   = (id,v) => { const e=$(id); if(e) e.textContent=v };
+const today= () => new Date().toISOString().slice(0,10);
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+
+let U=null, P=null, curTab='rapport';
+
+/* ══ TABS ══ */
+function switchTab(tab){
+  curTab=tab;
+  $('mt-rapport').className='mt'+(tab==='rapport'?' on':'');
+  $('mt-support').className='mt'+(tab==='support'?' on':'');
+  $('tab-rapport').style.display=tab==='rapport'?'block':'none';
+  $('tab-support').style.display=tab==='support'?'block':'none';
+  if(tab==='support') scrollChatBottom();
+}
+
+/* ══════════════════════════════
+   SECTION RAPPORT
+══════════════════════════════ */
+function timeAgo(iso){
+  const d=Math.floor((Date.now()-new Date(iso))/1000);
+  if(d<60)return 'À l\'instant';
+  if(d<3600)return Math.floor(d/60)+'min';
+  if(d<86400)return Math.floor(d/3600)+'h';
+  return Math.floor(d/86400)+'j';
+}
+
+async function chargerRapport(){
+  // Profil
+  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
+  P=p||{};
+  const vip=P.vip_niveau||'VIP 0';
+  $s('tb-vip',vip);
+  $s('r-solde',fmtF(P.solde||0));
+  $s('r-sub',vip+' · '+((P.taches_total||3)-( P.taches_jour||0))+' tâche(s) restantes');
+  $s('r-gains-jour',fmtK(P.gains_jour||0));
+  $s('r-gains-mois',fmtK(P.gains_mois||0));
+  $s('r-gains-tot',fmtK(P.gains_totaux||0));
+  $s('r-taches-jour',(P.taches_jour||0)+'/'+(P.taches_total||3));
+  $s('r-invest',fmtK(P.investissement||0));
+  $s('r-commissions',fmtK(P.commission_parrainage||0));
+
+  // Filleuls
+  if(P.code_parrainage){
+    const{count}=await SB.from('profiles').select('id',{count:'exact'}).eq('code_parrain',P.code_parrainage);
+    $s('r-filleuls',count||0);
+  }
+
+  // Transactions récentes
+  await chargerTransactions();
+
+  // Graphique 7 jours
+  await chargerGraphique();
+}
+
+async function chargerTransactions(){
+  const{data:tx}=await SB.from('transactions')
+    .select('*').eq('user_id',U.id)
+    .order('created_at',{ascending:false}).limit(15);
+
+  const list=$('tx-list');
+  if(!tx||!tx.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu);font-size:.75rem;font-weight:700">Aucune transaction</div>';return}
+
+  const TMAP={
+    tache:    {ico:'✅',cls:'ti-g',label:'Tâche complétée',  col:'amt-g',sign:'+'},
+    recharge: {ico:'💳',cls:'ti-b',label:'Recharge',         col:'amt-b',sign:''},
+    retrait:  {ico:'💸',cls:'ti-r',label:'Retrait',          col:'amt-r',sign:'-'},
+    commission:{ico:'👥',cls:'ti-g',label:'Commission',      col:'amt-g',sign:'+'},
+    roue:     {ico:'🎰',cls:'ti-o',label:'Roue de chance',   col:'amt-g',sign:'+'},
+    fond:     {ico:'📈',cls:'ti-b',label:'Fonds invest.',    col:'amt-b',sign:''},
+  };
+  const SMAP={valide:{cls:'ts-v',lbl:'Validé'},en_attente:{cls:'ts-w',lbl:'En attente'},rejete:{cls:'ts-r',lbl:'Rejeté'}};
+
+  list.innerHTML=tx.map(t=>{
+    const m=TMAP[t.type]||{ico:'💰',cls:'ti-b',label:t.type,col:'amt-g',sign:'+'};
+    const s=SMAP[t.statut||'valide']||SMAP.valide;
+    return `<div class="tx">
+      <div class="tx-ico ${m.cls}">${m.ico}</div>
+      <div class="tx-info">
+        <div class="tx-nom">${m.label}</div>
+        <div class="tx-date">${timeAgo(t.created_at)}${t.note?' · '+t.note:''}</div>
+      </div>
+      <div class="tx-right">
+        <div class="tx-amt ${m.col}">${m.sign}${fmtF(t.montant)}</div>
+        <span class="tx-stat ${s.cls}">${s.lbl}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function chargerGraphique(){
+  // Récupérer les 7 derniers jours de tâches
+  const jours=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    jours.push(d.toISOString().slice(0,10));
+  }
+
+  const{data:tc}=await SB.from('taches_completees')
+    .select('reward,date_jour').eq('user_id',U.id)
+    .gte('date_jour',jours[0]).lte('date_jour',jours[6]);
+
+  const gainParJour={};
+  jours.forEach(j=>gainParJour[j]=0);
+  (tc||[]).forEach(t=>{ if(gainParJour[t.date_jour]!==undefined) gainParJour[t.date_jour]+=(t.reward||0) });
+
+  const vals=jours.map(j=>gainParJour[j]);
+  const maxVal=Math.max(...vals,1);
+  const totalSemaine=vals.reduce((a,b)=>a+b,0);
+  $s('chart-total',fmtF(totalSemaine));
+
+  const jNames=['Di','Lu','Ma','Me','Je','Ve','Sa'];
+  $('chart-bars').innerHTML=jours.map((j,i)=>{
+    const pct=Math.max(Math.round((vals[i]/maxVal)*100),vals[i]>0?8:0);
+    const isToday=j===today();
+    return `<div class="bar-wrap">
+      <div class="bar" style="height:${pct}%;${isToday?'background:linear-gradient(to top,var(--o),#FCD34D)':''}"></div>
+      <div class="bar-day" style="${isToday?'color:var(--o);font-weight:900':''}">${jNames[new Date(j+'T12:00:00').getDay()]}</div>
+    </div>`;
+  }).join('');
+}
+
+function voirTout(){
+  switchTab('rapport');
+  toast('Historique complet bientôt disponible');
+}
+
+/* ══════════════════════════════
+   SECTION SUPPORT / CHAT
+══════════════════════════════ */
+const REPONSES_AUTO = [
+  {
+    mots:['recharge','valide','validation','recharge pas'],
+    rep:'Votre demande de recharge est en cours de traitement. La validation peut prendre jusqu\'à 24h ouvrées. Si vous n\'avez pas de réponse après ce délai, notre équipe va vérifier manuellement. Merci de votre patience 🙏'
+  },
+  {
+    mots:['retrait','retirer','paiement','virement'],
+    rep:'Les retraits sont traités sous 24h ouvrées. Assurez-vous que votre numéro Mobile Money est correct et que votre solde est suffisant (minimum 600 FCFA, frais 5%). Notre équipe va traiter votre demande dès que possible 💸'
+  },
+  {
+    mots:['tache','tâche','travail','completee'],
+    rep:'Les tâches se renouvellent chaque jour à minuit. Si vous avez un problème technique avec une tâche (vidéo bloquée, bouton inactif), essayez de recharger la page. Votre VIP détermine le nombre de tâches disponibles par jour ✅'
+  },
+  {
+    mots:['compte','connexion','mot de passe','email','bloquer'],
+    rep:'Pour les problèmes de compte, vérifiez votre email et mot de passe. Si vous avez oublié votre mot de passe, utilisez la fonction "Mot de passe oublié" sur la page de connexion. Notre équipe peut aussi vous aider directement 🔐'
+  },
+  {
+    mots:['parrain','commission','filleul','parrainage'],
+    rep:'Les commissions de parrainage (10%) sont créditées automatiquement dès que votre filleul réalise un gain. Partagez votre code ou lien unique depuis la page "Inviter des amis" pour recruter votre équipe 👥'
+  },
+  {
+    mots:['vip','plan','activer','upgrade'],
+    rep:'Pour activer un plan VIP, allez sur la page "Recharge", choisissez votre plan, effectuez le paiement et soumettez votre preuve. L\'activation est automatique après validation par notre équipe 💎'
+  },
+  {
+    mots:['bonjour','salut','hello','bonsoir','allo'],
+    rep:'Bonjour ! 😊 Je suis le support automatique VGN. Décrivez votre problème et notre équipe vous répondra dans les meilleurs délais. Vous pouvez aussi utiliser les boutons rapides ci-dessus.'
+  },
+  {
+    mots:['merci','super','parfait','ok','bien'],
+    rep:'Merci pour votre message ! 🌱 Si vous avez d\'autres questions, n\'hésitez pas. Notre équipe est là pour vous aider. Bonne journée !'
+  },
+];
+
+const REPONSE_DEFAULT = 'Merci pour votre message. Notre équipe de support a bien reçu votre demande et vous répondra dans les 24h ouvrées. En attendant, consultez notre FAQ ou rejoignez notre canal Telegram pour les actualités VGN 🌱';
+
+function getReponseAuto(msg){
+  const m=msg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  for(const r of REPONSES_AUTO){
+    if(r.mots.some(mot=>m.includes(mot))) return r.rep;
+  }
+  return REPONSE_DEFAULT;
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,90)+'px';
+}
+function checkSendBtn(){
+  const v=($('chat-inp')?.value||'').trim();
+  const btn=$('chat-send');if(btn)btn.disabled=!v;
+}
+function prefillMsg(txt){
+  const inp=$('chat-inp');if(!inp)return;
+  inp.value=txt;autoResize(inp);checkSendBtn();inp.focus();
+  switchTab('support');
+  // Scroll au chat
+  setTimeout(()=>inp.scrollIntoView({behavior:'smooth',block:'center'}),200);
+}
+
+function scrollChatBottom(){
+  const cb=$('chat-body');
+  if(cb) setTimeout(()=>cb.scrollTop=cb.scrollHeight,80);
+}
+
+function addMsg(txt,side,nom,time){
+  const cb=$('chat-body');if(!cb)return;
+  const now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  const initiale=side==='mine'?((P?.full_name||U?.email||'M')[0].toUpperCase()):'🌱';
+  const avCls=side==='mine'?'av-me':'av-admin';
+  const el=document.createElement('div');
+  el.className='msg '+side;
+  el.innerHTML=`<div class="msg-av ${avCls}">${initiale}</div>
+    <div class="msg-bubble">${txt.replace(/\n/g,'<br>')}</div>
+    <div class="msg-time">${nom||''} · ${time||now}</div>`;
+  cb.appendChild(el);
+  scrollChatBottom();
+}
+
+async function envoyerMsg(){
+  const inp=$('chat-inp');
+  const txt=(inp?.value||'').trim();
+  if(!txt)return;
+  const btn=$('chat-send');
+  btn.disabled=true;inp.value='';autoResize(inp);
+
+  const now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  const nom=P?.full_name||U?.email?.split('@')[0]||'Moi';
+
+  // Afficher le message de l'utilisateur
+  addMsg(txt,'mine',nom,now);
+
+  // Sauvegarder dans Supabase
+  try{
+    await SB.from('support_messages').insert({
+      user_id: U.id,
+      user_nom: nom,
+      message: txt,
+      direction: 'user',
+      lu_admin: false,
+      created_at: new Date().toISOString()
+    });
+  }catch(e){/* Table peut ne pas exister encore */}
+
+  // Simuler typing de l'admin
+  const typing=$('typing');
+  if(typing)typing.classList.add('show');
+  scrollChatBottom();
+
+  // Réponse automatique après délai réaliste
+  const delai=1500+Math.random()*1500;
+  setTimeout(async()=>{
+    if(typing)typing.classList.remove('show');
+    const rep=getReponseAuto(txt);
+    addMsg(rep,'admin','Support VGN',null);
+
+    try{
+      await SB.from('support_messages').insert({
+        user_id: U.id,
+        user_nom: 'Support VGN',
+        message: rep,
+        direction: 'admin',
+        lu_admin: true,
+        is_auto: true,
+        created_at: new Date().toISOString()
+      });
+    }catch(e){}
+  },delai);
+
+  setTimeout(()=>{btn.disabled=false},500);
+}
+
+async function clearChat(){
+  if(!confirm('Effacer la conversation ?'))return;
+  const cb=$('chat-body');if(!cb)return;
+  cb.innerHTML=`<div class="msg-sys">${new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</div>
+  <div class="msg admin">
+    <div class="msg-av av-admin">🌱</div>
+    <div class="msg-bubble">Bonjour ! 👋 La conversation a été effacée. Comment pouvons-nous vous aider ?</div>
+    <div class="msg-time">Support VGN · Maintenant</div>
+  </div>`;
+}
+
+// Écouter les réponses admin en temps réel
+function ecouterSupport(){
+  SB.channel('support-'+U.id)
+    .on('postgres_changes',{
+      event:'INSERT',schema:'public',table:'support_messages',
+      filter:`user_id=eq.${U.id}`
+    }, payload=>{
+      const msg=payload.new;
+      // N'afficher que les messages de l'admin (pas nos propres messages)
+      if(msg.direction==='admin'&&!msg.is_auto){
+        addMsg(msg.message,'admin',msg.user_nom||'Support VGN',null);
+        if(curTab!=='support') toast('💬 Nouveau message du support','ok');
+      }
+    }).subscribe();
+}
+
+/* ══ INIT ══ */
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+  await chargerRapport();
+  // Charger historique chat depuis Supabase
+  await chargerHistoChat();
+  ecouterSupport();
+}
+
+async function chargerHistoChat(){
+  try{
+    const{data:msgs}=await SB.from('support_messages')
+      .select('*').eq('user_id',U.id)
+      .order('created_at',{ascending:true}).limit(50);
+    if(!msgs||msgs.length===0)return;
+    const cb=$('chat-body');if(!cb)return;
+    // Effacer le message auto de bienvenue si on a un historique
+    cb.innerHTML='<div class="msg-sys">Historique</div>';
+    msgs.forEach(m=>{
+      const side=m.direction==='user'?'mine':'admin';
+      const nom=m.direction==='user'?(P?.full_name||'Moi'):(m.user_nom||'Support VGN');
+      const time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      addMsg(m.message,side,nom,time);
+    });
+  }catch(e){/* table pas encore créée */}
+}
+
+init();
+</script>
+</body>
+</html>
