@@ -296,6 +296,56 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .tag-r{background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.2)}
 .tag-b{background:var(--b2);color:var(--b);border:1px solid rgba(79,142,247,.2)}
 .tag-y{background:var(--y2);color:var(--y);border:1px solid rgba(240,180,41,.2)}
+
+/* ═══ SUPPORT CHAT ═══ */
+.conv-card{background:var(--s2);border-radius:14px;border:1px solid var(--bd);
+  overflow:hidden;margin-bottom:8px;transition:border-color .2s}
+.conv-card.unread{border-left:4px solid var(--r)}
+.conv-head{padding:11px 13px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;touch-action:manipulation}
+.conv-head:active{background:rgba(255,255,255,.04)}
+.conv-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;
+  color:#fff;flex-shrink:0}
+.conv-info{flex:1;min-width:0}
+.conv-nom{font-size:.77rem;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-last{font-size:.62rem;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-right{text-align:right;flex-shrink:0}
+.conv-time{font-size:.59rem;color:var(--mu);font-weight:600}
+.conv-badge{font-size:.58rem;font-weight:800;background:var(--r);color:#fff;
+  padding:2px 8px;border-radius:10px;margin-top:4px;display:inline-block}
+.conv-body{display:none;border-top:1px solid var(--bd)}
+.conv-card.open .conv-body{display:block}
+
+/* Chat window dans admin */
+.achat-msgs{background:#0D1117;min-height:220px;max-height:300px;overflow-y:auto;
+  padding:10px;display:flex;flex-direction:column;gap:8px}
+.achat-msgs::-webkit-scrollbar{width:3px}
+.achat-msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.acm{display:flex;flex-direction:column;max-width:85%}
+.acm.user{align-self:flex-start}.acm.admin-sent{align-self:flex-end}
+.acm-bubble{padding:8px 11px;border-radius:12px;font-size:.73rem;line-height:1.5;font-weight:500;word-break:break-word}
+.acm.user .acm-bubble{background:#1E2432;color:#E2E8F0;border-radius:12px 12px 12px 4px}
+.acm.admin-sent .acm-bubble{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:12px 12px 4px 12px}
+.acm-meta{font-size:.55rem;color:#4B5563;margin-top:3px;font-weight:600}
+.acm.admin-sent .acm-meta{text-align:right;color:rgba(255,255,255,.5)}
+
+/* Zone réponse admin */
+.achat-reply{padding:10px 12px;background:var(--s1);border-top:1px solid var(--bd);display:flex;gap:8px;align-items:flex-end}
+.achat-inp{flex:1;background:var(--s2);border:1.5px solid var(--bd);border-radius:12px;
+  padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--txt);
+  outline:none;resize:none;min-height:38px;max-height:100px;line-height:1.4;
+  font-weight:500;transition:border-color .2s}
+.achat-inp:focus{border-color:var(--g)}
+.achat-send{width:38px;height:38px;border-radius:50%;background:var(--g);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;
+  flex-shrink:0;touch-action:manipulation;transition:transform .15s}
+.achat-send:active{transform:scale(.9)}
+.achat-send:disabled{opacity:.3;cursor:not-allowed}
+.achat-mark{width:100%;padding:8px;background:transparent;border:1px solid var(--bd);
+  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:600;
+  color:var(--g);cursor:pointer;margin-bottom:4px;touch-action:manipulation}
+.achat-mark:active{background:var(--g2)}
 </style>
 </head>
 <body>
@@ -342,6 +392,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="tab" id="tb-users" onclick="goTab('users')">👥 Utilisateurs</div>
     <div class="tab" id="tb-notifs" onclick="goTab('notifs')">🔔 Notifs</div>
     <div class="tab" id="tb-stats" onclick="goTab('stats')">📈 Statistiques</div>
+    <div class="tab" id="tb-support" onclick="goTab('support')">💬 Support <span class="tbadge" id="b-support" style="background:var(--r);color:#fff">0</span></div>
   </div>
 </div>
 
@@ -492,6 +543,35 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   <div id="top-users" class="list"></div>
 </div>
 
+<div class="page" id="p-support">
+
+  <!-- En-tête stats support -->
+  <div class="kpi-grid" style="margin-top:4px">
+    <div class="kpi"><div class="kpi-ico" style="background:var(--r2)">📨</div><div class="kpi-val cr" id="sup-nonlu">—</div><div class="kpi-lbl">Non lus</div></div>
+    <div class="kpi"><div class="kpi-ico" style="background:var(--b2)">👥</div><div class="kpi-val cb" id="sup-users">—</div><div class="kpi-lbl">Utilisateurs</div></div>
+    <div class="kpi"><div class="kpi-ico" style="background:var(--g2)">✅</div><div class="kpi-val cg" id="sup-rep">—</div><div class="kpi-lbl">Répondus</div></div>
+  </div>
+
+  <!-- Filtre -->
+  <div class="f-bar" id="f-support" style="margin:6px 10px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none">
+    <div class="chip on" onclick="filtSupport('nonlu',this)">🔴 Non lus</div>
+    <div class="chip" onclick="filtSupport('all',this)">Tous</div>
+    <div class="chip" onclick="filtSupport('replied',this)">✅ Répondus</div>
+  </div>
+
+  <!-- Barre recherche -->
+  <div class="search-bar" style="margin:0 10px 8px">
+    <span class="si">🔍</span>
+    <input id="q-support" type="search" placeholder="Rechercher un utilisateur..." oninput="filtSupport(currentSupportFilt,null)">
+  </div>
+
+  <!-- Liste conversations -->
+  <div class="list" id="list-support">
+    <div class="empty"><div class="empty-ico">💬</div><div class="empty-t">Chargement...</div></div>
+  </div>
+
+</div>
+
 </div><!-- /app -->
 
 <!-- ═══════════ MODALS ═══════════ -->
@@ -558,7 +638,7 @@ const SB=supabase.createClient(
   {auth:{persistSession:true,storageKey:'vgn-admin',storage:window.localStorage}}
 );
 
-const ADMINS=['abdoula13cherif@gmail.com']; // ← ajouter les emails admin ici
+const ADMINS=['admin@vgn.com']; // ← ajouter les emails admin ici
 
 const PLANS_VIP={
   'VIP 1':{gain:70,taches:5},'VIP 2':{gain:175,taches:8},'VIP 3':{gain:560,taches:10},
@@ -609,11 +689,12 @@ function goTab(name){
   $('tb-'+name)?.classList.add('on');
   $('p-'+name)?.classList.add('on');
   if(name==='notifs') $('notif-dot').style.display='none';
+  if(name==='support'){ $('b-support').style.display='none'; loadSupport(); }
 }
 
 /* ══ LOAD ALL ══ */
 async function loadAll(){
-  await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats()]);
+  await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats(),loadSupport()]);
 }
 
 /* ══ DASHBOARD ══ */
@@ -1049,6 +1130,151 @@ function toggleCard(id){
 function openM(id){$(id)?.classList.add('open')}
 function closeM(id){$(id)?.classList.remove('open')}
 document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+/* ══════════════════════════════════════
+   SUPPORT CHAT - ADMIN
+══════════════════════════════════════ */
+let SUPPORT_CONVS=[];
+let currentSupportFilt='nonlu';
+
+async function loadSupport(){
+  const{data:msgs,error}=await SB.from('support_messages')
+    .select('*').eq('direction','user')
+    .order('created_at',{ascending:false}).limit(200);
+  if(error){console.warn('support:',error.message);return;}
+  const map={};
+  (msgs||[]).forEach(m=>{
+    if(!map[m.user_id]){map[m.user_id]={user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[],unread:0};}
+    map[m.user_id].msgs.push(m);
+    if(!m.lu_admin)map[m.user_id].unread++;
+  });
+  SUPPORT_CONVS=Object.values(map);
+  const totalNonLu=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
+  const totalUsers=SUPPORT_CONVS.length;
+  const replied=SUPPORT_CONVS.filter(c=>c.unread===0).length;
+  const $s2=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  $s2('sup-nonlu',totalNonLu);$s2('sup-users',totalUsers);$s2('sup-rep',replied);
+  const badge=document.getElementById('b-support');
+  if(badge){badge.textContent=totalNonLu;badge.style.display=totalNonLu>0?'inline':'none';}
+  renderSupport();
+}
+
+function filtSupport(filt,el){
+  currentSupportFilt=filt;
+  if(el){document.querySelectorAll('#f-support .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+  renderSupport();
+}
+
+function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function taAgo(iso){
+  const d=Math.floor((Date.now()-new Date(iso))/1000);
+  if(d<60)return 'Maintenant';if(d<3600)return Math.floor(d/60)+'min';
+  if(d<86400)return Math.floor(d/3600)+'h';return Math.floor(d/86400)+'j';
+}
+function autoResizeA(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+function renderSupport(){
+  const q=(document.getElementById('q-support')?.value||'').toLowerCase();
+  let list=SUPPORT_CONVS;
+  if(currentSupportFilt==='nonlu')list=list.filter(c=>c.unread>0);
+  else if(currentSupportFilt==='replied')list=list.filter(c=>c.unread===0);
+  if(q)list=list.filter(c=>(c.user_nom||'').toLowerCase().includes(q));
+  const el=document.getElementById('list-support');if(!el)return;
+  if(!list.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">'+
+      (currentSupportFilt==='nonlu'?'🎉':'💬')+'</div><div class="empty-t">'+
+      (currentSupportFilt==='nonlu'?'Aucun message non lu !':'Aucune conversation')+
+      '</div></div>';return;
+  }
+  el.innerHTML=list.map(conv=>{
+    const last=conv.msgs[0];
+    const ini=(conv.user_nom||'U')[0].toUpperCase();
+    const lastMsg=(last?.message||'').slice(0,55);
+    const unreadBadge=conv.unread>0?'<div class="conv-badge">'+conv.unread+' nv</div>':'';
+    const uid=conv.user_id;
+    return '<div class="conv-card'+(conv.unread>0?' unread':'')+'" id="conv-'+uid+'">'+
+      '<div class="conv-head" onclick="this.parentElement.classList.toggle('open');ouvrirConv(''+uid+'')">'+
+      '<div class="conv-av">'+ini+'</div>'+
+      '<div class="conv-info"><div class="conv-nom">'+escH(conv.user_nom)+'</div>'+
+      '<div class="conv-last">'+escH(lastMsg)+'</div></div>'+
+      '<div class="conv-right"><div class="conv-time">'+taAgo(last?.created_at||'')+'</div>'+unreadBadge+'</div>'+
+      '<span style="font-size:.9rem;color:var(--mu);margin-left:6px">&#8250;</span></div>'+
+      '<div class="conv-body" id="cb-'+uid+'">'+
+      '<div class="achat-msgs" id="msgs-'+uid+'"><div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Chargement...</div></div>'+
+      '<div class="achat-reply">'+
+      '<textarea class="achat-inp" id="rep-'+uid+'" placeholder="Repondre a '+escH(conv.user_nom)+'..." rows="1" oninput="autoResizeA(this)"></textarea>'+
+      '<button class="achat-send" onclick="envoyerReponse(''+uid+'',''+escH(conv.user_nom)+'')">&#10148;</button>'+
+      '</div>'+
+      '<button class="achat-mark" onclick="marquerLu(''+uid+'')">Marquer tout comme lu</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+async function ouvrirConv(uid){
+  const msgsEl=document.getElementById('msgs-'+uid);if(!msgsEl)return;
+  const{data:all}=await SB.from('support_messages').select('*').eq('user_id',uid).order('created_at',{ascending:true}).limit(100);
+  if(!all||!all.length){msgsEl.innerHTML='<div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Aucun message</div>';return;}
+  msgsEl.innerHTML=all.map(m=>{
+    const side=m.direction==='user'?'user':'admin-sent';
+    const nom=m.direction==='user'?(m.user_nom||'Utilisateur'):'Admin VGN';
+    const time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const date=new Date(m.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    return '<div class="acm '+side+'"><div class="acm-bubble">'+escH(m.message)+'</div>'+
+      '<div class="acm-meta">'+escH(nom)+' · '+date+' '+time+(m.is_auto?' · auto':'')+' </div></div>';
+  }).join('');
+  setTimeout(()=>msgsEl.scrollTop=msgsEl.scrollHeight,80);
+}
+
+async function envoyerReponse(uid,userNom){
+  const inp=document.getElementById('rep-'+uid);
+  const txt=(inp?.value||'').trim();
+  if(!txt){toast('Message vide','err');return;}
+  inp.value='';autoResizeA(inp);
+  const{error}=await SB.from('support_messages').insert({
+    user_id:uid,user_nom:'Support Admin VGN',message:txt,
+    direction:'admin',lu_admin:true,is_auto:false,created_at:new Date().toISOString()
+  });
+  if(error){toast('Erreur: '+error.message,'err');return;}
+  await SB.from('notifications').insert({
+    user_id:uid,type:'info',titre:'Reponse du support VGN',
+    message:txt,lue:false,created_at:new Date().toISOString()
+  });
+  toast('Reponse envoyee a '+userNom,'ok');
+  await ouvrirConv(uid);
+  await marquerLu(uid);
+}
+
+async function marquerLu(uid){
+  await SB.from('support_messages').update({lu_admin:true}).eq('user_id',uid).eq('lu_admin',false);
+  const conv=SUPPORT_CONVS.find(c=>c.user_id===uid);
+  if(conv)conv.unread=0;
+  const card=document.getElementById('conv-'+uid);
+  if(card){card.classList.remove('unread');card.querySelector('.conv-badge')?.remove();}
+  const total=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
+  const badge=document.getElementById('b-support');
+  if(badge){badge.textContent=total;badge.style.display=total>0?'inline':'none';}
+  const e2=document.getElementById('sup-nonlu');if(e2)e2.textContent=total;
+}
+
+function ecouterSupportRT(){
+  SB.channel('admin-support-rt')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'support_messages',filter:'direction=eq.user'},
+    async payload=>{
+      const m=payload.new;
+      let conv=SUPPORT_CONVS.find(c=>c.user_id===m.user_id);
+      if(conv){conv.msgs.unshift(m);conv.unread++;}
+      else{SUPPORT_CONVS.unshift({user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[m],unread:1});}
+      const total=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
+      const badge=document.getElementById('b-support');
+      if(badge){badge.textContent=total;badge.style.display='inline';}
+      const e2=document.getElementById('sup-nonlu');if(e2)e2.textContent=total;
+      toast('Nouveau message de '+(m.user_nom||'Utilisateur'),'ok');
+      if(document.getElementById('p-support')?.classList.contains('on'))renderSupport();
+      if(document.getElementById('conv-'+m.user_id)?.classList.contains('open'))await ouvrirConv(m.user_id);
+    }).subscribe();
+}
+
+ecouterSupportRT();
 </script>
 </body>
 </html>
