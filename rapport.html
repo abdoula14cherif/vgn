@@ -30,11 +30,12 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
   padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
 
 /* ── SCROLL ── */
-.scroll{padding-top:calc(var(--H)+var(--sat));padding-bottom:calc(var(--B)+var(--sab)+20px);min-height:100svh}
+.scroll{padding-top:calc(var(--H)+var(--sat)+42px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
 
 /* ── TABS PRINCIPALES ── */
-.main-tabs{background:var(--card);display:flex;border-bottom:2px solid var(--bd);position:sticky;
-  top:calc(var(--H)+var(--sat));z-index:98}
+.main-tabs{background:var(--card);display:flex;border-bottom:2px solid var(--bd);position:fixed;
+  top:calc(var(--H)+var(--sat));left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;z-index:98;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .mt{flex:1;text-align:center;padding:13px 0 11px;font-size:.82rem;font-weight:800;
   color:var(--mu);cursor:pointer;position:relative;transition:color .2s;touch-action:manipulation}
 .mt.on{color:var(--g)}
