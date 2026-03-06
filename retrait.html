@@ -2,192 +2,217 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>VGN – Retrait</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--od:#EA580C;--bg:#F1F5F1;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+:root{
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--r:#EF4444;--b:#3B82F6;
+  --bg:#F0F2F5;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
 html{font-family:'Nunito',sans-serif;background:var(--bg)}
 body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 
-/* ── TOPBAR ── */
-.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),#22C55E);display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 10px rgba(0,0,0,.15)}
-.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;text-decoration:none;color:#fff;font-weight:900}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .tbt{font-size:1rem;font-weight:900;color:#fff}
-.tbsolde{font-size:.68rem;font-weight:800;color:#fff;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.25)}
+.tbsolde{font-size:.68rem;font-weight:800;color:#fff;background:rgba(255,255,255,.15);
+  padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.25)}
 
-/* ── SCROLL ── */
-.scroll{padding-top:calc(var(--H) + var(--sat) + 12px);padding-bottom:calc(var(--B) + var(--sab) + 24px);min-height:100svh;min-height:100vh}
+.scroll{padding-top:calc(var(--H) + var(--sat) + 10px);
+  padding-bottom:calc(var(--B) + var(--sab) + 24px);min-height:100vh}
 
-/* ── BOTNAV ── */
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
-.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative}
-.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
-
-/* ── SOLDE CARD ── */
-.solde-card{margin:0 12px 14px;background:linear-gradient(135deg,var(--gd),#22C55E);border-radius:18px;padding:16px 18px;box-shadow:0 4px 18px rgba(22,163,74,.25);position:relative;overflow:hidden}
+.solde-card{margin:0 12px 14px;background:linear-gradient(135deg,var(--gd),#22C55E);
+  border-radius:18px;padding:16px 18px;box-shadow:0 4px 18px rgba(22,163,74,.25);
+  position:relative;overflow:hidden}
 .solde-card::after{content:'💰';position:absolute;right:-6px;bottom:-8px;font-size:5rem;opacity:.1}
-.sc-lbl{font-size:.7rem;color:rgba(255,255,255,.75);font-weight:700;margin-bottom:4px}
-.sc-val{font-size:1.8rem;font-weight:900;color:#fff}
-.sc-sub{font-size:.65rem;color:rgba(255,255,255,.65);margin-top:4px}
+.sc-lbl{font-size:.65rem;font-weight:800;color:rgba(255,255,255,.7);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.sc-val{font-size:2rem;font-weight:900;color:#fff}
+.sc-sub{font-size:.65rem;color:rgba(255,255,255,.65);margin-top:5px;font-weight:600}
 .sc-chips{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:.65rem;font-weight:800;padding:4px 10px;border-radius:20px;cursor:pointer;transition:background .15s}
+.chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:.65rem;font-weight:800;padding:4px 10px;border-radius:20px;
+  cursor:pointer;touch-action:manipulation}
 .chip:active{background:rgba(255,255,255,.35)}
 
-/* ── SECTION HEADER ── */
-.sec-h{padding:0 14px;margin-bottom:10px;font-size:.85rem;font-weight:900;color:var(--txt)}
+.sec-h{padding:10px 14px 6px;font-size:.78rem;font-weight:900;color:var(--mu);
+  text-transform:uppercase;letter-spacing:.04em}
 
-/* ── MÉTHODE DE RETRAIT ── */
-.methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px;margin-bottom:14px}
-.meth{background:var(--card);border-radius:14px;padding:13px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:2px solid transparent;transition:all .2s;box-shadow:0 1px 7px rgba(0,0,0,.07)}
-.meth.on{border-color:var(--g);background:#F0FDF4}
+.methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px;margin-bottom:10px}
+.meth{background:var(--card);border:2px solid var(--bd);border-radius:14px;
+  padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;touch-action:manipulation;transition:all .18s}
 .meth:active{transform:scale(.96)}
-.meth-ico{font-size:1.7rem}
-.meth-nom{font-size:.72rem;font-weight:800;color:var(--txt)}
+.meth.on{border-color:var(--g);background:#F0FDF4}
+.meth-ico{font-size:1.5rem}
+.meth-nom{font-size:.74rem;font-weight:900;color:var(--txt)}
 .meth-tag{font-size:.58rem;color:var(--mu);font-weight:600}
 
-/* ── FORMULAIRE ── */
-.form-card{background:var(--card);border-radius:18px;margin:0 12px 14px;padding:16px;box-shadow:0 1px 8px rgba(0,0,0,.08)}
+.form-card{margin:0 12px 12px;background:var(--card);border-radius:18px;
+  padding:16px 14px;box-shadow:0 1px 8px rgba(0,0,0,.07)}
 .field{margin-bottom:14px}
-.field label{display:block;font-size:.73rem;font-weight:800;color:var(--txt);margin-bottom:6px}
-.field input{width:100%;padding:12px 14px;border:1.5px solid var(--bd);border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;color:var(--txt);background:#fff;outline:none;transition:border .2s}
-.field input:focus{border-color:var(--g)}
-.field input.err-input{border-color:#DC2626}
-.field .hint{font-size:.63rem;color:var(--mu);margin-top:5px;font-weight:600}
-.field .hint.err-txt{color:#DC2626}
-.montant-wrap{position:relative}
-.montant-wrap input{padding-right:50px}
-.montant-wrap .cur{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:.72rem;font-weight:900;color:var(--mu)}
-
-/* ── FRAIS ── */
-.frais-box{background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:11px 14px;margin-bottom:14px}
-.frais-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-.frais-row:last-child{margin-bottom:0;padding-top:6px;border-top:1px dashed #FED7AA}
-.frais-lbl{font-size:.7rem;color:#92400E;font-weight:700}
-.frais-val{font-size:.75rem;font-weight:900;color:#92400E}
-.frais-row.total .frais-lbl{color:var(--g);font-size:.75rem}
-.frais-row.total .frais-val{color:var(--g);font-size:.88rem}
-
-/* ── BOUTON ── */
-.btn-retrait{width:100%;padding:14px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 14px rgba(22,163,74,.3);margin:0 0 10px}
-.btn-retrait:active{transform:scale(.97)}
-.btn-retrait:disabled{opacity:.5;cursor:not-allowed;transform:none}
-
-/* ── HISTORIQUE ── */
-.hist-list{padding:0 12px;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
-.hist-item{background:var(--card);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
-.hist-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.hist-ico.pending{background:#FFF7ED}.hist-ico.done{background:#F0FDF4}.hist-ico.fail{background:#FEF2F2}
-.hist-info{flex:1;min-width:0}
-.hist-nom{font-size:.77rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hist-date{font-size:.62rem;color:var(--mu);margin-top:2px}
-.hist-right{text-align:right;flex-shrink:0}
-.hist-mont{font-size:.85rem;font-weight:900;color:#DC2626}
-.hist-stat{font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:3px;display:inline-block}
-.hist-stat.pending{background:#FFF7ED;color:#D97706}
-.hist-stat.done{background:#F0FDF4;color:var(--g)}
-.hist-stat.fail{background:#FEF2F2;color:#DC2626}
-
-/* ── VIDE ── */
-.vide{text-align:center;padding:24px 16px;color:var(--mu);font-size:.78rem;font-weight:700}
-.vide-ico{font-size:2.5rem;margin-bottom:8px}
-
-/* ── OVERLAY CONFIRM ── */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
-.ov.open{opacity:1;pointer-events:all}
-.ov-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:20px 20px 32px;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1)}
-.ov.open .ov-box{transform:translateY(0)}
-.ov-title{font-size:1.05rem;font-weight:900;color:var(--txt);margin-bottom:4px}
-.ov-sub{font-size:.73rem;color:var(--mu);margin-bottom:16px}
-.ov-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F3F4F6}
-.ov-row:last-of-type{border-bottom:none}
-.ov-lbl{font-size:.73rem;color:var(--mu);font-weight:700}
-.ov-val{font-size:.8rem;font-weight:900;color:var(--txt)}
-.ov-val.green{color:var(--g)}.ov-val.red{color:#DC2626}
-.ov-btns{display:flex;gap:10px;margin-top:16px}
-.ov-cancel{flex:1;padding:12px;background:#F3F4F6;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:var(--mu);cursor:pointer}
-.ov-confirm{flex:2;padding:12px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:900;color:#fff;cursor:pointer}
-
-/* ── SÉLECTEUR PAYS ── */
-.pays-wrap{display:flex;gap:8px;align-items:stretch;margin-bottom:4px}
-.pays-btn{display:flex;align-items:center;gap:6px;padding:11px 12px;background:#F9FAFB;
-  border:1.5px solid var(--bd);border-radius:12px;cursor:pointer;font-size:.8rem;
-  font-weight:800;color:var(--txt);white-space:nowrap;touch-action:manipulation;
-  transition:border-color .2s;flex-shrink:0}
-.pays-btn:active{background:#F3F4F6}
-.pays-inp{flex:1;padding:11px 14px;border:1.5px solid var(--bd);border-radius:12px;
+.field label{font-size:.74rem;font-weight:800;color:var(--txt);display:block;margin-bottom:6px}
+.field input{width:100%;padding:11px 14px;border:1.5px solid var(--bd);border-radius:12px;
   font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;color:var(--txt);
   background:#F9FAFB;outline:none;transition:border-color .2s}
-.pays-inp:focus{border-color:var(--g);background:#fff}
-.pays-dropdown{position:fixed;left:50%;transform:translateX(-50%);width:calc(100% - 24px);
-  max-width:406px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.18);
-  z-index:9999;max-height:280px;overflow-y:auto;display:none;border:1px solid var(--bd)}
-.pays-dropdown.open{display:block}
-.pays-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;
-  touch-action:manipulation;font-size:.82rem;font-weight:700;color:var(--txt)}
-.pays-item:active{background:#F0FDF4}
-.pays-item.sel{background:#F0FDF4;color:var(--g)}
-.pays-flag{font-size:1.3rem;flex-shrink:0}
-.pays-info{flex:1}
-.pays-nom{font-size:.8rem;font-weight:800}
-.pays-tel{font-size:.62rem;color:var(--mu);font-weight:600}
-.pays-reseaux{font-size:.6rem;color:var(--g);font-weight:700;margin-top:1px}
+.field input:focus{border-color:var(--g);background:#fff}
+.hint{font-size:.63rem;color:var(--mu);margin-top:5px;font-weight:600}
+.hint.red{color:var(--r)}
+.hint.green{color:var(--g)}
 
-/* ── TOAST ── */
-.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}.tst.ok{background:var(--g)}
-.ld{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+/* PAYS */
+.pays-row{display:flex;gap:8px}
+.pays-flag-btn{flex-shrink:0;display:flex;align-items:center;gap:5px;
+  padding:11px 12px;background:#F9FAFB;border:1.5px solid var(--bd);
+  border-radius:12px;cursor:pointer;touch-action:manipulation;font-size:.8rem;font-weight:800}
+.pays-flag-btn:active{background:#eee}
+.pays-num-inp{flex:1;padding:11px 14px;border:1.5px solid var(--bd);border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;
+  color:var(--txt);background:#F9FAFB;outline:none;transition:border-color .2s}
+.pays-num-inp:focus{border-color:var(--g);background:#fff}
+
+.pays-dd{position:fixed;background:#fff;border-radius:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);max-height:280px;overflow-y:auto;
+  display:none;border:1px solid var(--bd);z-index:9999;width:calc(100% - 24px);max-width:406px}
+.pays-dd.show{display:block}
+.pays-opt{display:flex;align-items:center;gap:10px;padding:11px 16px;
+  cursor:pointer;touch-action:manipulation;border-bottom:1px solid #F8FAFC}
+.pays-opt:last-child{border-bottom:none}
+.pays-opt:active,.pays-opt.actif{background:#F0FDF4}
+.po-flag{font-size:1.3rem;flex-shrink:0}
+.po-nom{font-size:.8rem;font-weight:800;color:var(--txt)}
+.po-detail{font-size:.62rem;color:var(--mu)}
+.po-reseaux{font-size:.6rem;color:var(--g);font-weight:700;margin-top:1px}
+
+.frais-box{background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;
+  padding:11px 14px;margin:0 12px 14px}
+.fr-row{display:flex;justify-content:space-between;margin-bottom:5px}
+.fr-row:last-child{margin-bottom:0;padding-top:6px;border-top:1px dashed #FED7AA}
+.fr-lbl{font-size:.7rem;color:#92400E;font-weight:700}
+.fr-val{font-size:.75rem;font-weight:900;color:#92400E}
+.fr-row.net .fr-lbl,.fr-row.net .fr-val{color:var(--g);font-size:.82rem}
+
+.btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,var(--g),var(--gd));
+  border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;
+  font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.3);
+  touch-action:manipulation;transition:transform .15s}
+.btn-submit:active{transform:scale(.97)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.hist-list{padding:0 12px;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.hi{background:var(--card);border-radius:14px;padding:11px 13px;
+  display:flex;align-items:center;gap:10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.hi-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:1rem;flex-shrink:0}
+.ic-v{background:#F0FDF4}.ic-p{background:#FFF7ED}.ic-r{background:#FEF2F2}
+.hi-info{flex:1;min-width:0}
+.hi-nom{font-size:.77rem;font-weight:800;color:var(--txt);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi-date{font-size:.61rem;color:var(--mu);margin-top:2px}
+.hi-right{text-align:right;flex-shrink:0}
+.hi-mont{font-size:.85rem;font-weight:900;color:#DC2626}
+.hi-stat{font-size:.58rem;font-weight:800;padding:2px 8px;border-radius:8px;display:inline-block;margin-top:3px}
+.sv{background:#F0FDF4;color:var(--g)}.sp{background:#FFF7ED;color:var(--o)}.sr{background:#FEF2F2;color:var(--r)}
+.vide{text-align:center;padding:30px;color:var(--mu);font-size:.75rem;font-weight:700}
+.vide-ico{font-size:2.5rem;margin-bottom:8px}
+
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.ov.open{opacity:1;pointer-events:all}
+.ov-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:430px;
+  padding:22px 20px calc(20px + var(--sab));
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.2,.64,1)}
+.ov.open .ov-box{transform:translateY(0)}
+.ov-title{font-size:1rem;font-weight:900;color:var(--txt);text-align:center;margin-bottom:16px}
+.ov-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)}
+.ov-row:last-of-type{border-bottom:none}
+.ov-lbl{font-size:.72rem;color:var(--mu);font-weight:700}
+.ov-val{font-size:.78rem;font-weight:900;color:var(--txt)}
+.ov-val.g{color:var(--g)}.ov-val.r{color:var(--r)}
+.ov-btns{display:flex;gap:10px;margin-top:18px}
+.btn-cancel{flex:1;padding:13px;background:#F3F4F6;border:none;border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:var(--mu);
+  cursor:pointer;touch-action:manipulation}
+.btn-confirm{flex:2;padding:13px;background:linear-gradient(135deg,var(--g),var(--gd));
+  border:none;border-radius:12px;font-family:'Nunito',sans-serif;
+  font-size:.88rem;font-weight:900;color:#fff;cursor:pointer;touch-action:manipulation}
+.btn-confirm:disabled{opacity:.5}
+
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#fff;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;
+  padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+
+.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;
+  transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;
+  padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;
+  z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}
+.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+.ld{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-  <a class="tbk" href="dashboard.html">‹</a>
-  <span class="tbt">💳 Retrait</span>
+  <a href="dashboard.html" style="color:#fff;font-size:1.4rem;font-weight:900;text-decoration:none;line-height:1">‹</a>
+  <span class="tbt">💸 Retrait</span>
   <div class="tbsolde">💰 <span id="tb-solde">—</span></div>
 </div>
+
 <div class="tst" id="tst"></div>
 
 <div class="scroll">
 
-  <!-- SOLDE DISPONIBLE -->
+  <!-- SOLDE -->
   <div class="solde-card">
     <div class="sc-lbl">Solde disponible</div>
     <div class="sc-val" id="sc-solde"><span class="ld"></span></div>
-    <div class="sc-sub" id="sc-sub"></div>
+    <div class="sc-sub" id="sc-sub">Chargement...</div>
     <div class="sc-chips">
-      <div class="chip" onclick="setMontant(600)">600</div>
-      <div class="chip" onclick="setMontant(1000)">1 000</div>
-      <div class="chip" onclick="setMontant(5000)">5 000</div>
-      <div class="chip" onclick="setMontantMax()">Max</div>
+      <div class="chip" onclick="setM(600)">600</div>
+      <div class="chip" onclick="setM(1000)">1 000</div>
+      <div class="chip" onclick="setM(5000)">5 000</div>
+      <div class="chip" onclick="setMax()">Max</div>
     </div>
   </div>
 
-  <!-- MÉTHODE -->
-  <div class="sec-h">Méthode de retrait</div>
+  <!-- METHODE -->
+  <div class="sec-h">Méthode</div>
   <div class="methods">
-    <div class="meth on" id="m-momo" onclick="selectMeth('momo')">
+    <div class="meth on" id="m-momo" onclick="setMeth('momo')">
       <span class="meth-ico">📱</span>
       <span class="meth-nom">Mobile Money</span>
-      <span class="meth-tag">MTN / Orange / Moov</span>
+      <span class="meth-tag">MTN · Orange · Moov</span>
     </div>
-    <div class="meth" id="m-bank" onclick="selectMeth('bank')">
-      <span class="meth-ico">🏦</span>
-      <span class="meth-nom">Virement bancaire</span>
-      <span class="meth-tag">2–5 jours ouvrés</span>
-    </div>
-    <div class="meth" id="m-wave" onclick="selectMeth('wave')">
+    <div class="meth" id="m-wave" onclick="setMeth('wave')">
       <span class="meth-ico">🌊</span>
       <span class="meth-nom">Wave</span>
       <span class="meth-tag">Instantané</span>
     </div>
-    <div class="meth" id="m-crypto" onclick="selectMeth('crypto')">
+    <div class="meth" id="m-bank" onclick="setMeth('bank')">
+      <span class="meth-ico">🏦</span>
+      <span class="meth-nom">Virement</span>
+      <span class="meth-tag">2–5 jours</span>
+    </div>
+    <div class="meth" id="m-crypto" onclick="setMeth('crypto')">
       <span class="meth-ico">₿</span>
-      <span class="meth-nom">Crypto (USDT)</span>
+      <span class="meth-nom">Crypto USDT</span>
       <span class="meth-tag">TRC-20</span>
     </div>
   </div>
@@ -198,92 +223,109 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <!-- Montant -->
     <div class="field">
       <label>Montant à retirer</label>
-      <div class="montant-wrap">
-        <input type="number" id="inp-montant" placeholder="0" min="0" inputmode="numeric" oninput="calcFrais()">
-        <span class="cur">FCFA</span>
+      <div style="position:relative">
+        <input type="number" id="inp-montant" placeholder="0" min="0"
+          inputmode="numeric" oninput="calcFrais()" style="padding-right:58px">
+        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);
+          font-size:.72rem;font-weight:900;color:var(--mu)">FCFA</span>
       </div>
-      <div class="hint" id="hint-montant"></div>
+      <div class="hint" id="hint-m"></div>
     </div>
 
-    <!-- champ tel intégré dans pays-wrap ci-dessus -->
-
-    <!-- Pays destinataire -->
-    <div class="field" id="field-pays">
-      <label>Pays du destinataire</label>
-      <div class="pays-wrap">
-        <div class="pays-btn" id="pays-btn" onclick="togglePaysDD()">
-          <span id="pays-flag">🇨🇲</span>
-          <span id="pays-code">+237</span>
-          <span style="font-size:.7rem;color:var(--mu)">▼</span>
+    <!-- PAYS + NUMÉRO -->
+    <div class="field" id="f-pays">
+      <label>Pays &amp; Numéro</label>
+      <div class="pays-row">
+        <div class="pays-flag-btn" id="btn-pays" onclick="toggleDD(event)">
+          <span id="p-flag">🇨🇲</span>
+          <span id="p-ind" style="font-size:.75rem;font-weight:800">+237</span>
+          <span style="font-size:.6rem;color:var(--mu)">▼</span>
         </div>
-        <input class="pays-inp" id="inp-tel" type="tel" placeholder="Numéro sans indicatif" inputmode="tel">
+        <input class="pays-num-inp" id="inp-tel" type="tel"
+          placeholder="Numéro" inputmode="tel">
       </div>
-      <div class="hint" id="hint-pays">Cameroun — MTN, Orange</div>
+      <div class="hint" id="hint-pays">🇨🇲 Cameroun — MTN, Orange</div>
     </div>
 
-    <!-- Dropdown pays -->
-    <div class="pays-dropdown" id="pays-dd"></div>
+    <!-- Dropdown pays — hors form-card pour z-index -->
 
-    <!-- Réseau (Mobile Money) -->
-    <div class="field" id="field-reseau">
+    <!-- Réseau -->
+    <div class="field" id="f-reseau">
       <label>Réseau</label>
-      <input type="text" id="inp-reseau" placeholder="Ex: MTN, Orange, Moov..." readonly onclick="cycleReseau()" style="cursor:pointer;background:#F9FAFB">
+      <input type="text" id="inp-reseau" readonly onclick="nextReseau()"
+        placeholder="Appuyer pour changer" style="cursor:pointer;background:#F9FAFB">
       <div class="hint">Appuyez pour changer de réseau</div>
     </div>
 
-    <!-- Nom bénéficiaire (Banque) -->
-    <div class="field" id="field-nom" style="display:none">
+    <!-- Banque -->
+    <div class="field" id="f-nom" style="display:none">
       <label>Nom du bénéficiaire</label>
       <input type="text" id="inp-nom" placeholder="Nom complet">
     </div>
-
-    <!-- IBAN / RIB (Banque) -->
-    <div class="field" id="field-iban" style="display:none">
+    <div class="field" id="f-iban" style="display:none">
       <label>IBAN / RIB</label>
-      <input type="text" id="inp-iban" placeholder="FR76 xxxx xxxx xxxx">
+      <input type="text" id="inp-iban" placeholder="FRXX XXXX XXXX...">
     </div>
 
-    <!-- Adresse crypto -->
-    <div class="field" id="field-crypto" style="display:none">
-      <label>Adresse USDT TRC-20</label>
+    <!-- Crypto -->
+    <div class="field" id="f-crypto" style="display:none">
+      <label>Adresse USDT (TRC-20)</label>
       <input type="text" id="inp-crypto" placeholder="T...">
-      <div class="hint">⚠️ Vérifiez l'adresse — transfert irréversible</div>
+      <div class="hint">Réseau TRC-20 uniquement</div>
     </div>
 
   </div>
 
+  <!-- DROPDOWN PAYS (en dehors du form pour z-index) -->
+  <div class="pays-dd" id="pays-dd"></div>
+
   <!-- FRAIS -->
-  <div class="frais-box" id="frais-box" style="display:none;margin:0 12px 14px">
-    <div class="frais-row">
-      <span class="frais-lbl">Montant demandé</span>
-      <span class="frais-val" id="f-montant">—</span>
+  <div class="frais-box" id="frais-box" style="display:none">
+    <div class="fr-row">
+      <span class="fr-lbl">Montant demandé</span>
+      <span class="fr-val" id="f-mont">—</span>
     </div>
-    <div class="frais-row">
-      <span class="frais-lbl">Frais de traitement (5%)</span>
-      <span class="frais-val" id="f-frais">—</span>
+    <div class="fr-row">
+      <span class="fr-lbl">Frais (5%)</span>
+      <span class="fr-val" id="f-frais">—</span>
     </div>
-    <div class="frais-row total">
-      <span class="frais-lbl">Vous recevrez</span>
-      <span class="frais-val" id="f-net">—</span>
+    <div class="fr-row net">
+      <span class="fr-lbl">Vous recevrez</span>
+      <span class="fr-val" id="f-net">—</span>
     </div>
   </div>
 
   <!-- BOUTON -->
-  <div style="padding:0 12px 4px">
-    <button class="btn-retrait" id="btn-retrait" onclick="demanderConfirm()">
+  <div style="padding:0 12px 14px">
+    <button class="btn-submit" id="btn-retrait" onclick="confirmer()">
       💳 Demander le retrait
     </button>
   </div>
 
   <!-- HISTORIQUE -->
-  <div class="sec-h" style="margin-top:6px">Historique des retraits</div>
+  <div class="sec-h">Historique des retraits</div>
   <div class="hist-list" id="hist-list">
-    <div style="text-align:center;padding:16px"><span class="ld"></span></div>
+    <div class="vide"><div class="vide-ico">⏳</div>Chargement...</div>
   </div>
 
+</div><!-- /scroll -->
+
+<!-- OVERLAY -->
+<div class="ov" id="ov">
+  <div class="ov-box">
+    <div class="ov-title">✅ Confirmer le retrait</div>
+    <div class="ov-row"><span class="ov-lbl">🌍 Pays</span><span class="ov-val" id="ov-pays">—</span></div>
+    <div class="ov-row"><span class="ov-lbl">Compte</span><span class="ov-val" id="ov-compte">—</span></div>
+    <div class="ov-row"><span class="ov-lbl">Montant</span><span class="ov-val" id="ov-mont">—</span></div>
+    <div class="ov-row"><span class="ov-lbl">Frais (5%)</span><span class="ov-val r" id="ov-frais">—</span></div>
+    <div class="ov-row"><span class="ov-lbl">Vous recevrez</span><span class="ov-val g" id="ov-net">—</span></div>
+    <div class="ov-btns">
+      <button class="btn-cancel" onclick="closeOv()">Annuler</button>
+      <button class="btn-confirm" id="ov-btn" onclick="soumettre()">✅ Confirmer</button>
+    </div>
+  </div>
 </div>
 
-<!-- BOTNAV -->
 <nav class="botnav">
   <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
   <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
@@ -291,359 +333,272 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
   <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
 </nav>
 
-<!-- OVERLAY CONFIRMATION -->
-<div class="ov" id="ov">
-  <div class="ov-box">
-    <div class="ov-title">✅ Confirmer le retrait</div>
-    <div class="ov-sub">Vérifiez les informations avant de valider</div>
-    <div class="ov-row"><span class="ov-lbl">Méthode</span><span class="ov-val" id="ov-meth">—</span></div>
-    <div class="ov-row"><span class="ov-lbl">Compte / Numéro</span><span class="ov-val" id="ov-compte">—</span></div>
-    <div class="ov-row"><span class="ov-lbl">Montant demandé</span><span class="ov-val" id="ov-montant">—</span></div>
-    <div class="ov-row"><span class="ov-lbl">Frais (2%)</span><span class="ov-val red" id="ov-frais">—</span></div>
-    <div class="ov-row"><span class="ov-lbl">Vous recevrez</span><span class="ov-val green" id="ov-net">—</span></div>
-    <div class="ov-btns">
-      <button class="ov-cancel" onclick="closeOv()">Annuler</button>
-      <button class="ov-confirm" id="ov-btn" onclick="validerRetrait()">✅ Confirmer</button>
-    </div>
-  </div>
-</div>
-
 <script>
-const SB=supabase.createClient(
+const SB = supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
 
-const FRAIS_PCT=0.05; // 5%
-let MIN=600; // 600 pour le 1er retrait, 1000 ensuite
-
-// Calculer le minimum selon l'historique de retraits
-async function calcMin(userId){
-  const{data,count}=await SB.from('transactions')
-    .select('id',{count:'exact',head:true})
-    .eq('user_id',userId)
-    .eq('type','retrait')
-    .in('statut',['valide','en_attente']); // compter validés + en attente
-  const nb=count||0;
-  return nb===0 ? 600 : 1000; // 1er retrait = 600, ensuite 1000
+const fmt  = n => Number(n||0).toLocaleString('fr-FR');
+const fmtF = n => fmt(n)+' FCFA';
+const $    = id => document.getElementById(id);
+const $s   = (id,v) => { const e=$(id); if(e) e.textContent=v; };
+function toast(msg, type=''){
+  const el=$('tst');
+  el.textContent=msg;
+  el.className='tst show'+(type?' '+type:'');
+  setTimeout(()=>{ el.className='tst'; },3500);
 }
-const fmt=n=>Number(n||0).toLocaleString('fr-FR');
-const fmtF=n=>fmt(n)+' FCFA';
-const $=id=>document.getElementById(id);
-const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
-const toast=(m,type='')=>{const t=$('tst');t.textContent=m;t.className='tst show'+(type?' '+type:'');setTimeout(()=>t.className='tst',3500)};
 
-
-/* ── PAYS & RÉSEAUX ── */
-const PAYS_LIST = [
-  {code:'CM', flag:'🇨🇲', nom:'Cameroun',          tel:'+237', reseaux:['MTN','Orange']},
-  {code:'BJ', flag:'🇧🇯', nom:'Bénin',             tel:'+229', reseaux:['MTN','Moov','Wave']},
-  {code:'SN', flag:'🇸🇳', nom:'Sénégal',           tel:'+221', reseaux:['Orange','Wave','Free']},
-  {code:'CI', flag:'🇨🇮', nom:'Côte d'Ivoire',    tel:'+225', reseaux:['MTN','Orange','Moov','Wave']},
-  {code:'ML', flag:'🇲🇱', nom:'Mali',              tel:'+223', reseaux:['Orange','Moov']},
-  {code:'BF', flag:'🇧🇫', nom:'Burkina Faso',      tel:'+226', reseaux:['Orange','Moov']},
-  {code:'GN', flag:'🇬🇳', nom:'Guinée',            tel:'+224', reseaux:['Orange','MTN','Moov']},
-  {code:'TG', flag:'🇹🇬', nom:'Togo',              tel:'+228', reseaux:['Moov','TMoney']},
-  {code:'NE', flag:'🇳🇪', nom:'Niger',             tel:'+227', reseaux:['Airtel','Orange']},
-  {code:'GA', flag:'🇬🇦', nom:'Gabon',             tel:'+241', reseaux:['Airtel','MTN']},
-  {code:'CG', flag:'🇨🇬', nom:'Congo Brazzaville', tel:'+242', reseaux:['MTN','Airtel']},
-  {code:'CD', flag:'🇨🇩', nom:'RD Congo',          tel:'+243', reseaux:['Airtel','Orange','Vodacom']},
-  {code:'GH', flag:'🇬🇭', nom:'Ghana',             tel:'+233', reseaux:['MTN','Vodafone','AirtelTigo']},
-  {code:'NG', flag:'🇳🇬', nom:'Nigeria',           tel:'+234', reseaux:['MTN','Airtel','Glo']},
-  {code:'CF', flag:'🇨🇫', nom:'Rép. Centrafricaine',tel:'+236',reseaux:['Orange','Moov']},
-  {code:'TD', flag:'🇹🇩', nom:'Tchad',             tel:'+235', reseaux:['Airtel','MTN']},
-  {code:'GQ', flag:'🇬🇶', nom:'Guinée Équatoriale',tel:'+240', reseaux:['Orange','Hits']},
+/* ───── DONNÉES PAYS ───── */
+const PAYS = [
+  {f:'🇨🇲',n:'Cameroun',         t:'+237',r:['MTN','Orange']},
+  {f:'🇧🇯',n:'Bénin',            t:'+229',r:['MTN','Moov','Wave']},
+  {f:'🇸🇳',n:'Sénégal',          t:'+221',r:['Orange','Wave','Free']},
+  {f:'🇨🇮',n:"Côte d'Ivoire",   t:'+225',r:['MTN','Orange','Moov']},
+  {f:'🇲🇱',n:'Mali',             t:'+223',r:['Orange','Moov']},
+  {f:'🇧🇫',n:'Burkina Faso',     t:'+226',r:['Orange','Moov']},
+  {f:'🇬🇳',n:'Guinée',           t:'+224',r:['Orange','MTN','Moov']},
+  {f:'🇹🇬',n:'Togo',             t:'+228',r:['Moov','TMoney']},
+  {f:'🇳🇪',n:'Niger',            t:'+227',r:['Airtel','Orange']},
+  {f:'🇬🇦',n:'Gabon',            t:'+241',r:['Airtel','MTN']},
+  {f:'🇨🇬',n:'Congo Brazzaville',t:'+242',r:['MTN','Airtel']},
+  {f:'🇨🇩',n:'RD Congo',         t:'+243',r:['Airtel','Orange','Vodacom']},
+  {f:'🇬🇭',n:'Ghana',            t:'+233',r:['MTN','Vodafone']},
+  {f:'🇳🇬',n:'Nigeria',          t:'+234',r:['MTN','Airtel','Glo']},
+  {f:'🇨🇫',n:'Rép. Centrafricaine',t:'+236',r:['Orange','Moov']},
+  {f:'🇹🇩',n:'Tchad',            t:'+235',r:['Airtel','MTN']},
+  {f:'🇬🇶',n:'Guinée Équatoriale',t:'+240',r:['Orange']},
 ];
-let paysSelIdx = 0; // Cameroun par défaut
 
-let U=null, P=null, methode='momo', reseauIdx=0;
+let U=null, P=null, MIN=600;
+const FRAIS=0.05;
+let meth='momo', pi=0, ri=0; // pi=index pays, ri=index réseau
 
-/* ── SÉLECTEUR PAYS ── */
-function buildPaysDD(){
-  const dd=$('pays-dd');if(!dd)return;
-  dd.innerHTML=PAYS_LIST.map((p,i)=>`
-    <div class="pays-item${i===paysSelIdx?' sel':''}" onclick="selectPays(${i})">
-      <span class="pays-flag">${p.flag}</span>
-      <div class="pays-info">
-        <div class="pays-nom">${p.nom}</div>
-        <div class="pays-tel">${p.tel}</div>
-        <div class="pays-reseaux">${p.reseaux.join(' · ')}</div>
+/* ───── DROPDOWN PAYS ───── */
+function buildDD(){
+  $('pays-dd').innerHTML = PAYS.map((p,i)=>
+    `<div class="pays-opt${i===pi?' actif':''}" onclick="choisirPays(${i})">
+      <span class="po-flag">${p.f}</span>
+      <div>
+        <div class="po-nom">${p.n} <span style="color:var(--mu);font-weight:600;font-size:.65rem">${p.t}</span></div>
+        <div class="po-reseaux">${p.r.join(' · ')}</div>
       </div>
-    </div>`).join('');
+    </div>`
+  ).join('');
 }
 
-function togglePaysDD(){
-  const dd=$('pays-dd');if(!dd)return;
-  buildPaysDD();
-  const open=dd.classList.toggle('open');
-  // Positionner sous le bouton
-  if(open){
-    const btn=$('pays-btn');
-    const rect=btn.getBoundingClientRect();
-    dd.style.top=(rect.bottom+6+window.scrollY)+'px';
-    // Fermer si clic dehors
-    setTimeout(()=>document.addEventListener('click',closePaysDD,{once:true}),10);
-  }
-}
-function closePaysDD(e){
+function toggleDD(e){
+  e.stopPropagation();
   const dd=$('pays-dd');
-  if(dd&&!dd.contains(e?.target))dd.classList.remove('open');
+  if(dd.classList.contains('show')){
+    dd.classList.remove('show'); return;
+  }
+  buildDD();
+  const rect=$('btn-pays').getBoundingClientRect();
+  dd.style.top  = (rect.bottom + window.scrollY + 4)+'px';
+  dd.style.left = '12px';
+  dd.classList.add('show');
 }
 
-function selectPays(idx){
-  paysSelIdx=idx;
-  const p=PAYS_LIST[idx];
-  $s('pays-flag',p.flag);
-  $s('pays-code',p.tel);
-  // Mettre à jour hint
-  const hint=$('hint-pays');
-  if(hint)hint.textContent=p.nom+' — '+p.reseaux.join(', ');
-  // Mettre à jour réseaux disponibles
-  reseauIdx=0;
-  const inp=$('inp-reseau');
-  if(inp)inp.value=p.reseaux[0]||'';
-  $('pays-dd')?.classList.remove('open');
-  // Mettre à jour placeholder tel
-  const tel=$('inp-tel');
-  if(tel)tel.placeholder='Ex: '+p.tel.replace('+','')+'XXXXXXXX';
+document.addEventListener('click', ()=>$('pays-dd').classList.remove('show'));
+
+function choisirPays(i){
+  pi=i; ri=0;
+  const p=PAYS[i];
+  $s('p-flag',p.f);
+  $s('p-ind',p.t);
+  $s('hint-pays',p.f+' '+p.n+' — '+p.r.join(', '));
+  $('inp-reseau').value = p.r[0]||'';
+  $('inp-tel').placeholder = 'Ex: '+p.t.slice(1)+'XXXXXX';
+  $('pays-dd').classList.remove('show');
 }
 
-function cycleReseau(){
-  const p=PAYS_LIST[paysSelIdx];
-  reseauIdx=(reseauIdx+1)%p.reseaux.length;
-  $('inp-reseau').value=p.reseaux[reseauIdx];
+function nextReseau(){
+  const p=PAYS[pi];
+  ri=(ri+1)%p.r.length;
+  $('inp-reseau').value=p.r[ri];
 }
 
-/* ── Sélection méthode ── */
-function selectMeth(m){
-  methode=m;
-  ['momo','bank','wave','crypto'].forEach(k=>$('m-'+k).classList.remove('on'));
+/* ───── MÉTHODE ───── */
+function setMeth(m){
+  meth=m;
+  ['momo','wave','bank','crypto'].forEach(k=>$('m-'+k).classList.remove('on'));
   $('m-'+m).classList.add('on');
-  // Afficher/cacher champs
-  $('field-pays').style.display=(m==='momo'||m==='wave')?'block':'none';
-  $('field-reseau').style.display=m==='momo'?'block':'none';
-  $('field-nom').style.display=m==='bank'?'block':'none';
-  $('field-iban').style.display=m==='bank'?'block':'none';
-  $('field-crypto').style.display=m==='crypto'?'block':'none';
+  $('f-pays').style.display   = (m==='momo'||m==='wave') ? 'block':'none';
+  $('f-reseau').style.display = m==='momo'  ? 'block':'none';
+  $('f-nom').style.display    = m==='bank'  ? 'block':'none';
+  $('f-iban').style.display   = m==='bank'  ? 'block':'none';
+  $('f-crypto').style.display = m==='crypto'? 'block':'none';
   calcFrais();
 }
 
-/* ── Montant ── */
-function setMontant(v){
-  $('inp-montant').value=v;
-  calcFrais();
-}
-function setMontantMax(){
-  if(!P){toast('Chargement...','');return}
+/* ───── MONTANT ───── */
+function setM(v){ $('inp-montant').value=v; calcFrais(); }
+function setMax(){
+  if(!P) return;
   const max=Math.floor(P.solde||0);
-  if(max<MIN){toast('⚠️ Solde insuffisant','err');return}
-  $('inp-montant').value=max;
-  calcFrais();
+  if(max<MIN){ toast('⚠️ Solde insuffisant','err'); return; }
+  $('inp-montant').value=max; calcFrais();
 }
 
 function calcFrais(){
   const v=parseInt($('inp-montant').value)||0;
-  const fraisBox=$('frais-box');
-  const hint=$('hint-montant');
-  const solde=P?.solde||0;
-
+  const hint=$('hint-m'), box=$('frais-box');
   hint.className='hint';
-  $('inp-montant').classList.remove('err-input');
-
-  if(v<=0){fraisBox.style.display='none';return}
-
+  if(!v){ box.style.display='none'; hint.textContent=''; return; }
   if(v<MIN){
-    hint.textContent='⚠️ Minimum : '+fmtF(MIN);
-    hint.className='hint err-txt';
-    $('inp-montant').classList.add('err-input');
-    fraisBox.style.display='none';return;
+    hint.textContent='⚠️ Minimum '+fmtF(MIN);
+    hint.className='hint red'; box.style.display='none'; return;
   }
-  if(v>solde){
+  if(v>(P?.solde||0)){
     hint.textContent='⚠️ Solde insuffisant';
-    hint.className='hint err-txt';
-    $('inp-montant').classList.add('err-input');
-    fraisBox.style.display='none';return;
+    hint.className='hint red'; box.style.display='none'; return;
   }
-
-  hint.textContent='Montant valide ✓';
-  hint.style.color='var(--g)';
-  const frais=Math.ceil(v*FRAIS_PCT);
-  const net=v-frais;
-  $s('f-montant',fmtF(v));
-  $s('f-frais',fmtF(frais));
-  $s('f-net',fmtF(net));
-  fraisBox.style.display='block';
+  hint.textContent='✓ Montant valide'; hint.className='hint green';
+  const frais=Math.ceil(v*FRAIS), net=v-frais;
+  $s('f-mont',fmtF(v)); $s('f-frais',fmtF(frais)); $s('f-net',fmtF(net));
+  box.style.display='block';
 }
 
-/* ── Validation formulaire ── */
-function validerChamps(){
+/* ───── CONFIRMATION ───── */
+function confirmer(){
   const v=parseInt($('inp-montant').value)||0;
-  const solde=P?.solde||0;
-  if(v<MIN){toast('⚠️ Montant insuffisant','err');return false}
-  if(v>solde){toast('⚠️ Solde insuffisant','err');return false}
-
-  if(methode==='momo'||methode==='wave'){
-    const tel=$('inp-tel').value.trim();
-    if(tel.length<6){toast('⚠️ Numéro invalide','err');return false}
+  if(v<MIN){ toast('⚠️ Minimum '+fmtF(MIN),'err'); return; }
+  if(v>(P?.solde||0)){ toast('⚠️ Solde insuffisant','err'); return; }
+  if(meth==='momo'||meth==='wave'){
+    if($('inp-tel').value.trim().length<5){ toast('⚠️ Numéro invalide','err'); return; }
   }
-  if(methode==='momo'){
-    if(!$('inp-reseau').value){toast('⚠️ Sélectionnez un réseau','err');return false}
+  if(meth==='bank'){
+    if(!$('inp-nom').value.trim()){ toast('⚠️ Nom requis','err'); return; }
+    if($('inp-iban').value.trim().length<10){ toast('⚠️ IBAN invalide','err'); return; }
   }
-  if(methode==='bank'){
-    if(!$('inp-nom').value.trim()){toast('⚠️ Nom requis','err');return false}
-    if($('inp-iban').value.trim().length<10){toast('⚠️ IBAN invalide','err');return false}
+  if(meth==='crypto'){
+    if($('inp-crypto').value.trim().length<15){ toast('⚠️ Adresse invalide','err'); return; }
   }
-  if(methode==='crypto'){
-    const addr=$('inp-crypto').value.trim();
-    if(addr.length<20){toast('⚠️ Adresse crypto invalide','err');return false}
-  }
-  return true;
-}
-
-function demanderConfirm(){
-  if(!validerChamps())return;
-  const v=parseInt($('inp-montant').value);
-  const frais=Math.ceil(v*FRAIS_PCT);
-  const net=v-frais;
-  const methLabels={momo:'Mobile Money',bank:'Virement bancaire',wave:'Wave',crypto:'Crypto USDT'};
-  const compte={
-    momo:$('inp-tel').value.trim()+' ('+($('inp-reseau').value||'—')+')',
-    wave:$('inp-tel').value.trim(),
-    bank:$('inp-nom').value.trim()+' – '+$('inp-iban').value.trim(),
-    crypto:$('inp-crypto').value.trim()
-  }[methode];
-  $s('ov-meth',methLabels[methode]);
-  $s('ov-compte',compte);
-  $s('ov-montant',fmtF(v));
-  $s('ov-frais',fmtF(frais));
-  $s('ov-net',fmtF(net));
+  const p=PAYS[pi];
+  const tel=$('inp-tel').value.trim();
+  const compte = {
+    momo:   p.t+tel+' ('+($('inp-reseau').value||'—')+')',
+    wave:   p.t+tel,
+    bank:   ($('inp-nom').value.trim())+' – '+($('inp-iban').value.trim()),
+    crypto: $('inp-crypto').value.trim()
+  }[meth];
+  const frais=Math.ceil(v*FRAIS), net=v-frais;
+  $s('ov-pays', p.f+' '+p.n);
+  $s('ov-compte', compte);
+  $s('ov-mont', fmtF(v));
+  $s('ov-frais', fmtF(frais));
+  $s('ov-net', fmtF(net));
   $('ov').classList.add('open');
 }
-function closeOv(){$('ov').classList.remove('open')}
+function closeOv(){ $('ov').classList.remove('open'); }
 
-/* ── Valider retrait ── */
-async function validerRetrait(){
-  if(!U||!P)return;
+/* ───── SOUMETTRE ───── */
+async function soumettre(){
   const v=parseInt($('inp-montant').value);
-  const frais=Math.ceil(v*FRAIS_PCT);
-  const net=v-frais;
+  const p=PAYS[pi];
+  const tel=$('inp-tel').value.trim();
+  const frais=Math.ceil(v*FRAIS), net=v-frais;
+  const compte = {
+    momo:   p.t+tel+' ('+($('inp-reseau').value||'—')+')',
+    wave:   p.t+tel,
+    bank:   ($('inp-nom').value.trim())+' – '+($('inp-iban').value.trim()),
+    crypto: $('inp-crypto').value.trim()
+  }[meth];
   const btn=$('ov-btn');
-  btn.textContent='⏳...';btn.disabled=true;
-
-  const methLabels={momo:'Mobile Money',bank:'Virement bancaire',wave:'Wave',crypto:'Crypto USDT'};
-  const paysInfo=PAYS_LIST[paysSelIdx];
-  const telComplet=paysInfo.tel+$('inp-tel').value.trim();
-  const compte={
-    momo:telComplet+' ('+$('inp-reseau').value+') — '+paysInfo.nom,
-    wave:telComplet+' — '+paysInfo.nom,
-    bank:$('inp-nom').value.trim()+' – '+$('inp-iban').value.trim(),
-    crypto:$('inp-crypto').value.trim()
-  }[methode];
-  const paysNote=paysInfo.nom+' '+paysInfo.flag;
-
+  btn.textContent='⏳...'; btn.disabled=true;
   try{
-    // 1. Insérer la transaction
     const{error:e1}=await SB.from('transactions').insert({
-      user_id:U.id,
-      type:'retrait',
-      montant:v,
-      frais:frais,
-      montant_net:net,
-      methode:methode,
-      compte:compte,
-      note:paysNote,
+      user_id:U.id, type:'retrait',
+      montant:v, frais:frais, montant_net:net,
+      methode:meth, compte:compte,
+      note:p.f+' '+p.n,
       statut:'en_attente',
       created_at:new Date().toISOString()
     });
-    if(e1)throw new Error(e1.message);
-
-    // 2. Déduire du solde
-    const nouveauSolde=(P.solde||0)-v;
-    const{error:e2}=await SB.from('profiles').update({solde:nouveauSolde}).eq('id',U.id);
-    if(e2)throw new Error(e2.message);
-
-    // 3. Mettre à jour local
-    P.solde=nouveauSolde;
-    $s('sc-solde',fmtF(nouveauSolde));
-    $s('tb-solde',fmtF(nouveauSolde));
-
+    if(e1) throw new Error(e1.message);
+    const{error:e2}=await SB.from('profiles')
+      .update({solde:(P.solde||0)-v}).eq('id',U.id);
+    if(e2) throw new Error(e2.message);
+    P.solde=(P.solde||0)-v;
+    $s('sc-solde',fmtF(P.solde));
+    $s('tb-solde',fmtF(P.solde));
     closeOv();
     toast('✅ Demande envoyée ! Traitement sous 24h','ok');
     $('inp-montant').value='';
     $('frais-box').style.display='none';
-    MIN=await calcMin(U.id); // recalculer après chaque retrait
-    $('hint-montant').textContent='';
-    $('hint-montant').className='hint';
-    chargerHistorique();
+    $('hint-m').textContent='';
+    MIN=await getMin();
+    $s('sc-sub','Minimum : '+fmtF(MIN)+' · Frais : 5%');
+    chargerHisto();
   }catch(err){
     toast('❌ '+err.message,'err');
-    console.error(err);
   }finally{
-    btn.textContent='✅ Confirmer';btn.disabled=false;
+    btn.textContent='✅ Confirmer'; btn.disabled=false;
   }
 }
 
-/* ── Historique ── */
-async function chargerHistorique(){
+/* ───── MINIMUM DYNAMIQUE ───── */
+async function getMin(){
+  const{count}=await SB.from('transactions')
+    .select('id',{count:'exact',head:true})
+    .eq('user_id',U.id).eq('type','retrait')
+    .in('statut',['valide','en_attente']);
+  return (count||0)===0 ? 600 : 1000;
+}
+
+/* ───── HISTORIQUE ───── */
+async function chargerHisto(){
   const{data:hist}=await SB.from('transactions')
     .select('*').eq('user_id',U.id).eq('type','retrait')
     .order('created_at',{ascending:false}).limit(20);
   const list=$('hist-list');
-  if(!hist||hist.length===0){
+  if(!hist||!hist.length){
     list.innerHTML='<div class="vide"><div class="vide-ico">📋</div>Aucun retrait effectué</div>';
     return;
   }
-  const statLabel={en_attente:'En attente',valide:'Validé',rejete:'Rejeté'};
-  const statCls={en_attente:'pending',valide:'done',rejete:'fail'};
-  const methIco={momo:'📱',bank:'🏦',wave:'🌊',crypto:'₿'};
-  const methNom={momo:'Mobile Money',bank:'Virement',wave:'Wave',crypto:'Crypto'};
+  const sL={en_attente:'En attente',valide:'Validé',rejete:'Rejeté'};
+  const sC={en_attente:'sp',valide:'sv',rejete:'sr'};
+  const mI={momo:'📱',bank:'🏦',wave:'🌊',crypto:'₿'};
+  const mN={momo:'Mobile Money',bank:'Virement',wave:'Wave',crypto:'Crypto'};
+  const iC={en_attente:'ic-p',valide:'ic-v',rejete:'ic-r'};
   list.innerHTML=hist.map(h=>{
     const st=h.statut||'en_attente';
     const dt=new Date(h.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    return `<div class="hist-item">
-      <div class="hist-ico ${statCls[st]}">${methIco[h.methode]||'💳'}</div>
-      <div class="hist-info">
-        <div class="hist-nom">${methNom[h.methode]||h.methode} — ${h.compte||'—'}</div>
-        <div class="hist-date">${dt}</div>
+    return `<div class="hi">
+      <div class="hi-ico ${iC[st]||'ic-p'}">${mI[h.methode]||'💳'}</div>
+      <div class="hi-info">
+        <div class="hi-nom">${mN[h.methode]||h.methode}${h.note?' · '+h.note:''}</div>
+        <div class="hi-date">${dt} — ${h.compte||'—'}</div>
       </div>
-      <div class="hist-right">
-        <div class="hist-mont">-${fmtF(h.montant)}</div>
-        <span class="hist-stat ${statCls[st]}">${statLabel[st]||st}</span>
+      <div class="hi-right">
+        <div class="hi-mont">-${fmtF(h.montant)}</div>
+        <span class="hi-stat ${sC[st]||'sp'}">${sL[st]||st}</span>
       </div>
     </div>`;
   }).join('');
 }
 
-/* ── INIT ── */
+/* ───── INIT ───── */
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
-  if(!session){window.location.href='index.html';return}
+  if(!session){ window.location.href='index.html'; return; }
   U=session.user;
-
   const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
   P=p||{solde:0};
-
-  // Calculer le minimum dynamique (silencieux)
-  MIN=await calcMin(U.id);
-
+  MIN=await getMin();
   $s('sc-solde',fmtF(P.solde));
   $s('tb-solde',fmtF(P.solde));
   $s('sc-sub','Minimum : '+fmtF(MIN)+' · Frais : 5%');
-
-  // Initialiser sélecteur pays (Cameroun par défaut)
-  selectPays(0);
-
-  // Désactiver bouton si solde insuffisant ou zéro
   if((P.solde||0)<=0){
     $('btn-retrait').disabled=true;
     $('btn-retrait').textContent='Solde insuffisant';
   }
-
-  await chargerHistorique();
+  choisirPays(0); // Cameroun par défaut
+  await chargerHisto();
 }
-
-// Créer table transactions si elle n'existe pas (géré côté SQL)
 init();
 </script>
 </body>
