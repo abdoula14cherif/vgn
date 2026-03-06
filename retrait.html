@@ -110,6 +110,31 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .ov-cancel{flex:1;padding:12px;background:#F3F4F6;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:var(--mu);cursor:pointer}
 .ov-confirm{flex:2;padding:12px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:900;color:#fff;cursor:pointer}
 
+/* ── SÉLECTEUR PAYS ── */
+.pays-wrap{display:flex;gap:8px;align-items:stretch;margin-bottom:4px}
+.pays-btn{display:flex;align-items:center;gap:6px;padding:11px 12px;background:#F9FAFB;
+  border:1.5px solid var(--bd);border-radius:12px;cursor:pointer;font-size:.8rem;
+  font-weight:800;color:var(--txt);white-space:nowrap;touch-action:manipulation;
+  transition:border-color .2s;flex-shrink:0}
+.pays-btn:active{background:#F3F4F6}
+.pays-inp{flex:1;padding:11px 14px;border:1.5px solid var(--bd);border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;color:var(--txt);
+  background:#F9FAFB;outline:none;transition:border-color .2s}
+.pays-inp:focus{border-color:var(--g);background:#fff}
+.pays-dropdown{position:fixed;left:50%;transform:translateX(-50%);width:calc(100% - 24px);
+  max-width:406px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.18);
+  z-index:9999;max-height:280px;overflow-y:auto;display:none;border:1px solid var(--bd)}
+.pays-dropdown.open{display:block}
+.pays-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;
+  touch-action:manipulation;font-size:.82rem;font-weight:700;color:var(--txt)}
+.pays-item:active{background:#F0FDF4}
+.pays-item.sel{background:#F0FDF4;color:var(--g)}
+.pays-flag{font-size:1.3rem;flex-shrink:0}
+.pays-info{flex:1}
+.pays-nom{font-size:.8rem;font-weight:800}
+.pays-tel{font-size:.62rem;color:var(--mu);font-weight:600}
+.pays-reseaux{font-size:.6rem;color:var(--g);font-weight:700;margin-top:1px}
+
 /* ── TOAST ── */
 .tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 .tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}.tst.ok{background:var(--g)}
@@ -180,12 +205,24 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
       <div class="hint" id="hint-montant"></div>
     </div>
 
-    <!-- Numéro / Compte (Mobile Money) -->
-    <div class="field" id="field-tel">
-      <label id="lbl-compte">Numéro Mobile Money</label>
-      <input type="tel" id="inp-tel" placeholder="Ex: 07 00 00 00 00" inputmode="tel">
-      <div class="hint">Le numéro doit être enregistré à votre nom</div>
+    <!-- champ tel intégré dans pays-wrap ci-dessus -->
+
+    <!-- Pays destinataire -->
+    <div class="field" id="field-pays">
+      <label>Pays du destinataire</label>
+      <div class="pays-wrap">
+        <div class="pays-btn" id="pays-btn" onclick="togglePaysDD()">
+          <span id="pays-flag">🇨🇲</span>
+          <span id="pays-code">+237</span>
+          <span style="font-size:.7rem;color:var(--mu)">▼</span>
+        </div>
+        <input class="pays-inp" id="inp-tel" type="tel" placeholder="Numéro sans indicatif" inputmode="tel">
+      </div>
+      <div class="hint" id="hint-pays">Cameroun — MTN, Orange</div>
     </div>
+
+    <!-- Dropdown pays -->
+    <div class="pays-dropdown" id="pays-dd"></div>
 
     <!-- Réseau (Mobile Money) -->
     <div class="field" id="field-reseau">
@@ -297,7 +334,86 @@ const $=id=>document.getElementById(id);
 const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
 const toast=(m,type='')=>{const t=$('tst');t.textContent=m;t.className='tst show'+(type?' '+type:'');setTimeout(()=>t.className='tst',3500)};
 
-let U=null, P=null, methode='momo', reseaux=['MTN','Orange','Moov'], reseauIdx=0;
+
+/* ── PAYS & RÉSEAUX ── */
+const PAYS_LIST = [
+  {code:'CM', flag:'🇨🇲', nom:'Cameroun',          tel:'+237', reseaux:['MTN','Orange']},
+  {code:'BJ', flag:'🇧🇯', nom:'Bénin',             tel:'+229', reseaux:['MTN','Moov','Wave']},
+  {code:'SN', flag:'🇸🇳', nom:'Sénégal',           tel:'+221', reseaux:['Orange','Wave','Free']},
+  {code:'CI', flag:'🇨🇮', nom:'Côte d'Ivoire',    tel:'+225', reseaux:['MTN','Orange','Moov','Wave']},
+  {code:'ML', flag:'🇲🇱', nom:'Mali',              tel:'+223', reseaux:['Orange','Moov']},
+  {code:'BF', flag:'🇧🇫', nom:'Burkina Faso',      tel:'+226', reseaux:['Orange','Moov']},
+  {code:'GN', flag:'🇬🇳', nom:'Guinée',            tel:'+224', reseaux:['Orange','MTN','Moov']},
+  {code:'TG', flag:'🇹🇬', nom:'Togo',              tel:'+228', reseaux:['Moov','TMoney']},
+  {code:'NE', flag:'🇳🇪', nom:'Niger',             tel:'+227', reseaux:['Airtel','Orange']},
+  {code:'GA', flag:'🇬🇦', nom:'Gabon',             tel:'+241', reseaux:['Airtel','MTN']},
+  {code:'CG', flag:'🇨🇬', nom:'Congo Brazzaville', tel:'+242', reseaux:['MTN','Airtel']},
+  {code:'CD', flag:'🇨🇩', nom:'RD Congo',          tel:'+243', reseaux:['Airtel','Orange','Vodacom']},
+  {code:'GH', flag:'🇬🇭', nom:'Ghana',             tel:'+233', reseaux:['MTN','Vodafone','AirtelTigo']},
+  {code:'NG', flag:'🇳🇬', nom:'Nigeria',           tel:'+234', reseaux:['MTN','Airtel','Glo']},
+  {code:'CF', flag:'🇨🇫', nom:'Rép. Centrafricaine',tel:'+236',reseaux:['Orange','Moov']},
+  {code:'TD', flag:'🇹🇩', nom:'Tchad',             tel:'+235', reseaux:['Airtel','MTN']},
+  {code:'GQ', flag:'🇬🇶', nom:'Guinée Équatoriale',tel:'+240', reseaux:['Orange','Hits']},
+];
+let paysSelIdx = 0; // Cameroun par défaut
+
+let U=null, P=null, methode='momo', reseauIdx=0;
+
+/* ── SÉLECTEUR PAYS ── */
+function buildPaysDD(){
+  const dd=$('pays-dd');if(!dd)return;
+  dd.innerHTML=PAYS_LIST.map((p,i)=>`
+    <div class="pays-item${i===paysSelIdx?' sel':''}" onclick="selectPays(${i})">
+      <span class="pays-flag">${p.flag}</span>
+      <div class="pays-info">
+        <div class="pays-nom">${p.nom}</div>
+        <div class="pays-tel">${p.tel}</div>
+        <div class="pays-reseaux">${p.reseaux.join(' · ')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function togglePaysDD(){
+  const dd=$('pays-dd');if(!dd)return;
+  buildPaysDD();
+  const open=dd.classList.toggle('open');
+  // Positionner sous le bouton
+  if(open){
+    const btn=$('pays-btn');
+    const rect=btn.getBoundingClientRect();
+    dd.style.top=(rect.bottom+6+window.scrollY)+'px';
+    // Fermer si clic dehors
+    setTimeout(()=>document.addEventListener('click',closePaysDD,{once:true}),10);
+  }
+}
+function closePaysDD(e){
+  const dd=$('pays-dd');
+  if(dd&&!dd.contains(e?.target))dd.classList.remove('open');
+}
+
+function selectPays(idx){
+  paysSelIdx=idx;
+  const p=PAYS_LIST[idx];
+  $s('pays-flag',p.flag);
+  $s('pays-code',p.tel);
+  // Mettre à jour hint
+  const hint=$('hint-pays');
+  if(hint)hint.textContent=p.nom+' — '+p.reseaux.join(', ');
+  // Mettre à jour réseaux disponibles
+  reseauIdx=0;
+  const inp=$('inp-reseau');
+  if(inp)inp.value=p.reseaux[0]||'';
+  $('pays-dd')?.classList.remove('open');
+  // Mettre à jour placeholder tel
+  const tel=$('inp-tel');
+  if(tel)tel.placeholder='Ex: '+p.tel.replace('+','')+'XXXXXXXX';
+}
+
+function cycleReseau(){
+  const p=PAYS_LIST[paysSelIdx];
+  reseauIdx=(reseauIdx+1)%p.reseaux.length;
+  $('inp-reseau').value=p.reseaux[reseauIdx];
+}
 
 /* ── Sélection méthode ── */
 function selectMeth(m){
@@ -305,21 +421,12 @@ function selectMeth(m){
   ['momo','bank','wave','crypto'].forEach(k=>$('m-'+k).classList.remove('on'));
   $('m-'+m).classList.add('on');
   // Afficher/cacher champs
-  $('field-tel').style.display=(m==='momo'||m==='wave')?'block':'none';
+  $('field-pays').style.display=(m==='momo'||m==='wave')?'block':'none';
   $('field-reseau').style.display=m==='momo'?'block':'none';
   $('field-nom').style.display=m==='bank'?'block':'none';
   $('field-iban').style.display=m==='bank'?'block':'none';
   $('field-crypto').style.display=m==='crypto'?'block':'none';
-  // Label
-  const labels={momo:'Numéro Mobile Money',wave:'Numéro Wave',bank:'Nom du bénéficiaire',crypto:'Adresse USDT'};
-  $s('lbl-compte',labels[m]||'Compte');
-  if(m==='wave') $('inp-tel').placeholder='Ex: 07 00 00 00 00';
   calcFrais();
-}
-
-function cycleReseau(){
-  reseauIdx=(reseauIdx+1)%reseaux.length;
-  $('inp-reseau').value=reseaux[reseauIdx];
 }
 
 /* ── Montant ── */
@@ -378,7 +485,7 @@ function validerChamps(){
 
   if(methode==='momo'||methode==='wave'){
     const tel=$('inp-tel').value.trim();
-    if(tel.length<8){toast('⚠️ Numéro invalide','err');return false}
+    if(tel.length<6){toast('⚠️ Numéro invalide','err');return false}
   }
   if(methode==='momo'){
     if(!$('inp-reseau').value){toast('⚠️ Sélectionnez un réseau','err');return false}
@@ -425,12 +532,15 @@ async function validerRetrait(){
   btn.textContent='⏳...';btn.disabled=true;
 
   const methLabels={momo:'Mobile Money',bank:'Virement bancaire',wave:'Wave',crypto:'Crypto USDT'};
+  const paysInfo=PAYS_LIST[paysSelIdx];
+  const telComplet=paysInfo.tel+$('inp-tel').value.trim();
   const compte={
-    momo:$('inp-tel').value.trim()+' ('+$('inp-reseau').value+')',
-    wave:$('inp-tel').value.trim(),
+    momo:telComplet+' ('+$('inp-reseau').value+') — '+paysInfo.nom,
+    wave:telComplet+' — '+paysInfo.nom,
     bank:$('inp-nom').value.trim()+' – '+$('inp-iban').value.trim(),
     crypto:$('inp-crypto').value.trim()
   }[methode];
+  const paysNote=paysInfo.nom+' '+paysInfo.flag;
 
   try{
     // 1. Insérer la transaction
@@ -442,6 +552,7 @@ async function validerRetrait(){
       montant_net:net,
       methode:methode,
       compte:compte,
+      note:paysNote,
       statut:'en_attente',
       created_at:new Date().toISOString()
     });
@@ -520,8 +631,8 @@ async function init(){
   $s('tb-solde',fmtF(P.solde));
   $s('sc-sub','Minimum : '+fmtF(MIN)+' · Frais : 5%');
 
-  // Initialiser réseau Mobile Money
-  $('inp-reseau').value=reseaux[0];
+  // Initialiser sélecteur pays (Cameroun par défaut)
+  selectPays(0);
 
   // Désactiver bouton si solde insuffisant ou zéro
   if((P.solde||0)<=0){
