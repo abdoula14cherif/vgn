@@ -100,7 +100,7 @@ canvas#roue{position:relative;z-index:2;border-radius:50%;display:block;box-shad
         <div class="lb-title">🔒 VIP 1 actif — Débloquez la roue</div>
         <div class="lb-sub">Passez au <b>VIP 2</b> pour pouvoir lancer la roue et gagner selon votre investissement</div>
       </div>
-      <a href="vip.html" class="lb-btn">VIP 2 →</a>
+      <a href="vip.html" class="lb-btn">VIP 1 →</a>
     </div>
   </div>
 
@@ -154,6 +154,20 @@ const toast=(m,t='')=>{const el=$('tst');el.textContent=m;el.className='tst show
 let U=null,P=null,SEGS=[],spinning=false,angle=0;
 
 function buildSegments(inv,vipNum){
+  // VIP 1 : gains fixes petits (pas d'investissement requis)
+  if(vipNum===1){
+    const base=100;
+    return [
+      {label:'×0.5',mult:.5,color:'#EF4444'},
+      {label:'×1',mult:1,color:'#F97316'},
+      {label:'×1.5',mult:1.5,color:'#EAB308'},
+      {label:'×2',mult:2,color:'#22C55E'},
+      {label:'×0.5',mult:.5,color:'#EF4444'},
+      {label:'×1',mult:1,color:'#3B82F6'},
+      {label:'×2',mult:2,color:'#8B5CF6'},
+      {label:'×1',mult:1,color:'#F97316'},
+    ].map(s=>({...s,gain:Math.round(base*s.mult)}));
+  }
   const base=Math.max(Math.round((inv||0)*0.01),200);
   const maxM=vipNum>=5?5:vipNum>=4?4:vipNum>=3?3.5:3;
   return [
@@ -166,6 +180,33 @@ function buildSegments(inv,vipNum){
     {label:'×'+maxM,mult:maxM,color:'#8B5CF6'},
     {label:'×1',mult:1,color:'#F97316'},
   ].map(s=>({...s,gain:Math.round(base*s.mult)}));
+}
+
+// Vérifie si l'utilisateur peut jouer selon son VIP
+async function peutJouer(vipNum){
+  if(vipNum===0) return {ok:false,msg:'🔒 Passez au VIP 1 pour jouer !'};
+  
+  if(vipNum===1){
+    // 1 tour par semaine — vérifier dans Supabase
+    const debutSemaine=new Date();
+    debutSemaine.setDate(debutSemaine.getDate()-debutSemaine.getDay());
+    debutSemaine.setHours(0,0,0,0);
+    const{count}=await SB.from('roue_historique')
+      .select('id',{count:'exact',head:true})
+      .eq('user_id',U.id)
+      .gte('created_at',debutSemaine.toISOString());
+    if((count||0)>0) return {ok:false,msg:'⏳ 1 tour/semaine — Revenez lundi !'};
+    return {ok:true};
+  }
+  
+  // VIP 2+ : 1 tour par jour
+  const today=new Date().toISOString().slice(0,10);
+  const{count}=await SB.from('roue_historique')
+    .select('id',{count:'exact',head:true})
+    .eq('user_id',U.id)
+    .gte('created_at',today+'T00:00:00.000Z');
+  if((count||0)>0) return {ok:false,msg:'✅ Tour utilisé — Revenez demain !'};
+  return {ok:true};
 }
 
 function drawWheel(segs,rot=0){
@@ -190,12 +231,11 @@ function drawWheel(segs,rot=0){
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('VGN',cx,cy);
 }
 
-function lancer(){
+async function lancer(){
   if(spinning||!P)return;
   const vipN=parseInt((P.vip_niveau||'VIP 0').replace('VIP ',''))||0;
-  if(vipN<2){toast('🔒 Passez au VIP 2 pour jouer !','err');return}
-  const today=new Date().toISOString().slice(0,10);
-  if(localStorage.getItem('vgn-spin-'+U.id)===today){toast('⏳ 1 tour/jour — revenez demain !','err');return}
+  const check=await peutJouer(vipN);
+  if(!check.ok){toast(check.msg,'err');return}
   spinning=true;$('spin-btn').disabled=true;$('result-card').classList.remove('show');
   const n=SEGS.length,arc=(2*Math.PI)/n,inv=P.investissement||0;
   // Tirage pondéré : + d'investissement = + de chances sur les grands multiplicateurs
@@ -231,7 +271,7 @@ async function crediter(seg){
     const{error:e2}=await SB.from('profiles').update({solde:ns,gains_totaux:ng}).eq('id',U.id);
     if(e2)throw new Error(e2.message);
     P.solde=ns;P.gains_totaux=ng;
-    localStorage.setItem('vgn-spin-'+U.id,today);
+    // Tour enregistré dans roue_historique (Supabase) — pas besoin de localStorage
     const icos={0.5:'😬',1:'😊',1.5:'😄',2:'🤩',3:'🎊',3.5:'🎊',4:'💥',5:'🏆'};
     $s('r-ico',icos[seg.mult]||'🎉');$s('r-val',fmtF(seg.gain));
     $s('r-mult',seg.label+' — Solde mis à jour !');
@@ -274,27 +314,34 @@ async function init(){
   $s('ic-max',vipNum>=2?fmtF(maxG):'🔒');
   drawWheel(SEGS,0); // Toujours dessiner
 
-  if(vipNum<2){
-    // Afficher le bandeau lock, bloquer le bouton
+  if(vipNum===0){
+    // VIP 0 : bloquer totalement
     $('vip-lock').style.display='block';
     $('spin-btn').disabled=true;
     $('spin-btn').style.opacity='0.4';
-    $('spin-btn').textContent='🔒 VIP 2 requis pour jouer';
+    $('spin-btn').textContent='🔒 VIP 1 requis pour jouer';
     $('gains-info').style.display='none';
     return;
   }
 
-  // VIP 2+ : tout débloquer
+  // VIP 1+ : débloquer la roue
   $('vip-lock').style.display='none';
   $('gains-info').style.display='block';
-  $s('gi-base',fmtF(base));
+  $s('gi-base',vipNum===1?'100':fmtF(base));
   $s('gi-range','×0.5 / ×'+maxM);
   $s('gi-max',fmtF(maxG));
 
-  const today=new Date().toISOString().slice(0,10);
-  if(localStorage.getItem('vgn-spin-'+U.id)===today){
-    $('spin-btn').textContent='✅ Tour utilisé — Revenez demain';
+  // Vérifier si tour déjà utilisé
+  const check=await peutJouer(vipNum);
+  if(!check.ok){
+    $('spin-btn').textContent=check.msg;
     $('spin-btn').disabled=true;
+  } else {
+    // Afficher fréquence selon VIP
+    const freq=vipNum===1?'1 tour / semaine':'1 tour / jour';
+    $('spin-btn').textContent='🎰 Lancer la roue ('+freq+')';
+    $('spin-btn').disabled=false;
+    $('spin-btn').style.opacity='1';
   }
   await chargerHistorique();
 }
