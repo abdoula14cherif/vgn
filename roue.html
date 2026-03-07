@@ -8,34 +8,103 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--od:#EA580C;--bg:#0A0A0F;--card:#13131A;--bd:#2A2A3A;--txt:#F0F0FF;--mu:#888;--H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+:root{
+  --g:#16A34A;--gd:#15803D;--o:#F97316;--od:#EA580C;
+  --bg:#0A0A0F;--card:#13131A;--bd:#2A2A3A;--txt:#F0F0FF;--mu:#888;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
 html{font-family:'Nunito',sans-serif;background:var(--bg)}
-body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
-.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,#0f0f1a,#1a1a2e);display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;border-bottom:1px solid #1f1f2e}
-.tbk{width:34px;height:34px;border-radius:50%;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;text-decoration:none;color:#fff;font-weight:900;line-height:1}
+body{
+  max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden;
+  padding-top:calc(var(--H) + var(--sat));
+  padding-bottom:calc(var(--B) + var(--sab) + 28px);
+}
+.topbar{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  height:calc(var(--H) + var(--sat));
+  background:linear-gradient(135deg,#0f0f1a,#1a1a2e);
+  display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 14px calc((var(--H) - 34px)/2);
+  z-index:999;border-bottom:1px solid #1f1f2e
+}
+.tbk{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;cursor:pointer;text-decoration:none;color:#fff;font-weight:900;line-height:1
+}
 .tbt{font-size:1rem;font-weight:900;color:#fff}
 .tbsolde{font-size:.66rem;font-weight:800;color:#fff;background:rgba(249,115,22,.2);padding:4px 10px;border-radius:16px;border:1px solid rgba(249,115,22,.35)}
-.scroll{padding-top:calc(var(--H) + var(--sat) + 14px);padding-bottom:calc(var(--B) + var(--sab) + 28px);min-height:100svh;min-height:100vh}
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#0f0f1a;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999}
+
+.botnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  height:calc(var(--B) + var(--sab));
+  padding-bottom:var(--sab);
+  background:#0f0f1a;border-top:1px solid var(--bd);
+  display:flex;align-items:center;z-index:999
+}
 .bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
 .bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
 
-/* LOCK */
-/* BANDEAU LOCK */
-.lock-banner{background:linear-gradient(135deg,#1e1040,#2d1060);border-radius:14px;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid rgba(139,92,246,.4);box-shadow:0 0 20px rgba(139,92,246,.1)}
+/* ══ TOAST ══ */
+.tst{
+  position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;
+  transform:translateX(-50%) translateY(-80px);
+  background:#111;color:#fff;padding:9px 22px;border-radius:22px;
+  font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.3)
+}
+.tst.show{transform:translateX(-50%) translateY(0)}
+.tst.err{background:#DC2626}.tst.ok{background:#16A34A}
+
+/* ══ LOCK BANNER ══ */
+.lock-banner{
+  background:linear-gradient(135deg,#1e1040,#2d1060);border-radius:14px;
+  padding:13px 14px;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;border:1px solid rgba(139,92,246,.4);box-shadow:0 0 20px rgba(139,92,246,.1)
+}
 .lb-left{flex:1}
 .lb-title{font-size:.78rem;font-weight:900;color:#c4b5fd;margin-bottom:3px}
 .lb-sub{font-size:.67rem;color:#a78bfa;line-height:1.4}
-.lb-btn{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;padding:9px 14px;border-radius:10px;font-size:.75rem;font-weight:900;text-decoration:none;white-space:nowrap;flex-shrink:0;box-shadow:0 3px 12px rgba(109,40,217,.4)}
-.spin-msg{text-align:center;margin:0 12px 10px;padding:11px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;font-size:.76rem;font-weight:800;color:#f87171}
+.lb-btn{
+  background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;
+  padding:9px 14px;border-radius:10px;font-size:.75rem;font-weight:900;
+  text-decoration:none;white-space:nowrap;flex-shrink:0;
+  box-shadow:0 3px 12px rgba(109,40,217,.4)
+}
+.spin-msg{
+  text-align:center;margin:0 12px 10px;padding:11px;
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
+  border-radius:12px;font-size:.76rem;font-weight:800;color:#f87171
+}
 
-/* STATS */
+/* ══ TOURS RESTANTS ══ */
+.tours-strip{
+  margin:0 12px 12px;background:linear-gradient(135deg,#0f1a0f,#0a1510);
+  border-radius:14px;padding:11px 14px;border:1px solid rgba(22,163,74,.3);
+  display:flex;align-items:center;justify-content:space-between
+}
+.tours-left{font-size:.72rem;font-weight:800;color:#4ade80}
+.tours-pills{display:flex;gap:5px}
+.tour-pip{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(22,163,74,.4);
+  display:flex;align-items:center;justify-content:center;font-size:.6rem
+}
+.tour-pip.used{background:rgba(22,163,74,.15);color:rgba(74,222,128,.4)}
+.tour-pip.avail{background:rgba(22,163,74,.35);color:#4ade80;border-color:#4ade80;font-size:.7rem}
+
+/* ══ STATS ══ */
 .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 12px 14px}
 .scard{background:var(--card);border-radius:14px;padding:12px 10px;text-align:center;border:1px solid var(--bd)}
 .scard-v{font-size:.98rem;font-weight:900;color:var(--o)}
 .scard-l{font-size:.59rem;color:var(--mu);font-weight:700;margin-top:3px}
 
-/* INFO GAINS */
+/* ══ GAINS INFO ══ */
 .gains-info{margin:0 12px 14px;background:linear-gradient(135deg,#0d2818,#0a1f10);border-radius:16px;padding:13px 15px;border:1px solid rgba(22,163,74,.3)}
 .gi-title{font-size:.73rem;font-weight:800;color:#4ade80;margin-bottom:9px}
 .gi-row{display:flex;justify-content:space-between;margin-bottom:5px}
@@ -43,18 +112,37 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .gi-lbl{font-size:.68rem;color:#6b7280;font-weight:700}
 .gi-val{font-size:.75rem;font-weight:900;color:#fff}
 
-/* ROUE */
-.roue-zone{display:flex;flex-direction:column;align-items:center;margin-bottom:12px;position:relative}
+/* ══ ROUE ══ */
+.roue-zone{display:flex;flex-direction:column;align-items:center;margin:12px 0;position:relative}
 .wheel-outer{position:relative;width:290px;height:290px}
-.wheel-outer::before{content:'';position:absolute;inset:-12px;border-radius:50%;background:conic-gradient(from 0deg,#F97316,#EAB308,#22C55E,#3B82F6,#8B5CF6,#EF4444,#F97316);animation:halo 8s linear infinite;filter:blur(10px);opacity:.45}
+.wheel-outer::before{
+  content:'';position:absolute;inset:-12px;border-radius:50%;
+  background:conic-gradient(from 0deg,#F97316,#EAB308,#22C55E,#3B82F6,#8B5CF6,#EF4444,#F97316);
+  animation:halo 8s linear infinite;filter:blur(10px);opacity:.45
+}
 @keyframes halo{to{transform:rotate(360deg)}}
-canvas#roue{position:relative;z-index:2;border-radius:50%;display:block;box-shadow:0 0 0 4px #1a1a2e,0 0 40px rgba(249,115,22,.35)}
-.needle{position:absolute;top:-2px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:36px solid #F97316;filter:drop-shadow(0 0 8px rgba(249,115,22,.9))}
+canvas#roue{
+  position:relative;z-index:2;border-radius:50%;display:block;
+  box-shadow:0 0 0 4px #1a1a2e,0 0 40px rgba(249,115,22,.35)
+}
+.needle{
+  position:absolute;top:-2px;left:50%;transform:translateX(-50%);z-index:10;
+  width:0;height:0;
+  border-left:11px solid transparent;border-right:11px solid transparent;border-top:36px solid #F97316;
+  filter:drop-shadow(0 0 8px rgba(249,115,22,.9))
+}
 
-.spin-btn{display:block;margin:0 auto 14px;padding:15px 44px;background:linear-gradient(135deg,var(--o),var(--od));border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 24px rgba(249,115,22,.55);transition:transform .15s}
-.spin-btn:active{transform:scale(.95)}.spin-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
+.spin-btn{
+  display:block;margin:0 auto 14px;padding:15px 44px;
+  background:linear-gradient(135deg,var(--o),var(--od));
+  border:none;border-radius:50px;font-family:'Nunito',sans-serif;
+  font-size:1.05rem;font-weight:900;color:#fff;cursor:pointer;
+  box-shadow:0 4px 24px rgba(249,115,22,.55);transition:transform .15s
+}
+.spin-btn:active{transform:scale(.95)}
+.spin-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
 
-/* RÉSULTAT */
+/* ══ RÉSULTAT ══ */
 .result-card{margin:0 12px 14px;background:var(--card);border-radius:18px;padding:18px;text-align:center;border:1px solid var(--bd);display:none}
 .result-card.show{display:block;animation:pop .45s cubic-bezier(.34,1.56,.64,1)}
 @keyframes pop{from{transform:scale(.75);opacity:0}to{transform:scale(1);opacity:1}}
@@ -63,7 +151,7 @@ canvas#roue{position:relative;z-index:2;border-radius:50%;display:block;box-shad
 .r-val{font-size:2rem;font-weight:900;color:var(--o)}
 .r-mult{font-size:.75rem;color:var(--mu);margin-top:5px}
 
-/* HISTORIQUE */
+/* ══ HISTORIQUE ══ */
 .sec-h{padding:0 14px;margin-bottom:8px;font-size:.85rem;font-weight:900;color:var(--txt)}
 .hist-list{padding:0 12px;display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
 .hitem{background:var(--card);border-radius:13px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--bd)}
@@ -71,72 +159,75 @@ canvas#roue{position:relative;z-index:2;border-radius:50%;display:block;box-shad
 .hi-l div:last-child{font-size:.62rem;color:var(--mu);margin-top:2px}
 .hi-r{font-size:.88rem;font-weight:900;color:var(--o)}
 .vide{text-align:center;padding:24px;color:var(--mu);font-size:.76rem;font-weight:700}
-.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:9px 22px;border-radius:22px;font-size:.77rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3)}
-.tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}.tst.ok{background:#16A34A}
 .ld{display:inline-block;width:10px;height:10px;border:2px solid #333;border-top-color:var(--o);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+
 <div class="topbar">
   <a class="tbk" href="dashboard.html">‹</a>
   <span class="tbt">🎡 Roue de Chance</span>
   <div class="tbsolde">💰 <span id="tb-solde">—</span></div>
 </div>
 <div class="tst" id="tst"></div>
-<div class="scroll">
 
-  <!-- STATS toujours visibles -->
-  <div class="stats-strip">
-    <div class="scard"><div class="scard-v" id="ic-vip">—</div><div class="scard-l">Niveau VIP</div></div>
-    <div class="scard"><div class="scard-v" id="ic-inv">—</div><div class="scard-l">Investissement</div></div>
-    <div class="scard"><div class="scard-v" id="ic-max">—</div><div class="scard-l">Gain max</div></div>
-  </div>
-
-  <!-- BANDEAU LOCK (affiché si VIP < 2) -->
-  <div id="vip-lock" style="display:none;margin:0 12px 12px">
-    <div class="lock-banner">
-      <div class="lb-left">
-        <div class="lb-title">🔒 VIP 1 actif — Débloquez la roue</div>
-        <div class="lb-sub">Passez au <b>VIP 2</b> pour pouvoir lancer la roue et gagner selon votre investissement</div>
-      </div>
-      <a href="vip.html" class="lb-btn">VIP 1 →</a>
-    </div>
-  </div>
-
-  <!-- INFO GAINS -->
-  <div class="gains-info" id="gains-info" style="display:none">
-    <div class="gi-title">📊 Gains calculés sur votre investissement</div>
-    <div class="gi-row"><span class="gi-lbl">Base (1% de l'investissement)</span><span class="gi-val" id="gi-base">—</span></div>
-    <div class="gi-row"><span class="gi-lbl">Multiplicateur min / max</span><span class="gi-val" id="gi-range">×0.5 / ×3</span></div>
-    <div class="gi-row"><span class="gi-lbl">Gain potentiel maximum</span><span class="gi-val" id="gi-max">—</span></div>
-  </div>
-
-  <!-- ROUE — toujours affichée -->
-  <div class="roue-zone">
-    <div class="wheel-outer">
-      <div class="needle"></div>
-      <canvas id="roue" width="280" height="280"></canvas>
-    </div>
-  </div>
-
-  <!-- BOUTON + état -->
-  <button class="spin-btn" id="spin-btn" onclick="lancer()">🎡 Lancer la roue</button>
-  <div class="spin-msg" id="spin-msg" style="display:none"></div>
-
-  <!-- RÉSULTAT -->
-  <div class="result-card" id="result-card">
-    <div class="r-ico" id="r-ico">🎉</div>
-    <div class="r-label">Vous avez gagné</div>
-    <div class="r-val" id="r-val">—</div>
-    <div class="r-mult" id="r-mult"></div>
-  </div>
-
-  <!-- HISTORIQUE -->
-  <div class="sec-h">Mes derniers tours</div>
-  <div class="hist-list" id="hist-list"><div class="vide"><span class="ld"></span></div></div>
-
+<!-- STATS -->
+<div class="stats-strip" style="margin-top:14px">
+  <div class="scard"><div class="scard-v" id="ic-vip">—</div><div class="scard-l">Niveau VIP</div></div>
+  <div class="scard"><div class="scard-v" id="ic-inv">—</div><div class="scard-l">Investissement</div></div>
+  <div class="scard"><div class="scard-v" id="ic-max">—</div><div class="scard-l">Gain max</div></div>
 </div>
+
+<!-- BANDEAU LOCK (VIP 0) -->
+<div id="vip-lock" style="display:none;margin:0 12px 12px">
+  <div class="lock-banner">
+    <div class="lb-left">
+      <div class="lb-title">🔒 Débloquez la roue</div>
+      <div class="lb-sub">Passez au <b>VIP 1</b> pour jouer 1 tour/semaine, ou <b>VIP 2+</b> pour plus de tours chaque jour</div>
+    </div>
+    <a href="vip.html" class="lb-btn">Voir les VIP →</a>
+  </div>
+</div>
+
+<!-- TOURS RESTANTS (VIP 1+) -->
+<div class="tours-strip" id="tours-strip" style="display:none">
+  <div class="tours-left" id="tours-label">— tours disponibles</div>
+  <div class="tours-pills" id="tours-pills"></div>
+</div>
+
+<!-- INFO GAINS -->
+<div class="gains-info" id="gains-info" style="display:none">
+  <div class="gi-title">📊 Gains calculés sur votre investissement</div>
+  <div class="gi-row"><span class="gi-lbl">Base (1% de l'investissement)</span><span class="gi-val" id="gi-base">—</span></div>
+  <div class="gi-row"><span class="gi-lbl">Multiplicateur min / max</span><span class="gi-val" id="gi-range">×0.5 / ×3</span></div>
+  <div class="gi-row"><span class="gi-lbl">Gain potentiel maximum</span><span class="gi-val" id="gi-max">—</span></div>
+</div>
+
+<!-- ROUE -->
+<div class="roue-zone">
+  <div class="wheel-outer">
+    <div class="needle"></div>
+    <canvas id="roue" width="280" height="280"></canvas>
+  </div>
+</div>
+
+<!-- BOUTON -->
+<button class="spin-btn" id="spin-btn" onclick="lancer()">🎡 Lancer la roue</button>
+<div class="spin-msg" id="spin-msg" style="display:none"></div>
+
+<!-- RÉSULTAT -->
+<div class="result-card" id="result-card">
+  <div class="r-ico" id="r-ico">🎉</div>
+  <div class="r-label">Vous avez gagné</div>
+  <div class="r-val" id="r-val">—</div>
+  <div class="r-mult" id="r-mult"></div>
+</div>
+
+<!-- HISTORIQUE -->
+<div class="sec-h">Mes derniers tours</div>
+<div class="hist-list" id="hist-list"><div class="vide"><span class="ld"></span></div></div>
+
 <nav class="botnav">
   <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
   <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
@@ -145,85 +236,97 @@ canvas#roue{position:relative;z-index:2;border-radius:50%;display:block;box-shad
 </nav>
 
 <script>
-const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
-const fmt=n=>Number(n||0).toLocaleString('fr-FR');
-const fmtF=n=>fmt(n)+' FCFA';
-const $=id=>document.getElementById(id);
-const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
-const toast=(m,t='')=>{const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)};
-let U=null,P=null,SEGS=[],spinning=false,angle=0;
+const SB = supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
 
-function buildSegments(inv,vipNum){
-  // VIP 1 : gains fixes petits (pas d'investissement requis)
-  if(vipNum===1){
-    const base=100;
-    return [
-      {label:'×0.5',mult:.5,color:'#EF4444'},
-      {label:'×1',mult:1,color:'#F97316'},
-      {label:'×1.5',mult:1.5,color:'#EAB308'},
-      {label:'×2',mult:2,color:'#22C55E'},
-      {label:'×0.5',mult:.5,color:'#EF4444'},
-      {label:'×1',mult:1,color:'#3B82F6'},
-      {label:'×2',mult:2,color:'#8B5CF6'},
-      {label:'×1',mult:1,color:'#F97316'},
-    ].map(s=>({...s,gain:Math.round(base*s.mult)}));
-  }
-  const base=Math.max(Math.round((inv||0)*0.01),200);
-  const maxM=vipNum>=5?5:vipNum>=4?4:vipNum>=3?3.5:3;
-  return [
-    {label:'×0.5',mult:.5,color:'#EF4444'},
-    {label:'×1',mult:1,color:'#F97316'},
-    {label:'×1.5',mult:1.5,color:'#EAB308'},
-    {label:'×2',mult:2,color:'#22C55E'},
-    {label:'×0.5',mult:.5,color:'#EF4444'},
-    {label:'×1',mult:1,color:'#3B82F6'},
-    {label:'×'+maxM,mult:maxM,color:'#8B5CF6'},
-    {label:'×1',mult:1,color:'#F97316'},
-  ].map(s=>({...s,gain:Math.round(base*s.mult)}));
+const fmt = n => Number(n||0).toLocaleString('fr-FR');
+const fmtF = n => fmt(n)+' FCFA';
+const $ = id => document.getElementById(id);
+const $s = (id,v) => { const e=$(id); if(e) e.textContent=v; };
+const toast = (m,t='') => {
+  const el=$('tst'); el.textContent=m;
+  el.className='tst show'+(t?' '+t:'');
+  setTimeout(()=>el.className='tst',3500);
+};
+
+let U=null, P=null, SEGS=[], spinning=false, angle=0;
+let toursRestants=0, vipGlobal=0;
+
+/* ══ TOURS PAR NIVEAU
+   VIP 1 : 1 tour / semaine
+   VIP 2 : 2 tours / jour
+   VIP 3 : 3 tours / jour
+   VIP 4 : 4 tours / jour
+   ...
+   VIP N (N≥2) : N tours / jour
+══ */
+function maxToursParPeriode(vipNum){
+  if(vipNum<=0) return 0;
+  if(vipNum===1) return 1; // par semaine
+  return vipNum;           // par jour (VIP 2 = 2/jour, VIP 3 = 3/jour…)
 }
 
-// Vérifie si l'utilisateur peut jouer selon son VIP
-async function peutJouer(vipNum){
-  if(vipNum===0) return {ok:false,msg:'🔒 Passez au VIP 1 pour jouer !'};
-  
+/* Renvoie le nombre de tours déjà utilisés dans la période en cours */
+async function toursUtilises(vipNum, userId){
   if(vipNum===1){
-    // 1 tour par semaine — vérifier dans Supabase
-    const debutSemaine=new Date();
-    debutSemaine.setDate(debutSemaine.getDate()-debutSemaine.getDay());
-    debutSemaine.setHours(0,0,0,0);
+    // Période = semaine (lundi 00:00 → dimanche 23:59)
+    const now=new Date();
+    const day=now.getDay(); // 0=dim, 1=lun…
+    const diff=day===0?6:day-1; // jours depuis lundi
+    const lundi=new Date(now);
+    lundi.setDate(now.getDate()-diff);
+    lundi.setHours(0,0,0,0);
     const{count}=await SB.from('roue_historique')
       .select('id',{count:'exact',head:true})
-      .eq('user_id',U.id)
-      .gte('created_at',debutSemaine.toISOString());
-    if((count||0)>0) return {ok:false,msg:'⏳ 1 tour/semaine — Revenez lundi !'};
-    return {ok:true};
+      .eq('user_id',userId)
+      .gte('created_at',lundi.toISOString());
+    return count||0;
   }
-  
-  // VIP 2+ : 1 tour par jour
+  // Période = jour calendaire
   const today=new Date().toISOString().slice(0,10);
   const{count}=await SB.from('roue_historique')
     .select('id',{count:'exact',head:true})
-    .eq('user_id',U.id)
+    .eq('user_id',userId)
     .gte('created_at',today+'T00:00:00.000Z');
-  if((count||0)>0) return {ok:false,msg:'✅ Tour utilisé — Revenez demain !'};
-  return {ok:true};
+  return count||0;
 }
 
-function drawWheel(segs,rot=0){
-  const cv=$('roue'),ctx=cv.getContext('2d');
+/* ══ SEGMENTS ══ */
+function buildSegments(inv, vipNum){
+  const base = vipNum===1 ? 100 : Math.max(Math.round((inv||0)*0.01), 200);
+  const maxM = vipNum>=5?5 : vipNum>=4?4 : vipNum>=3?3.5 : 3;
+  return [
+    {label:'×0.5', mult:.5,  color:'#EF4444'},
+    {label:'×1',   mult:1,   color:'#F97316'},
+    {label:'×1.5', mult:1.5, color:'#EAB308'},
+    {label:'×2',   mult:2,   color:'#22C55E'},
+    {label:'×0.5', mult:.5,  color:'#EF4444'},
+    {label:'×1',   mult:1,   color:'#3B82F6'},
+    {label:'×'+maxM, mult:maxM, color:'#8B5CF6'},
+    {label:'×1',   mult:1,   color:'#F97316'},
+  ].map(s=>({...s, gain:Math.round(base*s.mult)}));
+}
+
+/* ══ DESSIN ══ */
+function drawWheel(segs, rot=0){
+  const cv=$('roue'), ctx=cv.getContext('2d');
   const cx=140,cy=140,r=132,n=segs.length,arc=(2*Math.PI)/n;
   ctx.clearRect(0,0,280,280);
   segs.forEach((s,i)=>{
-    const a0=rot+i*arc,a1=a0+arc;
+    const a0=rot+i*arc, a1=a0+arc;
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a0,a1);ctx.closePath();
     ctx.fillStyle=s.color;ctx.fill();
     ctx.strokeStyle='rgba(0,0,0,.3)';ctx.lineWidth=2;ctx.stroke();
     ctx.save();ctx.translate(cx,cy);ctx.rotate(a0+arc/2);ctx.textAlign='right';
     ctx.fillStyle='#fff';ctx.font='bold 12px Nunito,sans-serif';
-    ctx.fillText(fmt(s.gain)+' F',r-8,4);
+    ctx.fillText(fmt(s.gain)+' F', r-8, 4);
     ctx.font='bold 10px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
-    ctx.fillText(s.label,r-8,16);ctx.restore();
+    ctx.fillText(s.label, r-8, 16);ctx.restore();
   });
+  // Centre
   ctx.beginPath();ctx.arc(cx,cy,24,0,2*Math.PI);
   ctx.fillStyle='#0A0A0F';ctx.fill();
   ctx.strokeStyle='rgba(249,115,22,.7)';ctx.lineWidth=3;ctx.stroke();
@@ -231,120 +334,205 @@ function drawWheel(segs,rot=0){
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('VGN',cx,cy);
 }
 
+/* ══ MISE À JOUR UI TOURS ══ */
+function renderTours(vipNum, restants, max){
+  $('tours-strip').style.display='flex';
+  const periode = vipNum===1 ? '/semaine' : '/jour';
+  $s('tours-label', restants > 0
+    ? `${restants} tour${restants>1?'s':''} restant${restants>1?'s':''} aujourd'hui`
+    : (vipNum===1 ? '⏳ Revenez lundi' : '⏳ Revenez demain')
+  );
+  const pills=$('tours-pills');
+  pills.innerHTML='';
+  for(let i=0;i<max;i++){
+    const d=document.createElement('div');
+    d.className='tour-pip '+(i<(max-restants)?'used':'avail');
+    d.textContent=i<(max-restants)?'✓':'●';
+    pills.appendChild(d);
+  }
+}
+
+/* ══ LANCER ══ */
 async function lancer(){
-  if(spinning||!P)return;
-  const vipN=parseInt((P.vip_niveau||'VIP 0').replace('VIP ',''))||0;
-  const check=await peutJouer(vipN);
-  if(!check.ok){toast(check.msg,'err');return}
-  spinning=true;$('spin-btn').disabled=true;$('result-card').classList.remove('show');
-  const n=SEGS.length,arc=(2*Math.PI)/n,inv=P.investissement||0;
-  // Tirage pondéré : + d'investissement = + de chances sur les grands multiplicateurs
+  if(spinning||!P) return;
+  if(toursRestants<=0){
+    const msg=vipGlobal===1?'⏳ 1 tour/semaine — Revenez lundi !':'⏳ Tours épuisés — Revenez demain !';
+    toast(msg,'err'); return;
+  }
+  spinning=true;
+  $('spin-btn').disabled=true;
+  $('result-card').classList.remove('show');
+
+  const n=SEGS.length, arc=(2*Math.PI)/n;
+  const inv=P.investissement||0;
+
+  /* Tirage pondéré — FIX : fallback sur dernier segment si r reste positif */
   const poids=SEGS.map(s=>{
     if(s.mult>=3)   return inv>=1000000?35:inv>=500000?22:inv>=100000?12:6;
     if(s.mult>=2)   return inv>=500000?28:inv>=100000?18:inv>=50000?12:8;
     if(s.mult>=1.5) return inv>=50000?20:15;
     if(s.mult>=1)   return 14;
-    return 7; // ×0.5
+    return 7;
   });
   const tot=poids.reduce((a,b)=>a+b,0);
-  let r=Math.random()*tot,w=0;
-  for(let i=0;i<poids.length;i++){r-=poids[i];if(r<=0){w=i;break}}
+  let r=Math.random()*tot, w=SEGS.length-1; // FIX : défaut = dernier segment
+  for(let i=0;i<poids.length;i++){r-=poids[i];if(r<=0){w=i;break;}}
+
+  /* Calcul angle final */
   const segCenter=w*arc+arc/2;
-  const endAngle=angle-(segCenter+Math.PI/2-angle%(2*Math.PI))+Math.PI*2*8;
-  const t0=performance.now(),startA=angle;
+  /* On veut que segCenter arrive sous l'aiguille (pointe en haut = -π/2) */
+  const targetAngle=-(segCenter)+(Math.PI*2*8); // 8 tours complets
+  const endAngle=angle+targetAngle;
+
+  const t0=performance.now(), startA=angle;
   function step(now){
-    const p=Math.min((now-t0)/4500,1),ease=1-Math.pow(1-p,4);
+    const p=Math.min((now-t0)/4500,1);
+    const ease=1-Math.pow(1-p,4); // ease-out quart
     angle=startA+(endAngle-startA)*ease;
     drawWheel(SEGS,angle);
-    if(p<1)requestAnimationFrame(step);
-    else{angle=angle%(2*Math.PI);crediter(SEGS[w]);}
+    if(p<1){requestAnimationFrame(step);}
+    else{
+      /* FIX : normaliser l'angle pour éviter la dérive infinie */
+      angle=((angle%(2*Math.PI))+(2*Math.PI))%(2*Math.PI);
+      crediter(SEGS[w]);
+    }
   }
   requestAnimationFrame(step);
 }
 
+/* ══ CRÉDITER ══ */
 async function crediter(seg){
   try{
-    const today=new Date().toISOString().slice(0,10);
-    const{error:e1}=await SB.from('roue_historique').insert({user_id:U.id,gain:seg.gain,multiplicateur:seg.mult,investissement_base:Math.round((P.investissement||0)*0.01),date_tour:today,created_at:new Date().toISOString()});
-    if(e1)throw new Error(e1.message);
-    const ns=(P.solde||0)+seg.gain,ng=(P.gains_totaux||0)+seg.gain;
+    const{error:e1}=await SB.from('roue_historique').insert({
+      user_id:U.id,
+      gain:seg.gain,
+      multiplicateur:seg.mult,
+      investissement_base:Math.round((P.investissement||0)*0.01),
+      date_tour:new Date().toISOString().slice(0,10),
+      created_at:new Date().toISOString()
+    });
+    if(e1) throw new Error(e1.message);
+
+    const ns=(P.solde||0)+seg.gain, ng=(P.gains_totaux||0)+seg.gain;
     const{error:e2}=await SB.from('profiles').update({solde:ns,gains_totaux:ng}).eq('id',U.id);
-    if(e2)throw new Error(e2.message);
-    P.solde=ns;P.gains_totaux=ng;
-    // Tour enregistré dans roue_historique (Supabase) — pas besoin de localStorage
+    if(e2) throw new Error(e2.message);
+
+    P.solde=ns; P.gains_totaux=ng;
+    toursRestants--;
+
+    // UI résultat
     const icos={0.5:'😬',1:'😊',1.5:'😄',2:'🤩',3:'🎊',3.5:'🎊',4:'💥',5:'🏆'};
-    $s('r-ico',icos[seg.mult]||'🎉');$s('r-val',fmtF(seg.gain));
+    $s('r-ico',icos[seg.mult]||'🎉');
+    $s('r-val',fmtF(seg.gain));
     $s('r-mult',seg.label+' — Solde mis à jour !');
-    $('result-card').classList.add('show');$s('tb-solde',fmtF(ns));
-    seg.mult<1?toast('😬 Pas de chance… réessayez demain !'):toast('🎉 +'+fmtF(seg.gain)+' FCFA !','ok');
+    $('result-card').classList.add('show');
+    $s('tb-solde',fmtF(ns));
+    seg.mult<1 ? toast('😬 Pas de chance…') : toast('🎉 +'+fmtF(seg.gain)+' FCFA !','ok');
+
+    // Mettre à jour l'UI tours
+    renderTours(vipGlobal, toursRestants, maxToursParPeriode(vipGlobal));
+
+    // Mettre à jour le bouton
+    if(toursRestants>0){
+      $('spin-btn').textContent='🎰 Lancer ('+toursRestants+' tour'+(toursRestants>1?'s':'')+' restant'+(toursRestants>1?'s':'')+')';
+      $('spin-btn').disabled=false;
+    } else {
+      const msgBtn=vipGlobal===1?'⏳ Revenez lundi':'⏳ Revenez demain';
+      $('spin-btn').textContent=msgBtn;
+      $('spin-btn').disabled=true;
+    }
     chargerHistorique();
-  }catch(err){toast('❌ '+err.message,'err')}
-  finally{spinning=false;$('spin-btn').textContent='✅ Tour utilisé — Revenez demain';$('spin-btn').disabled=true;}
+  }catch(err){
+    toast('❌ '+err.message,'err');
+    $('spin-btn').disabled=false;
+  }finally{
+    spinning=false;
+  }
 }
 
+/* ══ HISTORIQUE ══ */
 async function chargerHistorique(){
-  const{data:h}=await SB.from('roue_historique').select('*').eq('user_id',U.id).order('created_at',{ascending:false}).limit(10);
+  const{data:h}=await SB.from('roue_historique')
+    .select('*').eq('user_id',U.id)
+    .order('created_at',{ascending:false}).limit(10);
   const list=$('hist-list');
-  if(!h||!h.length){list.innerHTML='<div class="vide">Aucun tour effectué</div>';return}
+  if(!h||!h.length){list.innerHTML='<div class="vide">Aucun tour effectué</div>';return;}
   list.innerHTML=h.map(r=>{
     const dt=new Date(r.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    return `<div class="hitem"><div class="hi-l"><div>${dt} &nbsp;·&nbsp; ×${r.multiplicateur}</div><div>Base : ${fmtF(r.investissement_base)}</div></div><div class="hi-r">+${fmtF(r.gain)}</div></div>`;
+    return `<div class="hitem">
+      <div class="hi-l">
+        <div>${dt} &nbsp;·&nbsp; ×${r.multiplicateur}</div>
+        <div>Base : ${fmtF(r.investissement_base)}</div>
+      </div>
+      <div class="hi-r">+${fmtF(r.gain)}</div>
+    </div>`;
   }).join('');
 }
 
+/* ══ INIT ══ */
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
-  if(!session){window.location.href='index.html';return}
+  if(!session){window.location.href='index.html';return;}
   U=session.user;
+
   const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
   P=p||{solde:0,investissement:0,vip_niveau:'VIP 0'};
   $s('tb-solde',fmtF(P.solde));
-  const vipNum=parseInt((P.vip_niveau||'VIP 0').replace('VIP ',''))||0;
-  $s('lv-current',(vipNum>0?'✅ ':'⬜ ')+(P.vip_niveau||'VIP 0'));
-  if(vipNum>=1)$('lv-current').classList.replace('lock','ok');
 
-  // Toujours construire et afficher la roue
-  SEGS=buildSegments(P.investissement,vipNum);
-  const base=Math.max(Math.round((P.investissement||0)*0.01),200);
-  const maxG=Math.max(...SEGS.map(s=>s.gain));
-  const maxM=vipNum>=5?5:vipNum>=4?4:vipNum>=3?3.5:3;
+  vipGlobal=parseInt((P.vip_niveau||'VIP 0').replace('VIP ',''))||0;
+  const maxTours=maxToursParPeriode(vipGlobal);
+  const inv=P.investissement||0;
 
+  /* Stats strip */
   $s('ic-vip',P.vip_niveau||'VIP 0');
-  $s('ic-inv',fmt(Math.round(P.investissement||0))+' F');
-  $s('ic-max',vipNum>=2?fmtF(maxG):'🔒');
-  drawWheel(SEGS,0); // Toujours dessiner
+  $s('ic-inv',fmt(Math.round(inv))+' F');
 
-  if(vipNum===0){
-    // VIP 0 : bloquer totalement
+  /* Construire les segments et dessiner toujours */
+  SEGS=buildSegments(inv,vipGlobal);
+  const base=vipGlobal===1?100:Math.max(Math.round(inv*0.01),200);
+  const maxM=vipGlobal>=5?5:vipGlobal>=4?4:vipGlobal>=3?3.5:3;
+  const maxGain=Math.max(...SEGS.map(s=>s.gain));
+  $s('ic-max', vipGlobal>=1 ? fmtF(maxGain) : '🔒');
+  drawWheel(SEGS,0);
+
+  /* VIP 0 : bloquer */
+  if(vipGlobal===0){
     $('vip-lock').style.display='block';
-    $('spin-btn').disabled=true;
-    $('spin-btn').style.opacity='0.4';
-    $('spin-btn').textContent='🔒 VIP 1 requis pour jouer';
     $('gains-info').style.display='none';
+    $('tours-strip').style.display='none';
+    $('spin-btn').disabled=true;
+    $('spin-btn').textContent='🔒 VIP requis pour jouer';
+    $('hist-list').innerHTML='<div class="vide">Aucun tour effectué</div>';
     return;
   }
 
-  // VIP 1+ : débloquer la roue
+  /* VIP 1+ : afficher les infos */
   $('vip-lock').style.display='none';
   $('gains-info').style.display='block';
-  $s('gi-base',vipNum===1?'100':fmtF(base));
+  $s('gi-base', vipGlobal===1?'100 FCFA':fmtF(base)+' FCFA');
   $s('gi-range','×0.5 / ×'+maxM);
-  $s('gi-max',fmtF(maxG));
+  $s('gi-max',fmtF(maxGain));
 
-  // Vérifier si tour déjà utilisé
-  const check=await peutJouer(vipNum);
-  if(!check.ok){
-    $('spin-btn').textContent=check.msg;
-    $('spin-btn').disabled=true;
-  } else {
-    // Afficher fréquence selon VIP
-    const freq=vipNum===1?'1 tour / semaine':'1 tour / jour';
-    $('spin-btn').textContent='🎰 Lancer la roue ('+freq+')';
+  /* Calculer les tours restants */
+  const utilises=await toursUtilises(vipGlobal, U.id);
+  toursRestants=Math.max(0, maxTours-utilises);
+
+  /* Afficher les pills */
+  renderTours(vipGlobal, toursRestants, maxTours);
+
+  /* Bouton */
+  if(toursRestants>0){
+    const freqLabel=vipGlobal===1?'1 tour/semaine':`${maxTours} tours/jour`;
+    $('spin-btn').textContent='🎰 Lancer la roue ('+freqLabel+')';
     $('spin-btn').disabled=false;
-    $('spin-btn').style.opacity='1';
+  } else {
+    $('spin-btn').textContent=vipGlobal===1?'⏳ Revenez lundi':'⏳ Revenez demain';
+    $('spin-btn').disabled=true;
   }
+
   await chargerHistorique();
 }
+
 init();
 </script>
 </body>
