@@ -564,7 +564,8 @@ async function finishAd(){
           ngj=(P.gains_jour||0)+GAIN,ngs=(P.gains_semaine||0)+GAIN,
           ngm=(P.gains_mois||0)+GAIN,nt=(P.taches_jour||0)+1;
     const{error:e2}=await SB.from('profiles').update({
-      solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:ngs,gains_mois:ngm,taches_jour:nt
+      solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:ngs,gains_mois:ngm,
+      taches_jour:nt,derniere_tache_le:new Date().toISOString()
     }).eq('id',U.id);
     if(e2)throw e2;
     P={...P,solde:ns,gains_totaux:ng,gains_jour:ngj,taches_jour:nt};
@@ -601,13 +602,60 @@ function applyProfil(newP,showToast=false){
 }
 
 /* ── INIT ── */
+/* ── REMISE À ZÉRO VIP 0 après 24h sans tâche ── */
+async function checkResetInactif(userId, profil){
+  // Seulement pour les stagiaires VIP 0
+  if(profil.vip_niveau && profil.vip_niveau !== 'VIP 0') return profil;
+
+  const derniere = profil.derniere_tache_le;
+  if(!derniere) return profil; // Jamais travaillé → pas de pénalité
+
+  const diffH = (Date.now() - new Date(derniere).getTime()) / 3600000;
+  if(diffH < 24) return profil; // Moins de 24h → rien à faire
+
+  // ── Plus de 24h sans tâche : RESET ──
+  //
+  // ✅ Remis à 0 :
+  //    solde, gains_jour, gains_totaux   → argent perdu
+  //    taches_jour                        → compteur tâches du jour remis à 0
+  //    doneToday (côté client)            → les tâches redeviennent disponibles
+  //
+  // 🔒 NE CHANGE PAS :
+  //    created_at  → le stage continue à s'écouler depuis l'inscription
+  //                  Si on est J2, on reste J2. Le stage ne recommence pas.
+
+  const{error} = await SB.from('profiles')
+    .update({
+      solde:        0,
+      gains_jour:   0,
+      gains_totaux: 0,
+      taches_jour:  0   // tâches du jour remises à 0 → peut refaire ses tâches
+    })
+    .eq('id', userId)
+    .eq('vip_niveau', 'VIP 0');
+
+  if(!error){
+    // Vider doneToday côté client pour que les tâches soient disponibles
+    doneToday = [];
+
+    const ms = Date.now() - new Date(profil.created_at||Date.now()).getTime();
+    const jourStage = Math.min(Math.floor(ms/86400000)+1, DAYS_STAGE);
+    toast('⚠️ Inactif 24h — Solde et tâches remis à 0. Stage J'+jourStage+'/'+DAYS_STAGE+'.','err');
+    return {...profil, solde:0, gains_jour:0, gains_totaux:0, taches_jour:0};
+  }
+  return profil;
+}
+
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session?.user){window.location.href='index.html';return}
   U=session.user;
 
   const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
-  const profil=p||{solde:0,gains_totaux:0,gains_jour:0,investissement:0,taches_jour:0,taches_total:3,vip_niveau:'VIP 0',created_at:U.created_at};
+  let profil=p||{solde:0,gains_totaux:0,gains_jour:0,investissement:0,taches_jour:0,taches_total:3,vip_niveau:'VIP 0',created_at:U.created_at};
+
+  // Vérifier si reset nécessaire (VIP 0 + 24h inactif)
+  profil = await checkResetInactif(U.id, profil);
 
   // Charger historique complet (les 2 types)
   const{data:tc}=await SB.from('taches_completees')
