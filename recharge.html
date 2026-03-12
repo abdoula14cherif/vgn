@@ -401,49 +401,78 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         </div>
       </div>
 
-      <!-- BSC -->
+      <!-- BSC - NOWPAYMENTS DYNAMIQUE -->
       <div class="op-card" id="op-bsc" data-op="bsc" onclick="selOp('bsc')">
         <div class="op-head">
           <div class="op-logo logo-bsc">⬡</div>
           <div class="op-info">
-            <span class="op-tag tag-crypto">BSC-1 · BNB Chain</span>
-            <div class="op-name">Crypto USDT</div>
-            <div class="op-sub">BEP-20 · Binance Smart Chain</div>
+            <span class="op-tag tag-crypto">BSC · BNB Chain</span>
+            <div class="op-name">USDT BEP-20</div>
+            <div class="op-sub">Binance Smart Chain</div>
           </div>
           <div class="op-radio"></div>
         </div>
         <div class="op-detail" id="od-bsc">
-          <div class="crypto-box">
-            <span class="crypto-net net-bsc">⬡ BSC-1 · BEP-20</span>
-            <div class="crypto-lbl">Adresse de dépôt USDT</div>
-            <div class="crypto-addr">0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB</div>
-            <button class="crypto-copy" onclick="event.stopPropagation();copier('0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB','✅ Adresse BSC copiée !')">📋 Copier l'adresse</button>
-            <div class="crypto-warn">⚠️ Réseau BSC / BEP-20 uniquement. Envoi sur un autre réseau = perte définitive.</div>
+          <div class="crypto-box" id="np-box-bsc" style="position:relative">
+            <div id="np-spin-bsc" style="display:none;text-align:center;padding:10px;font-size:.78rem;color:#7C3AED;font-weight:800">⏳ Génération adresse...</div>
+            <span class="crypto-net net-bsc">⬡ BEP-20 · Binance Smart Chain</span>
+            <div class="crypto-lbl">Adresse de dépôt — générée pour vous</div>
+            <div class="crypto-addr" id="np-addr-bsc">— En attente —</div>
+            <button class="crypto-copy" id="np-copy-bsc">📋 Copier l'adresse</button>
+            <div class="crypto-lbl" style="margin-top:8px">Montant exact à envoyer</div>
+            <div style="font-size:.85rem;font-weight:900;color:#5B21B6;background:#fff;border-radius:9px;padding:9px 11px;border:1px solid #DDD6FE" id="np-amt-bsc">— calcul en cours —</div>
+            <div class="crypto-warn">⚠️ Réseau BSC/BEP-20 uniquement. Envoyez EXACTEMENT le montant indiqué.</div>
           </div>
-          <div class="pay-hint">Envoyez l'équivalent de <b id="bsc-hint">—</b> en USDT</div>
         </div>
       </div>
 
-      <!-- SOLANA -->
+      <!-- SOL - NOWPAYMENTS DYNAMIQUE -->
       <div class="op-card" id="op-sol" data-op="sol" onclick="selOp('sol')">
         <div class="op-head">
           <div class="op-logo logo-sol">◎</div>
           <div class="op-info">
-            <span class="op-tag tag-crypto">SOL-1 · Solana</span>
-            <div class="op-name">Crypto USDT / SOL</div>
-            <div class="op-sub">SPL Token · Réseau Solana</div>
+            <span class="op-tag tag-crypto">Solana · SPL</span>
+            <div class="op-name">USDT SPL</div>
+            <div class="op-sub">Réseau Solana</div>
           </div>
           <div class="op-radio"></div>
         </div>
         <div class="op-detail" id="od-sol">
-          <div class="crypto-box">
-            <span class="crypto-net net-sol">◎ SOL-1 · SPL</span>
-            <div class="crypto-lbl">Adresse de dépôt USDT</div>
-            <div class="crypto-addr">JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ</div>
-            <button class="crypto-copy" onclick="event.stopPropagation();copier('JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ','✅ Adresse Solana copiée !')">📋 Copier l'adresse</button>
-            <div class="crypto-warn">⚠️ Réseau Solana (SPL) uniquement. Envoi sur un autre réseau = perte définitive.</div>
+          <div class="crypto-box" id="np-box-sol" style="position:relative">
+            <div id="np-spin-sol" style="display:none;text-align:center;padding:10px;font-size:.78rem;color:#7C3AED;font-weight:800">⏳ Génération adresse...</div>
+            <span class="crypto-net net-sol">◎ SPL · Réseau Solana</span>
+            <div class="crypto-lbl">Adresse de dépôt — générée pour vous</div>
+            <div class="crypto-addr" id="np-addr-sol">— En attente —</div>
+            <button class="crypto-copy" id="np-copy-sol">📋 Copier l'adresse</button>
+            <div class="crypto-lbl" style="margin-top:8px">Montant exact à envoyer</div>
+            <div style="font-size:.85rem;font-weight:900;color:#5B21B6;background:#fff;border-radius:9px;padding:9px 11px;border:1px solid #DDD6FE" id="np-amt-sol">— calcul en cours —</div>
+            <div class="crypto-warn">⚠️ Réseau Solana uniquement. Envoyez EXACTEMENT le montant indiqué.</div>
           </div>
-          <div class="pay-hint">Envoyez l'équivalent de <b id="sol-hint">—</b> en USDT</div>
+        </div>
+      </div>
+
+      <!-- BNB NATIF - NOWPAYMENTS DYNAMIQUE -->
+      <div class="op-card" id="op-bnb" data-op="bnb" onclick="selOp('bnb')">
+        <div class="op-head">
+          <div class="op-logo" style="background:linear-gradient(135deg,#F3BA2F,#F0B90B);color:#fff;font-size:1.2rem">◈</div>
+          <div class="op-info">
+            <span class="op-tag tag-crypto">BNB · Natif</span>
+            <div class="op-name">BNB Coin</div>
+            <div class="op-sub">Binance Smart Chain</div>
+          </div>
+          <div class="op-radio"></div>
+        </div>
+        <div class="op-detail" id="od-bnb">
+          <div class="crypto-box" id="np-box-bnb" style="position:relative">
+            <div id="np-spin-bnb" style="display:none;text-align:center;padding:10px;font-size:.78rem;color:#7C3AED;font-weight:800">⏳ Génération adresse...</div>
+            <span class="crypto-net" style="background:#F3BA2F;color:#000">◈ BNB · BSC</span>
+            <div class="crypto-lbl">Adresse de dépôt — générée pour vous</div>
+            <div class="crypto-addr" id="np-addr-bnb">— En attente —</div>
+            <button class="crypto-copy" id="np-copy-bnb">📋 Copier l'adresse</button>
+            <div class="crypto-lbl" style="margin-top:8px">Montant exact à envoyer</div>
+            <div style="font-size:.85rem;font-weight:900;color:#5B21B6;background:#fff;border-radius:9px;padding:9px 11px;border:1px solid #DDD6FE" id="np-amt-bnb">— calcul en cours —</div>
+            <div class="crypto-warn">⚠️ Réseau BSC uniquement. Envoyez EXACTEMENT le montant BNB indiqué.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -519,6 +548,104 @@ const SB=supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
+
+/* ── NOWPAYMENTS CONFIG ── */
+const NP_API_KEY = 'a770cd00-767e-4f56-b377-1a8e9dca7d87';
+const NP_BASE    = 'https://api.nowpayments.io/v1';
+// Taux de conversion fixe FCFA → USD (1 USD ≈ 600 FCFA)
+const FCFA_TO_USD = 1/600;
+
+// Cryptos disponibles : currency = code NOWPayments
+const CRYPTO_LIST = {
+  bsc:  { label:'USDT BEP-20', network:'BSC',    currency:'usdtbsc',  symbol:'USDT', icon:'⬡', color:'#F3BA2F' },
+  sol:  { label:'USDT SPL',    network:'Solana',  currency:'usdtsol',  symbol:'USDT', icon:'◎', color:'#9945FF' },
+  bnb:  { label:'BNB',         network:'BSC',     currency:'bnbbsc',   symbol:'BNB',  icon:'◈', color:'#F0B90B' },
+};
+
+let npPayment = {}; // { bsc:{payment_id, pay_address, pay_amount}, ... }
+
+/* ── CRÉER UN PAIEMENT NOWPAYMENTS ── */
+async function createNPPayment(crypto, montantFCFA){
+  const key = crypto; // bsc | sol | bnb
+  if(npPayment[key]?.pay_address) return npPayment[key]; // déjà créé
+
+  const conf = CRYPTO_LIST[key];
+  if(!conf) return null;
+
+  const amountUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
+
+  try{
+    const res = await fetch(NP_BASE+'/payment', {
+      method:'POST',
+      headers:{'x-api-key':NP_API_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({
+        price_amount:    amountUSD,
+        price_currency:  'usd',
+        pay_currency:    conf.currency,
+        order_id:        U?.id+'_'+Date.now(),
+        order_description:'VGN Recharge '+montantFCFA+' FCFA',
+        ipn_callback_url:'https://tgrfzybemuwvhkbpuzmz.supabase.co/functions/v1/nowpayments-webhook'
+      })
+    });
+    const data = await res.json();
+    if(data.pay_address){
+      npPayment[key] = data;
+      // Sauvegarder en base pour tracking
+      await SB.from('recharges_crypto').upsert({
+        user_id:      U.id,
+        payment_id:   data.payment_id,
+        crypto:       key,
+        currency:     conf.currency,
+        pay_address:  data.pay_address,
+        pay_amount:   data.pay_amount,
+        montant_fcfa: montantFCFA,
+        statut:       'waiting',
+        created_at:   new Date().toISOString()
+      });
+      return data;
+    }
+    throw new Error(data.message||'Erreur NOWPayments');
+  }catch(err){
+    console.error('NP Error:',err);
+    toast('❌ Erreur création paiement: '+err.message,'err');
+    return null;
+  }
+}
+
+/* ── AFFICHER ADRESSE CRYPTO DYNAMIQUE ── */
+async function afficherAdresseCrypto(key, montantFCFA){
+  const boxId  = 'np-box-'+key;
+  const addrId = 'np-addr-'+key;
+  const amtId  = 'np-amt-'+key;
+  const spinId = 'np-spin-'+key;
+  const conf   = CRYPTO_LIST[key];
+
+  const box  = document.getElementById(boxId);
+  const spin = document.getElementById(spinId);
+  if(!box) return;
+
+  spin.style.display='block';
+  box.style.opacity='0.5';
+
+  const payment = await createNPPayment(key, montantFCFA);
+
+  spin.style.display='none';
+  box.style.opacity='1';
+
+  if(payment?.pay_address){
+    document.getElementById(addrId).textContent = payment.pay_address;
+    document.getElementById(amtId).textContent  =
+      payment.pay_amount + ' ' + conf.symbol + ' (≈ '+fmtF(montantFCFA)+' FCFA)';
+    // Activer le bouton copier
+    const copyBtn = document.getElementById('np-copy-'+key);
+    if(copyBtn) copyBtn.onclick = (e)=>{
+      e.stopPropagation();
+      copier(payment.pay_address, '✅ Adresse '+conf.label+' copiée !');
+    };
+  } else {
+    document.getElementById(addrId).textContent = 'Erreur — réessayez';
+  }
+}
 
 /* ══ PLANS VIP ══ */
 const PLANS=[
@@ -663,15 +790,20 @@ function calcFond(){
 /* ── OPÉRATEUR ── */
 function selOp(op){
   opSel=op;
-  ['orange','mtn','bsc','sol'].forEach(k=>{
+  ['orange','mtn','bsc','sol','bnb'].forEach(k=>{
     const el=$('op-'+k);if(!el)return;
     el.removeAttribute('data-sel');
     el.className='op-card';
-    $('od-'+k).style.display='none';
+    const od=$('od-'+k);if(od)od.style.display='none';
   });
-  $('op-'+op).setAttribute('data-sel','1');
-  $('op-'+op).classList.add('sel-'+op);
-  $('od-'+op).style.display='block';
+  const opEl=$('op-'+op);if(opEl){opEl.setAttribute('data-sel','1');opEl.classList.add('sel-'+op);}
+  const odEl=$('od-'+op);if(odEl)odEl.style.display='block';
+  // Si crypto => generer adresse NOWPayments dynamiquement
+  if(['bsc','sol','bnb'].includes(op)){
+    const montantFCFA=selType==='vip'?(planSel?.depot||0):(parseFloat($('inp-fond-montant')?.value)||0);
+    if(montantFCFA>0) afficherAdresseCrypto(op, montantFCFA);
+    else toast('Montant non defini','err');
+  }
 }
 
 /* ── STEP BAR ── */
@@ -756,21 +888,31 @@ async function soumettre(){
   const note=($('inp-note')?.value||'').trim();
   const numExp=opSel==='orange'?($('num-orange')?.value||'').trim():opSel==='mtn'?($('num-mtn')?.value||'').trim():'';
 
-  if(!ref){toast('⚠️ Référence de transaction requise','err');return}
-  if(mont<=0){toast('⚠️ Indiquez le montant envoyé','err');return}
+  // Pour les crypto NOWPayments, pas besoin de ref manuelle
+  const isCrypto = ['bsc','sol','bnb'].includes(opSel);
+  if(!isCrypto){
+    if(!ref){toast('Référence de transaction requise','err');return}
+    if(mont<=0){toast('Indiquez le montant envoyé','err');return}
+  } else {
+    // Vérifier que l'adresse a bien été générée
+    const npData = npPayment[opSel];
+    if(!npData?.payment_id){toast('Adresse non générée — sélectionnez à nouveau la crypto','err');return}
+  }
 
   const btn=$('btn-submit');btn.textContent='⏳ Envoi...';btn.disabled=true;
+  const isCrypto2 = ['bsc','sol','bnb'].includes(opSel);
 
   // Construire payload selon type
   let payload={
-    user_id:     U.id,
-    operateur:   opSel,
-    num_expediteur:numExp||null,
-    ref_transaction:ref,
-    montant_envoye:mont,
-    note:        note||null,
-    statut:      'en_attente',
-    created_at:  new Date().toISOString()
+    user_id:         U.id,
+    operateur:       opSel,
+    num_expediteur:  numExp||null,
+    ref_transaction: isCrypto2?(npPayment[opSel]?.payment_id||'NP-AUTO'):ref,
+    montant_envoye:  isCrypto2?(selType==='vip'?(planSel?.depot||0):(parseFloat($('inp-fond-montant')?.value)||0)):mont,
+    note:            isCrypto2?('NowPayments '+opSel.toUpperCase()+' '+npPayment[opSel]?.payment_id):(note||null),
+    statut:          isCrypto2?'en_attente_crypto':'en_attente',
+    np_payment_id:   isCrypto2?(npPayment[opSel]?.payment_id||null):null,
+    created_at:      new Date().toISOString()
   };
 
   if(selType==='vip'){
