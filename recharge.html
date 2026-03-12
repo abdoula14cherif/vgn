@@ -2,7 +2,177 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maxim
+
+/* ── NOWPAYMENTS CONFIG ── */
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+
+const NP_API_KEY = '1XMWTJB-6KC46MV-HTNF9PS-5NH4JK7';
+const NP_BASE    = 'https://api.nowpayments.io/v1';
+// Taux de conversion fixe FCFA → USD (1 USD ≈ 600 FCFA)
+const FCFA_TO_USD = 1/600;
+
+// Cryptos disponibles : currency = code NOWPayments
+const CRYPTO_LIST = {
+  bsc:  { label:'USDT BEP-20', network:'BSC',    currency:'usdtbsc',  symbol:'USDT', icon:'⬡', color:'#F3BA2F',
+          fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
+  sol:  { label:'USDT SPL',    network:'Solana',  currency:'usdtsol',  symbol:'USDT', icon:'◎', color:'#9945FF',
+          fallback:'JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ' },
+  bnb:  { label:'BNB',         network:'BSC',     currency:'bnbbsc',   symbol:'BNB',  icon:'◈', color:'#F0B90B',
+          fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
+};
+
+let npPayment = {}; // { bsc:{payment_id, pay_address, pay_amount}, ... }
+
+/* ── CRÉER UN PAIEMENT NOWPAYMENTS ── */
+async function createNPPayment(crypto, montantFCFA){
+  const key = crypto; // bsc | sol | bnb
+  if(npPayment[key]?.pay_address) return npPayment[key]; // déjà créé
+
+  const conf = CRYPTO_LIST[key];
+  if(!conf) return null;
+
+  const amountUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
+
+  try{
+    const res = await fetch(NP_BASE+'/payment', {
+      method:'POST',
+      headers:{'x-api-key':NP_API_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({
+        price_amount:    amountUSD,
+        price_currency:  'usd',
+        pay_currency:    conf.currency,
+        order_id:        U?.id+'_'+Date.now(),
+        order_description:'VGN Recharge '+montantFCFA+' FCFA',
+        ipn_callback_url:'https://tgrfzybemuwvhkbpuzmz.supabase.co/functions/v1/nowpayments-webhook'
+      })
+    });
+    const data = await res.json();
+    if(data.pay_address){
+      npPayment[key] = data;
+      // Sauvegarder en base pour tracking (silencieux si table absente)
+      try{
+        await SB.from('recharges_crypto').upsert({
+          user_id:      U.id,
+          payment_id:   data.payment_id,
+          crypto:       key,
+          currency:     conf.currency,
+          pay_address:  data.pay_address,
+          pay_amount:   data.pay_amount,
+          montant_fcfa: montantFCFA,
+          statut:       'waiting',
+          created_at:   new Date().toISOString()
+        });
+      }catch(e){ console.warn('recharges_crypto table may not exist yet:', e); }
+      return data;
+    }
+    throw new Error(data.message||'Erreur NOWPayments');
+  }catch(err){
+    console.error('NP Error:',err);
+    toast('❌ Erreur création paiement: '+err.message,'err');
+    return null;
+  }
+}
+
+/* ── AFFICHER ADRESSE CRYPTO (NOWPayments + fallback statique) ── */
+async function afficherAdresseCrypto(key, montantFCFA){
+  const boxId  = 'np-box-'+key;
+  const addrId = 'np-addr-'+key;
+  const amtId  = 'np-amt-'+key;
+  const spinId = 'np-spin-'+key;
+  const warnId = 'np-warn-'+key;
+  const conf   = CRYPTO_LIST[key];
+
+  const box  = document.getElementById(boxId);
+  const spin = document.getElementById(spinId);
+  if(!box) return;
+
+  spin.style.display='block';
+  box.style.opacity='0.5';
+
+  let address = null;
+  let amountLabel = '';
+  let isAutomatic = false;
+
+  // Essayer NOWPayments d'abord
+  const payment = await createNPPayment(key, montantFCFA);
+
+  spin.style.display='none';
+  box.style.opacity='1';
+
+  if(payment?.pay_address){
+    // ✅ NOWPayments OK : adresse dynamique unique
+    address = payment.pay_address;
+    amountLabel = payment.pay_amount + ' ' + conf.symbol + ' (≈ '+fmtF(montantFCFA)+' FCFA)';
+    isAutomatic = true;
+  } else {
+    // ⚠️ Fallback : adresse statique + montant calculé manuellement
+    address = conf.fallback;
+    const amtUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
+    amountLabel = '≈ '+amtUSD+' '+conf.symbol+' (≈ '+fmtF(montantFCFA)+' FCFA) — taux indicatif';
+
+    // Afficher avertissement fallback
+    const warnEl = document.getElementById(warnId);
+    if(warnEl){
+      warnEl.innerHTML = '⚠️ Adresse fixe — envoyez le montant indiqué puis <b>entrez votre référence de transaction</b> à l'étape suivante.';
+      warnEl.style.background='#FFF7ED';
+      warnEl.style.borderColor='#FED7AA';
+      warnEl.style.color='#92400E';
+    }
+  }
+
+  document.getElementById(addrId).textContent = address;
+  document.getElementById(amtId).textContent  = amountLabel;
+
+  const copyBtn = document.getElementById('np-copy-'+key);
+  if(copyBtn) copyBtn.onclick = (e)=>{
+    e.stopPropagation();
+    copier(address, '✅ Adresse '+conf.label+' copiée !');
+  };
+
+  // Stocker pour soumettre()
+  if(!isAutomatic){
+    npPayment[key] = { pay_address:address, payment_id:'MANUAL-'+Date.now(), pay_amount:0, manual:true };
+  }
+}
+
+/* ══ PLANS VIP ══ */
+const PLANS=[
+  {n:1,label:'VIP 1',job:'Job 1',gain:70,   taches:5, depot:10500,   ico:'💼',b:'b1'},
+  {n:2,label:'VIP 2',job:'Job 2',gain:175,  taches:8, depot:42000,   ico:'🚀',b:'b2'},
+  {n:3,label:'VIP 3',job:'Job 3',gain:560,  taches:10,depot:168000,  ico:'⭐',b:'b3'},
+  {n:4,label:'VIP 4',job:'Job 4',gain:1300, taches:15,depot:585000,  ico:'💎',b:'b4'},
+  {n:5,label:'VIP 5',job:'Job 5',gain:2000, taches:20,depot:1200000, ico:'🏆',b:'b5'},
+  {n:6,label:'VIP 6',job:'Job 6',gain:3500, taches:25,depot:2625000, ico:'👑',b:'b6'},
+  {n:7,label:'VIP 7',job:'Job 7',gain:6400, taches:30,depot:5760000, ico:'🌟',b:'b7'},
+  {n:8,label:'VIP 8',job:'Job 8',gain:11000,taches:35,depot:11550000,ico:'💫',b:'b8'},
+  {n:9,label:'VIP 9',job:'Job 9',gain:19000,taches:40,depot:22800000,ico:'🎯',b:'b9'},
+];
+
+/* ══ FONDS D'INVESTISSEMENT ══ */
+const FONDS=[
+  {id:1,nom:'VGN Fund 1',jours:7,  taux:15, min:10000, img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',ico:'🌱'},
+  {id:2,nom:'VGN Fund 2',jours:15, taux:25, min:20000, img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',ico:'🌾'},
+  {id:3,nom:'VGN Fund 3',jours:30, taux:35, min:30000, img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80',ico:'🌿'},
+  {id:4,nom:'VGN Fund 4',jours:90, taux:100,min:40000, img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80',ico:'💰'},
+  {id:5,nom:'VGN Fund 5',jours:95, taux:250,min:5000,  img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80',ico:'🏆'},
+];
+
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)}
+function copier(txt,msg){
+  const fb=()=>{const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast(msg,'ok')};
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast(msg,'ok')).catch(fb);else fb();
+}
+
+um-scale=1,user-scalable=no,viewport-fit=cover">
 <title>VGN – Recharge</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -543,171 +713,10 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 </nav>
 
 <script>
-const SB=supabase.createClient(
-  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
-  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
-);
 
-/* ── NOWPAYMENTS CONFIG ── */
-const NP_API_KEY = '1XMWTJB-6KC46MV-HTNF9PS-5NH4JK7';
-const NP_BASE    = 'https://api.nowpayments.io/v1';
-// Taux de conversion fixe FCFA → USD (1 USD ≈ 600 FCFA)
-const FCFA_TO_USD = 1/600;
 
-// Cryptos disponibles : currency = code NOWPayments
-const CRYPTO_LIST = {
-  bsc:  { label:'USDT BEP-20', network:'BSC',    currency:'usdtbsc',  symbol:'USDT', icon:'⬡', color:'#F3BA2F',
-          fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
-  sol:  { label:'USDT SPL',    network:'Solana',  currency:'usdtsol',  symbol:'USDT', icon:'◎', color:'#9945FF',
-          fallback:'JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ' },
-  bnb:  { label:'BNB',         network:'BSC',     currency:'bnbbsc',   symbol:'BNB',  icon:'◈', color:'#F0B90B',
-          fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
-};
 
-let npPayment = {}; // { bsc:{payment_id, pay_address, pay_amount}, ... }
 
-/* ── CRÉER UN PAIEMENT NOWPAYMENTS ── */
-async function createNPPayment(crypto, montantFCFA){
-  const key = crypto; // bsc | sol | bnb
-  if(npPayment[key]?.pay_address) return npPayment[key]; // déjà créé
-
-  const conf = CRYPTO_LIST[key];
-  if(!conf) return null;
-
-  const amountUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
-
-  try{
-    const res = await fetch(NP_BASE+'/payment', {
-      method:'POST',
-      headers:{'x-api-key':NP_API_KEY,'Content-Type':'application/json'},
-      body: JSON.stringify({
-        price_amount:    amountUSD,
-        price_currency:  'usd',
-        pay_currency:    conf.currency,
-        order_id:        U?.id+'_'+Date.now(),
-        order_description:'VGN Recharge '+montantFCFA+' FCFA',
-        ipn_callback_url:'https://tgrfzybemuwvhkbpuzmz.supabase.co/functions/v1/nowpayments-webhook'
-      })
-    });
-    const data = await res.json();
-    if(data.pay_address){
-      npPayment[key] = data;
-      // Sauvegarder en base pour tracking
-      await SB.from('recharges_crypto').upsert({
-        user_id:      U.id,
-        payment_id:   data.payment_id,
-        crypto:       key,
-        currency:     conf.currency,
-        pay_address:  data.pay_address,
-        pay_amount:   data.pay_amount,
-        montant_fcfa: montantFCFA,
-        statut:       'waiting',
-        created_at:   new Date().toISOString()
-      });
-      return data;
-    }
-    throw new Error(data.message||'Erreur NOWPayments');
-  }catch(err){
-    console.error('NP Error:',err);
-    toast('❌ Erreur création paiement: '+err.message,'err');
-    return null;
-  }
-}
-
-/* ── AFFICHER ADRESSE CRYPTO (NOWPayments + fallback statique) ── */
-async function afficherAdresseCrypto(key, montantFCFA){
-  const boxId  = 'np-box-'+key;
-  const addrId = 'np-addr-'+key;
-  const amtId  = 'np-amt-'+key;
-  const spinId = 'np-spin-'+key;
-  const warnId = 'np-warn-'+key;
-  const conf   = CRYPTO_LIST[key];
-
-  const box  = document.getElementById(boxId);
-  const spin = document.getElementById(spinId);
-  if(!box) return;
-
-  spin.style.display='block';
-  box.style.opacity='0.5';
-
-  let address = null;
-  let amountLabel = '';
-  let isAutomatic = false;
-
-  // Essayer NOWPayments d'abord
-  const payment = await createNPPayment(key, montantFCFA);
-
-  spin.style.display='none';
-  box.style.opacity='1';
-
-  if(payment?.pay_address){
-    // ✅ NOWPayments OK : adresse dynamique unique
-    address = payment.pay_address;
-    amountLabel = payment.pay_amount + ' ' + conf.symbol + ' (≈ '+fmtF(montantFCFA)+' FCFA)';
-    isAutomatic = true;
-  } else {
-    // ⚠️ Fallback : adresse statique + montant calculé manuellement
-    address = conf.fallback;
-    const amtUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
-    amountLabel = '≈ '+amtUSD+' '+conf.symbol+' (≈ '+fmtF(montantFCFA)+' FCFA) — taux indicatif';
-
-    // Afficher avertissement fallback
-    const warnEl = document.getElementById(warnId);
-    if(warnEl){
-      warnEl.innerHTML = '⚠️ Adresse fixe — envoyez le montant indiqué puis <b>entrez votre référence de transaction</b> à l'étape suivante.';
-      warnEl.style.background='#FFF7ED';
-      warnEl.style.borderColor='#FED7AA';
-      warnEl.style.color='#92400E';
-    }
-  }
-
-  document.getElementById(addrId).textContent = address;
-  document.getElementById(amtId).textContent  = amountLabel;
-
-  const copyBtn = document.getElementById('np-copy-'+key);
-  if(copyBtn) copyBtn.onclick = (e)=>{
-    e.stopPropagation();
-    copier(address, '✅ Adresse '+conf.label+' copiée !');
-  };
-
-  // Stocker pour soumettre()
-  if(!isAutomatic){
-    npPayment[key] = { pay_address:address, payment_id:'MANUAL-'+Date.now(), pay_amount:0, manual:true };
-  }
-}
-
-/* ══ PLANS VIP ══ */
-const PLANS=[
-  {n:1,label:'VIP 1',job:'Job 1',gain:70,   taches:5, depot:10500,   ico:'💼',b:'b1'},
-  {n:2,label:'VIP 2',job:'Job 2',gain:175,  taches:8, depot:42000,   ico:'🚀',b:'b2'},
-  {n:3,label:'VIP 3',job:'Job 3',gain:560,  taches:10,depot:168000,  ico:'⭐',b:'b3'},
-  {n:4,label:'VIP 4',job:'Job 4',gain:1300, taches:15,depot:585000,  ico:'💎',b:'b4'},
-  {n:5,label:'VIP 5',job:'Job 5',gain:2000, taches:20,depot:1200000, ico:'🏆',b:'b5'},
-  {n:6,label:'VIP 6',job:'Job 6',gain:3500, taches:25,depot:2625000, ico:'👑',b:'b6'},
-  {n:7,label:'VIP 7',job:'Job 7',gain:6400, taches:30,depot:5760000, ico:'🌟',b:'b7'},
-  {n:8,label:'VIP 8',job:'Job 8',gain:11000,taches:35,depot:11550000,ico:'💫',b:'b8'},
-  {n:9,label:'VIP 9',job:'Job 9',gain:19000,taches:40,depot:22800000,ico:'🎯',b:'b9'},
-];
-
-/* ══ FONDS D'INVESTISSEMENT ══ */
-const FONDS=[
-  {id:1,nom:'VGN Fund 1',jours:7,  taux:15, min:10000, img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',ico:'🌱'},
-  {id:2,nom:'VGN Fund 2',jours:15, taux:25, min:20000, img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',ico:'🌾'},
-  {id:3,nom:'VGN Fund 3',jours:30, taux:35, min:30000, img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80',ico:'🌿'},
-  {id:4,nom:'VGN Fund 4',jours:90, taux:100,min:40000, img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80',ico:'💰'},
-  {id:5,nom:'VGN Fund 5',jours:95, taux:250,min:5000,  img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80',ico:'🏆'},
-];
-
-const fmt=n=>Number(n||0).toLocaleString('fr-FR');
-const fmtF=n=>fmt(n)+' FCFA';
-const $=id=>document.getElementById(id);
-const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
-function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)}
-function copier(txt,msg){
-  const fb=()=>{const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast(msg,'ok')};
-  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast(msg,'ok')).catch(fb);else fb();
-}
 
 let U=null,selType='vip',planSel=null,fondSel=null,opSel=null,timerInt=null;
 
@@ -1009,14 +1018,20 @@ async function chargerHistorique(){
 
 /* ── INIT ── */
 async function init(){
-  const{data:{session}}=await SB.auth.getSession();
-  if(!session){window.location.href='index.html';return}
-  U=session.user;
-  const{data:p}=await SB.from('profiles').select('vip_niveau,solde').eq('id',U.id).single();
-  $s('tb-vip',(p?.vip_niveau)||'VIP 0');
+  // Toujours afficher les plans même si Supabase plante
   renderPlans();
   renderFonds();
-  await chargerHistorique();
+  try{
+    const{data:{session}}=await SB.auth.getSession();
+    if(!session){window.location.href='index.html';return}
+    U=session.user;
+    const{data:p}=await SB.from('profiles').select('vip_niveau,solde').eq('id',U.id).single();
+    $s('tb-vip',(p?.vip_niveau)||'VIP 0');
+    await chargerHistorique();
+  }catch(err){
+    console.error('Init error:',err);
+    toast('Erreur de connexion — réessayez','err');
+  }
 }
 
 init();
