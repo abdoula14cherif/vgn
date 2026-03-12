@@ -421,7 +421,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
             <button class="crypto-copy" id="np-copy-bsc">📋 Copier l'adresse</button>
             <div class="crypto-lbl" style="margin-top:8px">Montant exact à envoyer</div>
             <div style="font-size:.85rem;font-weight:900;color:#5B21B6;background:#fff;border-radius:9px;padding:9px 11px;border:1px solid #DDD6FE" id="np-amt-bsc">— calcul en cours —</div>
-            <div class="crypto-warn">⚠️ Réseau BSC/BEP-20 uniquement. Envoyez EXACTEMENT le montant indiqué.</div>
+            <div class="crypto-warn" id="np-warn-bsc">⚠️ Réseau BSC/BEP-20 uniquement. Envoyez EXACTEMENT le montant indiqué.</div>
           </div>
         </div>
       </div>
@@ -446,7 +446,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
             <button class="crypto-copy" id="np-copy-sol">📋 Copier l'adresse</button>
             <div class="crypto-lbl" style="margin-top:8px">Montant exact à envoyer</div>
             <div style="font-size:.85rem;font-weight:900;color:#5B21B6;background:#fff;border-radius:9px;padding:9px 11px;border:1px solid #DDD6FE" id="np-amt-sol">— calcul en cours —</div>
-            <div class="crypto-warn">⚠️ Réseau Solana uniquement. Envoyez EXACTEMENT le montant indiqué.</div>
+            <div class="crypto-warn" id="np-warn-sol">⚠️ Réseau Solana uniquement. Envoyez EXACTEMENT le montant indiqué.</div>
           </div>
         </div>
       </div>
@@ -471,7 +471,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
             <button class="crypto-copy" id="np-copy-bnb">📋 Copier l'adresse</button>
             <div class="crypto-lbl" style="margin-top:8px">Montant exact à envoyer</div>
             <div style="font-size:.85rem;font-weight:900;color:#5B21B6;background:#fff;border-radius:9px;padding:9px 11px;border:1px solid #DDD6FE" id="np-amt-bnb">— calcul en cours —</div>
-            <div class="crypto-warn">⚠️ Réseau BSC uniquement. Envoyez EXACTEMENT le montant BNB indiqué.</div>
+            <div class="crypto-warn" id="np-warn-bnb">⚠️ Réseau BSC uniquement. Envoyez EXACTEMENT le montant BNB indiqué.</div>
           </div>
         </div>
       </div>
@@ -550,16 +550,19 @@ const SB=supabase.createClient(
 );
 
 /* ── NOWPAYMENTS CONFIG ── */
-const NP_API_KEY = 'a770cd00-767e-4f56-b377-1a8e9dca7d87';
+const NP_API_KEY = '1XMWTJB-6KC46MV-HTNF9PS-5NH4JK7';
 const NP_BASE    = 'https://api.nowpayments.io/v1';
 // Taux de conversion fixe FCFA → USD (1 USD ≈ 600 FCFA)
 const FCFA_TO_USD = 1/600;
 
 // Cryptos disponibles : currency = code NOWPayments
 const CRYPTO_LIST = {
-  bsc:  { label:'USDT BEP-20', network:'BSC',    currency:'usdtbsc',  symbol:'USDT', icon:'⬡', color:'#F3BA2F' },
-  sol:  { label:'USDT SPL',    network:'Solana',  currency:'usdtsol',  symbol:'USDT', icon:'◎', color:'#9945FF' },
-  bnb:  { label:'BNB',         network:'BSC',     currency:'bnbbsc',   symbol:'BNB',  icon:'◈', color:'#F0B90B' },
+  bsc:  { label:'USDT BEP-20', network:'BSC',    currency:'usdtbsc',  symbol:'USDT', icon:'⬡', color:'#F3BA2F',
+          fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
+  sol:  { label:'USDT SPL',    network:'Solana',  currency:'usdtsol',  symbol:'USDT', icon:'◎', color:'#9945FF',
+          fallback:'JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ' },
+  bnb:  { label:'BNB',         network:'BSC',     currency:'bnbbsc',   symbol:'BNB',  icon:'◈', color:'#F0B90B',
+          fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
 };
 
 let npPayment = {}; // { bsc:{payment_id, pay_address, pay_amount}, ... }
@@ -612,12 +615,13 @@ async function createNPPayment(crypto, montantFCFA){
   }
 }
 
-/* ── AFFICHER ADRESSE CRYPTO DYNAMIQUE ── */
+/* ── AFFICHER ADRESSE CRYPTO (NOWPayments + fallback statique) ── */
 async function afficherAdresseCrypto(key, montantFCFA){
   const boxId  = 'np-box-'+key;
   const addrId = 'np-addr-'+key;
   const amtId  = 'np-amt-'+key;
   const spinId = 'np-spin-'+key;
+  const warnId = 'np-warn-'+key;
   const conf   = CRYPTO_LIST[key];
 
   const box  = document.getElementById(boxId);
@@ -627,23 +631,49 @@ async function afficherAdresseCrypto(key, montantFCFA){
   spin.style.display='block';
   box.style.opacity='0.5';
 
+  let address = null;
+  let amountLabel = '';
+  let isAutomatic = false;
+
+  // Essayer NOWPayments d'abord
   const payment = await createNPPayment(key, montantFCFA);
 
   spin.style.display='none';
   box.style.opacity='1';
 
   if(payment?.pay_address){
-    document.getElementById(addrId).textContent = payment.pay_address;
-    document.getElementById(amtId).textContent  =
-      payment.pay_amount + ' ' + conf.symbol + ' (≈ '+fmtF(montantFCFA)+' FCFA)';
-    // Activer le bouton copier
-    const copyBtn = document.getElementById('np-copy-'+key);
-    if(copyBtn) copyBtn.onclick = (e)=>{
-      e.stopPropagation();
-      copier(payment.pay_address, '✅ Adresse '+conf.label+' copiée !');
-    };
+    // ✅ NOWPayments OK : adresse dynamique unique
+    address = payment.pay_address;
+    amountLabel = payment.pay_amount + ' ' + conf.symbol + ' (≈ '+fmtF(montantFCFA)+' FCFA)';
+    isAutomatic = true;
   } else {
-    document.getElementById(addrId).textContent = 'Erreur — réessayez';
+    // ⚠️ Fallback : adresse statique + montant calculé manuellement
+    address = conf.fallback;
+    const amtUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
+    amountLabel = '≈ '+amtUSD+' '+conf.symbol+' (≈ '+fmtF(montantFCFA)+' FCFA) — taux indicatif';
+
+    // Afficher avertissement fallback
+    const warnEl = document.getElementById(warnId);
+    if(warnEl){
+      warnEl.innerHTML = '⚠️ Adresse fixe — envoyez le montant indiqué puis <b>entrez votre référence de transaction</b> à l'étape suivante.';
+      warnEl.style.background='#FFF7ED';
+      warnEl.style.borderColor='#FED7AA';
+      warnEl.style.color='#92400E';
+    }
+  }
+
+  document.getElementById(addrId).textContent = address;
+  document.getElementById(amtId).textContent  = amountLabel;
+
+  const copyBtn = document.getElementById('np-copy-'+key);
+  if(copyBtn) copyBtn.onclick = (e)=>{
+    e.stopPropagation();
+    copier(address, '✅ Adresse '+conf.label+' copiée !');
+  };
+
+  // Stocker pour soumettre()
+  if(!isAutomatic){
+    npPayment[key] = { pay_address:address, payment_id:'MANUAL-'+Date.now(), pay_amount:0, manual:true };
   }
 }
 
