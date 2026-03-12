@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-
+<title>VGN – Recharge</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -130,7 +131,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 /* ── PAGE 2 : PAIEMENT ── */
 .amount-hero{background:linear-gradient(160deg,#14532D 0%,var(--g) 60%,var(--gl) 100%);padding:20px 18px 24px;position:relative;overflow:hidden}
 .amount-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.06)}
-/* Pour les fonds : header bleu */
 .amount-hero.fond-hero{background:linear-gradient(160deg,#1E3A8A 0%,#2563EB 60%,#60A5FA 100%)}
 .ah-label{display:inline-block;font-size:.7rem;font-weight:900;padding:5px 16px;border-radius:30px;margin-bottom:10px;letter-spacing:.06em;text-transform:uppercase}
 .ah-label.vip-label{background:var(--o);color:#fff}
@@ -140,8 +140,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .ah-currency{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:5px;font-weight:600}
 .ah-timer{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
   color:#fff;font-size:.7rem;font-weight:800;padding:4px 11px;border-radius:20px}
-
-/* Infos fond sélectionné dans hero */
 .ah-fond-details{margin-top:10px;display:flex;gap:10px}
 .ah-fd{background:rgba(255,255,255,.15);border-radius:10px;padding:7px 12px;text-align:center;flex:1}
 .ah-fd-v{font-size:.9rem;font-weight:900;color:#fff}
@@ -173,7 +171,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .op-radio{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .op-card[data-sel] .op-radio{border-color:var(--g);background:var(--g)}
 .op-card[data-sel] .op-radio::after{content:'✓';color:#fff;font-size:.75rem;font-weight:900}
-/* Détail opérateur */
 .op-detail{display:none;padding:0 14px 14px}
 .dest-box{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:13px;padding:13px;margin-bottom:10px}
 .dest-lbl{font-size:.6rem;font-weight:800;color:var(--g);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
@@ -268,13 +265,11 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
   <!-- ══════════════════ PAGE 1 — CHOISIR ══════════════════ -->
   <div id="page1">
 
-    <!-- TYPE SWITCH -->
     <div class="type-switch">
       <button class="type-btn on" id="btn-type-vip" onclick="switchType('vip')">💎 Plans VIP</button>
       <button class="type-btn" id="btn-type-fond" onclick="switchType('fond')">📈 Fonds d'investissement</button>
     </div>
 
-    <!-- ── SECTION VIP ── -->
     <div id="section-vip">
       <div class="sec-row">
         <div class="sec-ico vip">💎</div>
@@ -288,7 +283,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
       </div>
     </div>
 
-    <!-- ── SECTION FONDS ── -->
     <div id="section-fond" style="display:none">
       <div class="sec-row">
         <div class="sec-ico fond">📈</div>
@@ -300,7 +294,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
       <div class="card-list" id="fond-list">
         <div style="text-align:center;padding:28px"><span class="ld"></span></div>
       </div>
-      <!-- Champ montant pour le fonds -->
       <div class="fond-montant-wrap" id="fond-montant-wrap">
         <label class="fm-lbl" for="inp-fond-montant">💵 Montant à investir</label>
         <div class="fm-input-row">
@@ -322,14 +315,12 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
   <!-- ══════════════════ PAGE 2 — PAIEMENT ══════════════════ -->
   <div id="page2" style="display:none">
 
-    <!-- Hero montant -->
     <div class="amount-hero" id="amount-hero">
       <div class="ah-timer">⏱ <span id="timer-display">20:00</span></div>
       <div class="ah-label" id="ah-label">MONTANT DU PAIEMENT</div>
       <div class="ah-plan-name" id="ah-plan">—</div>
       <div class="ah-amount" id="ah-amount">—</div>
       <div class="ah-currency">Francs CFA · XAF</div>
-      <!-- Pour les fonds : détails supplémentaires -->
       <div id="ah-fond-extra" style="display:none" class="ah-fond-details">
         <div class="ah-fd"><div class="ah-fd-v" id="ahf-taux">—</div><div class="ah-fd-l">Rendement</div></div>
         <div class="ah-fd"><div class="ah-fd-v" id="ahf-duree">—</div><div class="ah-fd-l">Durée</div></div>
@@ -337,7 +328,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
       </div>
     </div>
 
-    <!-- Sélection opérateur -->
     <div class="op-section">
       <div class="op-title">📲 Sélectionnez votre opérateur</div>
 
@@ -400,7 +390,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         </div>
       </div>
 
-      <!-- BSC - NOWPAYMENTS DYNAMIQUE -->
+      <!-- BSC -->
       <div class="op-card" id="op-bsc" data-op="bsc" onclick="selOp('bsc')">
         <div class="op-head">
           <div class="op-logo logo-bsc">⬡</div>
@@ -412,7 +402,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
           <div class="op-radio"></div>
         </div>
         <div class="op-detail" id="od-bsc">
-          <div class="crypto-box" id="np-box-bsc" style="position:relative">
+          <div class="crypto-box" id="np-box-bsc">
             <div id="np-spin-bsc" style="display:none;text-align:center;padding:10px;font-size:.78rem;color:#7C3AED;font-weight:800">⏳ Génération adresse...</div>
             <span class="crypto-net net-bsc">⬡ BEP-20 · Binance Smart Chain</span>
             <div class="crypto-lbl">Adresse de dépôt — générée pour vous</div>
@@ -425,7 +415,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         </div>
       </div>
 
-      <!-- SOL - NOWPAYMENTS DYNAMIQUE -->
+      <!-- SOL -->
       <div class="op-card" id="op-sol" data-op="sol" onclick="selOp('sol')">
         <div class="op-head">
           <div class="op-logo logo-sol">◎</div>
@@ -437,7 +427,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
           <div class="op-radio"></div>
         </div>
         <div class="op-detail" id="od-sol">
-          <div class="crypto-box" id="np-box-sol" style="position:relative">
+          <div class="crypto-box" id="np-box-sol">
             <div id="np-spin-sol" style="display:none;text-align:center;padding:10px;font-size:.78rem;color:#7C3AED;font-weight:800">⏳ Génération adresse...</div>
             <span class="crypto-net net-sol">◎ SPL · Réseau Solana</span>
             <div class="crypto-lbl">Adresse de dépôt — générée pour vous</div>
@@ -450,7 +440,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         </div>
       </div>
 
-      <!-- BNB NATIF - NOWPAYMENTS DYNAMIQUE -->
+      <!-- BNB -->
       <div class="op-card" id="op-bnb" data-op="bnb" onclick="selOp('bnb')">
         <div class="op-head">
           <div class="op-logo" style="background:linear-gradient(135deg,#F3BA2F,#F0B90B);color:#fff;font-size:1.2rem">◈</div>
@@ -462,7 +452,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
           <div class="op-radio"></div>
         </div>
         <div class="op-detail" id="od-bnb">
-          <div class="crypto-box" id="np-box-bnb" style="position:relative">
+          <div class="crypto-box" id="np-box-bnb">
             <div id="np-spin-bnb" style="display:none;text-align:center;padding:10px;font-size:.78rem;color:#7C3AED;font-weight:800">⏳ Génération adresse...</div>
             <span class="crypto-net" style="background:#F3BA2F;color:#000">◈ BNB · BSC</span>
             <div class="crypto-lbl">Adresse de dépôt — générée pour vous</div>
@@ -524,7 +514,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
     </div>
   </div>
 
-  <!-- ══════════════════ HISTORIQUE ══════════════════ -->
+  <!-- HISTORIQUE -->
   <div id="hist-wrap">
     <div class="hist-title">📋 Mes demandes de recharge</div>
     <div class="hist-list" id="hist-list">
@@ -542,40 +532,36 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 </nav>
 
 <script>
-/* ── NOWPAYMENTS CONFIG ── */
+/* ── SUPABASE ── */
 const SB=supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
 
+/* ── NOWPAYMENTS CONFIG ── */
 const NP_API_KEY = '1XMWTJB-6KC46MV-HTNF9PS-5NH4JK7';
 const NP_BASE    = 'https://api.nowpayments.io/v1';
-// Taux de conversion fixe FCFA → USD (1 USD ≈ 600 FCFA)
 const FCFA_TO_USD = 1/600;
 
-// Cryptos disponibles : currency = code NOWPayments
 const CRYPTO_LIST = {
-  bsc:  { label:'USDT BEP-20', network:'BSC',    currency:'usdtbsc',  symbol:'USDT', icon:'⬡', color:'#F3BA2F',
+  bsc:  { label:'USDT BEP-20', network:'BSC',    currency:'usdtbsc',  symbol:'USDT', icon:'⬡',
           fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
-  sol:  { label:'USDT SPL',    network:'Solana',  currency:'usdtsol',  symbol:'USDT', icon:'◎', color:'#9945FF',
+  sol:  { label:'USDT SPL',    network:'Solana',  currency:'usdtsol',  symbol:'USDT', icon:'◎',
           fallback:'JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ' },
-  bnb:  { label:'BNB',         network:'BSC',     currency:'bnbbsc',   symbol:'BNB',  icon:'◈', color:'#F0B90B',
+  bnb:  { label:'BNB',         network:'BSC',     currency:'bnbbsc',   symbol:'BNB',  icon:'◈',
           fallback:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB' },
 };
 
-let npPayment = {}; // { bsc:{payment_id, pay_address, pay_amount}, ... }
+let npPayment = {};
 
-/* ── CRÉER UN PAIEMENT NOWPAYMENTS ── */
+/* ── NOWPAYMENTS ── */
 async function createNPPayment(crypto, montantFCFA){
-  const key = crypto; // bsc | sol | bnb
-  if(npPayment[key]?.pay_address) return npPayment[key]; // déjà créé
-
+  const key = crypto;
+  if(npPayment[key]?.pay_address) return npPayment[key];
   const conf = CRYPTO_LIST[key];
   if(!conf) return null;
-
   const amountUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
-
   try{
     const res = await fetch(NP_BASE+'/payment', {
       method:'POST',
@@ -592,20 +578,14 @@ async function createNPPayment(crypto, montantFCFA){
     const data = await res.json();
     if(data.pay_address){
       npPayment[key] = data;
-      // Sauvegarder en base pour tracking (silencieux si table absente)
       try{
         await SB.from('recharges_crypto').upsert({
-          user_id:      U.id,
-          payment_id:   data.payment_id,
-          crypto:       key,
-          currency:     conf.currency,
-          pay_address:  data.pay_address,
-          pay_amount:   data.pay_amount,
-          montant_fcfa: montantFCFA,
-          statut:       'waiting',
-          created_at:   new Date().toISOString()
+          user_id:U.id, payment_id:data.payment_id, crypto:key,
+          currency:conf.currency, pay_address:data.pay_address,
+          pay_amount:data.pay_amount, montant_fcfa:montantFCFA,
+          statut:'waiting', created_at:new Date().toISOString()
         });
-      }catch(e){ console.warn('recharges_crypto table may not exist yet:', e); }
+      }catch(e){ console.warn('recharges_crypto:',e); }
       return data;
     }
     throw new Error(data.message||'Erreur NOWPayments');
@@ -616,66 +596,33 @@ async function createNPPayment(crypto, montantFCFA){
   }
 }
 
-/* ── AFFICHER ADRESSE CRYPTO (NOWPayments + fallback statique) ── */
 async function afficherAdresseCrypto(key, montantFCFA){
-  const boxId  = 'np-box-'+key;
-  const addrId = 'np-addr-'+key;
-  const amtId  = 'np-amt-'+key;
-  const spinId = 'np-spin-'+key;
-  const warnId = 'np-warn-'+key;
-  const conf   = CRYPTO_LIST[key];
-
-  const box  = document.getElementById(boxId);
-  const spin = document.getElementById(spinId);
+  const conf = CRYPTO_LIST[key];
+  const spin = document.getElementById('np-spin-'+key);
+  const box  = document.getElementById('np-box-'+key);
   if(!box) return;
-
-  spin.style.display='block';
-  box.style.opacity='0.5';
-
-  let address = null;
-  let amountLabel = '';
-  let isAutomatic = false;
-
-  // Essayer NOWPayments d'abord
+  spin.style.display='block'; box.style.opacity='0.5';
   const payment = await createNPPayment(key, montantFCFA);
-
-  spin.style.display='none';
-  box.style.opacity='1';
-
+  spin.style.display='none'; box.style.opacity='1';
+  let address, amountLabel;
   if(payment?.pay_address){
-    // ✅ NOWPayments OK : adresse dynamique unique
     address = payment.pay_address;
     amountLabel = payment.pay_amount + ' ' + conf.symbol + ' (≈ '+fmtF(montantFCFA)+' FCFA)';
-    isAutomatic = true;
   } else {
-    // ⚠️ Fallback : adresse statique + montant calculé manuellement
     address = conf.fallback;
     const amtUSD = (montantFCFA * FCFA_TO_USD).toFixed(2);
     amountLabel = '≈ '+amtUSD+' '+conf.symbol+' (≈ '+fmtF(montantFCFA)+' FCFA) — taux indicatif';
-
-    // Afficher avertissement fallback
-    const warnEl = document.getElementById(warnId);
+    const warnEl = document.getElementById('np-warn-'+key);
     if(warnEl){
-      warnEl.innerHTML = '⚠️ Adresse fixe — envoyez le montant indiqué puis <b>entrez votre référence de transaction</b> à l'étape suivante.';
-      warnEl.style.background='#FFF7ED';
-      warnEl.style.borderColor='#FED7AA';
-      warnEl.style.color='#92400E';
+      warnEl.innerHTML='⚠️ Adresse fixe — envoyez le montant indiqué puis entrez votre référence de transaction à l\'étape suivante.';
+      warnEl.style.background='#FFF7ED'; warnEl.style.borderColor='#FED7AA'; warnEl.style.color='#92400E';
     }
-  }
-
-  document.getElementById(addrId).textContent = address;
-  document.getElementById(amtId).textContent  = amountLabel;
-
-  const copyBtn = document.getElementById('np-copy-'+key);
-  if(copyBtn) copyBtn.onclick = (e)=>{
-    e.stopPropagation();
-    copier(address, '✅ Adresse '+conf.label+' copiée !');
-  };
-
-  // Stocker pour soumettre()
-  if(!isAutomatic){
     npPayment[key] = { pay_address:address, payment_id:'MANUAL-'+Date.now(), pay_amount:0, manual:true };
   }
+  document.getElementById('np-addr-'+key).textContent = address;
+  document.getElementById('np-amt-'+key).textContent  = amountLabel;
+  const copyBtn = document.getElementById('np-copy-'+key);
+  if(copyBtn) copyBtn.onclick = (e)=>{e.stopPropagation();copier(address,'✅ Adresse '+conf.label+' copiée !');};
 }
 
 /* ══ PLANS VIP ══ */
@@ -691,7 +638,7 @@ const PLANS=[
   {n:9,label:'VIP 9',job:'Job 9',gain:19000,taches:40,depot:22800000,ico:'🎯',b:'b9'},
 ];
 
-/* ══ FONDS D'INVESTISSEMENT ══ */
+/* ══ FONDS ══ */
 const FONDS=[
   {id:1,nom:'VGN Fund 1',jours:7,  taux:15, min:10000, img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',ico:'🌱'},
   {id:2,nom:'VGN Fund 2',jours:15, taux:25, min:20000, img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',ico:'🌾'},
@@ -700,6 +647,7 @@ const FONDS=[
   {id:5,nom:'VGN Fund 5',jours:95, taux:250,min:5000,  img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80',ico:'🏆'},
 ];
 
+/* ── HELPERS ── */
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
 const $=id=>document.getElementById(id);
@@ -710,27 +658,16 @@ function copier(txt,msg){
   if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast(msg,'ok')).catch(fb);else fb();
 }
 
-um-scale=1,user-scalable=no,viewport-fit=cover">
-<title>VGN – Recharge</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-
-
-
-
-
 let U=null,selType='vip',planSel=null,fondSel=null,opSel=null,timerInt=null;
 
 /* ── TYPE SWITCH ── */
 function switchType(t){
-  selType=t;
-  planSel=null;fondSel=null;
+  selType=t;planSel=null;fondSel=null;
   $('btn-p1').disabled=true;
   $('btn-type-vip').className='type-btn'+(t==='vip'?' on':'');
   $('btn-type-fond').className='type-btn'+(t==='fond'?' on':'');
   $('section-vip').style.display=t==='vip'?'block':'none';
   $('section-fond').style.display=t==='fond'?'block':'none';
-  // Reset selection visuelle
   document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));
   document.querySelectorAll('.f-card').forEach(c=>c.classList.remove('sel'));
   $('fond-montant-wrap').style.display='none';
@@ -798,15 +735,12 @@ function selFond(id){
   document.querySelectorAll('.f-card').forEach(c=>c.classList.remove('sel'));
   $('fc'+id)?.classList.add('sel');
   fondSel=FONDS.find(f=>f.id===id);
-  // Afficher le champ montant
   const mw=$('fond-montant-wrap');mw.style.display='block';
   $s('fm-hint','Minimum : '+fmtF(fondSel.min));
   $s('fmc-taux',fondSel.taux);
   $('inp-fond-montant').value='';
   $('fm-calc').style.display='none';
-  // Activer bouton seulement si montant valide
   $('btn-p1').disabled=true;
-  // Scroll vers le champ
   setTimeout(()=>mw.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
 
@@ -816,14 +750,10 @@ function calcFond(){
   if(v>=fondSel.min){
     const inter=Math.round(v*fondSel.taux/100);
     const total=v+inter;
-    $s('fmc-capital',fmtF(v));
-    $s('fmc-inter','+'+fmtF(inter));
-    $s('fmc-total',fmtF(total));
-    $('fm-calc').style.display='block';
-    $('btn-p1').disabled=false;
+    $s('fmc-capital',fmtF(v));$s('fmc-inter','+'+fmtF(inter));$s('fmc-total',fmtF(total));
+    $('fm-calc').style.display='block';$('btn-p1').disabled=false;
   }else{
-    $('fm-calc').style.display='none';
-    $('btn-p1').disabled=true;
+    $('fm-calc').style.display='none';$('btn-p1').disabled=true;
   }
 }
 
@@ -832,17 +762,15 @@ function selOp(op){
   opSel=op;
   ['orange','mtn','bsc','sol','bnb'].forEach(k=>{
     const el=$('op-'+k);if(!el)return;
-    el.removeAttribute('data-sel');
-    el.className='op-card';
+    el.removeAttribute('data-sel');el.className='op-card';
     const od=$('od-'+k);if(od)od.style.display='none';
   });
   const opEl=$('op-'+op);if(opEl){opEl.setAttribute('data-sel','1');opEl.classList.add('sel-'+op);}
   const odEl=$('od-'+op);if(odEl)odEl.style.display='block';
-  // Si crypto => generer adresse NOWPayments dynamiquement
   if(['bsc','sol','bnb'].includes(op)){
     const montantFCFA=selType==='vip'?(planSel?.depot||0):(parseFloat($('inp-fond-montant')?.value)||0);
-    if(montantFCFA>0) afficherAdresseCrypto(op, montantFCFA);
-    else toast('Montant non defini','err');
+    if(montantFCFA>0) afficherAdresseCrypto(op,montantFCFA);
+    else toast('Montant non défini','err');
   }
 }
 
@@ -867,7 +795,6 @@ function startTimer(){
 
 /* ── NAVIGATION ── */
 function goPage(n){
-  // Valider avant de passer
   if(n===2){
     if(selType==='vip'&&!planSel){toast('⚠️ Sélectionnez un plan VIP','err');return}
     if(selType==='fond'){
@@ -875,12 +802,9 @@ function goPage(n){
       const mv=parseFloat($('inp-fond-montant').value)||0;
       if(mv<fondSel.min){toast('⚠️ Montant minimum : '+fmtF(fondSel.min),'err');return}
     }
-
-    // Calculer montant à afficher
     let montantAff=0,planLabel='';
     if(selType==='vip'){
-      montantAff=planSel.depot;
-      planLabel=planSel.label+' — '+planSel.job;
+      montantAff=planSel.depot; planLabel=planSel.label+' — '+planSel.job;
       $('amount-hero').className='amount-hero';
       $('ah-label').className='ah-label vip-label';$('ah-label').textContent='MONTANT DU PAIEMENT';
       $('ah-fond-extra').style.display='none';
@@ -888,37 +812,23 @@ function goPage(n){
       montantAff=parseFloat($('inp-fond-montant').value)||fondSel.min;
       planLabel=fondSel.nom+' · '+fondSel.jours+' jours';
       $('amount-hero').className='amount-hero fond-hero';
-      $('ah-label').className='ah-label fond-label';$('ah-label').textContent='FONDS D\'INVESTISSEMENT';
+      $('ah-label').className='ah-label fond-label';$('ah-label').textContent="FONDS D'INVESTISSEMENT";
       const inter=Math.round(montantAff*fondSel.taux/100);
       $('ah-fond-extra').style.display='flex';
-      $s('ahf-taux','+'+fondSel.taux+'%');
-      $s('ahf-duree',fondSel.jours+' jours');
-      $s('ahf-gain','+'+fmtF(inter));
+      $s('ahf-taux','+'+fondSel.taux+'%');$s('ahf-duree',fondSel.jours+' jours');$s('ahf-gain','+'+fmtF(inter));
     }
-    const amtStr=fmtF(montantAff)+' FCFA';
-    $s('ah-plan',planLabel);
-    $s('ah-amount','XAF '+fmt(montantAff));
-    ['orange-hint','mtn-hint','bsc-hint','sol-hint'].forEach(id=>$s(id,amtStr));
-    startTimer();
-    // Sélectionner Orange par défaut
-    selOp('orange');
+    $s('ah-plan',planLabel);$s('ah-amount','XAF '+fmt(montantAff));
+    ['orange-hint','mtn-hint'].forEach(id=>$s(id,fmtF(montantAff)+' FCFA'));
+    startTimer();selOp('orange');
   }
-
   if(n===3){
-    if(opSel==='orange'){
-      if(($('num-orange')?.value||'').replace(/\s/g,'').length<8){toast('⚠️ Entrez votre numéro Orange expéditeur','err');return}
-    }
-    if(opSel==='mtn'){
-      if(($('num-mtn')?.value||'').replace(/\s/g,'').length<8){toast('⚠️ Entrez votre numéro MTN expéditeur','err');return}
-    }
-    const lb=selType==='vip'?(planSel?.label||'—'):(fondSel?.nom||'—');
-    $s('note-plan',lb);
+    if(opSel==='orange'&&($('num-orange')?.value||'').replace(/\s/g,'').length<8){toast('⚠️ Entrez votre numéro Orange expéditeur','err');return}
+    if(opSel==='mtn'&&($('num-mtn')?.value||'').replace(/\s/g,'').length<8){toast('⚠️ Entrez votre numéro MTN expéditeur','err');return}
+    $s('note-plan',selType==='vip'?(planSel?.label||'—'):(fondSel?.nom||'—'));
   }
-
   [1,2,3,4].forEach(i=>$('page'+i).style.display=i===n?'block':'none');
   $('hist-wrap').style.display=n===4?'none':'block';
-  setStep(n);
-  window.scrollTo({top:0,behavior:'smooth'});
+  setStep(n);window.scrollTo({top:0,behavior:'smooth'});
 }
 
 /* ── SOUMETTRE ── */
@@ -927,59 +837,34 @@ async function soumettre(){
   const mont=parseFloat($('inp-montant')?.value)||0;
   const note=($('inp-note')?.value||'').trim();
   const numExp=opSel==='orange'?($('num-orange')?.value||'').trim():opSel==='mtn'?($('num-mtn')?.value||'').trim():'';
-
-  // Pour les crypto NOWPayments, pas besoin de ref manuelle
-  const isCrypto = ['bsc','sol','bnb'].includes(opSel);
+  const isCrypto=['bsc','sol','bnb'].includes(opSel);
   if(!isCrypto){
     if(!ref){toast('Référence de transaction requise','err');return}
     if(mont<=0){toast('Indiquez le montant envoyé','err');return}
-  } else {
-    // Vérifier que l'adresse a bien été générée
-    const npData = npPayment[opSel];
-    if(!npData?.payment_id){toast('Adresse non générée — sélectionnez à nouveau la crypto','err');return}
-  }
-
-  const btn=$('btn-submit');btn.textContent='⏳ Envoi...';btn.disabled=true;
-  const isCrypto2 = ['bsc','sol','bnb'].includes(opSel);
-
-  // Construire payload selon type
-  let payload={
-    user_id:         U.id,
-    operateur:       opSel,
-    num_expediteur:  numExp||null,
-    ref_transaction: isCrypto2?(npPayment[opSel]?.payment_id||'NP-AUTO'):ref,
-    montant_envoye:  isCrypto2?(selType==='vip'?(planSel?.depot||0):(parseFloat($('inp-fond-montant')?.value)||0)):mont,
-    note:            isCrypto2?('NowPayments '+opSel.toUpperCase()+' '+npPayment[opSel]?.payment_id):(note||null),
-    statut:          isCrypto2?'en_attente_crypto':'en_attente',
-    np_payment_id:   isCrypto2?(npPayment[opSel]?.payment_id||null):null,
-    created_at:      new Date().toISOString()
-  };
-
-  if(selType==='vip'){
-    payload={...payload,
-      plan_niveau:planSel.n, plan_label:planSel.label,
-      plan_depot:planSel.depot, plan_gain:planSel.gain,
-      plan_taches:planSel.taches,
-      type_recharge:'vip'
-    };
   }else{
-    payload={...payload,
-      plan_niveau:0, plan_label:fondSel.nom,
-      plan_depot:mont, plan_gain:0, plan_taches:0,
-      fond_id:fondSel.id, fond_taux:fondSel.taux, fond_jours:fondSel.jours,
-      type_recharge:'fond'
-    };
+    if(!npPayment[opSel]?.payment_id){toast('Adresse non générée — sélectionnez à nouveau la crypto','err');return}
   }
-
+  const btn=$('btn-submit');btn.textContent='⏳ Envoi...';btn.disabled=true;
+  let payload={
+    user_id:U.id, operateur:opSel, num_expediteur:numExp||null,
+    ref_transaction:isCrypto?(npPayment[opSel]?.payment_id||'NP-AUTO'):ref,
+    montant_envoye:isCrypto?(selType==='vip'?(planSel?.depot||0):(parseFloat($('inp-fond-montant')?.value)||0)):mont,
+    note:isCrypto?('NowPayments '+opSel.toUpperCase()+' '+npPayment[opSel]?.payment_id):(note||null),
+    statut:isCrypto?'en_attente_crypto':'en_attente',
+    np_payment_id:isCrypto?(npPayment[opSel]?.payment_id||null):null,
+    created_at:new Date().toISOString()
+  };
+  if(selType==='vip'){
+    payload={...payload,plan_niveau:planSel.n,plan_label:planSel.label,plan_depot:planSel.depot,plan_gain:planSel.gain,plan_taches:planSel.taches,type_recharge:'vip'};
+  }else{
+    payload={...payload,plan_niveau:0,plan_label:fondSel.nom,plan_depot:mont,plan_gain:0,plan_taches:0,fond_id:fondSel.id,fond_taux:fondSel.taux,fond_jours:fondSel.jours,type_recharge:'fond'};
+  }
   try{
     const{error}=await SB.from('recharges').insert(payload);
     if(error)throw new Error(error.message);
     clearInterval(timerInt);
-    const lb=selType==='vip'?('✅ '+planSel.label+' — En attente'):('✅ '+fondSel.nom+' — En attente');
-    $s('suc-badge',lb);
-    goPage(4);
-    await chargerHistorique();
-    toast('✅ Demande envoyée !','ok');
+    $s('suc-badge',selType==='vip'?('✅ '+planSel.label+' — En attente'):('✅ '+fondSel.nom+' — En attente'));
+    goPage(4);await chargerHistorique();toast('✅ Demande envoyée !','ok');
   }catch(err){
     toast('❌ '+err.message,'err');console.error(err);
   }finally{
@@ -989,24 +874,20 @@ async function soumettre(){
 
 /* ── HISTORIQUE ── */
 async function chargerHistorique(){
-  const{data:h}=await SB.from('recharges')
-    .select('*').eq('user_id',U.id)
-    .order('created_at',{ascending:false}).limit(25);
+  const{data:h}=await SB.from('recharges').select('*').eq('user_id',U.id).order('created_at',{ascending:false}).limit(25);
   const list=$('hist-list');
   if(!h||!h.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu);font-size:.75rem;font-weight:700">Aucune demande pour le moment</div>';return}
   const stl={en_attente:'En attente',valide:'Validé ✓',rejete:'Rejeté'};
   const stc={en_attente:'sw',valide:'sv',rejete:'sr'};
   const stic={en_attente:'ic-w',valide:'ic-v',rejete:'ic-r'};
-  const oico={orange:'🍊',mtn:'📱',bsc:'⬡',sol:'◎'};
   const ticon={vip:'💎',fond:'📈'};
   list.innerHTML=h.map(r=>{
     const st=r.statut||'en_attente';
     const d=new Date(r.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    const tl=r.type_recharge==='fond'?'Fonds':'VIP';
     return `<div class="h-item">
       <div class="h-ico ${stic[st]}">${ticon[r.type_recharge]||'💰'}</div>
       <div class="h-info">
-        <div class="h-name">${tl} · ${r.plan_label||'—'} · ${oico[r.operateur]||''} ${(r.operateur||'').toUpperCase()}</div>
+        <div class="h-name">${r.type_recharge==='fond'?'Fonds':'VIP'} · ${r.plan_label||'—'} · ${(r.operateur||'').toUpperCase()}</div>
         <div class="h-date">${d} · ${r.ref_transaction||'—'}</div>
       </div>
       <div class="h-right">
@@ -1019,9 +900,7 @@ async function chargerHistorique(){
 
 /* ── INIT ── */
 async function init(){
-  // Toujours afficher les plans même si Supabase plante
-  renderPlans();
-  renderFonds();
+  renderPlans();renderFonds();
   try{
     const{data:{session}}=await SB.auth.getSession();
     if(!session){window.location.href='index.html';return}
