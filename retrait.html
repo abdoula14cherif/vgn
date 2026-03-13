@@ -529,7 +529,7 @@ async function soumettre(){
     momo:   p.t+tel+' ('+($('inp-reseau').value||'—')+')',
     wave:   p.t+tel,
     bank:   ($('inp-nom').value.trim())+' – '+($('inp-iban').value.trim()),
-    crypto: ($('inp-crypto').value.trim())+' ('+cryptoNetLabel+')'
+    crypto: cryptoNet+':'+($('inp-crypto').value.trim())
   }[meth];
   const btn=$('ov-btn');
   btn.textContent='⏳...'; btn.disabled=true;
