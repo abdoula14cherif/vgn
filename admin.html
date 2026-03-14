@@ -666,12 +666,37 @@ let NTYPE='info';
 async function login(){
   const email=$('l-email').value.trim(), pass=$('l-pass').value;
   if(!email||!pass){showErr('Champs requis');return}
-  const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
-  if(error){showErr('Identifiants incorrects');return}
-  if(!ADMINS.includes(data.user.email)){await SB.auth.signOut();showErr('Accès non autorisé');return}
-  ME=data.user;$('lock').style.display='none';$('app').style.display='block';loadAll();
+  const btn=$('lock').querySelector('.lock-btn');
+  btn.textContent='⏳ Connexion...'; btn.disabled=true;
+  try{
+    const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
+    if(error){showErr('❌ '+error.message);return}
+    if(!ADMINS.includes(data.user.email)){
+      await SB.auth.signOut();
+      showErr('⛔ Accès non autorisé — email : '+data.user.email);
+      return;
+    }
+    ME=data.user;
+    $('lock').style.display='none';
+    $('app').style.display='block';
+    loadAll();
+  }catch(e){
+    showErr('❌ Erreur: '+e.message);
+  }finally{
+    btn.textContent='Connexion sécurisée →'; btn.disabled=false;
+  }
 }
-function showErr(m){$('l-err').textContent=m;$('l-err').style.display='block'}
+function showErr(m){
+  const el=$('l-err');
+  el.textContent=m;
+  el.style.display='block';
+  el.style.fontSize='.8rem';
+  el.style.color='#ff4444';
+  el.style.padding='8px';
+  el.style.background='rgba(255,0,0,.1)';
+  el.style.borderRadius='8px';
+  el.style.marginTop='6px';
+}
 async function logout(){await SB.auth.signOut();location.reload()}
 
 // Vérifier session existante
