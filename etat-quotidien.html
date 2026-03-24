@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – État Quotidien</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--od:#EA580C;
+  --bg:#F0F4F0;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;
+  z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);
+  padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
+
+.scroll{padding-top:calc(var(--H) + var(--sat));padding-bottom:calc(var(--B) + var(--sab) + 24px);min-height:100svh}
+
+/* DATE HERO */
+.date-hero{background:linear-gradient(135deg,#14532D,var(--g));padding:20px 16px 22px;position:relative;overflow:hidden}
+.date-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.05)}
+.dh-date{font-size:.72rem;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.dh-day{font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:14px}
+/* Barre de progression globale */
+.prog-global{background:rgba(255,255,255,.15);border-radius:12px;overflow:hidden;height:10px;margin-bottom:6px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#22C55E,#86EFAC);border-radius:12px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.prog-label{font-size:.65rem;color:rgba(255,255,255,.7);font-weight:700;display:flex;justify-content:space-between}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 12px 6px}
+.kpi{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 1px 8px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:-10px;right:-10px;width:50px;height:50px;border-radius:50%;opacity:.08}
+.kpi.green::before{background:var(--g)}
+.kpi.orange::before{background:var(--o)}
+.kpi.blue::before{background:#3B82F6}
+.kpi.purple::before{background:#8B5CF6}
+.kpi-ico{font-size:1.3rem;margin-bottom:6px}
+.kpi-v{font-size:1.4rem;font-weight:900;color:var(--txt);line-height:1}
+.kpi-v.g{color:var(--g)}.kpi-v.o{color:var(--o)}.kpi-v.b{color:#3B82F6}.kpi-v.p{color:#8B5CF6}
+.kpi-l{font-size:.62rem;font-weight:700;color:var(--mu);margin-top:4px}
+.kpi-sub{font-size:.58rem;font-weight:600;color:var(--mu);margin-top:2px}
+
+/* SECTION */
+.section{margin:10px 12px;background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.sec-head{padding:14px 16px 0;display:flex;align-items:center;gap:10px}
+.sec-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.sec-ico.g{background:linear-gradient(135deg,var(--g),var(--gd))}
+.sec-ico.o{background:linear-gradient(135deg,var(--o),var(--od))}
+.sec-ico.b{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}
+.sec-ttl{font-size:.88rem;font-weight:900;color:var(--txt)}
+.sec-sub{font-size:.62rem;color:var(--mu);margin-top:1px}
+
+/* TÂCHES AUJOURD'HUI */
+.tasks-today{padding:12px 14px 14px}
+.task-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F8FAFC}
+.task-row:last-child{border-bottom:none;padding-bottom:0}
+.tr-check{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.chk-done{background:#DCFCE7;color:var(--g)}
+.chk-wait{background:#FFF7ED;color:var(--o)}
+.tr-info{flex:1}
+.tr-name{font-size:.78rem;font-weight:800;color:var(--txt)}
+.tr-time{font-size:.6rem;color:var(--mu);font-weight:600;margin-top:1px}
+.tr-gain{font-size:.82rem;font-weight:900;color:var(--g)}
+.tr-gain.wait{color:var(--o)}
+
+/* MINI CHART (barres sur 7 jours) */
+.chart-wrap{padding:14px 16px}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:60px;margin-bottom:8px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:4px 4px 0 0;background:var(--bd);transition:height .4s ease;min-height:3px}
+.bar.today{background:linear-gradient(180deg,var(--gl),var(--g))}
+.bar.has-data{background:linear-gradient(180deg,#86EFAC,#16A34A)}
+.bar-lbl{font-size:.55rem;font-weight:700;color:var(--mu);text-align:center}
+.bar-lbl.today{color:var(--g);font-weight:900}
+
+/* OBJECTIF DU JOUR */
+.obj-card{margin:10px 12px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:18px;padding:16px}
+.obj-title{font-size:.82rem;font-weight:900;color:#1E40AF;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.obj-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed #BFDBFE}
+.obj-row:last-child{border-bottom:none;padding-bottom:0;margin-top:4px;padding-top:10px;font-size:.82rem;font-weight:900}
+.obj-lbl{font-size:.72rem;font-weight:700;color:#1E40AF}
+.obj-val{font-size:.78rem;font-weight:900;color:#1D4ED8}
+.obj-val.done{color:var(--g)}
+
+/* TIMER RESET */
+.reset-card{margin:10px 12px;background:var(--card);border-radius:16px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.reset-ico{font-size:1.5rem}
+.reset-info{flex:1}
+.reset-t{font-size:.78rem;font-weight:900;color:var(--txt)}
+.reset-s{font-size:.63rem;color:var(--mu);font-weight:600;margin-top:2px}
+.timer-badge{font-size:.82rem;font-weight:900;color:var(--o);background:#FFF7ED;
+  padding:6px 14px;border-radius:10px;border:1.5px solid #FED7AA;font-family:monospace}
+
+/* BOTNAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#fff;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--g);border-radius:0 0 3px 3px}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.bn.on .bnl{color:var(--g)}
+
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+
+.ld{display:inline-block;width:18px;height:18px;border:3px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading-wrap{text-align:center;padding:40px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="taches.html">‹</a>
+  <span class="tbt">📅 État Quotidien</span>
+  <div class="tb-pill" id="tb-date">—</div>
+</div>
+
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- DATE HERO -->
+  <div class="date-hero">
+    <div class="dh-date" id="hero-date">—</div>
+    <div class="dh-day" id="hero-day">Chargement…</div>
+    <div class="prog-global">
+      <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+    <div class="prog-label">
+      <span id="prog-done">0 tâches effectuées</span>
+      <span id="prog-total">sur 0</span>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi green">
+      <div class="kpi-ico">💰</div>
+      <div class="kpi-v g" id="kpi-gains-jour">0 F</div>
+      <div class="kpi-l">Gains aujourd'hui</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-ico">✅</div>
+      <div class="kpi-v o" id="kpi-taches-jour">0 / 0</div>
+      <div class="kpi-l">Tâches du jour</div>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-ico">📈</div>
+      <div class="kpi-v b" id="kpi-solde">0 F</div>
+      <div class="kpi-l">Solde actuel</div>
+    </div>
+    <div class="kpi purple">
+      <div class="kpi-ico">🏆</div>
+      <div class="kpi-v p" id="kpi-gains-total">0 F</div>
+      <div class="kpi-l">Gains cumulés</div>
+    </div>
+  </div>
+
+  <!-- OBJECTIF DU JOUR -->
+  <div class="obj-card">
+    <div class="obj-title">🎯 Objectif du jour</div>
+    <div class="obj-row"><span class="obj-lbl">Tâches à effectuer</span><span class="obj-val" id="obj-taches">—</span></div>
+    <div class="obj-row"><span class="obj-lbl">Gain par tâche</span><span class="obj-val" id="obj-gain-tache">—</span></div>
+    <div class="obj-row"><span class="obj-lbl">Gain potentiel</span><span class="obj-val" id="obj-gain-max">—</span></div>
+    <div class="obj-row"><span class="obj-lbl">💸 Gain réalisé</span><span class="obj-val done" id="obj-gain-done">—</span></div>
+  </div>
+
+  <!-- TÂCHES EFFECTUÉES AUJOURD'HUI -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-ico g">✅</div>
+      <div>
+        <div class="sec-ttl">Tâches d'aujourd'hui</div>
+        <div class="sec-sub" id="tasks-sub">Chargement…</div>
+      </div>
+    </div>
+    <div class="tasks-today" id="tasks-today-list">
+      <div class="loading-wrap"><div class="ld"></div></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITÉ 7 JOURS -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-ico b">📊</div>
+      <div>
+        <div class="sec-ttl">Activité des 7 derniers jours</div>
+        <div class="sec-sub">Tâches effectuées par jour</div>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-bars" id="chart-bars">
+        <div class="loading-wrap"><div class="ld"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMER RESET -->
+  <div class="reset-card">
+    <div class="reset-ico">⏰</div>
+    <div class="reset-info">
+      <div class="reset-t">Renouvellement des tâches</div>
+      <div class="reset-s">Les tâches se renouvellent chaque jour à minuit</div>
+    </div>
+    <div class="timer-badge" id="timer-reset">—</div>
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn on" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB = supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)}
+
+let U=null, P=null;
+
+function td(){return new Date().toISOString().slice(0,10)}
+
+function updateTimer(){
+  const now=new Date();
+  const midnight=new Date(now);
+  midnight.setHours(24,0,0,0);
+  const diff=midnight-now;
+  const h=Math.floor(diff/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  $s('timer-reset',String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'));
+}
+
+function renderChart(tasksByDay){
+  const days=[];
+  const now=new Date();
+  for(let i=6;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    days.push({
+      date:d.toISOString().slice(0,10),
+      lbl:i===0?'Auj':d.toLocaleDateString('fr-FR',{weekday:'short'}).slice(0,3),
+      isToday:i===0
+    });
+  }
+  const max=Math.max(...days.map(d=>tasksByDay[d.date]||0),1);
+  const html=days.map(d=>{
+    const count=tasksByDay[d.date]||0;
+    const pct=Math.round((count/max)*100);
+    return `<div class="bar-col">
+      <div class="bar ${d.isToday?'today':count>0?'has-data':''}" style="height:${Math.max(pct,5)}%"></div>
+      <div class="bar-lbl ${d.isToday?'today':''}">${d.lbl}</div>
+    </div>`;
+  }).join('');
+  $('chart-bars').innerHTML=html;
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+
+  // Date display
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  $s('hero-date',now.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}));
+  $s('hero-day',dateStr.charAt(0).toUpperCase()+dateStr.slice(1));
+  $s('tb-date',now.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}));
+
+  // Profil
+  const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
+  P=p||{};
+  $s('tb-vip',P.vip_niveau||'VIP 0');
+
+  const vipN=parseInt((P.vip_niveau||'VIP 0').replace('VIP ',''))||0;
+  const GAINS={0:70,1:70,2:175,3:560,4:1300,5:2000,6:3500,7:6400,8:11000,9:19000};
+  const TACHES={0:3,1:5,2:8,3:10,4:15,5:20,6:25,7:30,8:35,9:40};
+  const gainTache=GAINS[vipN]||70;
+  const tachesMax=TACHES[vipN]||3;
+  const tachesFaites=P.taches_jour||0;
+  const gainJour=P.gains_jour||0;
+
+  // KPIs
+  $s('kpi-gains-jour',fmt(gainJour)+' F');
+  $s('kpi-taches-jour',tachesFaites+' / '+tachesMax);
+  $s('kpi-solde',fmt(P.solde||0)+' F');
+  $s('kpi-gains-total',fmt(P.gains_totaux||0)+' F');
+
+  // Objectif
+  $s('obj-taches',tachesMax+' tâches');
+  $s('obj-gain-tache',fmtF(gainTache));
+  $s('obj-gain-max',fmtF(gainTache*tachesMax));
+  $s('obj-gain-done',fmtF(gainJour));
+
+  // Progression
+  const pct=tachesMax>0?Math.round((tachesFaites/tachesMax)*100):0;
+  $('prog-fill').style.width=pct+'%';
+  $s('prog-done',tachesFaites+' tâche'+(tachesFaites>1?'s':'')+' effectuée'+(tachesFaites>1?'s':''));
+  $s('prog-total','sur '+tachesMax);
+
+  // Tâches aujourd'hui
+  const{data:todayTasks}=await SB.from('taches_completees')
+    .select('*').eq('user_id',U.id).eq('date_jour',td())
+    .order('completee_le',{ascending:false});
+
+  const typeLabels={stage:'Tâche Stagiaire',vip:'Tâche VIP',video:'Vidéo',like:'Like',survey:'Sondage',share:'Partage'};
+  const typeIco={stage:'📋',vip:'💎',video:'▶️',like:'👍',survey:'📝',share:'📤'};
+
+  if(!todayTasks||!todayTasks.length){
+    $('tasks-today-list').innerHTML=`<div style="text-align:center;padding:20px;color:var(--mu);font-size:.72rem;font-weight:700">Aucune tâche effectuée aujourd'hui</div>`;
+    $s('tasks-sub','0 tâche effectuée');
+  } else {
+    $s('tasks-sub',todayTasks.length+' tâche'+(todayTasks.length>1?'s':'')+' effectuée'+(todayTasks.length>1?'s':''));
+    $('tasks-today-list').innerHTML=todayTasks.map(t=>`
+      <div class="task-row">
+        <div class="tr-check chk-done">${typeIco[t.type_tache]||'✅'}</div>
+        <div class="tr-info">
+          <div class="tr-name">${typeLabels[t.type_tache]||'Tâche'}</div>
+          <div class="tr-time">${new Date(t.completee_le).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div class="tr-gain">+${fmtF(t.reward||0)}</div>
+      </div>`).join('');
+  }
+
+  // Activité 7 jours
+  const since=new Date();since.setDate(since.getDate()-6);
+  const{data:weekTasks}=await SB.from('taches_completees')
+    .select('date_jour,completee_le').eq('user_id',U.id)
+    .gte('completee_le',since.toISOString());
+
+  const byDay={};
+  (weekTasks||[]).forEach(t=>{
+    const d=t.date_jour||(t.completee_le?.slice(0,10));
+    if(d)byDay[d]=(byDay[d]||0)+1;
+  });
+  renderChart(byDay);
+
+  // Timer
+  updateTimer();
+  setInterval(updateTimer,1000);
+}
+
+init();
+</script>
+</body>
+</html>
