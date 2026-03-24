@@ -520,6 +520,23 @@ function closeOv(){ $('ov').classList.remove('open'); }
 /* ───── SOUMETTRE ───── */
 async function soumettre(){
   const v=parseInt($('inp-montant').value);
+
+  // Bloquer retrait VIP 0 sans investisseur parrainé
+  if(!P?.vip_niveau || P.vip_niveau==='VIP 0'){
+    if(P?.code_parrainage){
+      const{data:filleuls}=await SB.from('profiles')
+        .select('id').eq('code_parrain',P.code_parrainage)
+        .not('vip_niveau','eq','VIP 0').limit(1);
+      if(!filleuls||filleuls.length===0){
+        toast('💎 Investissez ou invitez un investisseur pour débloquer les retraits','err');
+        return;
+      }
+    } else {
+      toast('💎 Investissez ou invitez un investisseur pour débloquer les retraits','err');
+      return;
+    }
+  }
+
   const p=PAYS[pi];
   const tel=$('inp-tel').value.trim();
   const frais=Math.ceil(v*FRAIS), net=v-frais;
