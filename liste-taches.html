@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Liste des Tâches</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--od:#EA580C;
+  --bg:#F0F4F0;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;
+  z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);
+  padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
+
+/* SCROLL */
+.scroll{padding-top:calc(var(--H) + var(--sat));padding-bottom:calc(var(--B) + var(--sab) + 24px);min-height:100svh}
+
+/* HERO STATS */
+.hero{background:linear-gradient(135deg,#14532D,var(--g),var(--gl));padding:20px 16px 24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero::after{content:'';position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero-title{font-size:.7rem;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.hs{background:rgba(255,255,255,.12);border-radius:12px;padding:10px 8px;text-align:center;border:1px solid rgba(255,255,255,.15)}
+.hs-v{font-size:1.2rem;font-weight:900;color:#fff}
+.hs-l{font-size:.58rem;color:rgba(255,255,255,.65);margin-top:2px;font-weight:700}
+
+/* FILTRES */
+.filter-bar{background:var(--card);padding:12px 14px;border-bottom:1px solid var(--bd);
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:.72rem;font-weight:800;
+  cursor:pointer;border:1.5px solid var(--bd);color:var(--mu);background:#F8FAFB;transition:all .18s}
+.chip.on{background:var(--g);color:#fff;border-color:var(--g)}
+
+/* SECTION TITRE */
+.sec-head{padding:16px 14px 8px;display:flex;align-items:center;justify-content:space-between}
+.sec-ttl{font-size:.88rem;font-weight:900;color:var(--txt)}
+.sec-count{font-size:.7rem;font-weight:800;color:var(--mu);background:#F1F5F9;padding:3px 10px;border-radius:10px}
+
+/* TASK CARDS */
+.task-list{padding:0 12px 8px;display:flex;flex-direction:column;gap:8px}
+.t-card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 1px 8px rgba(0,0,0,.06);
+  display:flex;gap:12px;align-items:flex-start;transition:transform .15s;border:1.5px solid transparent}
+.t-card:active{transform:scale(.98)}
+.t-card.done{border-color:#BBF7D0;background:linear-gradient(135deg,#F0FDF4,#fff)}
+.t-card.missed{opacity:.55}
+.t-ico{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.ic-done{background:linear-gradient(135deg,#16A34A,#22C55E)}
+.ic-pending{background:linear-gradient(135deg,#F97316,#FBBF24)}
+.ic-missed{background:#F1F5F9}
+.t-info{flex:1;min-width:0}
+.t-name{font-size:.85rem;font-weight:900;color:var(--txt);margin-bottom:3px}
+.t-meta{font-size:.63rem;color:var(--mu);font-weight:700;line-height:1.5}
+.t-right{text-align:right;flex-shrink:0}
+.t-gain{font-size:.9rem;font-weight:900;color:var(--g)}
+.t-gain.missed{color:var(--mu)}
+.t-time{font-size:.6rem;color:var(--mu);font-weight:700;margin-top:3px}
+.t-badge{display:inline-block;font-size:.57rem;font-weight:900;padding:2px 8px;border-radius:8px;margin-top:4px}
+.bd-done{background:#DCFCE7;color:#15803D}
+.bd-pending{background:#FFF7ED;color:#C2410C}
+.bd-missed{background:#F1F5F9;color:var(--mu)}
+
+/* SEPARATEUR DATE */
+.date-sep{padding:12px 14px 6px;font-size:.68rem;font-weight:900;color:var(--mu);
+  text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:8px}
+.date-sep::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:44px 20px;color:var(--mu)}
+.empty-ico{font-size:3rem;margin-bottom:12px}
+.empty-t{font-size:.9rem;font-weight:800;color:var(--txt);margin-bottom:6px}
+.empty-s{font-size:.72rem;font-weight:600;line-height:1.6}
+
+/* BOTNAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#fff;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--g);border-radius:0 0 3px 3px}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.bn.on .bnl{color:var(--g)}
+
+/* TOAST */
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+
+/* LOADER */
+.ld{display:inline-block;width:20px;height:20px;border:3px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading-wrap{text-align:center;padding:44px;color:var(--mu)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="taches.html">‹</a>
+  <span class="tbt">📋 Liste des Tâches</span>
+  <div class="tb-pill" id="tb-vip">—</div>
+</div>
+
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-title">📊 Résumé de votre activité</div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-v" id="st-total">0</div><div class="hs-l">Total effectuées</div></div>
+      <div class="hs"><div class="hs-v" id="st-today">0</div><div class="hs-l">Aujourd'hui</div></div>
+      <div class="hs"><div class="hs-v" id="st-gains">0</div><div class="hs-l">FCFA gagnés</div></div>
+    </div>
+  </div>
+
+  <!-- FILTRES -->
+  <div class="filter-bar">
+    <div class="chip on" id="chip-all" onclick="setFilter('all',this)">Toutes</div>
+    <div class="chip" id="chip-today" onclick="setFilter('today',this)">Aujourd'hui</div>
+    <div class="chip" id="chip-week" onclick="setFilter('week',this)">Cette semaine</div>
+    <div class="chip" id="chip-month" onclick="setFilter('month',this)">Ce mois</div>
+  </div>
+
+  <!-- LISTE -->
+  <div id="list-wrap">
+    <div class="loading-wrap"><div class="ld"></div></div>
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn on" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB = supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)}
+
+let U=null, ALL_TASKS=[], curFilter='all';
+
+function td(){return new Date().toISOString().slice(0,10)}
+function dtFmt(s){
+  const d=new Date(s);
+  const today=new Date();
+  const diff=Math.floor((today-d)/(1000*60*60*24));
+  if(diff===0)return "Aujourd'hui à "+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(diff===1)return "Hier à "+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+function dateSep(s){
+  const d=new Date(s);
+  const today=new Date();
+  const diff=Math.floor((today-d)/(1000*60*60*24));
+  if(diff===0)return "Aujourd'hui";
+  if(diff===1)return "Hier";
+  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long'});
+}
+
+function setFilter(f, el){
+  curFilter=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderTasks();
+}
+
+function filterTasks(tasks){
+  const now=new Date();
+  if(curFilter==='today'){
+    const t=td();
+    return tasks.filter(t=>t.date_jour===t||t.completee_le?.slice(0,10)===td());
+  }
+  if(curFilter==='week'){
+    const w=new Date(now);w.setDate(w.getDate()-7);
+    return tasks.filter(t=>new Date(t.completee_le)>=w);
+  }
+  if(curFilter==='month'){
+    const m=new Date(now);m.setDate(m.getDate()-30);
+    return tasks.filter(t=>new Date(t.completee_le)>=m);
+  }
+  return tasks;
+}
+
+function renderTasks(){
+  const tasks = filterTasks(ALL_TASKS);
+  const wrap = $('list-wrap');
+
+  if(!tasks.length){
+    wrap.innerHTML=`<div class="empty-state">
+      <div class="empty-ico">📭</div>
+      <div class="empty-t">Aucune tâche trouvée</div>
+      <div class="empty-s">Effectuez vos tâches quotidiennes<br>pour les voir apparaître ici.</div>
+    </div>`;
+    return;
+  }
+
+  // Grouper par date
+  const groups={};
+  tasks.forEach(t=>{
+    const d=t.completee_le?.slice(0,10)||t.date_jour||'';
+    if(!groups[d])groups[d]=[];
+    groups[d].push(t);
+  });
+
+  const typeLabels={
+    stage:'Tâche Stagiaire',vip:'Tâche VIP',video:'Vidéo',
+    like:'Like / Interaction',survey:'Sondage',share:'Partage'
+  };
+  const typeIco={stage:'📋',vip:'💎',video:'▶️',like:'👍',survey:'📝',share:'📤'};
+
+  let html='';
+  Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
+    html+=`<div class="date-sep">${dateSep(date)}</div>`;
+    html+='<div class="task-list">';
+    groups[date].forEach(t=>{
+      const label=typeLabels[t.type_tache]||t.type_tache||'Tâche';
+      const ico=typeIco[t.type_tache]||'✅';
+      html+=`<div class="t-card done">
+        <div class="t-ico ic-done">${ico}</div>
+        <div class="t-info">
+          <div class="t-name">${label} #${(t.tache_ref||'').toString().slice(-4)||'—'}</div>
+          <div class="t-meta">Réf: ${t.tache_ref||'—'}</div>
+        </div>
+        <div class="t-right">
+          <div class="t-gain">+${fmtF(t.reward||0)}</div>
+          <div class="t-time">${dtFmt(t.completee_le)}</div>
+          <span class="t-badge bd-done">✓ Validée</span>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+
+  wrap.innerHTML=html;
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+
+  const{data:p}=await SB.from('profiles').select('vip_niveau,gains_totaux').eq('id',U.id).single();
+  $s('tb-vip',p?.vip_niveau||'VIP 0');
+
+  const{data:tasks}=await SB.from('taches_completees')
+    .select('*').eq('user_id',U.id)
+    .order('completee_le',{ascending:false}).limit(500);
+
+  ALL_TASKS=tasks||[];
+
+  // Stats
+  const todayTasks=ALL_TASKS.filter(t=>t.date_jour===td()||t.completee_le?.slice(0,10)===td());
+  const totalGains=ALL_TASKS.reduce((s,t)=>s+(t.reward||0),0);
+  $s('st-total',fmt(ALL_TASKS.length));
+  $s('st-today',fmt(todayTasks.length));
+  $s('st-gains',fmt(totalGains));
+
+  renderTasks();
+}
+
+init();
+</script>
+</body>
+</html>
