@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-
+<title>VGN – Recharge</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -255,7 +256,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <a class="back-btn" href="dashboard.html">‹</a>
   <span class="top-title">💰 Recharge</span>
@@ -532,7 +532,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
   <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
   <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
 </nav>
-
 <script>
 /* ── NOWPAYMENTS CONFIG ── */
 const SB=supabase.createClient(
@@ -573,12 +572,6 @@ function copier(txt,msg){
   const fb=()=>{const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast(msg,'ok')};
   if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast(msg,'ok')).catch(fb);else fb();
 }
-
-um-scale=1,user-scalable=no,viewport-fit=cover">
-<title>VGN – Recharge</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-
 
 
 
