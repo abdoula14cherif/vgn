@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Conditions d'utilisation</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#16A34A;--gd:#15803D;--bg:#F0F4F0;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:56px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),#22C55E);
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;
+  z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none}
+.tbt{font-size:.95rem;font-weight:900;color:#fff}
+.tb-date{font-size:.63rem;font-weight:700;color:rgba(255,255,255,.75)}
+
+.scroll{padding-top:calc(var(--H) + var(--sat) + 16px);padding-bottom:calc(60px + var(--sab));min-height:100svh}
+
+/* HERO */
+.hero{margin:0 12px 14px;background:linear-gradient(135deg,var(--gd),#22C55E);border-radius:18px;
+  padding:20px 18px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'⚖️';position:absolute;right:-10px;top:-10px;font-size:5rem;opacity:.1}
+.hero-ico{font-size:2.5rem;margin-bottom:8px}
+.hero-t{font-size:1.1rem;font-weight:900;color:#fff;margin-bottom:4px}
+.hero-s{font-size:.7rem;color:rgba(255,255,255,.75);font-weight:600}
+
+/* SECTIONS */
+.sec{background:var(--card);border-radius:18px;margin:0 12px 12px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.sec-head{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);padding:14px 16px;
+  display:flex;align-items:center;gap:10px;border-bottom:1px solid #BBF7D0}
+.sec-num{width:30px;height:30px;border-radius:8px;background:var(--g);color:#fff;
+  font-size:.78rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:.88rem;font-weight:900;color:#15803D}
+.sec-body{padding:14px 16px}
+.sec-body p{font-size:.76rem;color:var(--txt);font-weight:600;line-height:1.7;margin-bottom:8px}
+.sec-body p:last-child{margin-bottom:0}
+.sec-body ul{padding-left:16px;margin:6px 0}
+.sec-body li{font-size:.74rem;color:var(--txt);font-weight:600;line-height:1.7;margin-bottom:3px}
+.highlight{background:#FFF7ED;border-left:3px solid #F97316;border-radius:0 8px 8px 0;padding:8px 12px;margin:8px 0;font-size:.73rem;color:#92400E;font-weight:700;line-height:1.6}
+.alert{background:#FEF2F2;border-left:3px solid #DC2626;border-radius:0 8px 8px 0;padding:8px 12px;margin:8px 0;font-size:.73rem;color:#991B1B;font-weight:700;line-height:1.6}
+.success{background:#F0FDF4;border-left:3px solid var(--g);border-radius:0 8px 8px 0;padding:8px 12px;margin:8px 0;font-size:.73rem;color:#15803D;font-weight:700;line-height:1.6}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;margin:8px 0;font-size:.72rem}
+.tbl th{background:#F0FDF4;color:#15803D;font-weight:900;padding:7px 10px;text-align:left;border-bottom:2px solid #BBF7D0}
+.tbl td{padding:7px 10px;border-bottom:1px solid #F1F5F9;font-weight:600;color:var(--txt)}
+.tbl tr:last-child td{border-bottom:none}
+
+/* ACCEPT BTN */
+.accept-zone{margin:0 12px 20px;background:var(--card);border-radius:18px;padding:16px;
+  text-align:center;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.accept-txt{font-size:.72rem;color:var(--mu);font-weight:600;line-height:1.6;margin-bottom:14px}
+.btn-accept{display:block;width:100%;padding:14px;background:linear-gradient(135deg,var(--g),var(--gd));
+  border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;
+  color:#fff;cursor:pointer;text-decoration:none;text-align:center;
+  box-shadow:0 4px 16px rgba(22,163,74,.35);transition:transform .15s}
+.btn-accept:active{transform:scale(.97)}
+.btn-tg{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;
+  background:linear-gradient(135deg,#0088cc,#006699);border:none;border-radius:14px;
+  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:900;color:#fff;
+  cursor:pointer;text-decoration:none;margin-top:10px;
+  box-shadow:0 3px 12px rgba(0,136,204,.3)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="javascript:history.back()">‹</a>
+  <span class="tbt">📋 Conditions d'utilisation</span>
+  <span class="tb-date">VGN v2.0</span>
+</div>
+
+<div class="scroll">
+
+  <div class="hero">
+    <div class="hero-ico">⚖️</div>
+    <div class="hero-t">Conditions d'utilisation</div>
+    <div class="hero-s">Dernière mise à jour : Mars 2026 · VGN Agriculture</div>
+  </div>
+
+  <!-- PRÉSENTATION -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">1</div><div class="sec-title">Présentation de la plateforme</div></div>
+    <div class="sec-body">
+      <p>VGN Agriculture est une plateforme d'investissement agricole numérique qui permet aux utilisateurs de participer à des projets agricoles virtuels et de générer des revenus via des tâches quotidiennes et des plans d'investissement.</p>
+      <div class="success">✅ Plateforme légale enregistrée · Activité principale : investissement agricole numérique</div>
+      <p>En créant un compte sur VGN Agriculture, vous acceptez l'ensemble des conditions d'utilisation décrites dans ce document.</p>
+    </div>
+  </div>
+
+  <!-- COMPTE -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">2</div><div class="sec-title">Création et gestion de compte</div></div>
+    <div class="sec-body">
+      <ul>
+        <li>Vous devez avoir au moins 18 ans pour vous inscrire</li>
+        <li>Un seul compte par personne est autorisé</li>
+        <li>Vous êtes responsable de la sécurité de vos identifiants</li>
+        <li>Toute tentative de fraude entraîne la suppression immédiate du compte</li>
+        <li>Les comptes inactifs depuis plus de 90 jours peuvent être archivés</li>
+      </ul>
+      <div class="highlight">⚠️ La création de faux comptes pour abuser du système de parrainage est strictement interdite.</div>
+    </div>
+  </div>
+
+  <!-- MODE STAGIAIRE -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">3</div><div class="sec-title">Mode Stagiaire (VIP 0)</div></div>
+    <div class="sec-body">
+      <p>Le mode Stagiaire est une période d'essai gratuite de <strong>3 jours</strong> permettant de découvrir la plateforme.</p>
+      <table class="tbl">
+        <tr><th>Paramètre</th><th>Valeur</th></tr>
+        <tr><td>Tâches par jour</td><td>3 maximum</td></tr>
+        <tr><td>Gain par tâche</td><td>70 FCFA</td></tr>
+        <tr><td>Gain max / jour</td><td>210 FCFA</td></tr>
+        <tr><td>Gain max total</td><td>630 FCFA</td></tr>
+        <tr><td>Durée</td><td>3 jours</td></tr>
+      </table>
+      <div class="alert">🚫 Les retraits ne sont pas disponibles en mode Stagiaire. Pour retirer vos gains, vous devez activer un plan VIP ou parrainer un investisseur actif.</div>
+    </div>
+  </div>
+
+  <!-- PLANS VIP -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">4</div><div class="sec-title">Plans VIP et investissement</div></div>
+    <div class="sec-body">
+      <p>Les plans VIP débloquent des tâches quotidiennes supplémentaires et des revenus plus élevés. Chaque plan nécessite un dépôt initial.</p>
+      <table class="tbl">
+        <tr><th>Plan</th><th>Dépôt</th><th>Tâches/j</th><th>Gain/j</th></tr>
+        <tr><td>VIP 1</td><td>10 500 F</td><td>5</td><td>350 F</td></tr>
+        <tr><td>VIP 2</td><td>42 000 F</td><td>8</td><td>1 400 F</td></tr>
+        <tr><td>VIP 3</td><td>168 000 F</td><td>10</td><td>5 600 F</td></tr>
+        <tr><td>VIP 4+</td><td>Voir tableau</td><td>15+</td><td>—</td></tr>
+      </table>
+      <div class="highlight">💡 Les gains sont crédités instantanément après validation de chaque tâche.</div>
+    </div>
+  </div>
+
+  <!-- RETRAITS -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">5</div><div class="sec-title">Retraits et paiements</div></div>
+    <div class="sec-body">
+      <p>Les retraits sont soumis aux conditions suivantes :</p>
+      <ul>
+        <li>Montant minimum : <strong>1 000 FCFA</strong></li>
+        <li>Frais de retrait : <strong>5%</strong> du montant demandé</li>
+        <li>Délai de traitement : <strong>24h ouvrées</strong></li>
+        <li>Les retraits sont disponibles en <strong>crypto-monnaie</strong> et via les moyens de paiement du Cameroun</li>
+      </ul>
+      <div class="success">✅ Méthodes disponibles : BNB (BSC) · USDT (Solana) · Bitcoin · Mobile Money Cameroun (bientôt)</div>
+      <div class="alert">🚫 Aucun retrait possible en mode Stagiaire sans avoir parrainé un investisseur actif.</div>
+    </div>
+  </div>
+
+  <!-- PARRAINAGE -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">6</div><div class="sec-title">Programme de parrainage</div></div>
+    <div class="sec-body">
+      <p>Le programme de parrainage vous permet de gagner des commissions sur les gains de vos filleuls.</p>
+      <ul>
+        <li>Commission : <strong>2%</strong> des gains de chaque filleul actif</li>
+        <li>Les commissions sont disponibles uniquement pour les membres ayant un <strong>plan VIP actif</strong></li>
+        <li>Les membres en mode Stagiaire ne perçoivent pas de commissions</li>
+        <li>La création de faux comptes filleuls est sanctionnée par une suspension</li>
+      </ul>
+      <div class="highlight">⚠️ Pour bénéficier des commissions, activez un plan VIP (minimum VIP 1).</div>
+    </div>
+  </div>
+
+  <!-- INTERDICTIONS -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">7</div><div class="sec-title">Comportements interdits</div></div>
+    <div class="sec-body">
+      <ul>
+        <li>Création de faux comptes multiples</li>
+        <li>Manipulation du système de tâches (bots, scripts automatisés)</li>
+        <li>Utilisation frauduleuse du système de parrainage</li>
+        <li>Tentatives de piratage ou d'exploitation de failles</li>
+        <li>Partage de fausses preuves de paiement</li>
+      </ul>
+      <div class="alert">🚫 Toute infraction entraîne la suspension immédiate et définitive du compte sans remboursement.</div>
+    </div>
+  </div>
+
+  <!-- RESPONSABILITÉ -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">8</div><div class="sec-title">Responsabilité et risques</div></div>
+    <div class="sec-body">
+      <p>VGN Agriculture est une plateforme de simulation d'investissement agricole numérique. Les gains sont générés par l'activité sur la plateforme.</p>
+      <div class="highlight">⚠️ Comme tout investissement, les rendements passés ne garantissent pas les rendements futurs. Investissez uniquement ce que vous pouvez vous permettre de perdre.</div>
+      <p>VGN Agriculture ne peut être tenu responsable de pertes liées à :</p>
+      <ul>
+        <li>Des fluctuations des taux de change (crypto)</li>
+        <li>Des erreurs dans les informations de retrait fournies par l'utilisateur</li>
+        <li>Une interruption de service due à une maintenance</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-num">9</div><div class="sec-title">Contact et support</div></div>
+    <div class="sec-body">
+      <p>Pour toute question relative aux présentes conditions d'utilisation ou à votre compte :</p>
+      <ul>
+        <li>📱 Support in-app : Onglet "Rapports" → Support</li>
+        <li>✈️ Telegram officiel : t.me/valuegrownetwork</li>
+        <li>⏰ Disponibilité : 24h/24, 7j/7</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACCEPTATION -->
+  <div class="accept-zone">
+    <div class="accept-txt">En utilisant la plateforme VGN Agriculture, vous confirmez avoir lu, compris et accepté l'ensemble de ces conditions d'utilisation.</div>
+    <a class="btn-accept" href="javascript:history.back()">✅ J'accepte et je retourne</a>
+    <a class="btn-tg" href="https://t.me/valuegrownetwork" target="_blank">✈️ Rejoindre Telegram VGN</a>
+  </div>
+
+</div>
+</body>
+</html>
