@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN Admin – Codes d'échange</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--gl:#22C55E;--o:#F97316;--r:#DC2626;--p:#7C3AED;--bg:#0F1117;--card:#1A1D26;--card2:#21252F;--txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;--H:56px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden;min-height:100vh}
+
+/* LOCK */
+.lock{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.lock-ico{font-size:3.5rem;margin-bottom:16px}
+.lock-t{font-size:1.1rem;font-weight:900;color:var(--txt);margin-bottom:4px;text-align:center}
+.lock-s{font-size:.72rem;color:var(--mu);margin-bottom:24px;text-align:center}
+.lock-inp{width:100%;padding:14px 16px;background:var(--card);border:1.5px solid var(--bd);border-radius:14px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;color:var(--txt);outline:none;margin-bottom:10px;transition:border .2s}
+.lock-inp:focus{border-color:var(--p)}
+.lock-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--p),#5B21B6);border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,.35)}
+.lock-err{color:#EF4444;font-size:.72rem;font-weight:700;margin-bottom:8px;display:none;text-align:center}
+
+/* APP */
+#app{display:none}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,#5B21B6,var(--p));display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 16px rgba(124,58,237,.4)}
+.tbk{font-size:.8rem;font-weight:800;color:rgba(255,255,255,.7);cursor:pointer}
+.tbt{font-size:.95rem;font-weight:900;color:#fff}
+.tb-pill{font-size:.65rem;font-weight:800;color:#fff;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.25)}
+
+.scroll{padding-top:calc(var(--H)+var(--sat)+14px);padding-bottom:30px;min-height:100svh}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 12px 14px}
+.st{background:var(--card);border-radius:14px;padding:12px;text-align:center}
+.st-v{font-size:1.2rem;font-weight:900;color:var(--p)}
+.st-v.g{color:var(--g)}.st-v.o{color:var(--o)}
+.st-l{font-size:.58rem;color:var(--mu);font-weight:700;margin-top:3px}
+
+/* CRÉER CODE */
+.create-card{background:var(--card);border-radius:20px;margin:0 12px 14px;overflow:hidden}
+.cc-head{background:linear-gradient(135deg,var(--p),#5B21B6);padding:14px 16px;display:flex;align-items:center;gap:9px}
+.cc-head-ico{font-size:1.1rem}
+.cc-head-t{font-size:.9rem;font-weight:900;color:#fff}
+.cc-body{padding:16px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.7rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.inp{width:100%;padding:12px 14px;background:var(--card2);border:1.5px solid var(--bd);border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;color:var(--txt);outline:none;transition:border .2s}
+.inp:focus{border-color:var(--p)}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-gen{width:100%;padding:8px 0;background:var(--card2);border:1.5px dashed var(--bd);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;color:var(--mu);cursor:pointer;margin-top:4px;transition:all .15s}
+.btn-gen:hover{border-color:var(--p);color:var(--p)}
+.btn-create{width:100%;padding:14px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.35);margin-top:4px;transition:transform .15s}
+.btn-create:active{transform:scale(.97)}.btn-create:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* LISTE CODES */
+.list-head{padding:0 14px 8px;display:flex;align-items:center;justify-content:space-between}
+.list-title{font-size:.85rem;font-weight:900;color:var(--txt)}
+.list-count{font-size:.7rem;font-weight:800;color:var(--mu);background:var(--card);padding:3px 10px;border-radius:10px}
+.codes-list{display:flex;flex-direction:column;gap:8px;padding:0 12px 14px}
+
+.code-card{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.2)}
+.code-card.inactive{opacity:.5}
+.code-top{padding:12px 14px;display:flex;align-items:center;gap:10px}
+.code-badge{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.cb-active{background:linear-gradient(135deg,var(--p),#5B21B6)}
+.cb-inactive{background:var(--card2)}
+.code-info{flex:1;min-width:0}
+.code-txt{font-size:.9rem;font-weight:900;color:var(--txt);font-family:monospace;letter-spacing:.06em}
+.code-sub{font-size:.62rem;color:var(--mu);font-weight:600;margin-top:2px}
+.code-right{text-align:right;flex-shrink:0}
+.code-amt{font-size:.95rem;font-weight:900;color:var(--g)}
+.code-stat{font-size:.58rem;font-weight:800;padding:2px 8px;border-radius:7px;display:inline-block;margin-top:3px}
+.cs-on{background:rgba(22,163,74,.15);color:#22C55E}
+.cs-off{background:rgba(220,38,38,.15);color:#EF4444}
+.code-actions{padding:0 14px 12px;display:flex;gap:7px}
+.ca-btn{flex:1;padding:8px 0;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:800;cursor:pointer;transition:transform .15s}
+.ca-btn:active{transform:scale(.95)}
+.ca-share{background:rgba(59,130,246,.15);color:#60A5FA}
+.ca-toggle{background:rgba(249,115,22,.15);color:#FB923C}
+.ca-edit{background:rgba(124,58,237,.15);color:#A78BFA}
+.ca-del{background:rgba(220,38,38,.15);color:#F87171}
+
+/* MODAL EDIT */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(4px)}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--card);border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:0 0 calc(env(safe-area-inset-bottom,0px)+20px);transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.1,.64,1)}
+.modal-ov.open .modal-box{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:12px auto}
+.modal-head{padding:0 16px 14px;font-size:.95rem;font-weight:900;color:var(--txt)}
+.modal-body{padding:0 16px 16px}
+
+/* SHARE POPUP */
+.share-box{background:var(--card2);border-radius:14px;padding:14px;margin:0 12px 14px}
+.share-code-disp{font-size:1.1rem;font-weight:900;color:var(--p);font-family:monospace;letter-spacing:.1em;text-align:center;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:10px;word-break:break-all}
+.share-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.share-btn{padding:10px 0;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;cursor:pointer;transition:transform .15s}
+.share-btn:active{transform:scale(.95)}
+.sb-copy{background:rgba(124,58,237,.2);color:#A78BFA}
+.sb-tg{background:rgba(0,136,204,.2);color:#38BDF8}
+.sb-wa{background:rgba(37,211,102,.2);color:#4ADE80}
+.sb-close{background:rgba(220,38,38,.15);color:#F87171;grid-column:1/-1}
+
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading-wrap{text-align:center;padding:40px;color:var(--mu)}
+.empty{text-align:center;padding:40px 20px;color:var(--mu)}
+.empty-ico{font-size:3rem;margin-bottom:10px}
+.empty-t{font-size:.85rem;font-weight:800;color:var(--txt);margin-bottom:5px}
+</style>
+</head>
+<body>
+
+<!-- LOCK ADMIN -->
+<div class="lock" id="lock">
+  <div class="lock-ico">🎟️</div>
+  <div class="lock-t">Admin — Codes d'échange</div>
+  <div class="lock-s">Accès réservé aux administrateurs</div>
+  <input class="lock-inp" type="email" id="l-email" placeholder="Email admin" autocomplete="email">
+  <input class="lock-inp" type="password" id="l-pass" placeholder="Mot de passe">
+  <div class="lock-err" id="l-err">Identifiants incorrects</div>
+  <button class="lock-btn" onclick="login()">🔐 Connexion</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="topbar">
+  <span class="tbk" onclick="logout()">⬅ Déco</span>
+  <span class="tbt">🎟️ Codes d'échange</span>
+  <div class="tb-pill" id="tb-count">0 codes</div>
+</div>
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="st"><div class="st-v g" id="st-actifs">0</div><div class="st-l">Actifs</div></div>
+    <div class="st"><div class="st-v" id="st-total">0</div><div class="st-l">Total</div></div>
+    <div class="st"><div class="st-v o" id="st-uses">0</div><div class="st-l">Utilisations</div></div>
+  </div>
+
+  <!-- CRÉER CODE -->
+  <div class="create-card">
+    <div class="cc-head"><span class="cc-head-ico">➕</span><span class="cc-head-t">Créer un nouveau code</span></div>
+    <div class="cc-body">
+      <div class="field">
+        <label>Code</label>
+        <input class="inp" type="text" id="new-code" placeholder="Ex: VGN-NOEL-2025" style="text-transform:uppercase;font-family:monospace;letter-spacing:.08em">
+        <button class="btn-gen" onclick="genCode()">🎲 Générer automatiquement</button>
+      </div>
+      <div class="inp-row">
+        <div class="field">
+          <label>Montant (FCFA)</label>
+          <input class="inp" type="number" id="new-montant" placeholder="500" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>Utilisations max</label>
+          <input class="inp" type="number" id="new-max" placeholder="1" inputmode="numeric" value="1">
+        </div>
+      </div>
+      <div class="field">
+        <label>Expiration (optionnel)</label>
+        <input class="inp" type="datetime-local" id="new-expire">
+      </div>
+      <button class="btn-create" id="btn-create" onclick="creerCode()">✅ Créer le code</button>
+    </div>
+  </div>
+
+  <!-- LISTE -->
+  <div class="list-head">
+    <span class="list-title">📋 Tous les codes</span>
+    <span class="list-count" id="list-count">0</span>
+  </div>
+  <div class="codes-list" id="codes-list">
+    <div class="loading-wrap"><div class="ld"></div></div>
+  </div>
+
+</div>
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal-ov" id="modal-edit">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-head">✏️ Modifier le code</div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="field"><label>Code</label><input class="inp" type="text" id="edit-code" style="text-transform:uppercase;font-family:monospace;letter-spacing:.08em"></div>
+      <div class="inp-row">
+        <div class="field"><label>Montant (FCFA)</label><input class="inp" type="number" id="edit-montant"></div>
+        <div class="field"><label>Max utilisations</label><input class="inp" type="number" id="edit-max"></div>
+      </div>
+      <div class="field"><label>Expiration</label><input class="inp" type="datetime-local" id="edit-expire"></div>
+      <button class="btn-create" onclick="saveEdit()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE BOX -->
+<div class="share-box" id="share-box" style="display:none">
+  <div class="share-code-disp" id="share-code-disp">—</div>
+  <div class="share-btns">
+    <button class="share-btn sb-copy" onclick="copyCode()">📋 Copier</button>
+    <button class="share-btn sb-tg" onclick="shareTG()">✈️ Telegram</button>
+    <button class="share-btn sb-wa" onclick="shareWA()">📱 WhatsApp</button>
+    <button class="share-btn sb-close" onclick="$('share-box').style.display='none'">✕ Fermer</button>
+  </div>
+</div>
+
+<script>
+const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-admin-codes',storage:window.localStorage}});
+const ADMIN='abdoula13cherif@gmail.com';
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)}
+
+let CODES=[], editId=null, shareCode='';
+
+/* ── AUTH ── */
+async function login(){
+  const email=$('l-email').value.trim(),pass=$('l-pass').value;
+  if(!email||!pass){showLockErr('Champs requis');return}
+  const btn=$('lock').querySelector('.lock-btn');
+  btn.textContent='⏳...';btn.disabled=true;
+  const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
+  if(error){showLockErr('❌ '+error.message);btn.textContent='🔐 Connexion';btn.disabled=false;return}
+  if(data.user.email!==ADMIN){await SB.auth.signOut();showLockErr('⛔ Accès non autorisé');btn.textContent='🔐 Connexion';btn.disabled=false;return}
+  $('lock').style.display='none';$('app').style.display='block';
+  loadCodes();
+}
+function showLockErr(m){const e=$('l-err');e.textContent=m;e.style.display='block'}
+async function logout(){await SB.auth.signOut();location.reload()}
+
+// Auto-login si session active
+(async()=>{
+  const{data:{session}}=await SB.auth.getSession();
+  if(session?.user?.email===ADMIN){$('lock').style.display='none';$('app').style.display='block';loadCodes();}
+})();
+
+/* ── CHARGER CODES ── */
+async function loadCodes(){
+  const{data}=await SB.from('codes_echange').select('*').order('created_at',{ascending:false});
+  CODES=data||[];
+  updateStats();
+  renderCodes();
+}
+
+function updateStats(){
+  const actifs=CODES.filter(c=>c.actif).length;
+  const totalUses=CODES.reduce((s,c)=>s+(c.usage_count||0),0);
+  $s('st-actifs',actifs);$s('st-total',CODES.length);$s('st-uses',totalUses);
+  $s('tb-count',CODES.length+' codes');
+  $s('list-count',CODES.length);
+}
+
+function renderCodes(){
+  const el=$('codes-list');
+  if(!CODES.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">🎟️</div><div class="empty-t">Aucun code créé</div><p style="font-size:.72rem;color:var(--mu)">Créez votre premier code ci-dessus</p></div>';
+    return;
+  }
+  el.innerHTML=CODES.map(c=>{
+    const used=c.usage_count||0;
+    const max=c.usage_max||1;
+    const expire=c.expire_le?new Date(c.expire_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    const expired=c.expire_le&&new Date(c.expire_le)<new Date();
+    const statut=!c.actif?'Désactivé':expired?'Expiré':used>=max?'Épuisé':'Actif';
+    const statCls=statut==='Actif'?'cs-on':'cs-off';
+    return `<div class="code-card ${!c.actif||expired||used>=max?'inactive':''}">
+      <div class="code-top">
+        <div class="code-badge ${c.actif&&!expired&&used<max?'cb-active':'cb-inactive'}">🎟️</div>
+        <div class="code-info">
+          <div class="code-txt">${c.code}</div>
+          <div class="code-sub">${used}/${max} utilisé${used>1?'s':''} · Exp: ${expire}</div>
+        </div>
+        <div class="code-right">
+          <div class="code-amt">+${fmtF(c.montant)}</div>
+          <span class="code-stat ${statCls}">${statut}</span>
+        </div>
+      </div>
+      <div class="code-actions">
+        <button class="ca-btn ca-share" onclick="openShare('${c.code}','${c.montant}')">📤 Partager</button>
+        <button class="ca-btn ca-toggle" onclick="toggleCode('${c.id}',${c.actif})">${c.actif?'⏸ Stop':'▶ Activer'}</button>
+        <button class="ca-btn ca-edit" onclick="openEdit('${c.id}')">✏️ Modifier</button>
+        <button class="ca-btn ca-del" onclick="supprimerCode('${c.id}','${c.code}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── GÉNÉRER CODE AUTO ── */
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const part=n=>Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  $('new-code').value='VGN-'+part(4)+'-'+part(4);
+}
+
+/* ── CRÉER ── */
+async function creerCode(){
+  const code=($('new-code').value||'').trim().toUpperCase();
+  const montant=parseFloat($('new-montant').value)||0;
+  const max=parseInt($('new-max').value)||1;
+  const expire=$('new-expire').value||null;
+
+  if(!code){toast('Entrez un code','err');return}
+  if(montant<=0){toast('Entrez un montant','err');return}
+
+  const btn=$('btn-create');btn.innerHTML='<span class="ld"></span>';btn.disabled=true;
+
+  const{error}=await SB.from('codes_echange').insert({
+    code,montant,usage_max:max,usage_count:0,
+    actif:true,
+    expire_le:expire?new Date(expire).toISOString():null
+  });
+
+  if(error){toast('❌ '+error.message,'err');}
+  else{
+    toast('✅ Code '+code+' créé !','ok');
+    $('new-code').value='';$('new-montant').value='';$('new-max').value='1';$('new-expire').value='';
+    await loadCodes();
+  }
+  btn.innerHTML='✅ Créer le code';btn.disabled=false;
+}
+
+/* ── TOGGLE ACTIF ── */
+async function toggleCode(id,actif){
+  await SB.from('codes_echange').update({actif:!actif}).eq('id',id);
+  toast(actif?'⏸ Code désactivé':'▶ Code activé','ok');
+  await loadCodes();
+}
+
+/* ── SUPPRIMER ── */
+async function supprimerCode(id,code){
+  if(!confirm('Supprimer le code '+code+' ?'))return;
+  await SB.from('codes_echange_uses').delete().eq('code_id',id);
+  await SB.from('codes_echange').delete().eq('id',id);
+  toast('🗑 Code supprimé','ok');
+  await loadCodes();
+}
+
+/* ── MODIFIER ── */
+function openEdit(id){
+  const c=CODES.find(x=>x.id===id);if(!c)return;
+  editId=id;
+  $('edit-id').value=id;
+  $('edit-code').value=c.code;
+  $('edit-montant').value=c.montant;
+  $('edit-max').value=c.usage_max;
+  $('edit-expire').value=c.expire_le?new Date(c.expire_le).toISOString().slice(0,16):'';
+  $('modal-edit').classList.add('open');
+}
+async function saveEdit(){
+  const id=$('edit-id').value;
+  const code=($('edit-code').value||'').toUpperCase().trim();
+  const montant=parseFloat($('edit-montant').value)||0;
+  const max=parseInt($('edit-max').value)||1;
+  const expire=$('edit-expire').value||null;
+  if(!code||montant<=0){toast('Données invalides','err');return}
+  const{error}=await SB.from('codes_echange').update({
+    code,montant,usage_max:max,
+    expire_le:expire?new Date(expire).toISOString():null
+  }).eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
+  toast('💾 Code mis à jour','ok');
+  $('modal-edit').classList.remove('open');
+  await loadCodes();
+}
+$('modal-edit').addEventListener('click',e=>{if(e.target===$('modal-edit'))$('modal-edit').classList.remove('open')});
+
+/* ── PARTAGER ── */
+function openShare(code,montant){
+  shareCode=code;
+  const box=$('share-box');
+  const url=`https://vgn-two.vercel.app/code-echange.html`;
+  $('share-code-disp').textContent=code;
+  box.style.display='block';
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function copyCode(){
+  const msg=`🎟️ Code VGN : *${shareCode}*\nUtilisez ce code sur l'application VGN Agriculture pour recevoir vos FCFA !\n👉 https://vgn-two.vercel.app/code-echange.html`;
+  navigator.clipboard?.writeText(msg).then(()=>toast('📋 Copié !','ok')).catch(()=>toast('Erreur copie','err'));
+}
+function shareTG(){
+  const msg=encodeURIComponent(`🎟️ Code VGN : ${shareCode}\nUtilisez ce code sur l'app VGN Agriculture pour recevoir vos FCFA !\n👉 https://vgn-two.vercel.app/code-echange.html`);
+  window.open(`https://t.me/share/url?url=https://vgn-two.vercel.app/code-echange.html&text=${msg}`,'_blank');
+}
+function shareWA(){
+  const msg=encodeURIComponent(`🎟️ Code VGN : ${shareCode}\nUtilisez ce code sur l'app VGN Agriculture pour recevoir vos FCFA !\n👉 https://vgn-two.vercel.app/code-echange.html`);
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+</script>
+</body>
+</html>
