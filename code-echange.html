@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Code d'échange</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--gl:#22C55E;--o:#F97316;--bg:#F0F4F0;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none}
+.tbt{font-size:1rem;font-weight:900;color:#fff}
+.tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
+.scroll{padding-top:calc(var(--H)+var(--sat)+16px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+
+/* HERO */
+.hero{margin:0 12px 18px;background:linear-gradient(135deg,#7C3AED,#5B21B6);border-radius:20px;padding:24px 18px;text-align:center;position:relative;overflow:hidden;box-shadow:0 6px 24px rgba(124,58,237,.3)}
+.hero::before{content:'🎟️';position:absolute;right:-10px;top:-10px;font-size:6rem;opacity:.12;transform:rotate(15deg)}
+.hero-ico{font-size:2.8rem;margin-bottom:10px}
+.hero-t{font-size:1.15rem;font-weight:900;color:#fff;margin-bottom:6px}
+.hero-s{font-size:.73rem;color:rgba(255,255,255,.75);font-weight:600;line-height:1.5}
+.hero-solde{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:.82rem;font-weight:800;padding:6px 18px;border-radius:20px;margin-top:10px}
+
+/* FORMULAIRE */
+.form-card{background:var(--card);border-radius:20px;margin:0 12px 14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.form-lbl{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:10px;display:block}
+.code-wrap{display:flex;align-items:center;background:#F8FAFB;border:2.5px solid var(--bd);border-radius:14px;overflow:hidden;transition:border .2s;margin-bottom:14px}
+.code-wrap:focus-within{border-color:#7C3AED}
+.code-ico{padding:0 14px;font-size:1.4rem;border-right:1px solid var(--bd);height:56px;display:flex;align-items:center;background:#fff;flex-shrink:0}
+.code-inp{flex:1;padding:0 14px;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;color:var(--txt);background:transparent;height:56px;letter-spacing:.1em;text-transform:uppercase}
+.code-inp::placeholder{color:#CBD5E1;font-weight:600;letter-spacing:0;text-transform:none;font-size:.88rem}
+.btn-valider{width:100%;padding:15px;background:linear-gradient(135deg,#7C3AED,#5B21B6);border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 18px rgba(124,58,237,.38);transition:transform .15s}
+.btn-valider:active{transform:scale(.97)}.btn-valider:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* RÉSULTAT */
+.result-card{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid #BBF7D0;border-radius:20px;margin:0 12px 14px;padding:20px;text-align:center;display:none}
+.result-card.show{display:block;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.res-ico{font-size:3rem;margin-bottom:8px}
+.res-amount{font-size:2rem;font-weight:900;color:var(--g);margin-bottom:4px}
+.res-msg{font-size:.78rem;font-weight:700;color:#15803D;line-height:1.5}
+.res-code{font-size:.7rem;color:var(--mu);margin-top:6px;font-weight:600}
+
+/* ERREUR */
+.err-box{background:#FEF2F2;border:1.5px solid #FECACA;border-radius:14px;margin:0 12px 14px;padding:14px;text-align:center;display:none}
+.err-box.show{display:block}
+.err-ico{font-size:1.8rem;margin-bottom:6px}
+.err-msg{font-size:.78rem;font-weight:800;color:#DC2626;line-height:1.5}
+
+/* HISTORIQUE */
+.hist-section{margin:0 12px;background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.hist-head{padding:14px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd)}
+.hist-ico{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7C3AED,#5B21B6);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.hist-title{font-size:.85rem;font-weight:900;color:var(--txt)}
+.hist-list{padding:8px 14px 12px;display:flex;flex-direction:column;gap:6px}
+.hist-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F8FAFC}
+.hist-item:last-child{border-bottom:none;padding-bottom:0}
+.hi-code{font-size:.8rem;font-weight:900;color:var(--txt);font-family:monospace;letter-spacing:.06em}
+.hi-date{font-size:.62rem;color:var(--mu);font-weight:600;margin-top:1px}
+.hi-amt{font-size:.9rem;font-weight:900;color:var(--g)}
+.empty-hist{text-align:center;padding:20px;color:var(--mu);font-size:.72rem;font-weight:700}
+
+/* BOTNAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">‹</a>
+  <span class="tbt">🎟️ Code d'échange</span>
+  <div class="tb-pill" id="tb-solde">—</div>
+</div>
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <div class="hero">
+    <div class="hero-ico">🎟️</div>
+    <div class="hero-t">Entrez votre code</div>
+    <div class="hero-s">Recevez instantanément des FCFA crédités sur votre solde</div>
+    <div class="hero-solde">Solde : <span id="hero-solde-val">—</span></div>
+  </div>
+
+  <!-- FORMULAIRE -->
+  <div class="form-card">
+    <label class="form-lbl">🔑 Code d'échange</label>
+    <div class="code-wrap">
+      <div class="code-ico">🎟️</div>
+      <input class="code-inp" type="text" id="inp-code" placeholder="Ex: VGN-BONUS-2025" maxlength="30" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <button class="btn-valider" id="btn-val" onclick="validerCode()">✅ Valider le code</button>
+  </div>
+
+  <!-- RÉSULTAT OK -->
+  <div class="result-card" id="result-ok">
+    <div class="res-ico">🎉</div>
+    <div class="res-amount" id="res-amount">+0 FCFA</div>
+    <div class="res-msg">Félicitations ! Le montant a été crédité sur votre solde.</div>
+    <div class="res-code" id="res-code-label">Code : —</div>
+  </div>
+
+  <!-- ERREUR -->
+  <div class="err-box" id="err-box">
+    <div class="err-ico">❌</div>
+    <div class="err-msg" id="err-msg">Code invalide</div>
+  </div>
+
+  <!-- HISTORIQUE -->
+  <div class="hist-section">
+    <div class="hist-head">
+      <div class="hist-ico">📜</div>
+      <div class="hist-title">Codes utilisés</div>
+    </div>
+    <div class="hist-list" id="hist-list">
+      <div class="empty-hist">Aucun code utilisé</div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>'+'+fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)}
+
+let U=null,P=null;
+
+function showResult(montant,code){
+  $('result-ok').classList.add('show');
+  $('err-box').classList.remove('show');
+  $s('res-amount',fmtF(montant));
+  $s('res-code-label','Code : '+code.toUpperCase());
+}
+function showErr(msg){
+  $('err-box').classList.add('show');
+  $('result-ok').classList.remove('show');
+  $s('err-msg',msg);
+}
+function hideResults(){
+  $('result-ok').classList.remove('show');
+  $('err-box').classList.remove('show');
+}
+
+async function validerCode(){
+  const code=$('inp-code').value.trim().toUpperCase();
+  if(!code){toast('Entrez un code','err');return}
+  const btn=$('btn-val');
+  btn.innerHTML='<span class="ld"></span> Vérification...';
+  btn.disabled=true;
+  hideResults();
+
+  try{
+    // 1. Vérifier le code
+    const{data:codeData,error:codeErr}=await SB.from('codes_echange')
+      .select('*').eq('code',code).eq('actif',true).single();
+
+    if(codeErr||!codeData){showErr('❌ Code invalide ou expiré');return}
+
+    // 2. Vérifier expiration
+    if(codeData.expire_le && new Date(codeData.expire_le)<new Date()){
+      showErr('⏰ Ce code a expiré');return
+    }
+
+    // 3. Vérifier quota restant
+    if(codeData.usage_count >= codeData.usage_max){
+      showErr('🚫 Ce code a déjà été utilisé le nombre maximum de fois');return
+    }
+
+    // 4. Vérifier si cet utilisateur l'a déjà utilisé
+    const{data:already}=await SB.from('codes_echange_uses')
+      .select('id').eq('code_id',codeData.id).eq('user_id',U.id).single();
+    if(already){showErr('⚠️ Vous avez déjà utilisé ce code');return}
+
+    // 5. Tout OK → créditer
+    const montant=codeData.montant;
+    const nvSolde=(P?.solde||0)+montant;
+
+    // Mettre à jour solde
+    await SB.from('profiles').update({
+      solde:nvSolde,
+      gains_totaux:(P?.gains_totaux||0)+montant
+    }).eq('id',U.id);
+
+    // Incrémenter usage
+    await SB.from('codes_echange').update({
+      usage_count:codeData.usage_count+1
+    }).eq('id',codeData.id);
+
+    // Enregistrer utilisation
+    await SB.from('codes_echange_uses').insert({
+      code_id:codeData.id,user_id:U.id
+    });
+
+    // Transaction
+    await SB.from('transactions').insert({
+      user_id:U.id,type:'bonus',montant,statut:'valide',
+      note:'Code échange : '+code,created_at:new Date().toISOString()
+    });
+
+    P.solde=nvSolde;
+    $s('tb-solde',fmt(nvSolde)+' F');
+    $s('hero-solde-val',fmt(nvSolde)+' FCFA');
+    showResult(montant,code);
+    toast('🎉 '+fmtF(montant)+' crédités !','ok');
+    $('inp-code').value='';
+    await chargerHistorique();
+
+  }catch(e){
+    showErr('❌ Erreur : '+(e.message||'Réessayez'));
+    console.error(e);
+  }finally{
+    btn.innerHTML='✅ Valider le code';
+    btn.disabled=false;
+  }
+}
+
+// Valider en appuyant Entrée
+$('inp-code').addEventListener('keydown',e=>{
+  if(e.key==='Enter') validerCode();
+  // Auto uppercase
+  setTimeout(()=>{ $('inp-code').value=$('inp-code').value.toUpperCase(); },0);
+});
+
+async function chargerHistorique(){
+  const{data:uses}=await SB.from('codes_echange_uses')
+    .select('*, codes_echange(code,montant)')
+    .eq('user_id',U.id)
+    .order('used_at',{ascending:false}).limit(20);
+
+  const list=$('hist-list');
+  if(!uses||!uses.length){
+    list.innerHTML='<div class="empty-hist">Aucun code utilisé pour le moment</div>';
+    return;
+  }
+  list.innerHTML=uses.map(u=>{
+    const d=new Date(u.used_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    return `<div class="hist-item">
+      <div>
+        <div class="hi-code">${u.codes_echange?.code||'—'}</div>
+        <div class="hi-date">${d}</div>
+      </div>
+      <div class="hi-amt">+${fmt(u.codes_echange?.montant||0)} F</div>
+    </div>`;
+  }).join('');
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+  const{data:p}=await SB.from('profiles').select('solde,gains_totaux').eq('id',U.id).single();
+  P=p||{solde:0,gains_totaux:0};
+  $s('tb-solde',fmt(P.solde)+' F');
+  $s('hero-solde-val',fmt(P.solde)+' FCFA');
+  await chargerHistorique();
+}
+init();
+</script>
+</body>
+</html>
