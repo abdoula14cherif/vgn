@@ -257,27 +257,6 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
   </div>
 </div>
 
-<!-- ── POPUP BIENVENUE ── -->
-<div class="pop-ov" id="pop-ov">
-  <div class="pop-box">
-    <div class="pop-handle"></div>
-    <div class="pop-img-wrap">
-      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="VGN">
-      <div class="pop-img-title">🌱 Bienvenue dans la communauté VGN Agriculture</div>
-    </div>
-    <div class="pop-content">
-      <div class="pop-tagline">Rejoignez notre canal officiel pour recevoir les dernières actualités, offres exclusives et mises à jour de la plateforme.</div>
-      <a class="pop-btn-tg" href="https://t.me/valuegrownetwork" target="_blank" onclick="sessionStorage.setItem('vgn-pop-seen','1')">
-        <span style="font-size:1.3rem">✈️</span> Rejoindre notre canal Telegram
-      </a>
-      <a class="pop-btn-cond" href="conditions.html">
-        📋 Lire nos Conditions d'utilisation
-      </a>
-      <span class="pop-close" onclick="closePopup()">✕ Fermer</span>
-    </div>
-  </div>
-</div>
-
 <script>
 const SB=supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
@@ -363,7 +342,7 @@ async function finishAd(){
   const btn=document.getElementById('adbtn');btn.textContent='⏳...';btn.disabled=true;
   const t=curT;curT=null;
   try{
-    const{error:e1}=await SB.from('taches_completees').insert({user_id:U.id,tache_ref:t.id,type_tache:'stage',reward:GAIN,date_jour:td(),completee_le:new Date().toISOString()});
+    const{error:e1}=await SB.from('taches_completees').insert({user_id:U.id,tache_ref:String(t.id),type_tache:'stage',reward:GAIN,date_jour:td(),completee_le:new Date().toISOString()});
     if(e1)throw new Error(e1.message);
     const ns=(P.solde||0)+GAIN,ng=(P.gains_totaux||0)+GAIN,ngj=(P.gains_jour||0)+GAIN,ngs=(P.gains_semaine||0)+GAIN,ngm=(P.gains_mois||0)+GAIN,nt=(P.taches_jour||0)+1;
     const{error:e2}=await SB.from('profiles').update({solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:ngs,gains_mois:ngm,taches_jour:nt}).eq('id',U.id);
@@ -395,10 +374,10 @@ async function init(){
   $s('v-tasks',done.length+' / '+MAX);
   renderTaches(stageLeft(P.created_at||U.created_at));
 
-  // ✅ CORRIGÉ : document.getElementById() au lieu de $() qui n'existe pas
-  const badge=document.getElementById('notif-badge');
+  // Badge notifications non lues
   const{data:notifs}=await SB.from('notifications').select('id').eq('user_id',U.id).eq('lue',false);
   const nb=(notifs||[]).length;
+  const badge=$('notif-badge');
   if(badge&&nb>0){badge.style.display='inline';badge.textContent=nb>9?'9+':nb}
 
   // Temps réel : mise à jour badge quand nouvelle notif arrive
@@ -409,7 +388,7 @@ async function init(){
       if(badge){badge.style.display='inline';badge.textContent=cur+1>9?'9+':cur+1}
     }).subscribe();
 
-  // ✅ Popup bienvenue (1x par session) — s'exécute maintenant car plus d'erreur avant
+  // Popup bienvenue (1x par session)
   if(!sessionStorage.getItem('vgn-pop-seen')){
     setTimeout(()=>document.getElementById('pop-ov')?.classList.add('open'), 1200);
   }
@@ -422,5 +401,26 @@ function closePopup(){
 
 init();
 </script>
+
+<!-- ── POPUP BIENVENUE ── -->
+<div class="pop-ov" id="pop-ov">
+  <div class="pop-box">
+    <div class="pop-handle"></div>
+    <div class="pop-img-wrap">
+      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="VGN">
+      <div class="pop-img-title">🌱 Bienvenue dans la communauté VGN Agriculture</div>
+    </div>
+    <div class="pop-content">
+      <div class="pop-tagline">Rejoignez notre canal officiel pour recevoir les dernières actualités, offres exclusives et mises à jour de la plateforme.</div>
+      <a class="pop-btn-tg" href="https://t.me/valuegrownetwork" target="_blank" onclick="sessionStorage.setItem('vgn-pop-seen','1')">
+        <span style="font-size:1.3rem">✈️</span> Rejoindre notre canal Telegram
+      </a>
+      <a class="pop-btn-cond" href="conditions.html">
+        📋 Lire nos Conditions d'utilisation
+      </a>
+      <span class="pop-close" onclick="closePopup()">✕ Fermer</span>
+    </div>
+  </div>
+</div>
 </body>
 </html>
