@@ -554,11 +554,15 @@ async function finishAd(){
   const t=curT;curT=null;
   try{
     const now=new Date().toISOString(),dj=td();
-    const{error:e1}=await SB.from('taches_completees').insert({
-      user_id:U.id,tache_ref:t.id,
+    const insertData={
+      user_id:U.id,
+      tache_ref:String(t.id),
       type_tache:isVIP?'vip':'stage',
-      reward:GAIN,date_jour:dj,completee_le:now
-    });
+      reward:GAIN,
+      date_jour:dj,
+      completee_le:now
+    };
+    const{error:e1}=await SB.from('taches_completees').insert(insertData);
     if(e1)throw e1;
     const ns=(P.solde||0)+GAIN,ng=(P.gains_totaux||0)+GAIN,
           ngj=(P.gains_jour||0)+GAIN,ngs=(P.gains_semaine||0)+GAIN,
