@@ -249,11 +249,10 @@ function render(){
 
 function renderDisponibles(){
   const FONDS_DATA=[
-    {id:1,nom:'VGN Fund 1',jours:7,taux:15,min:10000,img:IMGS[1]},
-    {id:2,nom:'VGN Fund 2',jours:15,taux:25,min:20000,img:IMGS[2]},
-    {id:3,nom:'VGN Fund 3',jours:30,taux:35,min:30000,img:IMGS[3]},
-    {id:4,nom:'VGN Fund 4',jours:90,taux:100,min:40000,img:IMGS[4]},
-    {id:5,nom:'VGN Fund 5',jours:95,taux:250,min:5000,img:IMGS[5]},
+    {id:1,nom:'VGN 1 Jour',  jours:1,  taux:1,   min:100, img:IMGS[1]},
+    {id:2,nom:'VGN 7 Jours', jours:7,  taux:7.5, min:100, img:IMGS[2]},
+    {id:3,nom:'VGN 14 Jours',jours:14, taux:18,  min:100, img:IMGS[3]},
+    {id:4,nom:'VGN 30 Jours',jours:30, taux:24,  min:100, img:IMGS[4]},
   ];
   return `<div class="sec-head"><div class="sec-ico b">📈</div><div><div class="sec-ttl">Fonds disponibles</div><div class="sec-sub">Cliquez pour investir</div></div></div>
   <div class="fonds-list">`+FONDS_DATA.map(f=>{
