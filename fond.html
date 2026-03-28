@@ -3,108 +3,168 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>VGN – Mes Fonds</title>
+<title>VGN – Fonds d'investissement</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--g:#16A34A;--gd:#15803D;--gl:#22C55E;--o:#F97316;--od:#EA580C;--b:#3B82F6;--r:#DC2626;--bg:#F0F4F0;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;--H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+:root{
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--od:#EA580C;
+  --b:#3B82F6;--bd2:#1D4ED8;
+  --bg:#F0F4F0;--card:#fff;--txt:#111827;--mu:#6B7280;--border:#E5E7EB;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
 html{font-family:'Nunito',sans-serif;background:var(--bg)}
 body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
-.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
-.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;
+  z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none}
 .tbt{font-size:1rem;font-weight:900;color:#fff}
-.tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
-.scroll{padding-top:calc(var(--H)+var(--sat)+14px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+.tb-solde{font-size:.72rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);
+  padding:5px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
+
+/* SCROLL */
+.scroll{padding-top:calc(var(--H)+var(--sat)+16px);padding-bottom:calc(var(--B)+var(--sab)+30px);min-height:100svh}
 
 /* HERO */
-.hero{background:linear-gradient(135deg,#1e3a8a,#2563EB,#60A5FA);margin:0 12px 14px;border-radius:20px;padding:20px 18px;position:relative;overflow:hidden;box-shadow:0 6px 24px rgba(37,99,235,.3)}
-.hero::before{content:'📈';position:absolute;right:-10px;top:-10px;font-size:6rem;opacity:.1}
+.hero{background:linear-gradient(135deg,#1e3a8a,#2563EB,#3B82F6);margin:0 12px 16px;
+  border-radius:20px;padding:22px 18px;position:relative;overflow:hidden;
+  box-shadow:0 6px 24px rgba(37,99,235,.3)}
+.hero::before{content:'📈';position:absolute;right:-8px;top:-8px;font-size:6rem;opacity:.1}
 .hero-lbl{font-size:.68rem;font-weight:800;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
-.hero-val{font-size:2rem;font-weight:900;color:#fff;line-height:1;margin-bottom:4px}
+.hero-val{font-size:2rem;font-weight:900;color:#fff;margin-bottom:2px}
 .hero-sub{font-size:.68rem;color:rgba(255,255,255,.6);font-weight:600;margin-bottom:14px}
-.hero-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.hg{background:rgba(255,255,255,.12);border-radius:10px;padding:8px;text-align:center;border:1px solid rgba(255,255,255,.15)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hg{background:rgba(255,255,255,.12);border-radius:10px;padding:9px 10px;border:1px solid rgba(255,255,255,.15)}
+.hg-l{font-size:.58rem;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:3px}
 .hg-v{font-size:.88rem;font-weight:900;color:#fff}
-.hg-l{font-size:.56rem;color:rgba(255,255,255,.6);margin-top:2px;font-weight:700}
 
-/* TABS */
-.tabs{background:var(--card);display:flex;border-bottom:2px solid var(--bd);position:sticky;top:calc(var(--H)+var(--sat));z-index:98}
-.tab{flex:1;text-align:center;padding:11px 0;font-size:.75rem;font-weight:800;color:var(--mu);cursor:pointer;transition:color .2s;position:relative}
-.tab.on{color:var(--b)}
-.tab.on::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2.5px;background:var(--b);border-radius:2px}
+/* FORMULAIRE INVESTISSEMENT */
+.form-section{background:var(--card);border-radius:20px;margin:0 12px 14px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.form-head{background:linear-gradient(135deg,#1e3a8a,#2563EB);padding:14px 16px;
+  display:flex;align-items:center;gap:9px}
+.form-head-ico{font-size:1.2rem}
+.form-head-t{font-size:.92rem;font-weight:900;color:#fff}
+.form-body{padding:18px 16px}
 
-/* FOND CARD */
-.fonds-list{padding:0 12px 8px;display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.fond-card{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07)}
-.fond-img{width:100%;height:110px;object-fit:cover;display:block}
-.fond-body{padding:14px}
-.fond-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.fond-name{font-size:.9rem;font-weight:900;color:var(--txt)}
-.fond-stat{font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:10px}
-.fs-actif{background:#DBEAFE;color:#1D4ED8}
-.fs-termine{background:#DCFCE7;color:#15803D}
-.fs-expire{background:#FEE2E2;color:var(--r)}
+/* CHAMP MONTANT */
+.montant-lbl{font-size:.75rem;font-weight:900;color:var(--txt);margin-bottom:8px;display:block}
+.montant-wrap{display:flex;align-items:center;background:#F8FAFB;border:2.5px solid var(--border);
+  border-radius:14px;overflow:hidden;transition:border .2s;margin-bottom:6px}
+.montant-wrap:focus-within{border-color:var(--b)}
+.montant-curr{padding:0 14px;font-size:.85rem;font-weight:900;color:var(--mu);
+  border-right:1px solid var(--border);height:54px;display:flex;align-items:center;flex-shrink:0;background:#fff}
+.montant-inp{flex:1;padding:0 14px;border:none;outline:none;font-family:'Nunito',sans-serif;
+  font-size:1.1rem;font-weight:900;color:var(--txt);background:transparent;height:54px}
+.montant-inp::placeholder{color:#CBD5E1;font-weight:600;font-size:.88rem}
+.solde-hint{font-size:.65rem;font-weight:700;color:var(--mu);margin-bottom:16px}
+.solde-hint span{color:var(--g);font-weight:900}
 
-/* PROGRESSION */
-.prog-wrap{margin-bottom:10px}
-.prog-bar{background:#F1F5F9;border-radius:6px;height:8px;overflow:hidden;margin-bottom:5px}
-.prog-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#3B82F6,#60A5FA);transition:width .6s ease}
-.prog-fill.done{background:linear-gradient(90deg,var(--g),var(--gl))}
-.prog-fill.expired{background:linear-gradient(90deg,var(--r),#F87171)}
-.prog-labels{display:flex;justify-content:space-between;font-size:.6rem;font-weight:700;color:var(--mu)}
+/* DURÉE SELECTOR */
+.duree-lbl{font-size:.75rem;font-weight:900;color:var(--txt);margin-bottom:10px;display:block}
+.duree-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:16px}
+.duree-btn{padding:10px 4px;border:2.5px solid var(--border);border-radius:14px;
+  background:#F8FAFB;cursor:pointer;text-align:center;transition:all .18s;user-select:none}
+.duree-btn:active{transform:scale(.94)}
+.duree-btn.sel{border-color:var(--b);background:linear-gradient(135deg,#EFF6FF,#DBEAFE)}
+.db-jours{font-size:.88rem;font-weight:900;color:var(--txt);line-height:1}
+.db-label{font-size:.55rem;font-weight:700;color:var(--mu);margin-top:2px}
+.db-taux{font-size:.75rem;font-weight:900;color:var(--g);margin-top:4px}
+.duree-btn.sel .db-jours{color:var(--b)}
+.duree-btn.sel .db-label{color:var(--b)}
 
-/* FOND GRID */
-.fond-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.fg{background:#F8FAFC;border-radius:10px;padding:8px 10px}
-.fg-l{font-size:.58rem;font-weight:700;color:var(--mu);margin-bottom:3px}
-.fg-v{font-size:.82rem;font-weight:900;color:var(--txt)}
-.fg-v.g{color:var(--g)}.fg-v.b{color:var(--b)}.fg-v.o{color:var(--o)}
-
-/* ECHÉANCE COUNTDOWN */
-.ech-bar{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
-.ech-lbl{font-size:.65rem;font-weight:700;color:#1E40AF}
-.ech-val{font-size:.8rem;font-weight:900;color:#1D4ED8;font-family:monospace}
-.ech-done{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-color:#BBF7D0}
-.ech-done .ech-lbl{color:#15803D}.ech-done .ech-val{color:var(--g)}
+/* SIMULATION */
+.simu-box{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;
+  border-radius:14px;padding:14px;margin-bottom:16px;display:none}
+.simu-box.show{display:block}
+.simu-title{font-size:.72rem;font-weight:900;color:#15803D;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.simu-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
+  border-bottom:1px dashed #BBF7D0;font-size:.72rem}
+.simu-row:last-child{border-bottom:none;padding-top:8px;font-size:.82rem;font-weight:900}
+.simu-lbl{color:#15803D;font-weight:700}
+.simu-val{color:var(--g);font-weight:900}
+.simu-val.total{color:#14532D;font-size:.95rem}
+.simu-date{font-size:.62rem;color:#15803D;font-weight:700;margin-top:6px;text-align:center;
+  background:rgba(255,255,255,.6);border-radius:8px;padding:4px 8px}
 
 /* BOUTON INVESTIR */
-.btn-invest{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#1D4ED8,#2563EB);border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;text-align:center;text-decoration:none;box-shadow:0 4px 14px rgba(29,78,216,.3);margin:14px 12px 0;width:calc(100% - 24px)}
-.btn-invest:active{transform:scale(.97)}
+.btn-invest{width:100%;padding:15px;background:linear-gradient(135deg,var(--b),var(--bd2));
+  border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;
+  color:#fff;cursor:pointer;box-shadow:0 4px 18px rgba(37,99,235,.38);transition:transform .15s}
+.btn-invest:active{transform:scale(.97)}.btn-invest:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
-/* EMPTY */
-.empty-state{text-align:center;padding:50px 24px;color:var(--mu)}
-.empty-ico{font-size:3.5rem;margin-bottom:14px}
-.empty-t{font-size:.95rem;font-weight:900;color:var(--txt);margin-bottom:6px}
-.empty-s{font-size:.74rem;line-height:1.6;margin-bottom:20px}
-.btn-go{display:inline-block;padding:12px 28px;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:14px;font-size:.85rem;font-weight:900;text-decoration:none;box-shadow:0 4px 14px rgba(22,163,74,.3)}
+/* PLANS RAPIDES */
+.plans-section{margin:0 12px 14px}
+.plans-title{font-size:.85rem;font-weight:900;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.plans-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.plan-card{background:var(--card);border-radius:16px;padding:14px;cursor:pointer;
+  border:2px solid var(--border);box-shadow:0 1px 8px rgba(0,0,0,.06);transition:all .18s;
+  text-align:center;user-select:none}
+.plan-card:active{transform:scale(.96)}
+.plan-card.p1{border-color:#FED7AA}.plan-card.p2{border-color:#BBF7D0}
+.plan-card.p3{border-color:#BFDBFE}.plan-card.p4{border-color:#DDD6FE}
+.pc-ico{font-size:1.6rem;margin-bottom:5px}
+.pc-jours{font-size:1.1rem;font-weight:900;color:var(--txt)}
+.pc-taux{font-size:.88rem;font-weight:900;margin-top:2px}
+.t1{color:#EA580C}.t2{color:var(--g)}.t3{color:var(--b)}.t4{color:#7C3AED}
+.pc-desc{font-size:.6rem;color:var(--mu);font-weight:600;margin-top:4px;line-height:1.4}
 
-/* SECTION DISPONIBLES */
-.sec-head{padding:14px 14px 8px;display:flex;align-items:center;gap:9px}
-.sec-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
-.sec-ico.b{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}
-.sec-ttl{font-size:.88rem;font-weight:900;color:var(--txt)}
-.sec-sub{font-size:.62rem;color:var(--mu);margin-top:1px}
+/* FONDS EN COURS */
+.actifs-section{margin:0 12px 14px}
+.actifs-title{font-size:.85rem;font-weight:900;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.actifs-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.fond-actif{background:var(--card);border-radius:16px;padding:14px;margin-bottom:8px;
+  box-shadow:0 1px 8px rgba(0,0,0,.06);border-left:4px solid var(--b)}
+.fa-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.fa-name{font-size:.82rem;font-weight:900;color:var(--txt)}
+.fa-stat{font-size:.6rem;font-weight:900;padding:2px 9px;border-radius:8px;background:#DBEAFE;color:#1D4ED8}
+.fa-stat.done{background:#DCFCE7;color:#15803D}
+.fa-prog{background:#F1F5F9;border-radius:5px;height:6px;overflow:hidden;margin-bottom:7px}
+.fa-fill{height:100%;background:linear-gradient(90deg,var(--b),#60A5FA);border-radius:5px}
+.fa-fill.done{background:linear-gradient(90deg,var(--g),var(--gl))}
+.fa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fag{background:#F8FAFC;border-radius:8px;padding:6px 8px;text-align:center}
+.fag-l{font-size:.55rem;color:var(--mu);font-weight:700}
+.fag-v{font-size:.75rem;font-weight:900;color:var(--txt);margin-top:1px}
+.fag-v.g{color:var(--g)}.fag-v.b{color:var(--b)}.fag-v.o{color:var(--o)}
+.empty-actifs{text-align:center;padding:20px;color:var(--mu);font-size:.75rem;font-weight:700}
 
 /* BOTNAV */
-.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;
+  border-top:1px solid var(--border);display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
 .bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative}
 .bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--g);border-radius:0 0 3px 3px}
 .bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}.bn.on .bnl{color:var(--g)}
 
-.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
-.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
-.ld{display:inline-block;width:18px;height:18px;border:3px solid var(--bd);border-top-color:var(--b);border-radius:50%;animation:sp .7s linear infinite}
+/* TOAST */
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.loading-wrap{text-align:center;padding:44px}
+.loading-wrap{text-align:center;padding:24px;color:var(--mu)}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <a class="tbk" href="dashboard.html">‹</a>
-  <span class="tbt">📈 Mes Fonds</span>
-  <div class="tb-pill" id="tb-invest">0 F</div>
+  <span class="tbt">📈 Fonds d'investissement</span>
+  <div class="tb-solde" id="tb-solde">— FCFA</div>
 </div>
 <div class="tst" id="tst"></div>
 
@@ -114,27 +174,106 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
   <div class="hero">
     <div class="hero-lbl">Total investi</div>
     <div class="hero-val" id="hero-invest">0 FCFA</div>
-    <div class="hero-sub">Fonds d'investissement agricole</div>
+    <div class="hero-sub">Fonds agricoles VGN</div>
     <div class="hero-grid">
-      <div class="hg"><div class="hg-v" id="hg-actifs">0</div><div class="hg-l">Actifs</div></div>
-      <div class="hg"><div class="hg-v" id="hg-attendu">0 F</div><div class="hg-l">Retour attendu</div></div>
-      <div class="hg"><div class="hg-v" id="hg-termine">0</div><div class="hg-l">Terminés</div></div>
+      <div class="hg"><div class="hg-l">Fonds actifs</div><div class="hg-v" id="hg-actifs">0</div></div>
+      <div class="hg"><div class="hg-l">Retour attendu</div><div class="hg-v" id="hg-attendu">0 F</div></div>
     </div>
   </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <div class="tab on" id="tab-actifs" onclick="switchTab('actifs')">En cours</div>
-    <div class="tab" id="tab-termines" onclick="switchTab('termines')">Terminés</div>
-    <div class="tab" id="tab-disponibles" onclick="switchTab('disponibles')">Investir</div>
+  <!-- FORMULAIRE -->
+  <div class="form-section">
+    <div class="form-head">
+      <span class="form-head-ico">💰</span>
+      <span class="form-head-t">Créer un investissement</span>
+    </div>
+    <div class="form-body">
+
+      <label class="montant-lbl">Montant à investir</label>
+      <div class="montant-wrap">
+        <div class="montant-curr">FCFA</div>
+        <input class="montant-inp" type="number" id="inp-montant" placeholder="Ex: 5 000" inputmode="numeric" oninput="calcSimu()">
+      </div>
+      <div class="solde-hint">Votre solde : <span id="solde-disp">0 FCFA</span></div>
+
+      <label class="duree-lbl">Choisir la durée</label>
+      <div class="duree-grid" id="duree-grid">
+        <div class="duree-btn sel" data-j="1" data-t="1" onclick="selDuree(this)">
+          <div class="db-jours">1</div><div class="db-label">jour</div><div class="db-taux">+1%</div>
+        </div>
+        <div class="duree-btn" data-j="7" data-t="7.5" onclick="selDuree(this)">
+          <div class="db-jours">7</div><div class="db-label">jours</div><div class="db-taux">+7,5%</div>
+        </div>
+        <div class="duree-btn" data-j="14" data-t="18" onclick="selDuree(this)">
+          <div class="db-jours">14</div><div class="db-label">jours</div><div class="db-taux">+18%</div>
+        </div>
+        <div class="duree-btn" data-j="30" data-t="24" onclick="selDuree(this)">
+          <div class="db-jours">30</div><div class="db-label">jours</div><div class="db-taux">+24%</div>
+        </div>
+      </div>
+
+      <!-- SIMULATION -->
+      <div class="simu-box" id="simu-box">
+        <div class="simu-title">🧮 Simulation de rendement</div>
+        <div class="simu-row">
+          <span class="simu-lbl">Capital investi</span>
+          <span class="simu-val" id="simu-capital">—</span>
+        </div>
+        <div class="simu-row">
+          <span class="simu-lbl">Rendement (<span id="simu-taux-lbl">—</span>%)</span>
+          <span class="simu-val" id="simu-interets">—</span>
+        </div>
+        <div class="simu-row">
+          <span class="simu-lbl">💎 Total à recevoir</span>
+          <span class="simu-val total" id="simu-total">—</span>
+        </div>
+        <div class="simu-date" id="simu-date">📅 Échéance : —</div>
+      </div>
+
+      <button class="btn-invest" id="btn-invest" onclick="investir()" disabled>
+        📈 Investir maintenant
+      </button>
+    </div>
   </div>
 
-  <!-- CONTENU -->
-  <div id="content">
-    <div class="loading-wrap"><div class="ld"></div></div>
+  <!-- PLANS RAPIDES -->
+  <div class="plans-section">
+    <div class="plans-title">⚡ Plans disponibles</div>
+    <div class="plans-grid">
+      <div class="plan-card p1" onclick="quickSelect(1,1)">
+        <div class="pc-ico">🌱</div>
+        <div class="pc-jours">1 jour</div>
+        <div class="pc-taux t1">+1%</div>
+        <div class="pc-desc">Court terme · Liquidité maximale</div>
+      </div>
+      <div class="plan-card p2" onclick="quickSelect(7,7.5)">
+        <div class="pc-ico">🌾</div>
+        <div class="pc-jours">7 jours</div>
+        <div class="pc-taux t2">+7,5%</div>
+        <div class="pc-desc">Rendement hebdomadaire</div>
+      </div>
+      <div class="plan-card p3" onclick="quickSelect(14,18)">
+        <div class="pc-ico">🌿</div>
+        <div class="pc-jours">14 jours</div>
+        <div class="pc-taux t3">+18%</div>
+        <div class="pc-desc">Bon rendement bi-mensuel</div>
+      </div>
+      <div class="plan-card p4" onclick="quickSelect(30,24)">
+        <div class="pc-ico">💎</div>
+        <div class="pc-jours">30 jours</div>
+        <div class="pc-taux t4">+24%</div>
+        <div class="pc-desc">Meilleur rendement mensuel</div>
+      </div>
+    </div>
   </div>
 
-  <a class="btn-invest" href="fonds.html" id="btn-invest-link" style="display:none">➕ Investir dans un fonds</a>
+  <!-- FONDS EN COURS -->
+  <div class="actifs-section">
+    <div class="actifs-title">📋 Mes investissements en cours</div>
+    <div id="actifs-list">
+      <div class="loading-wrap"><div class="ld" style="border-top-color:var(--b)"></div></div>
+    </div>
+  </div>
 
 </div>
 
@@ -146,160 +285,218 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 </nav>
 
 <script>
-const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}});
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+
 const $=id=>document.getElementById(id);
 const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
-function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)}
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)}
 
-const IMGS={
-  1:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80',
-  2:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80',
-  3:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80',
-  4:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&q=80',
-  5:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=600&q=80',
-};
+// Plans disponibles
+const PLANS=[
+  {jours:1,  taux:1,   nom:'VGN 1 Jour',   ico:'🌱'},
+  {jours:7,  taux:7.5, nom:'VGN 7 Jours',  ico:'🌾'},
+  {jours:14, taux:18,  nom:'VGN 14 Jours', ico:'🌿'},
+  {jours:30, taux:24,  nom:'VGN 30 Jours', ico:'💎'},
+];
 
-let U=null, ALL_FONDS=[], curTab='actifs';
+let U=null, P=null;
+let selJours=1, selTaux=1;
 
-function jours(d1,d2){return Math.ceil((new Date(d2)-new Date(d1))/(1000*60*60*24))}
-function joursRestants(f){return Math.max(0,jours(new Date(),f.date_echeance))}
-function pct(f){
-  const total=f.jours||30;
-  const reste=joursRestants(f);
-  const fait=total-reste;
-  return Math.min(100,Math.round((fait/total)*100));
+/* ── SÉLECTION DURÉE ── */
+function selDuree(btn){
+  document.querySelectorAll('.duree-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selJours=parseInt(btn.dataset.j);
+  selTaux=parseFloat(btn.dataset.t);
+  calcSimu();
 }
 
-function switchTab(t){
-  curTab=t;
-  ['actifs','termines','disponibles'].forEach(k=>{
-    const el=$('tab-'+k);
-    if(el)el.className='tab'+(k===t?' on':'');
-  });
-  render();
+function quickSelect(jours, taux){
+  const btn=document.querySelector(`.duree-btn[data-j="${jours}"]`);
+  if(btn) selDuree(btn);
+  $('inp-montant').focus();
 }
 
-function render(){
-  const c=$('content');
-  const btnLink=$('btn-invest-link');
+/* ── SIMULATION ── */
+function calcSimu(){
+  const montant=parseFloat($('inp-montant').value)||0;
+  const simu=$('simu-box');
+  const btn=$('btn-invest');
 
-  if(curTab==='disponibles'){
-    btnLink.style.display='none';
-    c.innerHTML=renderDisponibles();
+  if(montant<100){
+    simu.classList.remove('show');
+    btn.disabled=true;
     return;
   }
 
+  const interets=Math.round(montant*selTaux/100);
+  const total=montant+interets;
+  const dateEch=new Date(Date.now()+selJours*86400000);
+  const dateStr=dateEch.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+
+  $s('simu-taux-lbl',selTaux);
+  $s('simu-capital',fmtF(montant));
+  $s('simu-interets','+'+fmtF(interets));
+  $s('simu-total',fmtF(total));
+  $s('simu-date','📅 Retour le '+dateStr.charAt(0).toUpperCase()+dateStr.slice(1));
+
+  simu.classList.add('show');
+
+  // Vérifier solde
+  const solde=P?.solde||0;
+  if(montant>solde){
+    btn.disabled=true;
+    btn.textContent='❌ Solde insuffisant';
+  } else {
+    btn.disabled=false;
+    btn.textContent='📈 Investir '+fmtF(montant)+' · Retour '+fmtF(total);
+  }
+}
+
+/* ── INVESTIR ── */
+async function investir(){
+  const montant=parseFloat($('inp-montant').value)||0;
+  const solde=P?.solde||0;
+
+  if(montant<100){toast('Minimum 100 FCFA','err');return}
+  if(montant>solde){toast('Solde insuffisant','err');return}
+
+  const plan=PLANS.find(p=>p.jours===selJours);
+  const btn=$('btn-invest');
+  btn.innerHTML='<span class="ld"></span> Traitement...';
+  btn.disabled=true;
+
+  try{
+    const interets=Math.round(montant*selTaux/100);
+    const total=montant+interets;
+    const dateEch=new Date(Date.now()+selJours*86400000).toISOString();
+    const nvSolde=solde-montant;
+    const nvInvest=(P.investissement||0)+montant;
+    const nvAttendu=(P.revenu_attendu||0)+total;
+
+    // 1. Débiter le solde
+    const{error:e1}=await SB.from('profiles').update({
+      solde:nvSolde,
+      investissement:nvInvest,
+      revenu_attendu:nvAttendu
+    }).eq('id',U.id);
+    if(e1)throw e1;
+
+    // 2. Enregistrer le fond
+    const{error:e2}=await SB.from('fonds_investissements').insert({
+      user_id:U.id,
+      fond_nom:plan.nom,
+      fond_id:selJours, // on utilise jours comme id
+      montant,
+      taux:selTaux,
+      jours:selJours,
+      interets,
+      total_retour:total,
+      date_echeance:dateEch,
+      statut:'actif'
+    });
+    if(e2)throw e2;
+
+    // 3. Transaction
+    await SB.from('transactions').insert({
+      user_id:U.id,
+      type:'recharge',
+      montant,
+      statut:'confirme',
+      note:plan.nom+' — '+selTaux+'% / '+selJours+'j — échéance '+dateEch.slice(0,10),
+      created_at:new Date().toISOString()
+    });
+
+    // Mise à jour locale
+    P.solde=nvSolde;
+    P.investissement=nvInvest;
+    P.revenu_attendu=nvAttendu;
+
+    $s('tb-solde',fmt(nvSolde)+' FCFA');
+    $s('solde-disp',fmtF(nvSolde));
+    $s('hero-invest',fmtF(nvInvest));
+    $s('hg-attendu',fmt(nvAttendu)+' F');
+
+    $('inp-montant').value='';
+    $('simu-box').classList.remove('show');
+    btn.textContent='📈 Investir maintenant';
+
+    toast('🎉 '+fmtF(montant)+' investis ! Retour dans '+selJours+' jour'+(selJours>1?'s':'')+'.','ok');
+    await chargerActifs();
+
+  }catch(e){
+    toast('❌ '+(e.message||'Erreur'),'err');
+    console.error(e);
+    btn.textContent='📈 Investir maintenant';
+    btn.disabled=false;
+  }
+}
+
+/* ── CHARGER FONDS EN COURS ── */
+async function chargerActifs(){
+  const{data:fonds}=await SB.from('fonds_investissements')
+    .select('*').eq('user_id',U.id)
+    .order('created_at',{ascending:false}).limit(50);
+
+  const list=$('actifs-list');
   const now=new Date();
-  let fonds=curTab==='actifs'
-    ? ALL_FONDS.filter(f=>f.statut==='actif' && new Date(f.date_echeance)>now)
-    : ALL_FONDS.filter(f=>f.statut!=='actif' || new Date(f.date_echeance)<=now);
 
-  if(!fonds.length){
-    btnLink.style.display=curTab==='actifs'?'block':'none';
-    c.innerHTML=`<div class="empty-state">
-      <div class="empty-ico">${curTab==='actifs'?'📈':'🏆'}</div>
-      <div class="empty-t">${curTab==='actifs'?'Aucun fonds actif':'Aucun fonds terminé'}</div>
-      <div class="empty-s">${curTab==='actifs'?'Investissez dans un fonds pour commencer à faire fructifier votre capital.':'Vos fonds terminés apparaîtront ici.'}</div>
-      ${curTab==='actifs'?'<a class="btn-go" href="fonds.html">📈 Voir les fonds disponibles</a>':''}
-    </div>`;
+  if(!fonds||!fonds.length){
+    list.innerHTML='<div class="empty-actifs">Aucun investissement en cours</div>';
     return;
   }
 
-  btnLink.style.display='block';
-  c.innerHTML='<div class="fonds-list">'+fonds.map(f=>{
-    const reste=joursRestants(f);
-    const p=pct(f);
-    const termine=reste===0||f.statut==='termine';
-    const img=IMGS[f.fond_id]||IMGS[1];
-    const statCls=termine?'fs-termine':'fs-actif';
-    const statLbl=termine?'✅ Terminé':'🔵 En cours';
-    const fillCls=termine?'done':'';
+  const actifs=fonds.filter(f=>f.statut==='actif'&&new Date(f.date_echeance)>now);
+  const termines=fonds.filter(f=>f.statut!=='actif'||new Date(f.date_echeance)<=now);
 
-    // Date début estimée
-    const dateDebut=new Date(f.date_echeance);
-    dateDebut.setDate(dateDebut.getDate()-(f.jours||30));
+  $s('hg-actifs',actifs.length);
 
-    return `<div class="fond-card">
-      <img class="fond-img" src="${img}" alt="${f.fond_nom}" loading="lazy">
-      <div class="fond-body">
-        <div class="fond-top">
-          <div class="fond-name">${f.fond_nom}</div>
-          <span class="fond-stat ${statCls}">${statLbl}</span>
-        </div>
-        <div class="prog-wrap">
-          <div class="prog-bar"><div class="prog-fill ${fillCls}" style="width:${p}%"></div></div>
-          <div class="prog-labels"><span>Début</span><span>${p}% écoulé</span><span>Échéance</span></div>
-        </div>
-        <div class="fond-grid">
-          <div class="fg"><div class="fg-l">💰 Capital investi</div><div class="fg-v b">${fmtF(f.montant)}</div></div>
-          <div class="fg"><div class="fg-l">📈 Taux</div><div class="fg-v g">+${f.taux}%</div></div>
-          <div class="fg"><div class="fg-l">🎯 Intérêts</div><div class="fg-v g">+${fmtF(f.interets)}</div></div>
-          <div class="fg"><div class="fg-l">💎 Total retour</div><div class="fg-v o">${fmtF(f.total_retour)}</div></div>
-        </div>
-        <div class="ech-bar ${termine?'ech-done':''}">
-          <span class="ech-lbl">${termine?'✅ Échéance atteinte':'⏳ Temps restant'}</span>
-          <span class="ech-val">${termine?new Date(f.date_echeance).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):reste+' jour'+(reste>1?'s':'')+' restant'+(reste>1?'s':'')}</span>
-        </div>
+  list.innerHTML=[...actifs,...termines].map(f=>{
+    const ech=new Date(f.date_echeance);
+    const done=ech<=now||f.statut!=='actif';
+    const reste=Math.max(0,Math.ceil((ech-now)/86400000));
+    const pct=done?100:Math.min(100,Math.round(((f.jours-reste)/f.jours)*100));
+    const dateStr=ech.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    return `<div class="fond-actif">
+      <div class="fa-top">
+        <div class="fa-name">${f.fond_nom||'VGN Fund'}</div>
+        <span class="fa-stat ${done?'done':''}">${done?'✅ Terminé':'🔵 En cours'}</span>
+      </div>
+      <div class="fa-prog"><div class="fa-fill ${done?'done':''}" style="width:${pct}%"></div></div>
+      <div class="fa-grid">
+        <div class="fag"><div class="fag-l">Capital</div><div class="fag-v b">${fmt(f.montant)} F</div></div>
+        <div class="fag"><div class="fag-l">Intérêts</div><div class="fag-v g">+${fmt(f.interets)} F</div></div>
+        <div class="fag"><div class="fag-l">${done?'Reçu':'Échéance'}</div>
+          <div class="fag-v o">${done?fmt(f.total_retour)+' F':dateStr}</div></div>
       </div>
     </div>`;
-  }).join('')+'</div>';
+  }).join('');
 }
 
-function renderDisponibles(){
-  const FONDS_DATA=[
-    {id:1,nom:'VGN Fund 1',jours:7,taux:15,min:10000,img:IMGS[1]},
-    {id:2,nom:'VGN Fund 2',jours:15,taux:25,min:20000,img:IMGS[2]},
-    {id:3,nom:'VGN Fund 3',jours:30,taux:35,min:30000,img:IMGS[3]},
-    {id:4,nom:'VGN Fund 4',jours:90,taux:100,min:40000,img:IMGS[4]},
-    {id:5,nom:'VGN Fund 5',jours:95,taux:250,min:5000,img:IMGS[5]},
-  ];
-  return `<div class="sec-head"><div class="sec-ico b">📈</div><div><div class="sec-ttl">Fonds disponibles</div><div class="sec-sub">Cliquez pour investir</div></div></div>
-  <div class="fonds-list">`+FONDS_DATA.map(f=>{
-    const gainEx=Math.round(f.min*f.taux/100);
-    return `<a href="fonds.html" style="text-decoration:none">
-      <div class="fond-card" style="cursor:pointer">
-        <img class="fond-img" src="${f.img}" alt="${f.nom}" loading="lazy">
-        <div class="fond-body">
-          <div class="fond-top"><div class="fond-name">${f.nom}</div><span class="fond-stat fs-actif">📈 Disponible</span></div>
-          <div class="fond-grid">
-            <div class="fg"><div class="fg-l">⏱ Durée</div><div class="fg-v b">${f.jours} jours</div></div>
-            <div class="fg"><div class="fg-l">📈 Taux</div><div class="fg-v g">+${f.taux}%</div></div>
-            <div class="fg"><div class="fg-l">💰 Minimum</div><div class="fg-v o">${fmtF(f.min)}</div></div>
-            <div class="fg"><div class="fg-l">🎯 Gain min</div><div class="fg-v g">+${fmtF(gainEx)}</div></div>
-          </div>
-        </div>
-      </div>
-    </a>`;
-  }).join('')+'</div>';
-}
-
+/* ── INIT ── */
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session){window.location.href='index.html';return}
   U=session.user;
 
-  const[{data:p},{data:fonds}]=await Promise.all([
-    SB.from('profiles').select('investissement,revenu_attendu').eq('id',U.id).single(),
-    SB.from('fonds_investissements').select('*').eq('user_id',U.id).order('created_at',{ascending:false})
-  ]);
+  const{data:p}=await SB.from('profiles')
+    .select('solde,investissement,revenu_attendu').eq('id',U.id).single();
+  P=p||{solde:0,investissement:0,revenu_attendu:0};
 
-  ALL_FONDS=fonds||[];
-  const now=new Date();
-  const actifs=ALL_FONDS.filter(f=>f.statut==='actif'&&new Date(f.date_echeance)>now);
-  const termines=ALL_FONDS.filter(f=>f.statut!=='actif'||new Date(f.date_echeance)<=now);
-  const totalInvest=ALL_FONDS.reduce((s,f)=>s+(f.montant||0),0);
-  const totalAttendu=ALL_FONDS.reduce((s,f)=>s+(f.total_retour||0),0);
+  $s('tb-solde',fmt(P.solde)+' FCFA');
+  $s('solde-disp',fmtF(P.solde));
+  $s('hero-invest',fmtF(P.investissement||0));
+  $s('hg-attendu',fmt(P.revenu_attendu||0)+' F');
 
-  $s('tb-invest',fmt(p?.investissement||totalInvest)+' F');
-  $s('hero-invest',fmtF(p?.investissement||totalInvest));
-  $s('hg-actifs',actifs.length);
-  $s('hg-termine',termines.length);
-  $s('hg-attendu',fmt(p?.revenu_attendu||totalAttendu)+' F');
-
-  render();
+  await chargerActifs();
 }
+
 init();
 </script>
 </body>
