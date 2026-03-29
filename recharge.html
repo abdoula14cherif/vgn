@@ -157,6 +157,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .op-card.sel-orange{border-color:#FF6600;box-shadow:0 3px 18px rgba(255,102,0,.16)}
 .op-card.sel-mtn{border-color:#FFCC00;box-shadow:0 3px 18px rgba(255,204,0,.2)}
 .op-card.sel-bsc,.op-card.sel-sol{border-color:#8B5CF6;box-shadow:0 3px 18px rgba(139,92,246,.2)}
+.op-card.sel-wave{border-color:#06B6D4;box-shadow:0 3px 18px rgba(6,182,212,.22)}
 .op-head{padding:13px 14px;display:flex;align-items:center;gap:12px}
 .op-logo{width:52px;height:52px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .logo-orange{background:#FF6600;font-size:1.6rem}
@@ -374,9 +375,11 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
     <!-- Sélection méthode de paiement -->
     <div class="op-section">
       <div class="op-title">💳 Choisissez votre méthode de paiement</div>
+      <div style="font-size:.65rem;font-weight:700;color:var(--mu);padding:0 0 12px;text-align:center">
+        ✅ Wave disponible &nbsp;·&nbsp; 🚧 Orange &amp; MTN bientôt &nbsp;·&nbsp; ₿ Crypto 24h/7j
+      </div>
 
-      <!-- ── SECTION CRYPTO ── -->
-      <div class="op-section-title">₿ Cryptomonnaies</div>
+      <!-- ── SECTION MOBILE MONEY D'ABORD ── -->
 
       <!-- BNB BSC -->
       <div class="op-card" id="op-bnb" data-op="bnb" onclick="selOp('bnb')">
@@ -447,8 +450,37 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         </div>
       </div>
 
-      <!-- ── SECTION MOBILE MONEY (EN PRODUCTION) ── -->
+      <!-- ── SECTION MOBILE MONEY ── -->
       <div class="op-section-title">📱 Mobile Money</div>
+
+      <!-- WAVE ✅ ACTIF -->
+      <div class="op-card" id="op-wave" data-op="wave" onclick="selOp('wave')">
+        <div class="op-head">
+          <div class="op-logo" style="background:linear-gradient(135deg,#06B6D4,#0284C7);font-size:1.5rem">🌊</div>
+          <div class="op-info">
+            <span class="op-tag tag-def" style="background:#E0F2FE;color:#0369A1;border-color:#BAE6FD">✅ DISPONIBLE</span>
+            <div class="op-name">Wave</div>
+            <div class="op-sub">Paiement Wave · Cameroun 🇨🇲 &amp; Afrique de l'Ouest</div>
+          </div>
+          <div class="op-radio"></div>
+        </div>
+        <div class="op-detail" id="od-wave">
+          <div class="dest-box" style="background:linear-gradient(135deg,#E0F2FE,#BAE6FD);border-color:#7DD3FC">
+            <div class="dest-lbl" style="color:#0369A1">📱 Numéro Wave à créditer</div>
+            <div class="dest-num" style="color:#0C4A6E">658 033 690</div>
+            <div class="dest-name" style="color:#075985">👤 VGN Agriculture</div>
+            <button class="dest-copy" onclick="event.stopPropagation();copier('658033690','✅ Numéro Wave copié !')" style="border-color:#0369A1;color:#0369A1">📋 Copier le numéro</button>
+          </div>
+          <div class="pay-hint">Envoyez exactement <b id="wave-hint">—</b> puis notez votre <b>référence Wave</b></div>
+          <div class="num-field">
+            <label class="num-lbl">Votre numéro Wave (expéditeur)</label>
+            <div class="num-wrap" style="border-color:#BAE6FD">
+              <div class="num-flag">🌊</div>
+              <input class="num-inp" type="tel" id="num-wave" placeholder="6XX XX XX XX" inputmode="tel">
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ORANGE MONEY (disabled) -->
       <div class="op-card disabled">
@@ -472,19 +504,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
           <div class="op-info">
             <span class="prod-badge"> En cours de production</span>
             <div class="op-name">MTN MoMo</div>
-            <div class="op-sub">Disponible très prochainement</div>
-          </div>
-          <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #E5E7EB"></div>
-        </div>
-      </div>
-
-      <!-- WAVE (disabled) -->
-      <div class="op-card disabled">
-        <div class="op-head">
-          <div class="op-logo" style="background:linear-gradient(135deg,#06B6D4,#0284C7);font-size:1.5rem">🌊</div>
-          <div class="op-info">
-            <span class="prod-badge"> En cours de production</span>
-            <div class="op-name">Wave</div>
             <div class="op-sub">Disponible très prochainement</div>
           </div>
           <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #E5E7EB"></div>
@@ -725,11 +744,12 @@ function calcFond(){
 
 /* ── OPÉRATEUR ── */
 const CRYPTO_OPS = ['bnb','sol','btc'];
+const MOBILE_OPS = ['wave'];
 const CRYPTO_LABELS = {bnb:'BNB (BSC)',sol:'USDT (SOL)',btc:'Bitcoin'};
 
 function selOp(op){
   opSel=op;
-  CRYPTO_OPS.forEach(k=>{
+  [...CRYPTO_OPS,...MOBILE_OPS].forEach(k=>{
     const el=$('op-'+k);if(!el)return;
     el.removeAttribute('data-sel');
     el.className='op-card';
@@ -807,7 +827,7 @@ function goPage(n){
     const amtStr=fmtF(montantAff)+' FCFA';
     $s('ah-plan',planLabel);
     $s('ah-amount','XAF '+fmt(montantAff));
-    ['orange-hint','mtn-hint','bsc-hint','sol-hint'].forEach(id=>$s(id,amtStr));
+    ['orange-hint','mtn-hint','bsc-hint','sol-hint','wave-hint','bnb-hint','sol-hint','btc-hint'].forEach(id=>{const e=$(id);if(e)$s(id,amtStr);});
     startTimer();
     // Sélectionner BNB par défaut
     selOp('bnb');
@@ -843,11 +863,14 @@ async function soumettre(){
 
   const btn=$('btn-submit');btn.textContent='⏳ Envoi...';btn.disabled=true;
   const isCrypto = CRYPTO_OPS.includes(opSel);
+  const isMobile = MOBILE_OPS.includes(opSel);
+  const numWave = ($('num-wave')?.value||'').trim();
+  if(isMobile && opSel==='wave' && numWave.length<8){toast('⚠️ Entrez votre numéro Wave','err');return}
 
   let payload={
     user_id:         U.id,
     operateur:       isCrypto?'crypto':opSel,
-    num_expediteur:  isCrypto?(CRYPTO_LABELS[opSel]||opSel):null,
+    num_expediteur:  isCrypto?(CRYPTO_LABELS[opSel]||opSel):(opSel==='wave'?numWave:null),
     ref_transaction: ref,
     montant_envoye:  mont,
     note:            note||(isCrypto?('Crypto: '+opSel.toUpperCase()):null),
