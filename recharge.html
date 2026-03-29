@@ -280,7 +280,8 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
     <!-- TYPE SWITCH -->
     <div class="type-switch">
       <button class="type-btn on" id="btn-type-vip" onclick="switchType('vip')">💎 Plans VIP</button>
-      <button class="type-btn" id="btn-type-fond" onclick="switchType('fond')">📈 Fonds d'investissement</button>
+      <button class="type-btn" id="btn-type-fond" onclick="switchType('fond')">📈 Fonds</button>
+      <button class="type-btn" id="btn-type-solde" onclick="switchType('solde')">💰 Solde</button>
     </div>
 
     <!-- ── SECTION VIP ── -->
@@ -321,6 +322,30 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
           <div class="fm-calc-row"><span class="fm-calc-lbl">Capital investi</span><span class="fm-calc-val" id="fmc-capital">—</span></div>
           <div class="fm-calc-row"><span class="fm-calc-lbl">Intérêts (<span id="fmc-taux">—</span>%)</span><span class="fm-calc-val" id="fmc-inter">—</span></div>
           <div class="fm-calc-row"><span class="fm-calc-lbl">🎯 Total à recevoir</span><span class="fm-calc-val" id="fmc-total">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION SOLDE LIBRE ── -->
+    <div id="section-solde" style="display:none">
+      <div class="sec-row">
+        <div class="sec-ico" style="background:linear-gradient(135deg,#F97316,#EA580C)">💰</div>
+        <div class="sec-texts">
+          <div class="sec-title">Recharger mon solde</div>
+          <div class="sec-sub">Ajoutez des fonds librement, sans plan obligatoire</div>
+        </div>
+      </div>
+      <div style="margin:0 12px 14px;background:var(--card);border-radius:16px;padding:16px;box-shadow:0 1px 8px rgba(0,0,0,.07)">
+        <div style="font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:10px">💵 Montant à recharger</div>
+        <div style="display:flex;align-items:center;background:#F8FAFB;border:2px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:8px">
+          <div style="padding:0 14px;font-size:.85rem;font-weight:900;color:var(--mu);border-right:1px solid var(--bd);height:50px;display:flex;align-items:center;background:#fff">FCFA</div>
+          <input type="number" id="inp-solde-montant" inputmode="numeric" placeholder="Ex: 5 000"
+            style="flex:1;padding:0 14px;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:var(--txt);background:transparent;height:50px"
+            oninput="calcSoldeMontant()">
+        </div>
+        <div style="font-size:.65rem;color:var(--mu);font-weight:600">Minimum : 500 FCFA · Le montant sera crédité après validation admin</div>
+        <div id="solde-preview" style="display:none;margin-top:10px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:9px 12px">
+          <div style="font-size:.72rem;font-weight:700;color:#15803D">Vous rechargerez <span id="solde-preview-amt" style="font-weight:900"></span> FCFA sur votre solde</div>
         </div>
       </div>
     </div>
@@ -584,12 +609,27 @@ function switchType(t){
   $('btn-p1').disabled=true;
   $('btn-type-vip').className='type-btn'+(t==='vip'?' on':'');
   $('btn-type-fond').className='type-btn'+(t==='fond'?' on':'');
+  const ssBtn=$('btn-type-solde');if(ssBtn)ssBtn.className='type-btn'+(t==='solde'?' on':'');
   $('section-vip').style.display=t==='vip'?'block':'none';
   $('section-fond').style.display=t==='fond'?'block':'none';
-  // Reset selection visuelle
+  const ss=$('section-solde');if(ss)ss.style.display=t==='solde'?'block':'none';
   document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));
   document.querySelectorAll('.f-card').forEach(c=>c.classList.remove('sel'));
   $('fond-montant-wrap').style.display='none';
+  if(t==='solde')$('btn-p1').disabled=false;
+}
+
+function calcSoldeMontant(){
+  const v=parseFloat($('inp-solde-montant')?.value)||0;
+  const prev=$('solde-preview');
+  if(v>=500){
+    $s('solde-preview-amt',fmt(v));
+    if(prev)prev.style.display='block';
+    $('btn-p1').disabled=false;
+  } else {
+    if(prev)prev.style.display='none';
+    if(selType==='solde')$('btn-p1').disabled=true;
+  }
 }
 
 /* ── RENDER VIP ── */
@@ -734,6 +774,10 @@ function goPage(n){
       const mv=parseFloat($('inp-fond-montant').value)||0;
       if(mv<fondSel.min){toast('⚠️ Montant minimum : '+fmtF(fondSel.min),'err');return}
     }
+    if(selType==='solde'){
+      const sv=parseFloat($('inp-solde-montant')?.value)||0;
+      if(sv<500){toast('⚠️ Minimum 500 FCFA','err');return}
+    }
 
     // Calculer montant à afficher
     let montantAff=0,planLabel='';
@@ -743,7 +787,7 @@ function goPage(n){
       $('amount-hero').className='amount-hero';
       $('ah-label').className='ah-label vip-label';$('ah-label').textContent='MONTANT DU PAIEMENT';
       $('ah-fond-extra').style.display='none';
-    }else{
+    }else if(selType==='fond'){
       montantAff=parseFloat($('inp-fond-montant').value)||fondSel.min;
       planLabel=fondSel.nom+' · '+fondSel.jours+' jours';
       $('amount-hero').className='amount-hero fond-hero';
@@ -753,6 +797,12 @@ function goPage(n){
       $s('ahf-taux','+'+fondSel.taux+'%');
       $s('ahf-duree',fondSel.jours+' jours');
       $s('ahf-gain','+'+fmtF(inter));
+    }else{
+      montantAff=parseFloat($('inp-solde-montant')?.value)||0;
+      planLabel='Recharge Solde Libre';
+      $('amount-hero').className='amount-hero';
+      $('ah-label').className='ah-label vip-label';$('ah-label').textContent='RECHARGE SOLDE';
+      $('ah-fond-extra').style.display='none';
     }
     const amtStr=fmtF(montantAff)+' FCFA';
     $s('ah-plan',planLabel);
@@ -812,12 +862,21 @@ async function soumettre(){
       plan_taches:planSel.taches,
       type_recharge:'vip'
     };
-  }else{
+  }else if(selType==='fond'){
     payload={...payload,
       plan_niveau:0, plan_label:fondSel.nom,
       plan_depot:mont, plan_gain:0, plan_taches:0,
       fond_id:fondSel.id, fond_taux:fondSel.taux, fond_jours:fondSel.jours,
       type_recharge:'fond'
+    };
+  }else{
+    // Recharge solde libre
+    const soldeMont=parseFloat($('inp-solde-montant')?.value)||mont;
+    payload={...payload,
+      montant_envoye: soldeMont,
+      plan_niveau:0, plan_label:'Recharge Solde',
+      plan_depot:soldeMont, plan_gain:0, plan_taches:0,
+      type_recharge:'solde'
     };
   }
 
