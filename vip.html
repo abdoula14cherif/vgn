@@ -66,6 +66,11 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .vip-card.v7{background:linear-gradient(135deg,#F97316,#F59E0B,#84CC16)}
 .vip-card.v8{background:linear-gradient(135deg,#7C3AED,#9333EA,#4F46E5)}
 .vip-card.v9{background:linear-gradient(135deg,#06B6D4,#0891B2,#14B8A6)}
+.vip-card.vp1{background:linear-gradient(135deg,#FF6B6B,#FF8E53,#FFA726);position:relative}
+.vip-card.vp2{background:linear-gradient(135deg,#A855F7,#EC4899,#F97316);position:relative}
+.promo-ribbon{position:absolute;top:10px;right:-1px;background:#fff;color:#E53E3E;
+  font-size:.58rem;font-weight:900;padding:3px 10px;border-radius:8px 0 0 8px;
+  letter-spacing:.04em;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 
 /* Card header */
 .vc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
@@ -241,8 +246,10 @@ const SB = supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJ
 
 // ── PLANS VIP ──
 const PLANS = [
-  { niveau:0, job:'Intern',  label:'VIP 0', gain:70,    taches:3,  depot:0,          gradient:'v0', lock:false, gratuit:true },
-  { niveau:1, job:'Job 1',   label:'VIP 1', gain:70,    taches:5,  depot:10500,      gradient:'v1', lock:false },
+  { niveau:0,  job:'Intern',      label:'VIP 0',   gain:70,    taches:3,  depot:0,     gradient:'v0', lock:false, gratuit:true },
+  { niveau:-1, job:'Promo 1',     label:'PROMO 1', gain:200,   taches:1,  depot:3000,  gradient:'vp1',lock:false, promo:true, duree:30, gainJourFixe:200 },
+  { niveau:-2, job:'Promo 2',     label:'PROMO 2', gain:450,   taches:1,  depot:5000,  gradient:'vp2',lock:false, promo:true, duree:30, gainJourFixe:450 },
+  { niveau:1,  job:'Job 1',       label:'VIP 1',   gain:70,    taches:5,  depot:10500, gradient:'v1', lock:false },
   { niveau:2, job:'Job 2',   label:'VIP 2', gain:175,   taches:8,  depot:42000,      gradient:'v2', lock:false },
   { niveau:3, job:'Job 3',   label:'VIP 3', gain:560,   taches:10, depot:168000,     gradient:'v3', lock:false },
   { niveau:4, job:'Job 4',   label:'VIP 4', gain:1300,  taches:15, depot:585000,     gradient:'v4', lock:true  },
@@ -289,6 +296,7 @@ function renderCards(userNiveau){
     }
 
     card.innerHTML = `
+      ${p.promo ? '<div class="promo-ribbon">🔥 PROMO</div>' : ''}
       <div class="vc-head">
         <div class="vc-job">${p.job}</div>
         <div class="vc-vip">${p.label}</div>
@@ -308,6 +316,27 @@ function renderCards(userNiveau){
         <span class="vc-ico">🎁</span>
         <span class="vc-txt">Accès :</span>
         <span class="vc-val">&nbsp;Gratuit sans dépôt</span>
+      </div>
+      ` : p.promo ? `
+      <div class="vc-row">
+        <span class="vc-ico">💵</span>
+        <span class="vc-txt">Gain par jour :</span>
+        <span class="vc-val">&nbsp;${fmt(p.gainJourFixe)} FCFA</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">📅</span>
+        <span class="vc-txt">Durée :</span>
+        <span class="vc-val">&nbsp;${p.duree} jours</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">🏆</span>
+        <span class="vc-txt">Gain total estimé :</span>
+        <span class="vc-val">&nbsp;${fmtF(p.gainJourFixe * p.duree)}</span>
+      </div>
+      <div class="vc-row">
+        <span class="vc-ico">🏦</span>
+        <span class="vc-txt">Investissement :</span>
+        <span class="vc-val">&nbsp;${fmtF(p.depot)}</span>
       </div>
       ` : `
       <div class="vc-row">
@@ -360,6 +389,12 @@ function openModal(niveau){
   document.getElementById('m-taches').textContent = plan.taches+' tâches / jour';
   document.getElementById('m-jour').textContent   = fmtF(gainJour);
   document.getElementById('m-depot').textContent  = fmtF(plan.depot);
+  if(plan.promo){
+    const gainEl = document.getElementById('m-gain');
+    if(gainEl) gainEl.textContent = fmtF(plan.gainJourFixe) + ' / jour pendant ' + plan.duree + ' jours';
+    const gainJourEl = document.getElementById('m-gain-jour');
+    if(gainJourEl) gainJourEl.textContent = fmtF(plan.gainJourFixe * plan.duree) + ' FCFA total';
+  }
   document.getElementById('m-solde-val').textContent = fmtF(solde);
   document.getElementById('m-solde-val').className = 'msc-val '+(peutPayer?'ok':'nok');
   document.getElementById('m-solde-status').textContent = peutPayer ? '✅' : '❌';
