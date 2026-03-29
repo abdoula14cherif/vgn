@@ -151,6 +151,13 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 /* Opérateurs */
 .op-section{padding:14px 14px 4px}
 .op-title{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:11px}
+/* Pays */
+.pays-card{padding:10px 8px;border:2.5px solid var(--bd);border-radius:14px;background:#F8FAFB;cursor:pointer;text-align:center;transition:all .18s;user-select:none}
+.pays-card:active{transform:scale(.93)}
+.pays-card.sel{border-color:var(--g);background:linear-gradient(135deg,#F0FDF4,#DCFCE7)}
+.pays-flag{font-size:1.5rem;line-height:1;margin-bottom:3px}
+.pays-name{font-size:.65rem;font-weight:800;color:var(--txt)}
+.pays-card.sel .pays-name{color:var(--g)}
 .op-card{background:var(--card);border-radius:16px;border:2px solid var(--bd);margin-bottom:9px;
   cursor:pointer;user-select:none;overflow:hidden;transition:all .18s;box-shadow:0 1px 6px rgba(0,0,0,.05)}
 .op-card:active{transform:scale(.985)}
@@ -372,146 +379,20 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
       </div>
     </div>
 
-    <!-- Sélection méthode de paiement -->
+    <!-- Sélection pays + méthode de paiement -->
     <div class="op-section">
-      <div class="op-title">💳 Choisissez votre méthode de paiement</div>
-      <div style="font-size:.65rem;font-weight:700;color:var(--mu);padding:0 0 12px;text-align:center">
-        ✅ Wave disponible &nbsp;·&nbsp; 🚧 Orange &amp; MTN bientôt &nbsp;·&nbsp; ₿ Crypto 24h/7j
+      <div class="op-title">🌍 Pays et méthode de paiement</div>
+
+      <!-- SÉLECTEUR PAYS -->
+      <div id="pays-selector" style="padding:0 0 14px">
+        <div style="font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:9px">Choisissez votre pays</div>
+        <div id="pays-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px"></div>
       </div>
 
-      <!-- ── SECTION MOBILE MONEY D'ABORD ── -->
-
-      <!-- BNB BSC -->
-      <div class="op-card" id="op-bnb" data-op="bnb" onclick="selOp('bnb')">
-        <div class="op-head">
-          <div class="op-logo" style="background:linear-gradient(135deg,#F3BA2F,#F0B90B);font-size:1.4rem">◈</div>
-          <div class="op-info">
-            <span class="op-tag tag-crypto">BNB Chain · BSC</span>
-            <div class="op-name">BNB Coin</div>
-            <div class="op-sub">Binance Smart Chain · Réseau BSC</div>
-          </div>
-          <div class="op-radio"></div>
-        </div>
-        <div class="op-detail" id="od-bnb">
-          <div class="crypto-box">
-            <span class="crypto-net net-bsc">◈ BNB · Binance Smart Chain</span>
-            <div class="crypto-lbl">📬 Adresse de dépôt BNB</div>
-            <div class="crypto-addr" id="addr-bnb">0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB</div>
-            <button class="crypto-copy" onclick="event.stopPropagation();copier('0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB','✅ Adresse BNB copiée !')">📋 Copier l'adresse</button>
-            <div class="crypto-warn">⚠️ Réseau BSC uniquement — n'envoyez pas via un autre réseau. Conservez votre hash de transaction.</div>
-          </div>
-          <div class="pay-hint">Envoyez exactement <b id="bnb-hint">—</b> puis notez votre <b>hash de transaction</b></div>
-        </div>
-      </div>
-
-      <!-- SOL (USDT SPL) -->
-      <div class="op-card" id="op-sol" data-op="sol" onclick="selOp('sol')">
-        <div class="op-head">
-          <div class="op-logo logo-sol">◎</div>
-          <div class="op-info">
-            <span class="op-tag tag-crypto">Solana · SPL</span>
-            <div class="op-name">USDT SPL</div>
-            <div class="op-sub">Réseau Solana · Token USDT</div>
-          </div>
-          <div class="op-radio"></div>
-        </div>
-        <div class="op-detail" id="od-sol">
-          <div class="crypto-box">
-            <span class="crypto-net net-sol">◎ USDT · Réseau Solana</span>
-            <div class="crypto-lbl">📬 Adresse de dépôt USDT (SOL)</div>
-            <div class="crypto-addr" id="addr-sol">JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ</div>
-            <button class="crypto-copy" onclick="event.stopPropagation();copier('JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ','✅ Adresse SOL copiée !')">📋 Copier l'adresse</button>
-            <div class="crypto-warn">⚠️ Réseau Solana uniquement. Envoyez uniquement des USDT SPL.</div>
-          </div>
-          <div class="pay-hint">Envoyez <b id="sol-hint">—</b> en USDT puis notez votre <b>hash de transaction</b></div>
-        </div>
-      </div>
-
-      <!-- BTC -->
-      <div class="op-card" id="op-btc" data-op="btc" onclick="selOp('btc')">
-        <div class="op-head">
-          <div class="op-logo" style="background:linear-gradient(135deg,#F97316,#C2410C);font-size:1.4rem">₿</div>
-          <div class="op-info">
-            <span class="op-tag tag-crypto">Bitcoin · BTC</span>
-            <div class="op-name">Bitcoin</div>
-            <div class="op-sub">Réseau Bitcoin natif · SegWit</div>
-          </div>
-          <div class="op-radio"></div>
-        </div>
-        <div class="op-detail" id="od-btc">
-          <div class="crypto-box">
-            <span class="crypto-net net-btc">₿ Bitcoin · SegWit</span>
-            <div class="crypto-lbl">📬 Adresse de dépôt BTC</div>
-            <div class="crypto-addr" id="addr-btc">bc1pygygqdjmj60mph9yrn05extn3n4h22fv5ynt3w72hjd7arx64l4qdkp32x</div>
-            <button class="crypto-copy" onclick="event.stopPropagation();copier('bc1pygygqdjmj60mph9yrn05extn3n4h22fv5ynt3w72hjd7arx64l4qdkp32x','✅ Adresse BTC copiée !')">📋 Copier l'adresse</button>
-            <div class="crypto-warn">⚠️ Réseau Bitcoin uniquement. Les envois BTC peuvent prendre 10–30 min de confirmation.</div>
-          </div>
-          <div class="pay-hint">Envoyez <b id="btc-hint">—</b> en BTC puis notez votre <b>hash de transaction</b></div>
-        </div>
-      </div>
-
-      <!-- ── SECTION MOBILE MONEY ── -->
-      <div class="op-section-title">📱 Mobile Money</div>
-
-      <!-- WAVE ✅ ACTIF -->
-      <div class="op-card" id="op-wave" data-op="wave" onclick="selOp('wave')">
-        <div class="op-head">
-          <div class="op-logo" style="background:linear-gradient(135deg,#06B6D4,#0284C7);font-size:1.5rem">🌊</div>
-          <div class="op-info">
-            <span class="op-tag tag-def" style="background:#E0F2FE;color:#0369A1;border-color:#BAE6FD">✅ DISPONIBLE</span>
-            <div class="op-name">Wave</div>
-            <div class="op-sub">Paiement Wave · Cameroun 🇨🇲 &amp; Afrique de l'Ouest</div>
-          </div>
-          <div class="op-radio"></div>
-        </div>
-        <div class="op-detail" id="od-wave">
-          <div class="dest-box" style="background:linear-gradient(135deg,#E0F2FE,#BAE6FD);border-color:#7DD3FC">
-            <div class="dest-lbl" style="color:#0369A1">📱 Numéro Wave à créditer</div>
-            <div class="dest-num" style="color:#0C4A6E">658 033 690</div>
-            <div class="dest-name" style="color:#075985">👤 VGN Agriculture</div>
-            <button class="dest-copy" onclick="event.stopPropagation();copier('658033690','✅ Numéro Wave copié !')" style="border-color:#0369A1;color:#0369A1">📋 Copier le numéro</button>
-          </div>
-          <div class="pay-hint">Envoyez exactement <b id="wave-hint">—</b> puis notez votre <b>référence Wave</b></div>
-          <div class="num-field">
-            <label class="num-lbl">Votre numéro Wave (expéditeur)</label>
-            <div class="num-wrap" style="border-color:#BAE6FD">
-              <div class="num-flag">🌊</div>
-              <input class="num-inp" type="tel" id="num-wave" placeholder="6XX XX XX XX" inputmode="tel">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ORANGE MONEY (disabled) -->
-      <div class="op-card disabled">
-        <div class="op-head">
-          <div class="op-logo logo-orange">🍊</div>
-          <div class="op-info">
-            <span class="prod-badge"> En cours de production</span>
-            <div class="op-name">Orange Money</div>
-            <div class="op-sub">Disponible très prochainement</div>
-          </div>
-          <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #E5E7EB"></div>
-        </div>
-      </div>
-
-      <!-- MTN MONEY (disabled) -->
-      <div class="op-card disabled">
-        <div class="op-head">
-          <div class="op-logo logo-mtn">
-            <div class="mtn-bar"></div><div class="mtn-txt">MoMo</div><div class="mtn-bar"></div>
-          </div>
-          <div class="op-info">
-            <span class="prod-badge"> En cours de production</span>
-            <div class="op-name">MTN MoMo</div>
-            <div class="op-sub">Disponible très prochainement</div>
-          </div>
-          <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #E5E7EB"></div>
-        </div>
-      </div>
+      <!-- MÉTHODES DYNAMIQUES selon pays -->
+      <div id="methodes-container"></div>
 
     </div>
-
     <div style="display:flex;gap:8px;padding:4px 12px 20px">
       <button class="btn-cta btn-ghost" style="margin:0;flex:1;width:auto;padding:13px" onclick="goPage(1)">← Retour</button>
       <button class="btn-cta" style="margin:0;flex:2;width:auto;padding:13px" onclick="goPage(3)">J'ai payé →</button>
@@ -744,25 +625,189 @@ function calcFond(){
 
 /* ── OPÉRATEUR ── */
 const CRYPTO_OPS = ['bnb','sol','btc'];
-const MOBILE_OPS = ['wave'];
+const MOBILE_OPS = ['wave','orange','mtn'];
+
+/* ══ CONFIG PAYS + MÉTHODES ══ */
+const PAYS_CONFIG = [
+  {
+    id:'cm', nom:'Cameroun', flag:'🇨🇲',
+    methodes:[
+      { id:'wave',   label:'Wave',        logo:'🌊', couleur:'#06B6D4', actif:true,
+        numero:'658 033 690', titulaire:'VGN Agriculture',
+        hint:'Envoyez exactement {montant} FCFA par Wave',
+        champ:'Votre numéro Wave (expéditeur)' },
+      { id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
+        numero:'658 033 690', titulaire:'VGN Agriculture',
+        hint:'Envoyez exactement {montant} FCFA par Orange Money',
+        champ:'Votre numéro Orange (expéditeur)' },
+      { id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
+        numero:'658 033 690', titulaire:'VGN Agriculture',
+        hint:'Envoyez exactement {montant} FCFA par MTN MoMo',
+        champ:'Votre numéro MTN (expéditeur)' },
+    ]
+  },
+  {
+    id:'ci', nom:"Côte d'Ivoire", flag:'🇨🇮',
+    methodes:[
+      { id:'wave',   label:'Wave',        logo:'🌊', couleur:'#06B6D4', actif:true,
+        numero:'658 033 690', titulaire:'VGN Agriculture',
+        hint:'Envoyez exactement {montant} FCFA par Wave',
+        champ:"Votre numéro Wave" },
+      { id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:false, prod:true },
+      { id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:false, prod:true },
+    ]
+  },
+  {
+    id:'sn', nom:'Sénégal', flag:'🇸🇳',
+    methodes:[
+      { id:'wave',  label:'Wave',    logo:'🌊', couleur:'#06B6D4', actif:true,
+        numero:'658 033 690', titulaire:'VGN Agriculture',
+        hint:'Envoyez exactement {montant} FCFA par Wave',
+        champ:'Votre numéro Wave' },
+      { id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:false, prod:true },
+    ]
+  },
+  {
+    id:'tg', nom:'Togo', flag:'🇹🇬',
+    methodes:[
+      { id:'wave',  label:'Wave',    logo:'🌊', couleur:'#06B6D4', actif:true,
+        numero:'658 033 690', titulaire:'VGN Agriculture',
+        hint:'Envoyez {montant} FCFA par Wave',
+        champ:'Votre numéro Wave' },
+    ]
+  },
+  {
+    id:'bj', nom:'Bénin', flag:'🇧🇯',
+    methodes:[
+      { id:'mtn', label:'MTN MoMo', logo:'📱', couleur:'#FFCC00', actif:false, prod:true },
+      { id:'wave',label:'Wave',     logo:'🌊', couleur:'#06B6D4', actif:false, prod:true },
+    ]
+  },
+  {
+    id:'gn', nom:'Guinée', flag:'🇬🇳',
+    methodes:[
+      { id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:false, prod:true },
+    ]
+  },
+];
+
+// Crypto disponible partout
+const CRYPTO_METHODS = [
+  { id:'bnb', label:'BNB (BSC)',   logo:'◈', couleur:'#F3BA2F', actif:true,
+    addr:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB', reseau:'BSC uniquement',
+    warn:'⚠️ Réseau BSC uniquement' },
+  { id:'sol', label:'USDT (SOL)',  logo:'◎', couleur:'#9945FF', actif:true,
+    addr:'JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ', reseau:'Réseau Solana',
+    warn:'⚠️ Réseau Solana uniquement — USDT SPL seulement' },
+  { id:'btc', label:'Bitcoin',     logo:'₿', couleur:'#F97316', actif:true,
+    addr:'bc1pygygqdjmj60mph9yrn05extn3n4h22fv5ynt3w72hjd7arx64l4qdkp32x', reseau:'Bitcoin SegWit',
+    warn:'⚠️ Réseau Bitcoin uniquement. Confirmation 10–30 min.' },
+];
+
+let selPays = null;
 const CRYPTO_LABELS = {bnb:'BNB (BSC)',sol:'USDT (SOL)',btc:'Bitcoin'};
+
+function renderPays(){
+  const grid=$('pays-grid');
+  if(!grid)return;
+  grid.innerHTML=PAYS_CONFIG.map(p=>`
+    <div class="pays-card ${selPays===p.id?'sel':''}" onclick="selPays_fn('${p.id}')">
+      <div class="pays-flag">${p.flag}</div>
+      <div class="pays-name">${p.nom}</div>
+    </div>`).join('');
+}
+
+function selPays_fn(id){
+  selPays=id; opSel=null;
+  renderPays(); renderMethodes();
+}
+
+function renderMethodes(){
+  const box=$('methodes-container');
+  if(!box)return;
+  const pays=PAYS_CONFIG.find(p=>p.id===selPays);
+  const montantFCFA=selType==='vip'?(planSel?.depot||0):(parseFloat($('inp-fond-montant')?.value)||0);
+  const montantStr=fmtF(montantFCFA);
+  let html='';
+
+  if(pays){
+    html+='<div class="op-section-title">📱 Mobile Money — '+pays.flag+' '+pays.nom+'</div>';
+    pays.methodes.forEach(m=>{
+      if(!m.actif||m.prod){
+        html+=`<div class="op-card disabled"><div class="op-head">
+          <div class="op-logo" style="background:${m.couleur};font-size:1.4rem">${m.logo}</div>
+          <div class="op-info">
+            <span class="prod-badge">🚧 Bientôt disponible</span>
+            <div class="op-name">${m.label}</div>
+            <div class="op-sub">En cours de production</div>
+          </div>
+          <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #E5E7EB"></div>
+        </div></div>`;
+      } else {
+        const isSel=opSel===m.id;
+        html+=`<div class="op-card${isSel?' sel-'+m.id:''}" id="op-${m.id}" data-op="${m.id}" onclick="selOp('${m.id}')">
+          <div class="op-head">
+            <div class="op-logo" style="background:${m.couleur};font-size:1.4rem">${m.logo}</div>
+            <div class="op-info">
+              <span class="op-tag tag-def" style="background:#F0FDF4;color:#15803D;border-color:#BBF7D0">✅ DISPONIBLE</span>
+              <div class="op-name">${m.label}</div>
+              <div class="op-sub">${pays.flag} ${pays.nom}</div>
+            </div>
+            <div class="op-radio"></div>
+          </div>
+          <div class="op-detail" id="od-${m.id}" style="${isSel?'':'display:none'}">
+            <div class="dest-box" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-color:#BBF7D0">
+              <div class="dest-lbl" style="color:#15803D">📱 Numéro à créditer</div>
+              <div class="dest-num" style="color:#14532D">${m.numero||'658 033 690'}</div>
+              <div class="dest-name" style="color:#166534">👤 ${m.titulaire||'VGN Agriculture'}</div>
+              <button class="dest-copy" onclick="event.stopPropagation();copier('${(m.numero||'658033690').replace(/ /g,'')}','✅ Numéro copié !')" style="border-color:#15803D;color:#15803D">📋 Copier le numéro</button>
+            </div>
+            <div class="pay-hint">Envoyez exactement <b>${montantStr}</b> puis notez votre référence</div>
+            <div class="num-field">
+              <label class="num-lbl">${m.champ||'Votre numéro expéditeur'}</label>
+              <div class="num-wrap"><div class="num-flag">${m.logo}</div>
+              <input class="num-inp" type="tel" id="num-${m.id}" placeholder="6XX XX XX XX" inputmode="tel"></div>
+            </div>
+          </div>
+        </div>`;
+      }
+    });
+  } else {
+    html+='<div style="text-align:center;padding:16px;font-size:.75rem;color:var(--mu);font-weight:700;background:#F8FAFC;border-radius:12px;margin-bottom:10px">👆 Sélectionnez votre pays pour voir les méthodes disponibles</div>';
+  }
+
+  html+='<div class="op-section-title" style="margin-top:4px">₿ Cryptomonnaies — Mondial</div>';
+  CRYPTO_METHODS.forEach(m=>{
+    const isSel=opSel===m.id;
+    html+=`<div class="op-card${isSel?' sel-bsc':''}" id="op-${m.id}" data-op="${m.id}" onclick="selOp('${m.id}')">
+      <div class="op-head">
+        <div class="op-logo" style="background:${m.couleur};font-size:1.4rem">${m.logo}</div>
+        <div class="op-info">
+          <span class="op-tag tag-crypto">${m.reseau}</span>
+          <div class="op-name">${m.label}</div>
+          <div class="op-sub">Disponible 24h/7j · Mondial</div>
+        </div>
+        <div class="op-radio"></div>
+      </div>
+      <div class="op-detail" id="od-${m.id}" style="${isSel?'':'display:none'}">
+        <div class="crypto-box">
+          <span class="crypto-net net-bsc">${m.logo} ${m.reseau}</span>
+          <div class="crypto-lbl">📬 Adresse de dépôt</div>
+          <div class="crypto-addr">${m.addr}</div>
+          <button class="crypto-copy" onclick="event.stopPropagation();copier('${m.addr}','✅ Adresse copiée !')">📋 Copier l'adresse</button>
+          <div class="crypto-warn">${m.warn}</div>
+        </div>
+        <div class="pay-hint">Envoyez en ${m.label} puis notez votre <b>hash de transaction</b></div>
+      </div>
+    </div>`;
+  });
+
+  box.innerHTML=html;
+}
 
 function selOp(op){
   opSel=op;
-  [...CRYPTO_OPS,...MOBILE_OPS].forEach(k=>{
-    const el=$('op-'+k);if(!el)return;
-    el.removeAttribute('data-sel');
-    el.className='op-card';
-    const od=$('od-'+k);if(od)od.style.display='none';
-  });
-  const opEl=$('op-'+op);if(opEl){opEl.setAttribute('data-sel','1');opEl.classList.add('sel-'+op);}
-  const odEl=$('od-'+op);if(odEl)odEl.style.display='block';
-
-  // Mettre à jour le hint de montant
-  const montantFCFA = selType==='vip'?(planSel?.depot||0):(parseFloat($('inp-fond-montant')?.value)||0);
-  const montantStr = fmtF(montantFCFA);
-  const el = $(op+'-hint');
-  if(el) el.textContent = montantStr;
+  renderMethodes();
 }
 
 /* ── STEP BAR ── */
@@ -829,12 +874,20 @@ function goPage(n){
     $s('ah-amount','XAF '+fmt(montantAff));
     ['orange-hint','mtn-hint','bsc-hint','sol-hint','wave-hint','bnb-hint','sol-hint','btc-hint'].forEach(id=>{const e=$(id);if(e)$s(id,amtStr);});
     startTimer();
-    // Sélectionner BNB par défaut
-    selOp('bnb');
+    // Afficher le sélecteur de pays
+    renderPays();
+    renderMethodes();
   }
 
   if(n===3){
     if(!opSel){toast('⚠️ Sélectionnez une méthode de paiement','err');return}
+    // Vérifier numéro Mobile Money si applicable
+    if(MOBILE_OPS.includes(opSel)){
+      const numEl=$('num-'+opSel);
+      if(numEl&&(numEl.value||'').replace(/\s/g,'').length<8){
+        toast('⚠️ Entrez votre numéro '+opSel.toUpperCase()+' expéditeur','err');return
+      }
+    }
     const lb=selType==='vip'?(planSel?.label||'—'):(fondSel?.nom||'—');
     $s('note-plan',lb);
     // Adapter le hint montant selon crypto
@@ -864,13 +917,12 @@ async function soumettre(){
   const btn=$('btn-submit');btn.textContent='⏳ Envoi...';btn.disabled=true;
   const isCrypto = CRYPTO_OPS.includes(opSel);
   const isMobile = MOBILE_OPS.includes(opSel);
-  const numWave = ($('num-wave')?.value||'').trim();
-  if(isMobile && opSel==='wave' && numWave.length<8){toast('⚠️ Entrez votre numéro Wave','err');return}
+  const numMobile = opSel ? (($('num-'+opSel)?.value||'').trim()) : '';
 
   let payload={
     user_id:         U.id,
     operateur:       isCrypto?'crypto':opSel,
-    num_expediteur:  isCrypto?(CRYPTO_LABELS[opSel]||opSel):(opSel==='wave'?numWave:null),
+    num_expediteur:  isCrypto?(opSel?.toUpperCase()||'crypto'):(isMobile?numMobile:null),
     ref_transaction: ref,
     montant_envoye:  mont,
     note:            note||(isCrypto?('Crypto: '+opSel.toUpperCase()):null),
@@ -886,10 +938,11 @@ async function soumettre(){
       type_recharge:'vip'
     };
   }else if(selType==='fond'){
+    if(!fondSel){toast('⚠️ Sélectionnez un fonds','err');return}
     payload={...payload,
-      plan_niveau:0, plan_label:fondSel.nom,
+      plan_niveau:0, plan_label:fondSel?.nom||'Fonds',
       plan_depot:mont, plan_gain:0, plan_taches:0,
-      fond_id:fondSel.id, fond_taux:fondSel.taux, fond_jours:fondSel.jours,
+      fond_id:fondSel?.id||0, fond_taux:fondSel?.taux||0, fond_jours:fondSel?.jours||0,
       type_recharge:'fond'
     };
   }else{
@@ -907,7 +960,7 @@ async function soumettre(){
     const{error}=await SB.from('recharges').insert(payload);
     if(error)throw new Error(error.message);
     clearInterval(timerInt);
-    const lb=selType==='vip'?('✅ '+planSel.label+' — En attente'):('✅ '+fondSel.nom+' — En attente');
+    const lb=selType==='vip'?('✅ '+(planSel?.label||'Plan')+' — En attente'):selType==='fond'?('✅ '+(fondSel?.nom||'Fonds')+' — En attente'):'✅ Solde rechargé — En attente';
     $s('suc-badge',lb);
     goPage(4);
     await chargerHistorique();
