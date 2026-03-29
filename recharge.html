@@ -16,8 +16,6 @@
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
 }
 html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;margin:0 auto;overflow-x:hidden}
-
-/* ── TOPBAR ── */
 .topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
   height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
   display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 12px;
@@ -28,11 +26,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .top-title{font-size:1rem;font-weight:900;color:#fff}
 .top-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.2);
   padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.35)}
-
-/* ── SCROLL ── */
 .scroll{padding-top:calc(var(--H) + var(--sat));padding-bottom:calc(var(--B) + var(--sab) + 20px);min-height:100svh}
-
-/* ── STEP BAR ── */
 .step-bar{display:flex;align-items:center;justify-content:center;padding:12px 18px 10px;
   background:var(--card);border-bottom:1px solid var(--bd)}
 .step-item{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;position:relative}
@@ -45,22 +39,16 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .step-item.done .step-circle{background:var(--g);color:#fff}
 .step-lbl{font-size:.55rem;font-weight:700;color:var(--mu);text-align:center;white-space:nowrap}
 .step-item.active .step-lbl{color:var(--o)}.step-item.done .step-lbl{color:var(--g)}
-
-/* ── TYPE SWITCH ── */
 .type-switch{margin:12px 12px 10px;display:flex;background:#E5E7EB;border-radius:14px;padding:4px;gap:4px}
 .type-btn{flex:1;padding:10px;border:none;border-radius:11px;font-family:'Nunito',sans-serif;
   font-size:.8rem;font-weight:800;color:var(--mu);background:transparent;cursor:pointer;transition:all .2s}
 .type-btn.on{background:#fff;color:var(--g);box-shadow:0 2px 8px rgba(0,0,0,.1)}
-
-/* ── SECTION HEADER ── */
 .sec-row{padding:14px 14px 10px;display:flex;align-items:center;gap:10px}
 .sec-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.15rem}
 .sec-ico.vip{background:linear-gradient(135deg,var(--g),var(--gd))}
 .sec-ico.fond{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}
 .sec-texts .sec-title{font-size:.92rem;font-weight:900;color:var(--txt)}
 .sec-texts .sec-sub{font-size:.63rem;color:var(--mu);margin-top:1px}
-
-/* ── PLAN CARDS VIP ── */
 .card-list{display:flex;flex-direction:column;gap:8px;padding:0 12px 14px}
 .p-card{background:var(--card);border-radius:18px;overflow:hidden;border:2.5px solid transparent;
   cursor:pointer;user-select:none;box-shadow:0 1px 8px rgba(0,0,0,.07);transition:all .18s}
@@ -84,16 +72,13 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .p-stats{display:none;grid-template-columns:repeat(3,1fr);border-top:1px solid #F1F5F9;padding:9px 14px;background:#F8FAFB}
 .p-card.sel .p-stats{display:grid}
 .ps{text-align:center}.ps-v{font-size:.78rem;font-weight:900;color:var(--g)}.ps-l{font-size:.57rem;color:var(--mu);font-weight:700;margin-top:1px}
-
-/* ── FOND CARDS ── */
 .f-card{background:var(--card);border-radius:18px;overflow:hidden;border:2.5px solid transparent;
   cursor:pointer;user-select:none;box-shadow:0 1px 8px rgba(0,0,0,.07);transition:all .18s}
 .f-card:active{transform:scale(.985)}.f-card.sel{border-color:#3B82F6;box-shadow:0 4px 22px rgba(59,130,246,.2)}
 .f-img-wrap{width:100%;height:110px;overflow:hidden;position:relative}
 .f-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
 .f-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.5))}
-.f-tag{position:absolute;top:8px;right:8px;z-index:2;font-size:.6rem;font-weight:900;
-  padding:3px 10px;border-radius:8px;background:#3B82F6;color:#fff}
+.f-tag{position:absolute;top:8px;right:8px;z-index:2;font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:8px;background:#3B82F6;color:#fff}
 .f-name{position:absolute;bottom:8px;left:12px;z-index:2;font-size:.82rem;font-weight:900;color:#fff}
 .f-body{padding:11px 14px}
 .f-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:10px}
@@ -103,12 +88,9 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .fg-v.gv{color:var(--g)}.fg-v.ov{color:var(--o)}
 .f-radio-row{display:flex;align-items:center;justify-content:space-between}
 .f-sel-txt{font-size:.7rem;font-weight:800;color:#3B82F6}
-.f-radio{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--bd);
-  display:flex;align-items:center;justify-content:center;transition:all .2s}
+.f-radio{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--bd);display:flex;align-items:center;justify-content:center;transition:all .2s}
 .f-card.sel .f-radio{background:#3B82F6;border-color:#3B82F6}
 .f-card.sel .f-radio::after{content:'✓';color:#fff;font-size:.75rem;font-weight:900}
-
-/* Champ montant fonds */
 .fond-montant-wrap{margin:0 12px 10px;background:var(--card);border-radius:14px;padding:13px 14px;box-shadow:0 1px 8px rgba(0,0,0,.07);display:none}
 .fm-lbl{font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:7px;display:block}
 .fm-input-row{display:flex;align-items:center;background:#F8FAFB;border:2px solid var(--bd);border-radius:12px;overflow:hidden;transition:border .2s}
@@ -120,16 +102,12 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .fm-calc-row{display:flex;justify-content:space-between;font-size:.69rem;font-weight:700;margin-bottom:4px}
 .fm-calc-row:last-child{margin-bottom:0;padding-top:5px;border-top:1px dashed #BFDBFE;font-size:.76rem;font-weight:900}
 .fm-calc-lbl{color:#1E40AF}.fm-calc-val{color:#1E40AF}
-
-/* ── BOUTON PRINCIPAL ── */
 .btn-cta{display:block;margin:0 12px 10px;width:calc(100% - 24px);padding:15px;border:none;
   border-radius:14px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;
   color:#fff;background:linear-gradient(135deg,var(--o),var(--od));
   box-shadow:0 4px 18px rgba(249,115,22,.38);transition:transform .15s}
 .btn-cta:active{transform:scale(.97)}.btn-cta:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .btn-ghost{background:#EFF2F7;color:var(--mu);box-shadow:none;border:1.5px solid var(--bd)}
-
-/* ── PAGE 2 : PAIEMENT ── */
 .amount-hero{background:linear-gradient(160deg,#14532D 0%,var(--g) 60%,var(--gl) 100%);padding:20px 18px 24px;position:relative;overflow:hidden}
 .amount-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.06)}
 .amount-hero.fond-hero{background:linear-gradient(160deg,#1E3A8A 0%,#2563EB 60%,#60A5FA 100%)}
@@ -139,46 +117,31 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .ah-plan-name{font-size:.78rem;color:rgba(255,255,255,.65);font-weight:700;margin-bottom:5px}
 .ah-amount{font-size:2.7rem;font-weight:900;color:#fff;letter-spacing:.01em;line-height:1}
 .ah-currency{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:5px;font-weight:600}
-.ah-timer{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
-  color:#fff;font-size:.7rem;font-weight:800;padding:4px 11px;border-radius:20px}
+.ah-timer{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:.7rem;font-weight:800;padding:4px 11px;border-radius:20px}
 .ah-fond-details{margin-top:10px;display:flex;gap:10px}
 .ah-fd{background:rgba(255,255,255,.15);border-radius:10px;padding:7px 12px;text-align:center;flex:1}
 .ah-fd-v{font-size:.9rem;font-weight:900;color:#fff}
 .ah-fd-l{font-size:.58rem;color:rgba(255,255,255,.65);margin-top:2px}
-
-/* Opérateurs */
 .op-section{padding:14px 14px 4px}
 .op-title{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:11px}
-
-/* Pays */
 .pays-card{padding:10px 8px;border:2.5px solid var(--bd);border-radius:14px;background:#F8FAFB;cursor:pointer;text-align:center;transition:all .18s;user-select:none}
 .pays-card:active{transform:scale(.93)}
 .pays-card.sel{border-color:var(--g);background:linear-gradient(135deg,#F0FDF4,#DCFCE7)}
 .pays-flag{font-size:1.5rem;line-height:1;margin-bottom:3px}
 .pays-name{font-size:.65rem;font-weight:800;color:var(--txt)}
 .pays-card.sel .pays-name{color:var(--g)}
-
-/* Op card — FIX : pointer-events sur les enfants */
 .op-card{background:var(--card);border-radius:16px;border:2px solid var(--bd);margin-bottom:9px;
-  cursor:pointer;user-select:none;overflow:hidden;transition:all .18s;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+  cursor:pointer;user-select:none;overflow:hidden;transition:border .18s,box-shadow .18s;box-shadow:0 1px 6px rgba(0,0,0,.05)}
 .op-card.disabled{opacity:.6;cursor:default;pointer-events:none}
-/* On bloque la propagation via CSS pour les enfants interactifs */
-.op-card .op-detail input,
-.op-card .op-detail button,
-.op-card .op-detail textarea{pointer-events:auto}
-
 .op-head{padding:13px 14px;display:flex;align-items:center;gap:12px}
 .op-logo{width:52px;height:52px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:1.4rem}
 .op-info{flex:1;min-width:0}
 .op-tag{font-size:.57rem;font-weight:900;padding:2px 9px;border-radius:8px;display:inline-block;margin-bottom:3px}
-.tag-def{background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA}
-.tag-crypto{background:#F3E8FF;color:#7C3AED;border:1px solid #E9D5FF}
 .tag-avail{background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0}
+.tag-crypto{background:#F3E8FF;color:#7C3AED;border:1px solid #E9D5FF}
 .op-name{font-size:.88rem;font-weight:900;color:var(--txt)}
 .op-sub{font-size:.63rem;color:var(--mu);margin-top:2px;line-height:1.4}
 .op-radio{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
-
-/* Détail opérateur */
 .op-detail{display:none;padding:0 14px 14px}
 .dest-box{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:13px;padding:13px;margin-bottom:10px}
 .dest-lbl{font-size:.6rem;font-weight:800;color:var(--g);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
@@ -187,9 +150,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .dest-copy{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;padding:9px;background:#fff;border:1.5px solid var(--g);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;color:var(--g);cursor:pointer;transition:background .15s}
 .dest-copy:active{background:#F0FDF4}
 .crypto-box{background:linear-gradient(135deg,#FAF5FF,#EDE9FE);border:1.5px solid #C4B5FD;border-radius:13px;padding:14px;margin-bottom:10px}
-.crypto-net{display:inline-block;font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:8px;margin-bottom:8px}
-.net-bsc{background:#F3BA2F;color:#4A2E00}.net-sol{background:linear-gradient(135deg,#9945FF,#14F195);color:#fff}
-.net-btc{background:linear-gradient(135deg,#F97316,#C2410C);color:#fff}
+.crypto-net{display:inline-block;font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:8px;margin-bottom:8px;background:#F3BA2F;color:#4A2E00}
 .crypto-lbl{font-size:.6rem;font-weight:800;color:#5B21B6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
 .crypto-addr{font-size:.65rem;font-weight:700;color:#1e1b4b;font-family:'Courier New',monospace;word-break:break-all;line-height:1.6;background:#fff;border-radius:9px;padding:10px 12px;border:1px solid #DDD6FE;margin-bottom:9px;user-select:all}
 .crypto-copy{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;background:#fff;border:1.5px solid #8B5CF6;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;color:#7C3AED;cursor:pointer;transition:background .15s}
@@ -197,20 +158,15 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .crypto-warn{background:#FFFBEB;border:1px solid #FCD34D;border-radius:10px;padding:9px 12px;font-size:.63rem;font-weight:700;color:#92400E;line-height:1.6;text-align:center;margin-top:9px}
 .pay-hint{text-align:center;font-size:.72rem;font-weight:700;color:var(--mu);margin-bottom:11px;padding:8px;background:#F8FAFC;border-radius:9px}
 .pay-hint b{color:var(--g);font-size:.82rem}
-.prod-badge{display:inline-flex;align-items:center;gap:4px;font-size:.58rem;font-weight:900;padding:3px 10px;border-radius:8px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);color:#92400E;border:1px solid #FCD34D}
 .op-section-title{padding:16px 14px 8px;font-size:.75rem;font-weight:900;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:8px}
 .op-section-title::after{content:'';flex:1;height:1px;background:var(--bd)}
-
-/* Champ numéro expéditeur */
-.num-field{margin-top:2px}
+.num-field{margin-top:10px}
 .num-lbl{font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:7px;display:block}
 .num-wrap{display:flex;align-items:center;background:var(--card);border:2px solid var(--bd);border-radius:13px;overflow:hidden;transition:border .2s}
 .num-wrap:focus-within{border-color:var(--g)}
-.num-indic{min-width:54px;height:54px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--bd);flex-shrink:0;background:#F8FAFB;font-size:.78rem;font-weight:900;color:var(--txt);padding:0 8px;gap:4px}
+.num-indic{min-width:60px;height:54px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--bd);flex-shrink:0;background:#F8FAFB;font-size:.75rem;font-weight:900;color:var(--txt);padding:0 6px;gap:2px}
 .num-inp{flex:1;padding:0 14px;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;color:var(--txt);background:transparent;height:54px}
 .num-inp::placeholder{color:#CBD5E1;font-weight:600}
-
-/* ── PAGE 3 : PREUVE ── */
 .proof-card{margin:14px 12px 0;background:var(--card);border-radius:18px;padding:16px;box-shadow:0 1px 10px rgba(0,0,0,.07)}
 .proof-title{font-size:.9rem;font-weight:900;color:var(--txt);margin-bottom:14px}
 .pf{margin-bottom:12px}
@@ -222,8 +178,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .alert-info{margin:12px 12px 14px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:13px;padding:12px 13px;display:flex;gap:9px;align-items:flex-start}
 .ai-ico{font-size:1.1rem;flex-shrink:0}
 .ai-txt{font-size:.69rem;color:#1E40AF;font-weight:700;line-height:1.55}
-
-/* ── PAGE 4 : SUCCÈS ── */
 .success-page{padding:44px 20px 20px;text-align:center}
 .suc-emoji{font-size:5rem;display:block;margin-bottom:16px;animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
 @keyframes pop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
@@ -231,8 +185,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .suc-sub{font-size:.78rem;color:var(--mu);line-height:1.65;margin-bottom:10px}
 .suc-badge{display:inline-block;font-size:.9rem;font-weight:900;color:var(--g);background:#F0FDF4;padding:11px 24px;border-radius:14px;margin:12px 0 20px;border:1.5px solid #BBF7D0}
 .suc-home{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;padding:13px 32px;border-radius:14px;font-size:.9rem;font-weight:900;text-decoration:none;box-shadow:0 4px 18px rgba(22,163,74,.3)}
-
-/* ── HISTORIQUE ── */
 .hist-title{padding:16px 14px 8px;font-size:.88rem;font-weight:900;color:var(--txt)}
 .hist-list{padding:0 12px 20px;display:flex;flex-direction:column;gap:8px}
 .h-item{background:var(--card);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
@@ -245,13 +197,9 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .h-amt{font-size:.88rem;font-weight:900;color:var(--g)}
 .h-stat{font-size:.6rem;font-weight:800;padding:2px 9px;border-radius:9px;margin-top:3px;display:inline-block}
 .sw{background:#FFF7ED;color:#D97706}.sv{background:#F0FDF4;color:var(--g)}.sr{background:#FEF2F2;color:#DC2626}
-
-/* ── BOTNAV ── */
 .botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#fff;border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;box-shadow:0 -3px 16px rgba(0,0,0,.07)}
 .bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
 .bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
-
-/* ── TOAST & LOADER ── */
 .tst{position:fixed;top:calc(var(--H) + var(--sat) + 10px);left:50%;transform:translateX(-50%) translateY(-90px);background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.25)}
 .tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
 .ld{display:inline-block;width:11px;height:11px;border:2px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
@@ -264,12 +212,8 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
   <span class="top-title">💰 Recharge</span>
   <div class="top-pill" id="tb-vip">—</div>
 </div>
-
 <div class="tst" id="tst"></div>
-
 <div class="scroll">
-
-  <!-- STEP BAR -->
   <div class="step-bar">
     <div class="step-item active" id="stp1"><div class="step-circle">1</div><div class="step-lbl">Choisir</div></div>
     <div class="step-item" id="stp2"><div class="step-circle">2</div><div class="step-lbl">Paiement</div></div>
@@ -277,46 +221,23 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
     <div class="step-item" id="stp4"><div class="step-circle">4</div><div class="step-lbl">Confirmé</div></div>
   </div>
 
-  <!-- ══ PAGE 1 — CHOISIR ══ -->
+  <!-- PAGE 1 -->
   <div id="page1">
     <div class="type-switch">
       <button class="type-btn on" id="btn-type-vip" onclick="switchType('vip')">💎 Plans VIP</button>
       <button class="type-btn" id="btn-type-fond" onclick="switchType('fond')">📈 Fonds</button>
       <button class="type-btn" id="btn-type-solde" onclick="switchType('solde')">💰 Solde</button>
     </div>
-
-    <!-- VIP -->
     <div id="section-vip">
-      <div class="sec-row">
-        <div class="sec-ico vip">💎</div>
-        <div class="sec-texts">
-          <div class="sec-title">Plans VIP</div>
-          <div class="sec-sub">Activez un plan pour débloquer vos tâches quotidiennes</div>
-        </div>
-      </div>
-      <div class="card-list" id="plan-list">
-        <div style="text-align:center;padding:28px"><span class="ld"></span></div>
-      </div>
+      <div class="sec-row"><div class="sec-ico vip">💎</div><div class="sec-texts"><div class="sec-title">Plans VIP</div><div class="sec-sub">Activez un plan pour débloquer vos tâches quotidiennes</div></div></div>
+      <div class="card-list" id="plan-list"><div style="text-align:center;padding:28px"><span class="ld"></span></div></div>
     </div>
-
-    <!-- FONDS -->
     <div id="section-fond" style="display:none">
-      <div class="sec-row">
-        <div class="sec-ico fond">📈</div>
-        <div class="sec-texts">
-          <div class="sec-title">Fonds d'investissement</div>
-          <div class="sec-sub">Placez votre capital et recevez vos intérêts à échéance</div>
-        </div>
-      </div>
-      <div class="card-list" id="fond-list">
-        <div style="text-align:center;padding:28px"><span class="ld"></span></div>
-      </div>
+      <div class="sec-row"><div class="sec-ico fond">📈</div><div class="sec-texts"><div class="sec-title">Fonds d'investissement</div><div class="sec-sub">Placez votre capital et recevez vos intérêts à échéance</div></div></div>
+      <div class="card-list" id="fond-list"><div style="text-align:center;padding:28px"><span class="ld"></span></div></div>
       <div class="fond-montant-wrap" id="fond-montant-wrap">
         <label class="fm-lbl" for="inp-fond-montant">💵 Montant à investir</label>
-        <div class="fm-input-row">
-          <div class="fm-currency">FCFA</div>
-          <input class="fm-inp" type="number" id="inp-fond-montant" placeholder="0" inputmode="numeric" oninput="calcFond()">
-        </div>
+        <div class="fm-input-row"><div class="fm-currency">FCFA</div><input class="fm-inp" type="number" id="inp-fond-montant" placeholder="0" inputmode="numeric" oninput="calcFond()"></div>
         <div class="fm-hint" id="fm-hint">Minimum : —</div>
         <div class="fm-calc" id="fm-calc">
           <div class="fm-calc-row"><span class="fm-calc-lbl">Capital investi</span><span class="fm-calc-val" id="fmc-capital">—</span></div>
@@ -325,23 +246,13 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         </div>
       </div>
     </div>
-
-    <!-- SOLDE LIBRE -->
     <div id="section-solde" style="display:none">
-      <div class="sec-row">
-        <div class="sec-ico" style="background:linear-gradient(135deg,#F97316,#EA580C)">💰</div>
-        <div class="sec-texts">
-          <div class="sec-title">Recharger mon solde</div>
-          <div class="sec-sub">Ajoutez des fonds librement, sans plan obligatoire</div>
-        </div>
-      </div>
+      <div class="sec-row"><div class="sec-ico" style="background:linear-gradient(135deg,#F97316,#EA580C)">💰</div><div class="sec-texts"><div class="sec-title">Recharger mon solde</div><div class="sec-sub">Ajoutez des fonds librement, sans plan obligatoire</div></div></div>
       <div style="margin:0 12px 14px;background:var(--card);border-radius:16px;padding:16px;box-shadow:0 1px 8px rgba(0,0,0,.07)">
         <div style="font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:10px">💵 Montant à recharger</div>
         <div style="display:flex;align-items:center;background:#F8FAFB;border:2px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:8px">
           <div style="padding:0 14px;font-size:.85rem;font-weight:900;color:var(--mu);border-right:1px solid var(--bd);height:50px;display:flex;align-items:center;background:#fff">FCFA</div>
-          <input type="number" id="inp-solde-montant" inputmode="numeric" placeholder="Ex: 5 000"
-            style="flex:1;padding:0 14px;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:var(--txt);background:transparent;height:50px"
-            oninput="calcSoldeMontant()">
+          <input type="number" id="inp-solde-montant" inputmode="numeric" placeholder="Ex: 5 000" style="flex:1;padding:0 14px;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:var(--txt);background:transparent;height:50px" oninput="calcSoldeMontant()">
         </div>
         <div style="font-size:.65rem;color:var(--mu);font-weight:600">Minimum : 500 FCFA · Le montant sera crédité après validation admin</div>
         <div id="solde-preview" style="display:none;margin-top:10px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:9px 12px">
@@ -349,15 +260,14 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         </div>
       </div>
     </div>
-
     <button class="btn-cta" id="btn-p1" onclick="goPage(2)" disabled>Continuer →</button>
   </div>
 
-  <!-- ══ PAGE 2 — PAIEMENT ══ -->
+  <!-- PAGE 2 -->
   <div id="page2" style="display:none">
     <div class="amount-hero" id="amount-hero">
       <div class="ah-timer">⏱ <span id="timer-display">20:00</span></div>
-      <div class="ah-label" id="ah-label">MONTANT DU PAIEMENT</div>
+      <div class="ah-label vip-label" id="ah-label">MONTANT DU PAIEMENT</div>
       <div class="ah-plan-name" id="ah-plan">—</div>
       <div class="ah-amount" id="ah-amount">—</div>
       <div class="ah-currency">Francs CFA · XAF</div>
@@ -367,7 +277,6 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
         <div class="ah-fd"><div class="ah-fd-v" id="ahf-gain">—</div><div class="ah-fd-l">Gain estimé</div></div>
       </div>
     </div>
-
     <div class="op-section">
       <div class="op-title">🌍 Pays et méthode de paiement</div>
       <div id="pays-selector" style="padding:0 0 14px">
@@ -376,26 +285,25 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
       </div>
       <div id="methodes-container"></div>
     </div>
-
     <div style="display:flex;gap:8px;padding:4px 12px 20px">
       <button class="btn-cta btn-ghost" style="margin:0;flex:1;width:auto;padding:13px" onclick="goPage(1)">← Retour</button>
       <button class="btn-cta" style="margin:0;flex:2;width:auto;padding:13px" onclick="goPage(3)">J'ai payé →</button>
     </div>
   </div>
 
-  <!-- ══ PAGE 3 — PREUVE ══ -->
+  <!-- PAGE 3 -->
   <div id="page3" style="display:none">
     <div class="proof-card">
       <div class="proof-title">📤 Confirmer votre paiement</div>
       <div class="pf">
         <label>Référence / ID de transaction</label>
-        <input type="text" id="inp-ref" placeholder="Ex: 0xabc123... ou TxHash Solana…">
-        <div class="fhint">Hash de transaction visible sur l'explorateur blockchain ou l'appli d'envoi</div>
+        <input type="text" id="inp-ref" placeholder="Ex: VGN123456 ou hash crypto…">
+        <div class="fhint">Numéro de transaction visible dans votre appli de paiement</div>
       </div>
       <div class="pf">
-        <label>Montant envoyé</label>
+        <label>Montant envoyé (FCFA)</label>
         <input type="number" id="inp-montant" placeholder="0" inputmode="decimal" step="any">
-        <div class="fhint" id="montant-hint">En BNB / USDT / BTC selon la crypto choisie</div>
+        <div class="fhint" id="montant-hint">Entrez le montant exact que vous avez envoyé</div>
       </div>
       <div class="pf">
         <label>Note (optionnel)</label>
@@ -404,7 +312,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
     </div>
     <div class="alert-info">
       <span class="ai-ico">⏱️</span>
-      <div class="ai-txt">Votre demande sera vérifiée sous <b>24h ouvrées</b>. Votre plan / fonds <b id="note-plan">—</b> s'activera automatiquement dès validation.</div>
+      <div class="ai-txt">Votre demande sera vérifiée sous <b>24h ouvrées</b>. Votre plan <b id="note-plan">—</b> s'activera automatiquement dès validation.</div>
     </div>
     <div style="display:flex;gap:8px;padding:0 12px 20px">
       <button class="btn-cta btn-ghost" style="margin:0;flex:1;width:auto;padding:13px" onclick="goPage(2)">← Retour</button>
@@ -412,28 +320,24 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
     </div>
   </div>
 
-  <!-- ══ PAGE 4 — SUCCÈS ══ -->
+  <!-- PAGE 4 -->
   <div id="page4" style="display:none">
     <div class="success-page">
       <span class="suc-emoji">⏳</span>
       <div class="suc-title">Demande envoyée !</div>
       <div class="suc-sub">Votre paiement est reçu et en cours de vérification.</div>
       <div class="suc-badge" id="suc-badge">— en attente</div>
-      <div class="suc-sub">Vous recevrez une notification dès validation.</div>
-      <br>
+      <div class="suc-sub">Vous recevrez une notification dès validation.</div><br>
       <a href="dashboard.html" class="suc-home">🏠 Retour à l'accueil</a>
     </div>
   </div>
 
-  <!-- ══ HISTORIQUE ══ -->
+  <!-- HISTORIQUE -->
   <div id="hist-wrap">
     <div class="hist-title">📋 Mes demandes de recharge</div>
-    <div class="hist-list" id="hist-list">
-      <div style="text-align:center;padding:20px"><span class="ld"></span></div>
-    </div>
+    <div class="hist-list" id="hist-list"><div style="text-align:center;padding:20px"><span class="ld"></span></div></div>
   </div>
-
-</div><!-- /scroll -->
+</div>
 
 <nav class="botnav">
   <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
@@ -443,14 +347,13 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 </nav>
 
 <script>
-const SB = supabase.createClient(
+const SB=supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
-  { auth: { persistSession: true, storageKey: 'vgn-auth', storage: window.localStorage } }
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
 
-/* ══ DONNÉES ══ */
-const PLANS = [
+const PLANS=[
   {n:1,label:'VIP 1',job:'Job 1',gain:70,   taches:5, depot:10500,   ico:'💼',b:'b1'},
   {n:2,label:'VIP 2',job:'Job 2',gain:175,  taches:8, depot:42000,   ico:'🚀',b:'b2'},
   {n:3,label:'VIP 3',job:'Job 3',gain:560,  taches:10,depot:168000,  ico:'⭐',b:'b3'},
@@ -461,252 +364,115 @@ const PLANS = [
   {n:8,label:'VIP 8',job:'Job 8',gain:11000,taches:35,depot:11550000,ico:'💫',b:'b8'},
   {n:9,label:'VIP 9',job:'Job 9',gain:19000,taches:40,depot:22800000,ico:'🎯',b:'b9'},
 ];
-
-const FONDS = [
-  {id:1,nom:'VGN 1 Jour',  jours:1,  taux:1,   min:100,img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',ico:'🌱'},
-  {id:2,nom:'VGN 7 Jours', jours:7,  taux:7.5, min:100,img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',ico:'🌾'},
-  {id:3,nom:'VGN 14 Jours',jours:14, taux:18,  min:100,img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80',ico:'🌿'},
-  {id:4,nom:'VGN 30 Jours',jours:30, taux:24,  min:100,img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80',ico:'💎'},
+const FONDS=[
+  {id:1,nom:'VGN 1 Jour',  jours:1, taux:1,  min:100,img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',ico:'🌱'},
+  {id:2,nom:'VGN 7 Jours', jours:7, taux:7.5,min:100,img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',ico:'🌾'},
+  {id:3,nom:'VGN 14 Jours',jours:14,taux:18, min:100,img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&q=80',ico:'🌿'},
+  {id:4,nom:'VGN 30 Jours',jours:30,taux:24, min:100,img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80',ico:'💎'},
 ];
 
-/* ══ NUMÉROS RÉELS ══ */
-// MTN : 651461777 — Jean Jacques Rousseau
-// Orange : 658033690 — Alirou Moun
+/* Opérateurs de base — numéros réels */
+const MTN    ={id:'mtn',   label:'MTN MoMo',    logo:'📱',couleur:'#FFCC00',numero:'651 461 777',titulaire:'Jean Jacques Rousseau'};
+const ORANGE ={id:'orange',label:'Orange Money', logo:'🍊',couleur:'#FF6600',numero:'658 033 690',titulaire:'Alirou Moun'};
+const WAVE   ={id:'wave',  label:'Wave',         logo:'🌊',couleur:'#06B6D4',numero:'658 033 690',titulaire:'Alirou Moun'};
+const NITA   ={id:'nita',  label:'Nita',         logo:'Ⓜ️',couleur:'#E91E8C',numero:'658 033 690',titulaire:'Alirou Moun'};
+const op=(base,champ)=>({...base,champ:champ||'Votre numéro '+base.label});
 
-/* Indicatifs téléphoniques par pays */
-const INDICATIFS = {
-  cm:'+237', ci:'+225', sn:'+221', ml:'+223', bf:'+226',
-  tg:'+228', bj:'+229', gn:'+224', ne:'+227', mr:'+222',
-  ga:'+241', cg:'+242', gw:'+245', km:'+269',
-  fr:'+33',  be:'+32',  ma:'+212', dz:'+213', tn:'+216',
-  cd:'+243', ng:'+234', gh:'+233', other:''
-};
+const INDICATIFS={cm:'+237',ci:'+225',sn:'+221',ml:'+223',bf:'+226',tg:'+228',bj:'+229',gn:'+224',ne:'+227',mr:'+222',ga:'+241',cg:'+242',gw:'+245',km:'+269',td:'+235',fr:'+33',be:'+32',ma:'+212',dz:'+213',tn:'+216',cd:'+243',ng:'+234',gh:'+233',other:''};
 
-/* ══ CONFIG PAYS ══
-   MTN  : 651461777  — Jean Jacques Rousseau
-   Orange : 658033690 — Alirou Moun
-   Wave : pas encore de compte dédié → même Orange pour l'instant
+/*
+  Wave  → CM CI SN ML BF GN TG
+  Nita  → BF TG BJ NE GA
+  MTN   → CM CI BF TG BJ GN GA CG CD NG GH NE
+  Orange→ CM CI SN ML BF GN NE MR GW KM TD
 */
-const PAYS_CONFIG = [
-  {id:'cm', nom:'Cameroun',          flag:'🇨🇲', methodes:[
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-    {id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Orange'},
-  ]},
-  {id:'ci', nom:"Côte d'Ivoire",     flag:'🇨🇮', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Orange'},
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'sn', nom:'Sénégal',           flag:'🇸🇳', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Orange'},
-  ]},
-  {id:'ml', nom:'Mali',              flag:'🇲🇱', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Orange'},
-  ]},
-  {id:'bf', nom:'Burkina Faso',      flag:'🇧🇫', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Orange'},
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'tg', nom:'Togo',              flag:'🇹🇬', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'bj', nom:'Bénin',             flag:'🇧🇯', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'gn', nom:'Guinée',            flag:'🇬🇳', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Orange'},
-  ]},
-  {id:'ne', nom:'Niger',             flag:'🇳🇪', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'orange', label:'Orange Money', logo:'🍊', couleur:'#FF6600', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Orange'},
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'mr', nom:'Mauritanie',        flag:'🇲🇷', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-  ]},
-  {id:'ga', nom:'Gabon',             flag:'🇬🇦', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'cg', nom:'Congo-Brazzaville', flag:'🇨🇬', methodes:[
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-  ]},
-  {id:'gw', nom:'Guinée-Bissau',     flag:'🇬🇼', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-  ]},
-  {id:'km', nom:'Comores',           flag:'🇰🇲', methodes:[
-    {id:'wave',   label:'Wave',         logo:'🌊', couleur:'#06B6D4', actif:true,
-     numero:'658 033 690', titulaire:'Alirou Moun', champ:'Votre numéro Wave'},
-  ]},
-  {id:'fr', nom:'France',            flag:'🇫🇷', methodes:[]},
-  {id:'be', nom:'Belgique',          flag:'🇧🇪', methodes:[]},
-  {id:'ma', nom:'Maroc',             flag:'🇲🇦', methodes:[]},
-  {id:'dz', nom:'Algérie',           flag:'🇩🇿', methodes:[]},
-  {id:'tn', nom:'Tunisie',           flag:'🇹🇳', methodes:[]},
-  {id:'cd', nom:'Congo-Kinshasa',    flag:'🇨🇩', methodes:[
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'ng', nom:'Nigeria',           flag:'🇳🇬', methodes:[
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'gh', nom:'Ghana',             flag:'🇬🇭', methodes:[
-    {id:'mtn',    label:'MTN MoMo',    logo:'📱', couleur:'#FFCC00', actif:true,
-     numero:'651 461 777', titulaire:'Jean Jacques Rousseau', champ:'Votre numéro MTN'},
-  ]},
-  {id:'other', nom:'Autre pays',     flag:'🌍', methodes:[]},
+const PAYS_CONFIG=[
+  {id:'cm', nom:'Cameroun',          flag:'🇨🇲',methodes:[op(MTN,'Votre numéro MTN'),op(ORANGE,'Votre numéro Orange'),op(WAVE,'Votre numéro Wave')]},
+  {id:'ci', nom:"Côte d'Ivoire",     flag:'🇨🇮',methodes:[op(WAVE,'Votre numéro Wave'),op(ORANGE,'Votre numéro Orange'),op(MTN,'Votre numéro MTN')]},
+  {id:'sn', nom:'Sénégal',           flag:'🇸🇳',methodes:[op(WAVE,'Votre numéro Wave'),op(ORANGE,'Votre numéro Orange')]},
+  {id:'ml', nom:'Mali',              flag:'🇲🇱',methodes:[op(WAVE,'Votre numéro Wave'),op(ORANGE,'Votre numéro Orange')]},
+  {id:'bf', nom:'Burkina Faso',      flag:'🇧🇫',methodes:[op(WAVE,'Votre numéro Wave'),op(ORANGE,'Votre numéro Orange'),op(MTN,'Votre numéro MTN'),op(NITA,'Votre numéro Nita')]},
+  {id:'tg', nom:'Togo',              flag:'🇹🇬',methodes:[op(WAVE,'Votre numéro Wave'),op(MTN,'Votre numéro MTN'),op(NITA,'Votre numéro Nita')]},
+  {id:'bj', nom:'Bénin',             flag:'🇧🇯',methodes:[op(MTN,'Votre numéro MTN'),op(NITA,'Votre numéro Nita')]},
+  {id:'gn', nom:'Guinée',            flag:'🇬🇳',methodes:[op(WAVE,'Votre numéro Wave'),op(ORANGE,'Votre numéro Orange'),op(MTN,'Votre numéro MTN')]},
+  {id:'ne', nom:'Niger',             flag:'🇳🇪',methodes:[op(ORANGE,'Votre numéro Orange'),op(MTN,'Votre numéro MTN'),op(NITA,'Votre numéro Nita')]},
+  {id:'mr', nom:'Mauritanie',        flag:'🇲🇷',methodes:[op(ORANGE,'Votre numéro Orange')]},
+  {id:'ga', nom:'Gabon',             flag:'🇬🇦',methodes:[op(MTN,'Votre numéro MTN'),op(NITA,'Votre numéro Nita')]},
+  {id:'cg', nom:'Congo-Brazzaville', flag:'🇨🇬',methodes:[op(MTN,'Votre numéro MTN')]},
+  {id:'gw', nom:'Guinée-Bissau',     flag:'🇬🇼',methodes:[op(ORANGE,'Votre numéro Orange')]},
+  {id:'km', nom:'Comores',           flag:'🇰🇲',methodes:[op(ORANGE,'Votre numéro Orange')]},
+  {id:'td', nom:'Tchad',             flag:'🇹🇩',methodes:[op(ORANGE,'Votre numéro Orange')]},
+  {id:'fr', nom:'France',            flag:'🇫🇷',methodes:[]},
+  {id:'be', nom:'Belgique',          flag:'🇧🇪',methodes:[]},
+  {id:'ma', nom:'Maroc',             flag:'🇲🇦',methodes:[]},
+  {id:'dz', nom:'Algérie',           flag:'🇩🇿',methodes:[]},
+  {id:'tn', nom:'Tunisie',           flag:'🇹🇳',methodes:[]},
+  {id:'cd', nom:'Congo-Kinshasa',    flag:'🇨🇩',methodes:[op(MTN,'Votre numéro MTN')]},
+  {id:'ng', nom:'Nigeria',           flag:'🇳🇬',methodes:[op(MTN,'Votre numéro MTN')]},
+  {id:'gh', nom:'Ghana',             flag:'🇬🇭',methodes:[op(MTN,'Votre numéro MTN')]},
+  {id:'other',nom:'Autre pays',      flag:'🌍',methodes:[]},
 ];
 
-const CRYPTO_METHODS = [
-  { id:'bnb', label:'BNB (BSC)',  logo:'◈', couleur:'#F3BA2F', reseau:'BSC uniquement',
-    addr:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB',
-    warn:'⚠️ Réseau BSC uniquement' },
-  { id:'sol', label:'USDT (SOL)', logo:'◎', couleur:'#9945FF', reseau:'Réseau Solana',
-    addr:'JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ',
-    warn:'⚠️ Réseau Solana uniquement — USDT SPL seulement' },
-  { id:'btc', label:'Bitcoin',    logo:'₿', couleur:'#F97316', reseau:'Bitcoin SegWit',
-    addr:'bc1pygygqdjmj60mph9yrn05extn3n4h22fv5ynt3w72hjd7arx64l4qdkp32x',
-    warn:'⚠️ Réseau Bitcoin uniquement. Confirmation 10–30 min.' },
+const CRYPTO_METHODS=[
+  {id:'bnb',label:'BNB (BSC)', logo:'◈',couleur:'#F3BA2F',reseau:'BSC uniquement',addr:'0x44C9170272c7eA2c99f5dC28d955AdFE8b4AA3CB',warn:'⚠️ Réseau BSC uniquement'},
+  {id:'sol',label:'USDT (SOL)',logo:'◎',couleur:'#9945FF',reseau:'Réseau Solana',  addr:'JBe5kePCCj3tG5RciCaNCEaJjtziycdrtKwz64Csx2VJ',warn:'⚠️ Réseau Solana uniquement — USDT SPL seulement'},
+  {id:'btc',label:'Bitcoin',   logo:'₿',couleur:'#F97316',reseau:'Bitcoin SegWit', addr:'bc1pygygqdjmj60mph9yrn05extn3n4h22fv5ynt3w72hjd7arx64l4qdkp32x',warn:'⚠️ Réseau Bitcoin uniquement. Confirmation 10–30 min.'},
 ];
+const CRYPTO_IDS=['bnb','sol','btc'];
 
-const CRYPTO_IDS  = ['bnb','sol','btc'];
-const MOBILE_IDS  = ['wave','orange','mtn'];
-
-/* ══ UTILS ══ */
-const fmt  = n => Number(n||0).toLocaleString('fr-FR');
-const fmtF = n => fmt(n) + ' FCFA';
-const $    = id => document.getElementById(id);
-const $s   = (id, v) => { const e=$(id); if(e) e.textContent = v; };
-
-function toast(m, t='') {
-  const el = $('tst');
-  el.textContent = m;
-  el.className = 'tst show' + (t ? ' ' + t : '');
-  setTimeout(() => el.className = 'tst', 3500);
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500);}
+function copier(txt,msg){
+  const fb=()=>{const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast(msg,'ok');};
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast(msg,'ok')).catch(fb);else fb();
 }
 
-function copier(txt, msg) {
-  const fb = () => {
-    const t = document.createElement('textarea');
-    t.value = txt; document.body.appendChild(t); t.select();
-    document.execCommand('copy'); document.body.removeChild(t);
-    toast(msg, 'ok');
-  };
-  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast(msg,'ok')).catch(fb);
-  else fb();
+let U=null,selType='vip',planSel=null,fondSel=null,opSel=null,timerInt=null,selPaysId=null;
+
+function switchType(t){
+  selType=t;planSel=null;fondSel=null;$('btn-p1').disabled=true;
+  ['vip','fond','solde'].forEach(x=>{const b=$('btn-type-'+x);if(b)b.className='type-btn'+(t===x?' on':'');});
+  $('section-vip').style.display=t==='vip'?'block':'none';
+  $('section-fond').style.display=t==='fond'?'block':'none';
+  const ss=$('section-solde');if(ss)ss.style.display=t==='solde'?'block':'none';
+  document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('.f-card').forEach(c=>c.classList.remove('sel'));
+  $('fond-montant-wrap').style.display='none';
+  if(t==='solde')$('btn-p1').disabled=false;
+}
+function calcSoldeMontant(){
+  const v=parseFloat($('inp-solde-montant')?.value)||0;
+  const p=$('solde-preview');
+  if(v>=500){$s('solde-preview-amt',fmt(v));if(p)p.style.display='block';$('btn-p1').disabled=false;}
+  else{if(p)p.style.display='none';if(selType==='solde')$('btn-p1').disabled=true;}
 }
 
-/* ══ STATE ══ */
-let U = null, selType = 'vip', planSel = null, fondSel = null, opSel = null, timerInt = null;
-let selPaysId = null;
-
-/* ══ TYPE SWITCH ══ */
-function switchType(t) {
-  selType = t; planSel = null; fondSel = null;
-  $('btn-p1').disabled = true;
-  ['vip','fond','solde'].forEach(x => {
-    const btn = $('btn-type-' + x);
-    if(btn) btn.className = 'type-btn' + (t===x ? ' on' : '');
-  });
-  $('section-vip').style.display  = t==='vip'   ? 'block' : 'none';
-  $('section-fond').style.display = t==='fond'  ? 'block' : 'none';
-  const ss = $('section-solde'); if(ss) ss.style.display = t==='solde' ? 'block' : 'none';
-  document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
-  document.querySelectorAll('.f-card').forEach(c => c.classList.remove('sel'));
-  $('fond-montant-wrap').style.display = 'none';
-  if(t === 'solde') $('btn-p1').disabled = false;
-}
-
-function calcSoldeMontant() {
-  const v = parseFloat($('inp-solde-montant')?.value) || 0;
-  const prev = $('solde-preview');
-  if(v >= 500) {
-    $s('solde-preview-amt', fmt(v));
-    if(prev) prev.style.display = 'block';
-    $('btn-p1').disabled = false;
-  } else {
-    if(prev) prev.style.display = 'none';
-    if(selType === 'solde') $('btn-p1').disabled = true;
-  }
-}
-
-/* ══ RENDER VIP ══ */
-function renderPlans() {
-  $('plan-list').innerHTML = PLANS.map(p => {
-    const rev = p.gain * p.taches;
+function renderPlans(){
+  $('plan-list').innerHTML=PLANS.map(p=>{
+    const rev=p.gain*p.taches;
     return `<div class="p-card" id="pc${p.n}" onclick="selPlan(${p.n})">
       <div class="p-top">
         <div class="p-badge ${p.b}">${p.ico}</div>
-        <div class="p-meta">
-          <div class="p-name">${p.label} — ${p.job}</div>
-          <div class="p-desc">${p.taches} tâches/jour · +${fmt(p.gain)} FCFA/tâche · ${fmtF(rev)}/jour</div>
-        </div>
-        <div class="p-right">
-          <div class="p-price">${fmtF(p.depot)}</div>
-          <div class="p-radio"></div>
-        </div>
+        <div class="p-meta"><div class="p-name">${p.label} — ${p.job}</div><div class="p-desc">${p.taches} tâches/jour · +${fmt(p.gain)} FCFA/tâche · ${fmtF(rev)}/jour</div></div>
+        <div class="p-right"><div class="p-price">${fmtF(p.depot)}</div><div class="p-radio"></div></div>
       </div>
       <div class="p-stats">
         <div class="ps"><div class="ps-v">${fmt(p.gain)} F</div><div class="ps-l">/ tâche</div></div>
         <div class="ps"><div class="ps-v">${fmtF(rev)}</div><div class="ps-l">/ jour</div></div>
         <div class="ps"><div class="ps-v">${fmtF(rev*30)}</div><div class="ps-l">/ mois est.</div></div>
-      </div>
-    </div>`;
+      </div></div>`;
   }).join('');
 }
+function selPlan(n){document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));$('pc'+n)?.classList.add('sel');planSel=PLANS.find(p=>p.n===n);$('btn-p1').disabled=false;}
 
-function selPlan(n) {
-  document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
-  $('pc'+n)?.classList.add('sel');
-  planSel = PLANS.find(p => p.n === n);
-  $('btn-p1').disabled = false;
-}
-
-/* ══ RENDER FONDS ══ */
-function renderFonds() {
-  $('fond-list').innerHTML = FONDS.map(f => {
-    const gainEx = Math.round(f.min * f.taux / 100);
+function renderFonds(){
+  $('fond-list').innerHTML=FONDS.map(f=>{
+    const gainEx=Math.round(f.min*f.taux/100);
     return `<div class="f-card" id="fc${f.id}" onclick="selFond(${f.id})">
-      <div class="f-img-wrap">
-        <img src="${f.img}" alt="${f.nom}" loading="lazy">
-        <div class="f-tag">VIP 1+</div>
-        <div class="f-name">${f.ico} ${f.nom}</div>
-      </div>
+      <div class="f-img-wrap"><img src="${f.img}" alt="${f.nom}" loading="lazy"><div class="f-tag">VIP 1+</div><div class="f-name">${f.ico} ${f.nom}</div></div>
       <div class="f-body">
         <div class="f-grid">
           <div class="fg"><div class="fg-l">⏱ Durée</div><div class="fg-v">${f.jours} jours</div></div>
@@ -714,102 +480,67 @@ function renderFonds() {
           <div class="fg"><div class="fg-l">💰 Minimum</div><div class="fg-v ov">${fmtF(f.min)}</div></div>
           <div class="fg"><div class="fg-l">🎯 Gain min</div><div class="fg-v gv">+${fmtF(gainEx)}</div></div>
         </div>
-        <div class="f-radio-row">
-          <span class="f-sel-txt">Sélectionner ce fonds</span>
-          <div class="f-radio" id="fr${f.id}"></div>
-        </div>
-      </div>
-    </div>`;
+        <div class="f-radio-row"><span class="f-sel-txt">Sélectionner ce fonds</span><div class="f-radio"></div></div>
+      </div></div>`;
   }).join('');
 }
-
-function selFond(id) {
-  document.querySelectorAll('.f-card').forEach(c => c.classList.remove('sel'));
-  $('fc'+id)?.classList.add('sel');
-  fondSel = FONDS.find(f => f.id === id);
-  const mw = $('fond-montant-wrap'); mw.style.display = 'block';
-  $s('fm-hint', 'Minimum : ' + fmtF(fondSel.min));
-  $s('fmc-taux', fondSel.taux);
-  $('inp-fond-montant').value = '';
-  $('fm-calc').style.display = 'none';
-  $('btn-p1').disabled = true;
-  setTimeout(() => mw.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+function selFond(id){
+  document.querySelectorAll('.f-card').forEach(c=>c.classList.remove('sel'));
+  $('fc'+id)?.classList.add('sel');fondSel=FONDS.find(f=>f.id===id);
+  const mw=$('fond-montant-wrap');mw.style.display='block';
+  $s('fm-hint','Minimum : '+fmtF(fondSel.min));$s('fmc-taux',fondSel.taux);
+  $('inp-fond-montant').value='';$('fm-calc').style.display='none';$('btn-p1').disabled=true;
+  setTimeout(()=>mw.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+function calcFond(){
+  if(!fondSel)return;
+  const v=parseFloat($('inp-fond-montant').value)||0;
+  if(v>=fondSel.min){
+    const inter=Math.round(v*fondSel.taux/100);
+    $s('fmc-capital',fmtF(v));$s('fmc-inter','+'+fmtF(inter));$s('fmc-total',fmtF(v+inter));
+    $('fm-calc').style.display='block';$('btn-p1').disabled=false;
+  }else{$('fm-calc').style.display='none';$('btn-p1').disabled=true;}
 }
 
-function calcFond() {
-  if(!fondSel) return;
-  const v = parseFloat($('inp-fond-montant').value) || 0;
-  if(v >= fondSel.min) {
-    const inter = Math.round(v * fondSel.taux / 100);
-    $s('fmc-capital', fmtF(v));
-    $s('fmc-inter', '+' + fmtF(inter));
-    $s('fmc-total', fmtF(v + inter));
-    $('fm-calc').style.display = 'block';
-    $('btn-p1').disabled = false;
-  } else {
-    $('fm-calc').style.display = 'none';
-    $('btn-p1').disabled = true;
-  }
-}
-
-/* ══ RENDER PAYS ══ */
-function renderPays() {
-  const grid = $('pays-grid');
-  if(!grid) return;
-  grid.innerHTML = PAYS_CONFIG.map(p => `
+function renderPays(){
+  const grid=$('pays-grid');if(!grid)return;
+  grid.innerHTML=PAYS_CONFIG.map(p=>`
     <div class="pays-card${selPaysId===p.id?' sel':''}" onclick="choisirPays('${p.id}')">
-      <div class="pays-flag">${p.flag}</div>
-      <div class="pays-name">${p.nom}</div>
+      <div class="pays-flag">${p.flag}</div><div class="pays-name">${p.nom}</div>
     </div>`).join('');
 }
+function choisirPays(id){selPaysId=id;opSel=null;renderPays();renderMethodes();}
 
-function choisirPays(id) {
-  selPaysId = id; opSel = null;
-  renderPays();
-  renderMethodes();
-}
+function renderMethodes(){
+  const box=$('methodes-container');if(!box)return;
+  const pays=PAYS_CONFIG.find(p=>p.id===selPaysId);
+  const montantFCFA=selType==='vip'?(planSel?.depot||0):selType==='fond'?(parseFloat($('inp-fond-montant')?.value)||0):(parseFloat($('inp-solde-montant')?.value)||0);
+  const montantStr=fmtF(montantFCFA);
+  let html='';
 
-/* ══ RENDER MÉTHODES — FIX PRINCIPAL ══
-   Le bug modal-qui-se-ferme venait du onclick="selOp(...)" sur .op-card
-   qui capturait les clics des inputs/boutons enfants.
-   SOLUTION : onclick sur .op-head seulement + stopPropagation sur .op-detail.
-*/
-function renderMethodes() {
-  const box = $('methodes-container');
-  if(!box) return;
-
-  const pays = PAYS_CONFIG.find(p => p.id === selPaysId);
-  const montantFCFA = selType==='vip' ? (planSel?.depot||0)
-    : selType==='fond' ? (parseFloat($('inp-fond-montant')?.value)||0)
-    : (parseFloat($('inp-solde-montant')?.value)||0);
-  const montantStr = fmtF(montantFCFA);
-
-  let html = '';
-
-  /* ── Mobile Money ── */
-  const nomPays = pays ? `${pays.flag} ${pays.nom}` : '';
-  html += `<div class="op-section-title">📱 Mobile Money${nomPays ? ' — ' + nomPays : ''}</div>`;
-
-  if(pays && pays.methodes.length > 0) {
-    pays.methodes.forEach(m => {
-      const isSel = opSel === (m.id + '_mob');
-      const numBrut = m.numero.replace(/\s/g,'');
-      const indic = INDICATIFS[selPaysId] || '';
-      html += `
-      <div class="op-card" id="opc-${m.id}">
-        <!-- EN-TÊTE cliquable -->
-        <div class="op-head" onclick="toggleOp('${m.id}_mob', '${m.couleur}')">
+  html+=`<div class="op-section-title">📱 Mobile Money${pays?' — '+pays.flag+' '+pays.nom:''}</div>`;
+  if(!pays){
+    html+=`<div style="text-align:center;padding:16px;font-size:.75rem;color:var(--mu);font-weight:700;background:#F8FAFC;border-radius:12px;margin-bottom:10px">👆 Sélectionnez votre pays pour voir les méthodes disponibles</div>`;
+  }else if(pays.methodes.length===0){
+    html+=`<div style="text-align:center;padding:16px;font-size:.75rem;color:#991B1B;font-weight:700;background:#FEF2F2;border-radius:12px;margin-bottom:10px;border:1px solid #FECACA">ℹ️ Pas de Mobile Money disponible pour ce pays<br>Utilisez la crypto ci-dessous</div>`;
+  }else{
+    pays.methodes.forEach(m=>{
+      const uid=m.id+'_'+selPaysId;
+      const isSel=opSel===uid;
+      const indic=INDICATIFS[selPaysId]||'';
+      const numBrut=m.numero.replace(/\s/g,'');
+      html+=`
+      <div class="op-card" id="opc-${uid}" style="${isSel?'border-color:'+m.couleur+';box-shadow:0 3px 18px '+m.couleur+'44':''}">
+        <div class="op-head" onclick="toggleOp('${uid}','${m.couleur}')">
           <div class="op-logo" style="background:${m.couleur}">${m.logo}</div>
           <div class="op-info">
             <span class="op-tag tag-avail">✅ DISPONIBLE</span>
             <div class="op-name">${m.label}</div>
             <div class="op-sub">${pays.flag} ${pays.nom}</div>
           </div>
-          <div class="op-radio" id="radio-${m.id}_mob"></div>
+          <div class="op-radio" id="radio-${uid}" style="${isSel?'background:#16A34A;border-color:#16A34A':''}">${isSel?'<span style="color:#fff;font-size:.75rem;font-weight:900">✓</span>':''}</div>
         </div>
-        <!-- DÉTAIL — stopPropagation pour ne pas fermer au clic intérieur -->
-        <div class="op-detail" id="od-${m.id}_mob" style="${isSel?'display:block':'display:none'}"
-             onclick="event.stopPropagation()">
+        <div class="op-detail" id="od-${uid}" style="display:${isSel?'block':'none'}" onclick="event.stopPropagation()">
           <div class="dest-box">
             <div class="dest-lbl">📱 Numéro à créditer</div>
             <div class="dest-num">${m.numero}</div>
@@ -821,42 +552,31 @@ function renderMethodes() {
             <label class="num-lbl">${m.champ}</label>
             <div class="num-wrap">
               <div class="num-indic">${m.logo} ${indic}</div>
-              <input class="num-inp" type="tel" id="num-${m.id}_mob"
-                     placeholder="6XX XX XX XX" inputmode="tel"
-                     onclick="event.stopPropagation()">
+              <input class="num-inp" type="tel" id="num-${uid}" placeholder="6XX XX XX XX" inputmode="tel" onclick="event.stopPropagation()">
             </div>
           </div>
         </div>
       </div>`;
     });
-  } else if(!pays) {
-    html += `<div style="text-align:center;padding:16px;font-size:.75rem;color:var(--mu);font-weight:700;background:#F8FAFC;border-radius:12px;margin-bottom:10px">
-      👆 Sélectionnez votre pays pour voir les méthodes disponibles</div>`;
-  } else {
-    html += `<div style="text-align:center;padding:16px;font-size:.75rem;color:var(--mu);font-weight:700;background:#FEF2F2;border-radius:12px;margin-bottom:10px;border:1px solid #FECACA">
-      ℹ️ Pas de Mobile Money disponible pour ce pays<br>
-      <span style="color:#991B1B">Utilisez la crypto ci-dessous ou choisissez un autre pays</span></div>`;
   }
 
-  /* ── Crypto ── */
-  html += `<div class="op-section-title" style="margin-top:4px">₿ Cryptomonnaies — Mondial</div>`;
-  CRYPTO_METHODS.forEach(m => {
-    const isSel = opSel === m.id;
-    html += `
-    <div class="op-card" id="opc-${m.id}">
-      <div class="op-head" onclick="toggleOp('${m.id}', '${m.couleur}')">
+  html+=`<div class="op-section-title" style="margin-top:4px">₿ Cryptomonnaies — Mondial</div>`;
+  CRYPTO_METHODS.forEach(m=>{
+    const isSel=opSel===m.id;
+    html+=`
+    <div class="op-card" id="opc-${m.id}" style="${isSel?'border-color:'+m.couleur+';box-shadow:0 3px 18px '+m.couleur+'44':''}">
+      <div class="op-head" onclick="toggleOp('${m.id}','${m.couleur}')">
         <div class="op-logo" style="background:${m.couleur}">${m.logo}</div>
         <div class="op-info">
           <span class="op-tag tag-crypto">${m.reseau}</span>
           <div class="op-name">${m.label}</div>
           <div class="op-sub">Disponible 24h/7j · Mondial</div>
         </div>
-        <div class="op-radio" id="radio-${m.id}"></div>
+        <div class="op-radio" id="radio-${m.id}" style="${isSel?'background:#16A34A;border-color:#16A34A':''}">${isSel?'<span style="color:#fff;font-size:.75rem;font-weight:900">✓</span>':''}</div>
       </div>
-      <div class="op-detail" id="od-${m.id}" style="${isSel?'display:block':'display:none'}"
-           onclick="event.stopPropagation()">
+      <div class="op-detail" id="od-${m.id}" style="display:${isSel?'block':'none'}" onclick="event.stopPropagation()">
         <div class="crypto-box">
-          <span class="crypto-net net-bsc">${m.logo} ${m.reseau}</span>
+          <span class="crypto-net">${m.logo} ${m.reseau}</span>
           <div class="crypto-lbl">📬 Adresse de dépôt</div>
           <div class="crypto-addr">${m.addr}</div>
           <button class="crypto-copy" onclick="copier('${m.addr}','✅ Adresse copiée !')">📋 Copier l'adresse</button>
@@ -866,281 +586,153 @@ function renderMethodes() {
       </div>
     </div>`;
   });
-
-  box.innerHTML = html;
-
-  /* Re-appliquer style si un opérateur était sélectionné */
-  if(opSel) applyOpStyle(opSel);
+  box.innerHTML=html;
 }
 
-/* ══ TOGGLE OP — La vraie correction ══ */
-function toggleOp(id, couleur) {
-  /* Si même op → fermer */
-  if(opSel === id) {
-    opSel = null;
-    const od = $('od-' + id);
-    if(od) od.style.display = 'none';
-    const radio = $('radio-' + id);
-    if(radio) { radio.style.background=''; radio.style.borderColor=''; radio.innerHTML=''; }
-    /* Reset bordure carte */
-    const card = document.getElementById('opc-' + id.replace('_mob',''));
-    if(card) { card.style.borderColor=''; card.style.boxShadow=''; }
-    return;
+function toggleOp(uid,couleur){
+  if(opSel===uid){
+    const od=$('od-'+uid);if(od)od.style.display='none';
+    const r=$('radio-'+uid);if(r){r.style.background='';r.style.borderColor='';r.innerHTML='';}
+    const c=$('opc-'+uid);if(c){c.style.borderColor='';c.style.boxShadow='';}
+    opSel=null;return;
   }
-
-  /* Fermer l'ancien */
-  if(opSel) {
-    const old = $('od-' + opSel); if(old) old.style.display='none';
-    const oldR = $('radio-' + opSel);
-    if(oldR) { oldR.style.background=''; oldR.style.borderColor=''; oldR.innerHTML=''; }
-    const oldCard = document.getElementById('opc-' + opSel.replace('_mob',''));
-    if(oldCard) { oldCard.style.borderColor=''; oldCard.style.boxShadow=''; }
+  if(opSel){
+    const od=$('od-'+opSel);if(od)od.style.display='none';
+    const r=$('radio-'+opSel);if(r){r.style.background='';r.style.borderColor='';r.innerHTML='';}
+    const c=$('opc-'+opSel);if(c){c.style.borderColor='';c.style.boxShadow='';}
   }
-
-  opSel = id;
-  const od = $('od-' + id);
-  if(od) {
-    od.style.display = 'block';
-    setTimeout(() => od.scrollIntoView({behavior:'smooth', block:'nearest'}), 80);
-  }
-  applyOpStyle(id, couleur);
+  opSel=uid;
+  const od=$('od-'+uid);if(od){od.style.display='block';setTimeout(()=>od.scrollIntoView({behavior:'smooth',block:'nearest'}),80);}
+  const r=$('radio-'+uid);if(r){r.style.background='#16A34A';r.style.borderColor='#16A34A';r.innerHTML='<span style="color:#fff;font-size:.75rem;font-weight:900">✓</span>';}
+  const c=$('opc-'+uid);if(c){c.style.borderColor=couleur;c.style.boxShadow='0 3px 18px '+couleur+'44';}
 }
 
-function applyOpStyle(id, couleur) {
-  /* Couleurs connues si non passées */
-  const clrs = {
-    wave_mob:'#06B6D4', orange_mob:'#FF6600', mtn_mob:'#FFCC00',
-    bnb:'#F3BA2F', sol:'#9945FF', btc:'#F97316'
-  };
-  const clr = couleur || clrs[id] || '#16A34A';
-  const radio = $('radio-' + id);
-  if(radio) {
-    radio.style.background = '#16A34A';
-    radio.style.borderColor = '#16A34A';
-    radio.innerHTML = '<span style="color:#fff;font-size:.75rem;font-weight:900">✓</span>';
-  }
-  const baseId = id.replace('_mob','');
-  const card = document.getElementById('opc-' + baseId);
-  if(card) {
-    card.style.borderColor = clr;
-    card.style.boxShadow = '0 3px 18px ' + clr + '44';
-  }
-}
+function setStep(n){[1,2,3,4].forEach(i=>{const el=$('stp'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');});}
 
-/* ══ STEP BAR ══ */
-function setStep(n) {
-  [1,2,3,4].forEach(i => {
-    const el = $('stp'+i); el.classList.remove('active','done');
-    if(i < n) el.classList.add('done');
-    else if(i === n) el.classList.add('active');
-  });
-}
-
-/* ══ TIMER ══ */
-let timerSec = 1200;
-function startTimer() {
-  clearInterval(timerInt); timerSec = 1200;
-  timerInt = setInterval(() => {
-    if(timerSec <= 0) { clearInterval(timerInt); $s('timer-display','Expiré'); return; }
+let timerSec=1200;
+function startTimer(){
+  clearInterval(timerInt);timerSec=1200;
+  timerInt=setInterval(()=>{
+    if(timerSec<=0){clearInterval(timerInt);$s('timer-display','Expiré');return;}
     timerSec--;
-    $s('timer-display',
-      String(Math.floor(timerSec/60)).padStart(2,'0') + ':' +
-      String(timerSec%60).padStart(2,'0'));
-  }, 1000);
+    $s('timer-display',String(Math.floor(timerSec/60)).padStart(2,'0')+':'+String(timerSec%60).padStart(2,'0'));
+  },1000);
 }
 
-/* ══ NAVIGATION ══ */
-function goPage(n) {
-  if(n === 2) {
-    if(selType==='vip' && !planSel) { toast('⚠️ Sélectionnez un plan VIP','err'); return; }
-    if(selType==='fond') {
-      if(!fondSel) { toast('⚠️ Sélectionnez un fonds','err'); return; }
-      const mv = parseFloat($('inp-fond-montant').value) || 0;
-      if(mv < fondSel.min) { toast('⚠️ Montant minimum : ' + fmtF(fondSel.min),'err'); return; }
-    }
-    if(selType==='solde') {
-      const sv = parseFloat($('inp-solde-montant')?.value) || 0;
-      if(sv < 500) { toast('⚠️ Minimum 500 FCFA','err'); return; }
-    }
-
-    /* Hero montant */
-    let montantAff = 0, planLabel = '';
-    if(selType==='vip') {
-      montantAff = planSel.depot; planLabel = planSel.label + ' — ' + planSel.job;
-      $('amount-hero').className = 'amount-hero';
-      $('ah-label').className = 'ah-label vip-label'; $('ah-label').textContent = 'MONTANT DU PAIEMENT';
-      $('ah-fond-extra').style.display = 'none';
-    } else if(selType==='fond') {
-      montantAff = parseFloat($('inp-fond-montant').value) || fondSel.min;
-      planLabel = fondSel.nom + ' · ' + fondSel.jours + ' jours';
-      $('amount-hero').className = 'amount-hero fond-hero';
-      $('ah-label').className = 'ah-label fond-label'; $('ah-label').textContent = "FONDS D'INVESTISSEMENT";
-      const inter = Math.round(montantAff * fondSel.taux / 100);
-      $('ah-fond-extra').style.display = 'flex';
-      $s('ahf-taux', '+' + fondSel.taux + '%');
-      $s('ahf-duree', fondSel.jours + ' jours');
-      $s('ahf-gain', '+' + fmtF(inter));
-    } else {
-      montantAff = parseFloat($('inp-solde-montant')?.value) || 0;
-      planLabel = 'Recharge Solde Libre';
-      $('amount-hero').className = 'amount-hero';
-      $('ah-label').className = 'ah-label vip-label'; $('ah-label').textContent = 'RECHARGE SOLDE';
-      $('ah-fond-extra').style.display = 'none';
-    }
-    $s('ah-plan', planLabel);
-    $s('ah-amount', 'XAF ' + fmt(montantAff));
-    startTimer();
-    renderPays();
-    renderMethodes();
+function goPage(n){
+  if(n===2){
+    if(selType==='vip'&&!planSel){toast('⚠️ Sélectionnez un plan VIP','err');return;}
+    if(selType==='fond'){if(!fondSel){toast('⚠️ Sélectionnez un fonds','err');return;}if((parseFloat($('inp-fond-montant').value)||0)<fondSel.min){toast('⚠️ Minimum : '+fmtF(fondSel.min),'err');return;}}
+    if(selType==='solde'&&(parseFloat($('inp-solde-montant')?.value)||0)<500){toast('⚠️ Minimum 500 FCFA','err');return;}
+    let montantAff=0,planLabel='';
+    if(selType==='vip'){montantAff=planSel.depot;planLabel=planSel.label+' — '+planSel.job;$('amount-hero').className='amount-hero';$('ah-label').className='ah-label vip-label';$('ah-label').textContent='MONTANT DU PAIEMENT';$('ah-fond-extra').style.display='none';}
+    else if(selType==='fond'){montantAff=parseFloat($('inp-fond-montant').value)||fondSel.min;planLabel=fondSel.nom+' · '+fondSel.jours+' jours';$('amount-hero').className='amount-hero fond-hero';$('ah-label').className='ah-label fond-label';$('ah-label').textContent="FONDS D'INVESTISSEMENT";const inter=Math.round(montantAff*fondSel.taux/100);$('ah-fond-extra').style.display='flex';$s('ahf-taux','+'+fondSel.taux+'%');$s('ahf-duree',fondSel.jours+' jours');$s('ahf-gain','+'+fmtF(inter));}
+    else{montantAff=parseFloat($('inp-solde-montant')?.value)||0;planLabel='Recharge Solde Libre';$('amount-hero').className='amount-hero';$('ah-label').className='ah-label vip-label';$('ah-label').textContent='RECHARGE SOLDE';$('ah-fond-extra').style.display='none';}
+    $s('ah-plan',planLabel);$s('ah-amount','XAF '+fmt(montantAff));
+    startTimer();renderPays();renderMethodes();
   }
-
-  if(n === 3) {
-    if(!opSel) { toast('⚠️ Sélectionnez une méthode de paiement','err'); return; }
-    const isMob = !CRYPTO_IDS.includes(opSel);
-    if(isMob) {
-      /* opSel = "mtn_mob" par exemple */
-      const numEl = $('num-' + opSel);
-      if(numEl && (numEl.value||'').replace(/\s/g,'').length < 8) {
-        const nomOp = opSel.replace('_mob','').toUpperCase();
-        toast('⚠️ Entrez votre numéro ' + nomOp + ' expéditeur','err'); return;
-      }
-    }
-    const lb = selType==='vip' ? (planSel?.label||'—') : selType==='fond' ? (fondSel?.nom||'—') : 'Solde';
-    $s('note-plan', lb);
-    const hintMap = {bnb:'En BNB (ex: 0.015)',sol:'En USDT SPL (ex: 17.50)',btc:'En BTC (ex: 0.00025)'};
-    $s('montant-hint', hintMap[opSel] || 'Montant exact envoyé en FCFA');
-    const montantAttendu = selType==='vip' ? (planSel?.depot||0)
-      : selType==='fond' ? (parseFloat($('inp-fond-montant')?.value)||0)
-      : (parseFloat($('inp-solde-montant')?.value)||0);
-    if(montantAttendu > 0) $('inp-montant').placeholder = '≈ ' + fmtF(montantAttendu);
+  if(n===3){
+    if(!opSel){toast('⚠️ Sélectionnez une méthode de paiement','err');return;}
+    const isMob=!CRYPTO_IDS.includes(opSel);
+    if(isMob){const numEl=$('num-'+opSel);if(numEl&&(numEl.value||'').replace(/\s/g,'').length<8){toast('⚠️ Entrez votre numéro expéditeur','err');return;}}
+    const lb=selType==='vip'?(planSel?.label||'—'):selType==='fond'?(fondSel?.nom||'—'):'Solde';
+    $s('note-plan',lb);
+    $s('montant-hint',CRYPTO_IDS.includes(opSel)?'En crypto selon le réseau choisi':'Montant exact envoyé en FCFA');
+    const ma=selType==='vip'?(planSel?.depot||0):selType==='fond'?(parseFloat($('inp-fond-montant')?.value)||0):(parseFloat($('inp-solde-montant')?.value)||0);
+    if(ma>0)$('inp-montant').placeholder='≈ '+fmtF(ma);
   }
-
-  [1,2,3,4].forEach(i => $('page'+i).style.display = i===n ? 'block' : 'none');
-  $('hist-wrap').style.display = n===4 ? 'none' : 'block';
-  setStep(n);
-  window.scrollTo({top:0, behavior:'smooth'});
+  [1,2,3,4].forEach(i=>$('page'+i).style.display=i===n?'block':'none');
+  $('hist-wrap').style.display=n===4?'none':'block';
+  setStep(n);window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ══ SOUMETTRE ══ */
-async function soumettre() {
-  const ref   = ($('inp-ref')?.value||'').trim();
-  const mont  = parseFloat($('inp-montant')?.value) || 0;
-  const note  = ($('inp-note')?.value||'').trim();
+/* ══ SOUMETTRE — colonnes sécurisées, pas d'erreur 400 ══ */
+async function soumettre(){
+  const ref=($('inp-ref')?.value||'').trim();
+  const mont=parseFloat($('inp-montant')?.value)||0;
+  const note=($('inp-note')?.value||'').trim();
+  if(!opSel){toast('⚠️ Sélectionnez une méthode de paiement','err');return;}
+  if(!ref){toast('⚠️ Entrez la référence de transaction','err');return;}
+  if(mont<=0){toast('⚠️ Indiquez le montant envoyé','err');return;}
+  const btn=$('btn-submit');btn.textContent='⏳ Envoi...';btn.disabled=true;
+  const isCrypto=CRYPTO_IDS.includes(opSel);
+  const opBase=isCrypto?opSel:opSel.split('_')[0];
+  const numMobile=isCrypto?null:($('num-'+opSel)?.value||'').trim();
 
-  if(!opSel) { toast('⚠️ Sélectionnez une méthode de paiement','err'); return; }
-  if(!ref)   { toast('⚠️ Entrez le hash / ID de transaction','err'); return; }
-  if(mont <= 0) { toast('⚠️ Indiquez le montant envoyé','err'); return; }
-
-  const btn = $('btn-submit'); btn.textContent = '⏳ Envoi...'; btn.disabled = true;
-
-  const isCrypto = CRYPTO_IDS.includes(opSel);
-  const numMobile = isCrypto ? null : ($('num-' + opSel)?.value||'').trim();
-  /* nom opérateur propre pour Supabase */
-  const opLabel = isCrypto ? ('crypto_' + opSel) : opSel.replace('_mob','');
-
-  let payload = {
+  /* Payload — uniquement les colonnes de base qui existent forcément */
+  const payload={
     user_id:         U.id,
-    operateur:       opLabel,
-    num_expediteur:  isCrypto ? (opSel.toUpperCase()) : numMobile,
+    operateur:       opBase,
+    num_expediteur:  isCrypto?opSel.toUpperCase():(numMobile||null),
     ref_transaction: ref,
     montant_envoye:  mont,
-    note:            note || (isCrypto ? ('Crypto: ' + opSel.toUpperCase()) : null),
+    note:            note||null,
     statut:          'en_attente',
-    created_at:      new Date().toISOString()
+    type_recharge:   selType,
+    plan_label:      selType==='vip'?(planSel?.label||null):selType==='fond'?(fondSel?.nom||null):'Recharge Solde',
+    plan_depot:      selType==='vip'?(planSel?.depot||0):mont,
+    plan_niveau:     selType==='vip'?(planSel?.n||0):0,
+    plan_gain:       selType==='vip'?(planSel?.gain||0):0,
+    plan_taches:     selType==='vip'?(planSel?.taches||0):0,
   };
-
-  if(selType==='vip') {
-    payload = {...payload,
-      plan_niveau: planSel.n, plan_label: planSel.label,
-      plan_depot: planSel.depot, plan_gain: planSel.gain, plan_taches: planSel.taches,
-      type_recharge: 'vip'
-    };
-  } else if(selType==='fond') {
-    payload = {...payload,
-      plan_niveau: 0, plan_label: fondSel?.nom||'Fonds',
-      plan_depot: mont, plan_gain: 0, plan_taches: 0,
-      fond_id: fondSel?.id||0, fond_taux: fondSel?.taux||0, fond_jours: fondSel?.jours||0,
-      type_recharge: 'fond'
-    };
-  } else {
-    const sm = parseFloat($('inp-solde-montant')?.value) || mont;
-    payload = {...payload,
-      montant_envoye: sm,
-      plan_niveau: 0, plan_label: 'Recharge Solde',
-      plan_depot: sm, plan_gain: 0, plan_taches: 0,
-      type_recharge: 'solde'
-    };
+  /* Colonnes fonds — ajoutées seulement si la table les a */
+  if(selType==='fond'&&fondSel){
+    payload.fond_id=fondSel.id;
+    payload.fond_taux=fondSel.taux;
+    payload.fond_jours=fondSel.jours;
   }
 
-  try {
-    const {error} = await SB.from('recharges').insert(payload);
-    if(error) throw new Error(error.message);
+  try{
+    const{error}=await SB.from('recharges').insert(payload);
+    if(error)throw new Error(error.message+' ['+error.code+']');
     clearInterval(timerInt);
-    const lb = selType==='vip' ? ('✅ '+(planSel?.label||'Plan')+' — En attente')
-      : selType==='fond' ? ('✅ '+(fondSel?.nom||'Fonds')+' — En attente')
-      : '✅ Solde rechargé — En attente';
-    $s('suc-badge', lb);
-    goPage(4);
-    await chargerHistorique();
-    toast('✅ Demande envoyée !','ok');
-  } catch(err) {
-    toast('❌ ' + err.message,'err'); console.error(err);
-  } finally {
-    btn.textContent = '✅ Envoyer'; btn.disabled = false;
+    $s('suc-badge',selType==='vip'?'✅ '+planSel?.label+' — En attente':selType==='fond'?'✅ '+fondSel?.nom+' — En attente':'✅ Solde rechargé — En attente');
+    goPage(4);await chargerHistorique();toast('✅ Demande envoyée !','ok');
+  }catch(err){
+    toast('❌ '+err.message,'err');console.error(err);
+  }finally{
+    btn.textContent='✅ Envoyer';btn.disabled=false;
   }
 }
 
-/* ══ HISTORIQUE ══ */
-async function chargerHistorique() {
-  const {data:h} = await SB.from('recharges')
-    .select('*').eq('user_id', U.id)
-    .order('created_at',{ascending:false}).limit(25);
-  const list = $('hist-list');
-  if(!h||!h.length) {
-    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--mu);font-size:.75rem;font-weight:700">Aucune demande pour le moment</div>';
-    return;
-  }
-  const stl = {en_attente:'En attente', valide:'Validé ✓', rejete:'Rejeté'};
-  const stc = {en_attente:'sw', valide:'sv', rejete:'sr'};
-  const stic = {en_attente:'ic-w', valide:'ic-v', rejete:'ic-r'};
-  const oico = {orange:'🍊', mtn:'📱', wave:'🌊', bnb:'◈', sol:'◎', btc:'₿'};
-  const ticon = {vip:'💎', fond:'📈', solde:'💰'};
-  list.innerHTML = h.map(r => {
-    const st = r.statut||'en_attente';
-    const d  = new Date(r.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    const tl = r.type_recharge==='fond' ? 'Fonds' : r.type_recharge==='solde' ? 'Solde' : 'VIP';
-    const opK = (r.operateur||'').replace('crypto_','');
+async function chargerHistorique(){
+  const{data:h}=await SB.from('recharges').select('*').eq('user_id',U.id).order('created_at',{ascending:false}).limit(25);
+  const list=$('hist-list');
+  if(!h||!h.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu);font-size:.75rem;font-weight:700">Aucune demande pour le moment</div>';return;}
+  const stl={en_attente:'En attente',valide:'Validé ✓',rejete:'Rejeté'};
+  const stc={en_attente:'sw',valide:'sv',rejete:'sr'};
+  const stic={en_attente:'ic-w',valide:'ic-v',rejete:'ic-r'};
+  const oico={orange:'🍊',mtn:'📱',wave:'🌊',nita:'Ⓜ️',bnb:'◈',sol:'◎',btc:'₿'};
+  const ticon={vip:'💎',fond:'📈',solde:'💰'};
+  list.innerHTML=h.map(r=>{
+    const st=r.statut||'en_attente';
+    const d=new Date(r.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    const tl=r.type_recharge==='fond'?'Fonds':r.type_recharge==='solde'?'Solde':'VIP';
+    const opk=(r.operateur||'').toLowerCase();
     return `<div class="h-item">
       <div class="h-ico ${stic[st]}">${ticon[r.type_recharge]||'💰'}</div>
       <div class="h-info">
-        <div class="h-name">${tl} · ${r.plan_label||'—'} · ${oico[opK]||''} ${opK.toUpperCase()}</div>
+        <div class="h-name">${tl} · ${r.plan_label||'—'} · ${oico[opk]||''} ${opk.toUpperCase()}</div>
         <div class="h-date">${d} · ${r.ref_transaction||'—'}</div>
       </div>
       <div class="h-right">
         <div class="h-amt">${fmtF(r.montant_envoye)}</div>
         <span class="h-stat ${stc[st]}">${stl[st]||st}</span>
-      </div>
-    </div>`;
+      </div></div>`;
   }).join('');
 }
 
-/* ══ INIT ══ */
-async function init() {
-  renderPlans();
-  renderFonds();
-  try {
-    const {data:{session}} = await SB.auth.getSession();
-    if(!session) { window.location.href='index.html'; return; }
-    U = session.user;
-    const {data:p} = await SB.from('profiles').select('vip_niveau,solde').eq('id',U.id).single();
-    $s('tb-vip', p?.vip_niveau || 'VIP 0');
+async function init(){
+  renderPlans();renderFonds();
+  try{
+    const{data:{session}}=await SB.auth.getSession();
+    if(!session){window.location.href='index.html';return;}
+    U=session.user;
+    const{data:p}=await SB.from('profiles').select('vip_niveau,solde').eq('id',U.id).single();
+    $s('tb-vip',p?.vip_niveau||'VIP 0');
     await chargerHistorique();
-  } catch(err) {
-    console.error('Init error:', err);
-    toast('Erreur de connexion — réessayez','err');
-  }
+  }catch(err){console.error('Init:',err);toast('Erreur de connexion','err');}
 }
-
 init();
 </script>
 </body>
