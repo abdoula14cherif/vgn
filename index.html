@@ -829,11 +829,21 @@
         email,
         password: pwd,
         options: {
-          data: { full_name: name, phone }
+          data: { full_name: name, phone },
+          emailRedirectTo: window.location.origin + '/dashboard.html'
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Message clair pour rate limit
+        if(error.message && error.message.toLowerCase().includes('rate limit')) {
+          throw new Error('Trop de tentatives. Patientez 1 heure ou utilisez une autre adresse email.');
+        }
+        if(error.message && error.message.toLowerCase().includes('already registered')) {
+          throw new Error('Cet email est déjà utilisé. Connectez-vous à la place.');
+        }
+        throw error;
+      }
 
       if (data.user) {
         const userId = data.user.id;
