@@ -358,6 +358,24 @@ async function finishAd(){
 }
 
 /* INIT */
+// ── POPUP ──
+function showPopup(){
+  const el=document.getElementById('pop-ov');
+  if(el)el.classList.add('open');
+}
+function closePopup(){
+  const el=document.getElementById('pop-ov');
+  if(el)el.classList.remove('open');
+  setTimeout(function(){
+    if(!localStorage.getItem('vgn-tg-joined')) showPopup();
+  }, 3*60*1000);
+}
+function joinedTelegram(){
+  localStorage.setItem('vgn-tg-joined','1');
+  const el=document.getElementById('pop-ov');
+  if(el)el.classList.remove('open');
+}
+
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session){window.location.href='index.html';return}
@@ -393,27 +411,6 @@ async function init(){
     // 1ère ouverture : afficher après 1.2s
     setTimeout(()=>showPopup(), 1200);
   }
-}
-
-function showPopup(){
-  document.getElementById('pop-ov')?.classList.add('open');
-}
-
-function closePopup(){
-  // Fermer → réafficher après 3 minutes
-  document.getElementById('pop-ov')?.classList.remove('open');
-  setTimeout(()=>{
-    // Revérifier : si l'utilisateur a rejoint entre-temps, ne pas réafficher
-    if(!localStorage.getItem('vgn-tg-joined')){
-      showPopup();
-    }
-  }, 3 * 60 * 1000); // 3 minutes
-}
-
-function joinedTelegram(){
-  // Clic sur Rejoindre → marquer définitivement, ne plus jamais afficher
-  localStorage.setItem('vgn-tg-joined','1');
-  document.getElementById('pop-ov')?.classList.remove('open');
 }
 
 init();
