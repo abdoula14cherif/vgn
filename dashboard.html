@@ -388,15 +388,32 @@ async function init(){
       if(badge){badge.style.display='inline';badge.textContent=cur+1>9?'9+':cur+1}
     }).subscribe();
 
-  // Popup bienvenue (1x par session)
-  if(!sessionStorage.getItem('vgn-pop-seen')){
-    setTimeout(()=>document.getElementById('pop-ov')?.classList.add('open'), 1200);
+  // Popup : ne plus afficher si l'utilisateur a rejoint Telegram (localStorage)
+  if(!localStorage.getItem('vgn-tg-joined')){
+    // 1ère ouverture : afficher après 1.2s
+    setTimeout(()=>showPopup(), 1200);
   }
 }
 
+function showPopup(){
+  document.getElementById('pop-ov')?.classList.add('open');
+}
+
 function closePopup(){
+  // Fermer → réafficher après 3 minutes
   document.getElementById('pop-ov')?.classList.remove('open');
-  sessionStorage.setItem('vgn-pop-seen','1');
+  setTimeout(()=>{
+    // Revérifier : si l'utilisateur a rejoint entre-temps, ne pas réafficher
+    if(!localStorage.getItem('vgn-tg-joined')){
+      showPopup();
+    }
+  }, 3 * 60 * 1000); // 3 minutes
+}
+
+function joinedTelegram(){
+  // Clic sur Rejoindre → marquer définitivement, ne plus jamais afficher
+  localStorage.setItem('vgn-tg-joined','1');
+  document.getElementById('pop-ov')?.classList.remove('open');
 }
 
 init();
@@ -411,14 +428,14 @@ init();
       <div class="pop-img-title">🌱 Bienvenue dans la communauté VGN Agriculture</div>
     </div>
     <div class="pop-content">
-      <div class="pop-tagline">Rejoignez notre canal officiel pour recevoir les dernières actualités, offres exclusives et mises à jour de la plateforme.</div>
-      <a class="pop-btn-tg" href="https://t.me/valuegrownetwork" target="_blank" onclick="sessionStorage.setItem('vgn-pop-seen','1')">
+      <div class="pop-tagline">Rejoignez notre canal officiel pour recevoir les dernières actualités, offres exclusives et codes bonus en avant-première !</div>
+      <a class="pop-btn-tg" href="https://t.me/valuegrownetwork" target="_blank" onclick="joinedTelegram()">
         <span style="font-size:1.3rem">✈️</span> Rejoindre notre canal Telegram
       </a>
       <a class="pop-btn-cond" href="conditions.html">
         📋 Lire nos Conditions d'utilisation
       </a>
-      <span class="pop-close" onclick="closePopup()">✕ Fermer</span>
+      <span class="pop-close" onclick="closePopup()">Plus tard →</span>
     </div>
   </div>
 </div>
