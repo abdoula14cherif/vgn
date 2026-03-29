@@ -165,7 +165,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--bg);max-width:430px;m
 .op-card.sel-mtn{border-color:#FFCC00;box-shadow:0 3px 18px rgba(255,204,0,.2)}
 .op-card.sel-bsc,.op-card.sel-sol{border-color:#8B5CF6;box-shadow:0 3px 18px rgba(139,92,246,.2)}
 .op-card.sel-wave{border-color:#06B6D4;box-shadow:0 3px 18px rgba(6,182,212,.22)}
-.op-card.sel-moov{border-color:#0066CC;box-shadow:0 3px 18px rgba(0,102,204,.22)}
+.op-card.sel-nita{border-color:#0066CC;box-shadow:0 3px 18px rgba(0,102,204,.22)}
 .op-head{padding:13px 14px;display:flex;align-items:center;gap:12px}
 .op-logo{width:52px;height:52px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .logo-orange{background:#FF6600;font-size:1.6rem}
@@ -651,17 +651,17 @@ const PAYS_CONFIG = [
   {id:'bf',nom:'Burkina Faso',     flag:'🇧🇫', methodes:[
     {id:'wave',  label:'Wave',        logo:'🌊',couleur:'#06B6D4',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Wave'},
     {id:'orange',label:'Orange Money',logo:'🍊',couleur:'#FF6600',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Orange'},
-    {id:'moov',  label:'Moov Africa', logo:'Ⓜ',couleur:'#0066CC',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Moov'},
+    {id:'nita',  label:'Nita', logo:'Ⓜ',couleur:'#E91E8C',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Nita'},
   ]},
   {id:'tg',nom:'Togo',             flag:'🇹🇬', methodes:[
     {id:'wave',  label:'Wave',        logo:'🌊',couleur:'#06B6D4',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Wave'},
     {id:'mtn',   label:'MTN MoMo',   logo:'📱',couleur:'#FFCC00',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro MTN'},
-    {id:'moov',  label:'Moov Africa', logo:'Ⓜ',couleur:'#0066CC',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Moov'},
+    {id:'nita',  label:'Nita', logo:'Ⓜ',couleur:'#E91E8C',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Nita'},
   ]},
   {id:'bj',nom:'Bénin',            flag:'🇧🇯', methodes:[
     {id:'wave',  label:'Wave',        logo:'🌊',couleur:'#06B6D4',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Wave'},
     {id:'mtn',   label:'MTN MoMo',   logo:'📱',couleur:'#FFCC00',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro MTN'},
-    {id:'moov',  label:'Moov Africa', logo:'Ⓜ',couleur:'#0066CC',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Moov'},
+    {id:'nita',  label:'Nita', logo:'Ⓜ',couleur:'#E91E8C',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Nita'},
   ]},
   {id:'gn',nom:'Guinée',           flag:'🇬🇳', methodes:[
     {id:'wave',  label:'Wave',        logo:'🌊',couleur:'#06B6D4',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Wave'},
@@ -670,7 +670,7 @@ const PAYS_CONFIG = [
   {id:'ne',nom:'Niger',            flag:'🇳🇪', methodes:[
     {id:'wave',  label:'Wave',        logo:'🌊',couleur:'#06B6D4',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Wave'},
     {id:'orange',label:'Orange Money',logo:'🍊',couleur:'#FF6600',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Orange'},
-    {id:'moov',  label:'Moov Africa', logo:'Ⓜ',couleur:'#0066CC',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Moov'},
+    {id:'nita',  label:'Nita', logo:'Ⓜ',couleur:'#E91E8C',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Nita'},
   ]},
   {id:'mr',nom:'Mauritanie',       flag:'🇲🇷', methodes:[
     {id:'wave',  label:'Wave',        logo:'🌊',couleur:'#06B6D4',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Wave'},
@@ -678,7 +678,7 @@ const PAYS_CONFIG = [
   {id:'ga',nom:'Gabon',            flag:'🇬🇦', methodes:[
     {id:'wave',  label:'Wave',        logo:'🌊',couleur:'#06B6D4',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Wave'},
     {id:'mtn',   label:'MTN MoMo',   logo:'📱',couleur:'#FFCC00',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro MTN'},
-    {id:'moov',  label:'Moov Africa', logo:'Ⓜ',couleur:'#0066CC',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Moov'},
+    {id:'nita',  label:'Nita', logo:'Ⓜ',couleur:'#E91E8C',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro Nita'},
   ]},
   {id:'cg',nom:'Congo-Brazzaville',flag:'🇨🇬', methodes:[
     {id:'mtn',   label:'MTN MoMo',   logo:'📱',couleur:'#FFCC00',actif:true, numero:'658 033 690',titulaire:'VGN Agriculture',champ:'Votre numéro MTN'},
