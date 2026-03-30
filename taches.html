@@ -265,7 +265,9 @@ const SB=supabase.createClient(
    CONFIG PLANS VIP
 ═══════════════════════ */
 const VIP_CONF={
-  'VIP 0':{max:3,  gain:70,    ico:'🌱', pb:'pb0', label:'Stage gratuit'},
+  'VIP 0' :{max:3,  gain:70,    ico:'🌱', pb:'pb0', label:'Stage gratuit'},
+  'PROMO 1':{max:1, gain:200,   ico:'🔥', pb:'pbp1',label:'Promo 1', promo:true},
+  'PROMO 2':{max:1, gain:450,   ico:'🔥', pb:'pbp2',label:'Promo 2', promo:true},
   'VIP 1':{max:5,  gain:70,    ico:'💼', pb:'pb1', label:'Job 1'},
   'VIP 2':{max:8,  gain:175,   ico:'🚀', pb:'pb2', label:'Job 2'},
   'VIP 3':{max:10, gain:560,   ico:'⭐', pb:'pb3', label:'Job 3'},
@@ -372,15 +374,17 @@ function renderBanner(){
   if(vipNiv==='VIP 0'){b.style.display='none';return}
   const c=VIP_CONF[vipNiv]||VIP_CONF['VIP 0'];
   b.style.display='block';
-  b.innerHTML=`<div class="plan-banner ${c.pb}">
+  const isPromo=c.promo||false;
+  const gainLabel=isPromo?fmtF(GAIN)+'/jour':fmtF(GAIN)+'/tâche';
+  const subLabel=isPromo?'Plan Promo · '+fmtF(GAIN)+' FCFA/jour · 30 jours':MAX+' tâches/jour · Gain '+fmtF(GAIN)+'/tâche';
+  b.innerHTML=`<div class="plan-banner ${c.pb}" style="${isPromo?'background:linear-gradient(135deg,#FF6B6B,#F97316)':''}">
     <span class="pb-ico">${c.ico}</span>
     <div class="pb-info">
       <div class="pb-titre">${vipNiv} — ${c.label} <span style="font-size:.6rem;background:rgba(255,255,255,.2);padding:1px 7px;border-radius:8px;">✅ Actif</span></div>
-      <div class="pb-sub">${MAX} tâches/jour · Gain ${fmtF(GAIN)}/tâche</div>
+      <div class="pb-sub">${subLabel}</div>
     </div>
     <div class="pb-right">
-      <div class="pb-gain">+${fmtF(GAIN)}</div>
-      <div class="pb-gainl">/ tâche</div>
+      <div class="pb-gain">+${gainLabel}</div>
     </div>
   </div>`;
 }
@@ -593,7 +597,14 @@ function applyProfil(newP,showToast=false){
   vipNiv=newP.vip_niveau||'VIP 0';
   const conf=VIP_CONF[vipNiv]||VIP_CONF['VIP 0'];
   MAX=newP.taches_total||conf.max;
-  GAIN=conf.gain;
+  // Priorité : benefices_jour du profil (défini par le trigger SQL)
+  // Fallback : conf.gain (VIP_CONF)
+  // Pour PROMO : benefices_jour = 200 ou 450 selon le plan
+  if(newP.benefices_jour && newP.benefices_jour > 0 && newP.taches_total && newP.taches_total > 0){
+    GAIN = Math.round(newP.benefices_jour / newP.taches_total);
+  } else {
+    GAIN = conf.gain;
+  }
   isVIP=vipNiv!=='VIP 0';
   P={...P,...newP};
   $s('tb-solde',fmtF(P.solde));
