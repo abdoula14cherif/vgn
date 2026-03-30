@@ -825,6 +825,13 @@
     setLoading(btn, true);
 
     try {
+      // ── Vérifier si l'email existe déjà dans profiles ──
+      const { data: existing } = await sb.from('profiles')
+        .select('id').eq('email', email.toLowerCase()).maybeSingle();
+      if (existing) {
+        throw new Error('Cet email est déjà associé à un compte. Connectez-vous à la place.');
+      }
+
       const { data, error } = await sb.auth.signUp({
         email,
         password: pwd,
@@ -835,14 +842,19 @@
       });
 
       if (error) {
-        // Message clair pour rate limit
         if(error.message && error.message.toLowerCase().includes('rate limit')) {
           throw new Error('Trop de tentatives. Patientez 1 heure ou utilisez une autre adresse email.');
         }
-        if(error.message && error.message.toLowerCase().includes('already registered')) {
+        if(error.message && (error.message.toLowerCase().includes('already registered') ||
+           error.message.toLowerCase().includes('already been registered'))) {
           throw new Error('Cet email est déjà utilisé. Connectez-vous à la place.');
         }
         throw error;
+      }
+
+      // Supabase retourne identities=[] si email déjà pris (sans confirmation email)
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        throw new Error('Cet email est déjà utilisé. Connectez-vous à la place.');
       }
 
       if (data.user) {
