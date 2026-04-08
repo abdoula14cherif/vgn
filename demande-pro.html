@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Demande compte Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#16A34A;--p:#8B5CF6;--gold:#F59E0B;
+  --bg:#0F1117;--card:#1A1D26;--card2:#21252F;
+  --txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,#0F1117,#1A1D26);
+  border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:var(--card2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--mu);text-decoration:none}
+.tbt{font-size:.95rem;font-weight:900;color:var(--txt)}
+.scroll{padding-top:calc(var(--H)+var(--sat)+16px);padding-bottom:40px;min-height:100svh}
+
+/* HERO BANNER */
+.hero-pro{background:linear-gradient(135deg,#4c1d95,#6d28d9,#7c3aed);margin:0 12px 16px;
+  border-radius:18px;padding:22px 18px}
+.hero-biz{background:linear-gradient(135deg,#78350f,#b45309,#d97706);margin:0 12px 16px;
+  border-radius:18px;padding:22px 18px}
+.hero-ico{font-size:2.5rem;margin-bottom:8px}
+.hero-title{font-size:1.2rem;font-weight:900;color:#fff;margin-bottom:4px}
+.hero-sub{font-size:.72rem;color:rgba(255,255,255,.75);font-weight:600;line-height:1.5}
+.hero-taux{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);
+  color:#fff;font-size:.85rem;font-weight:900;padding:5px 16px;border-radius:12px;margin-top:10px}
+
+/* CONDITIONS */
+.cond-card{margin:0 12px 12px;background:var(--card);border-radius:16px;
+  padding:16px;border:1px solid var(--bd)}
+.cond-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:12px;
+  display:flex;align-items:center;gap:7px}
+.cond-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;
+  border-bottom:1px solid var(--bd)}
+.cond-item:last-child{border-bottom:none;padding-bottom:0}
+.ci-check{width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;margin-top:1px}
+.ci-ok{background:rgba(74,222,128,.15);color:#4ADE80}
+.ci-no{background:rgba(148,163,184,.1);color:var(--mu)}
+.ci-txt{font-size:.7rem;font-weight:700;color:var(--txt);line-height:1.5;flex:1}
+.ci-val{font-size:.65rem;color:var(--mu);margin-top:2px}
+
+/* FORMULAIRE */
+.form-card{margin:0 12px 12px;background:var(--card);border-radius:16px;
+  padding:16px;border:1px solid var(--bd)}
+.form-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:14px;
+  display:flex;align-items:center;gap:7px}
+.field{margin-bottom:14px}
+.field-lbl{font-size:.72rem;font-weight:800;color:var(--txt);margin-bottom:7px;display:block}
+.field-sub{font-size:.62rem;color:var(--mu);font-weight:600;margin-bottom:7px}
+.field input,.field textarea,.field select{
+  width:100%;background:var(--card2);border:1.5px solid var(--bd);
+  border-radius:12px;padding:12px 14px;color:var(--txt);font-family:"Nunito",sans-serif;
+  font-size:.85rem;font-weight:700;outline:none;transition:border .2s;
+  -webkit-appearance:none}
+.field input:focus,.field textarea:focus{border-color:var(--p)}
+.field textarea{resize:none;height:90px}
+.field select{cursor:pointer}
+.field select option{background:#1A1D26;color:var(--txt)}
+
+/* PROGRESS */
+.progress-card{margin:0 12px 12px;background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--bd)}
+.prog-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:12px}
+.prog-bar-wrap{background:var(--card2);border-radius:8px;height:8px;overflow:hidden;margin-bottom:8px}
+.prog-bar{height:100%;border-radius:8px;transition:width .5s;
+  background:linear-gradient(90deg,var(--p),#A78BFA)}
+.prog-pct{font-size:.72rem;font-weight:900;color:#A78BFA;text-align:right}
+.prog-items{display:flex;flex-direction:column;gap:6px}
+.pi{display:flex;align-items:center;gap:8px;font-size:.68rem;font-weight:700}
+.pi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pi-ok .pi-dot{background:#4ADE80}
+.pi-no .pi-dot{background:var(--bd)}
+.pi-ok{color:#4ADE80}.pi-no{color:var(--mu)}
+
+/* BOUTON */
+.btn-submit{width:100%;padding:15px;border:none;border-radius:14px;
+  font-family:"Nunito",sans-serif;font-size:1rem;font-weight:900;
+  color:#fff;cursor:pointer;transition:transform .15s;margin:0 0 8px}
+.btn-submit:active{transform:scale(.97)}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-pro{background:linear-gradient(135deg,#6d28d9,#7c3aed);box-shadow:0 4px 18px rgba(109,40,217,.35)}
+.btn-biz{background:linear-gradient(135deg,#b45309,#d97706);box-shadow:0 4px 18px rgba(180,83,9,.35)}
+.btn-back{width:100%;padding:13px;border:1.5px solid var(--bd);border-radius:14px;
+  background:transparent;color:var(--mu);font-family:"Nunito",sans-serif;
+  font-size:.88rem;font-weight:800;cursor:pointer}
+
+/* STATUS */
+.status-card{margin:0 12px 12px;border-radius:16px;padding:20px;text-align:center}
+.sc-attente{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3)}
+.sc-approuve{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3)}
+.sc-rejete{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3)}
+.sc-ico{font-size:2.5rem;margin-bottom:10px}
+.sc-title{font-size:1rem;font-weight:900;color:var(--txt);margin-bottom:6px}
+.sc-msg{font-size:.72rem;color:var(--mu);font-weight:600;line-height:1.6}
+
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;
+  transform:translateX(-50%) translateY(-80px);background:#0F172A;color:#fff;
+  padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:18px;height:18px;border:3px solid var(--bd);
+  border-top-color:var(--p);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading-wrap{text-align:center;padding:40px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="compte-pro.html">&#8249;</a>
+  <span class="tbt" id="top-title">Demande compte Pro</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+
+<div class="scroll" id="main-scroll">
+  <div class="loading-wrap"><div class="ld"></div></div>
+</div>
+
+<script>
+const SB=supabase.createClient(
+  "https://tgrfzybemuwvhkbpuzmz.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE",
+  {auth:{persistSession:true,storageKey:"vgn-auth",storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n||0).toLocaleString("fr-FR");
+function toast(m,t=""){const el=$("tst");el.textContent=m;el.className="tst show"+(t?" "+t:"");setTimeout(()=>el.className="tst",3000)}
+
+const params=new URLSearchParams(location.search);
+const TYPE=params.get("type")||"pro";
+const isPro=TYPE==="pro";
+
+let U=null,P=null,nbFilleuls=0,nbVipActifs=0,commTotal=0,joursActif=0;
+
+const CONDS_PRO=[
+  {id:"groupe",label:"Groupe WhatsApp/Telegram actif de 30+ membres parlant de VGN",check:()=>true},
+  {id:"filleuls",label:"Au moins 5 filleuls inscrits via votre lien",check:()=>nbFilleuls>=5,val:()=>nbFilleuls+" / 5"},
+  {id:"vip_actifs",label:"Au moins 2 filleuls avec un plan VIP actif",check:()=>nbVipActifs>=2,val:()=>nbVipActifs+" / 2"},
+  {id:"vip_perso",label:"Vous-même avec un plan VIP 1 minimum",check:()=>P&&P.vip_niveau&&P.vip_niveau!=="VIP 0"&&P.vip_niveau!=="Intern",val:()=>P?.vip_niveau||"Non"},
+  {id:"anciennete",label:"Compte actif depuis au moins 7 jours",check:()=>joursActif>=7,val:()=>joursActif+" / 7 jours"},
+];
+
+const CONDS_BIZ=[
+  {id:"compte_pro",label:"Avoir un compte Pro actif depuis 30+ jours",check:()=>P&&P.account_type==="pro",val:()=>P?.account_type==="pro"?"Pro actif":"Non"},
+  {id:"groupe100",label:"Groupe de 100+ membres actifs VGN",check:()=>true},
+  {id:"filleuls20",label:"Au moins 20 filleuls inscrits",check:()=>nbFilleuls>=20,val:()=>nbFilleuls+" / 20"},
+  {id:"vip10",label:"Au moins 10 filleuls avec plan VIP actif",check:()=>nbVipActifs>=10,val:()=>nbVipActifs+" / 10"},
+  {id:"comm50k",label:"Généré 50 000+ FCFA de commissions",check:()=>commTotal>=50000,val:()=>fmt(commTotal)+" / 50 000 F"},
+  {id:"vip3",label:"Avoir un plan VIP 3 ou supérieur",check:()=>{const n=parseInt((P?.vip_niveau||"").replace(/[^0-9]/g,""));return n>=3;},val:()=>P?.vip_niveau||"Non"},
+];
+
+function getConds(){return isPro?CONDS_PRO:CONDS_BIZ}
+
+function calcProgress(){
+  const conds=getConds();
+  // Ignorer la condition groupe (manuelle)
+  const auto=conds.filter(c=>c.id!=="groupe"&&c.id!=="groupe100");
+  const ok=auto.filter(c=>c.check()).length;
+  return Math.round((ok/auto.length)*100);
+}
+
+function renderPage(){
+  const scroll=$("main-scroll");
+  const conds=getConds();
+  const pct=calcProgress();
+  const heroCls=isPro?"hero-pro":"hero-biz";
+  const btnCls=isPro?"btn-pro":"btn-biz";
+  const ico=isPro?"🚀":"🏆";
+  const titre=isPro?"Compte Pro — 5% de commission":"Compte Business — 8% de commission";
+  const sousTitre=isPro
+    ?"Multipliez vos commissions par 2.5. Accès aux outils marketing avancés et au suivi de votre réseau."
+    :"Le niveau ultime. 4x plus de commissions que le compte standard. Réservé aux leaders VGN.";
+
+  // Vérifier si déjà une demande en attente
+  scroll.innerHTML=`
+    <div class="${heroCls}">
+      <div class="hero-ico">${ico}</div>
+      <div class="hero-title">${titre}</div>
+      <div class="hero-sub">${sousTitre}</div>
+      <div class="hero-taux">${isPro?"5%":"8%"} de commission sur tous les gains de vos filleuls</div>
+    </div>
+
+    <div class="progress-card">
+      <div class="prog-title">📋 Votre progression</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+      <div class="prog-pct">${pct}% des conditions remplies</div>
+      <div class="prog-items" style="margin-top:10px">
+        ${conds.map(c=>{
+          const ok=c.id==="groupe"||c.id==="groupe100"?null:c.check();
+          const isManuel=c.id==="groupe"||c.id==="groupe100";
+          const cls=isManuel?"pi-no":ok?"pi-ok":"pi-no";
+          const val=c.val?c.val():"";
+          return `<div class="pi ${cls}"><div class="pi-dot"></div><span>${c.label}${val?" ("+val+")":""}</span></div>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">📝 Informations requises</div>
+
+      <div class="field">
+        <label class="field-lbl">🔗 Lien de votre groupe ${isPro?"(30+ membres)":"(100+ membres)"}</label>
+        <div class="field-sub">Lien d'invitation WhatsApp ou Telegram où vous parlez de VGN</div>
+        <input type="url" id="inp-groupe" placeholder="https://t.me/... ou https://chat.whatsapp.com/...">
+      </div>
+
+      <div class="field">
+        <label class="field-lbl">👥 Nombre de membres dans votre groupe</label>
+        <input type="number" id="inp-taille" placeholder="${isPro?"Minimum 30":"Minimum 100"}" inputmode="numeric">
+      </div>
+
+      <div class="field">
+        <label class="field-lbl">💬 Décrivez votre activité marketing (optionnel)</label>
+        <div class="field-sub">Comment vous faites la promotion de VGN ? Réseaux, méthodes...</div>
+        <textarea id="inp-desc" placeholder="Ex: Je gère un groupe WhatsApp de 45 membres où je partage quotidiennement les actualités VGN..."></textarea>
+      </div>
+    </div>
+
+    <div style="padding:0 12px 20px">
+      <button class="btn-submit ${btnCls}" onclick="soumettre()">${ico} Envoyer ma demande</button>
+      <button class="btn-back" onclick="window.location.href='compte-pro.html'">← Retour</button>
+    </div>
+  `;
+}
+
+function renderStatut(statut,note){
+  const scroll=$("main-scroll");
+  const configs={
+    en_attente:{cls:"sc-attente",ico:"⏳",title:"Demande en cours d'examen",msg:"Notre équipe examine votre demande. Vous serez notifié par WhatsApp ou Telegram sous 24-48h ouvrées."},
+    approuve:{cls:"sc-approuve",ico:"🎉",title:"Demande approuvée !",msg:"Félicitations ! Votre compte "+(isPro?"Pro":"Business")+" est maintenant actif. Vos commissions sont mises à jour."},
+    rejete:{cls:"sc-rejete",ico:"❌",title:"Demande non approuvée",msg:note||"Votre demande n'a pas été approuvée. Vérifiez les conditions et réessayez."},
+  };
+  const c=configs[statut]||configs.en_attente;
+  scroll.innerHTML=`
+    <div style="padding:20px 12px">
+      <div class="status-card ${c.cls}">
+        <div class="sc-ico">${c.ico}</div>
+        <div class="sc-title">${c.title}</div>
+        <div class="sc-msg">${c.msg}</div>
+      </div>
+      <button class="btn-back" style="margin-top:12px" onclick="window.location.href='compte-pro.html'">← Retour au dashboard</button>
+    </div>
+  `;
+}
+
+async function soumettre(){
+  const lien=($("inp-groupe")?.value||"").trim();
+  const taille=parseInt($("inp-taille")?.value||"0");
+  const desc=($("inp-desc")?.value||"").trim();
+
+  if(!lien){toast("⚠️ Entrez le lien de votre groupe","err");return}
+  const minTaille=isPro?30:100;
+  if(taille<minTaille){toast("⚠️ Minimum "+minTaille+" membres requis","err");return}
+
+  const btn=document.querySelector(".btn-submit");
+  btn.innerHTML="<span style='display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite'></span>";
+  btn.disabled=true;
+
+  try{
+    const{error}=await SB.from("demandes_compte_pro").insert({
+      user_id:U.id,
+      type_demande:TYPE,
+      lien_groupe:lien,
+      taille_groupe:taille,
+      description:desc||null,
+      statut:"en_attente"
+    });
+    if(error)throw error;
+
+    // Mettre à jour le profil
+    await SB.from("profiles").update({
+      compte_pro_statut:"en_attente",
+      compte_pro_demande_le:new Date().toISOString(),
+      lien_groupe_promo:lien,
+      taille_groupe_declaree:taille
+    }).eq("id",U.id);
+
+    renderStatut("en_attente");
+    toast("✅ Demande envoyée !","ok");
+  }catch(e){
+    toast("❌ "+(e.message||"Erreur"),"err");
+    btn.innerHTML=(isPro?"🚀":"🏆")+" Envoyer ma demande";
+    btn.disabled=false;
+  }
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href="index.html";return}
+  U=session.user;
+
+  $("top-title")&&($("top-title").textContent="Demande "+TYPE.charAt(0).toUpperCase()+TYPE.slice(1));
+
+  const{data:p}=await SB.from("profiles").select("*").eq("id",U.id).single();
+  P=p||{};
+
+  // Jours depuis inscription
+  joursActif=Math.floor((Date.now()-new Date(P.created_at||U.created_at||Date.now()).getTime())/86400000);
+
+  // Compter filleuls
+  const monCode=P.code_parrainage||"";
+  if(monCode){
+    const{data:fils}=await SB.from("profiles")
+      .select("vip_niveau").eq("code_parrain",monCode);
+    nbFilleuls=(fils||[]).length;
+    nbVipActifs=(fils||[]).filter(f=>f.vip_niveau&&f.vip_niveau!=="VIP 0"&&f.vip_niveau!=="Intern").length;
+  }
+
+  // Commissions totales
+  commTotal=P.gains_parrainage_total||P.commission_parrainage||0;
+
+  // Vérifier si demande existante
+  const{data:demande}=await SB.from("demandes_compte_pro")
+    .select("*").eq("user_id",U.id).eq("type_demande",TYPE)
+    .order("created_at",{ascending:false}).limit(1).maybeSingle();
+
+  if(demande&&demande.statut==="en_attente"){
+    renderStatut("en_attente");
+  }else if(demande&&demande.statut==="approuve"){
+    renderStatut("approuve");
+  }else if(demande&&demande.statut==="rejete"){
+    renderStatut("rejete",demande.admin_note);
+  }else{
+    renderPage();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
