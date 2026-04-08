@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Espace Marketing</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;
+  --o:#F97316;--b:#3B82F6;--p:#8B5CF6;
+  --gold:#F59E0B;--gold2:#FBBF24;
+  --bg:#0F1117;--card:#1A1D26;--card2:#21252F;
+  --txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--B:58px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));
+  background:linear-gradient(135deg,#0F1117,#1A1D26);
+  border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:var(--card2);
+  border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;color:var(--mu);text-decoration:none}
+.tbt{font-size:.95rem;font-weight:900;color:var(--txt)}
+.account-badge{padding:4px 12px;border-radius:20px;font-size:.65rem;font-weight:900}
+.badge-standard{background:rgba(148,163,184,.15);color:var(--mu);border:1px solid var(--bd)}
+.badge-pro{background:rgba(139,92,246,.2);color:#A78BFA;border:1px solid rgba(139,92,246,.3)}
+.badge-business{background:rgba(245,158,11,.2);color:var(--gold);border:1px solid rgba(245,158,11,.3)}
+
+.scroll{padding-top:calc(var(--H)+var(--sat)+14px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+
+/* HERO */
+.hero{margin:0 12px 16px;border-radius:20px;overflow:hidden;position:relative}
+.hero-bg{background:linear-gradient(135deg,#1e1b4b,#312e81,#4c1d95);padding:22px 18px 20px}
+.hero-bg::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 80% 20%,rgba(139,92,246,.3),transparent 60%);
+  pointer-events:none}
+.hero-label{font-size:.65rem;font-weight:800;color:rgba(167,139,250,.7);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.hero-name{font-size:1.2rem;font-weight:900;color:#fff;margin-bottom:2px}
+.hero-type{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:800;
+  color:#A78BFA;background:rgba(139,92,246,.2);padding:4px 12px;border-radius:20px;
+  border:1px solid rgba(139,92,246,.3);margin-bottom:16px}
+
+/* REVENUS HERO */
+.hero-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.hg{background:rgba(255,255,255,.08);border-radius:12px;padding:10px 8px;
+  text-align:center;border:1px solid rgba(255,255,255,.1)}
+.hg-v{font-size:.88rem;font-weight:900;color:#fff}
+.hg-l{font-size:.55rem;color:rgba(255,255,255,.55);font-weight:700;margin-top:2px}
+
+/* LIEN PERSO */
+.lien-card{margin:0 12px 12px;background:var(--card);border-radius:18px;
+  padding:16px;border:1px solid var(--bd)}
+.lc-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:10px;
+  display:flex;align-items:center;gap:7px}
+.lc-url{background:var(--card2);border:1px solid var(--bd);border-radius:12px;
+  padding:11px 14px;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px}
+.lc-url-txt{font-size:.68rem;font-weight:700;color:var(--p);font-family:monospace;
+  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-copy{padding:7px 14px;background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.3);
+  border-radius:8px;color:#A78BFA;font-family:'Nunito',sans-serif;font-size:.7rem;
+  font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;margin-left:8px}
+.share-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.share-btn{padding:10px 0;border:none;border-radius:10px;font-family:'Nunito',sans-serif;
+  font-size:.72rem;font-weight:800;cursor:pointer;transition:transform .15s}
+.share-btn:active{transform:scale(.95)}
+.sb-tg{background:rgba(0,136,204,.2);color:#38BDF8;border:1px solid rgba(0,136,204,.3)}
+.sb-wa{background:rgba(37,211,102,.15);color:#4ADE80;border:1px solid rgba(37,211,102,.2)}
+
+/* STATS GRID */
+.stats-section{margin:0 12px 12px}
+.stats-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:10px;
+  display:flex;align-items:center;gap:7px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-card{background:var(--card);border-radius:16px;padding:14px;
+  border:1px solid var(--bd);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;
+  width:60px;height:60px;border-radius:50%;opacity:.1}
+.sc-green::before{background:var(--g)}
+.sc-purple::before{background:var(--p)}
+.sc-orange::before{background:var(--o)}
+.sc-blue::before{background:var(--b)}
+.sc-gold::before{background:var(--gold)}
+.stat-ico{font-size:1.2rem;margin-bottom:6px}
+.stat-val{font-size:1.3rem;font-weight:900;color:var(--txt)}
+.stat-val.g{color:#4ADE80}.stat-val.p{color:#A78BFA}
+.stat-val.o{color:#FB923C}.stat-val.b{color:#60A5FA}.stat-val.gold{color:var(--gold)}
+.stat-lbl{font-size:.6rem;font-weight:700;color:var(--mu);margin-top:3px}
+.stat-sub{font-size:.58rem;color:var(--mu);margin-top:2px}
+
+/* TAUX COMMISSION */
+.taux-card{margin:0 12px 12px;background:linear-gradient(135deg,#1e1b4b,#312e81);
+  border-radius:18px;padding:16px;border:1px solid rgba(139,92,246,.3)}
+.taux-title{font-size:.78rem;font-weight:900;color:#A78BFA;margin-bottom:12px}
+.taux-list{display:flex;flex-direction:column;gap:7px}
+.taux-row{display:flex;align-items:center;justify-content:space-between;
+  padding:9px 12px;border-radius:11px;background:rgba(255,255,255,.06)}
+.taux-row.active{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.3)}
+.taux-left{display:flex;align-items:center;gap:8px}
+.taux-badge{font-size:.62rem;font-weight:900;padding:2px 9px;border-radius:7px}
+.tb-std{background:rgba(148,163,184,.2);color:var(--mu)}
+.tb-pro{background:rgba(139,92,246,.3);color:#A78BFA}
+.tb-biz{background:rgba(245,158,11,.25);color:var(--gold)}
+.taux-name{font-size:.75rem;font-weight:800;color:var(--txt)}
+.taux-pct{font-size:.9rem;font-weight:900;color:#4ADE80}
+.taux-check{color:#4ADE80;font-size:.9rem}
+
+/* FAÇONS DE GAGNER */
+.gains-section{margin:0 12px 12px}
+.gains-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:10px;
+  display:flex;align-items:center;gap:7px}
+.gain-item{background:var(--card);border-radius:14px;padding:13px 14px;
+  margin-bottom:8px;border:1px solid var(--bd);
+  display:flex;align-items:flex-start;gap:12px}
+.gi-ico{width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.gi-info{flex:1}
+.gi-title{font-size:.8rem;font-weight:900;color:var(--txt);margin-bottom:3px}
+.gi-desc{font-size:.64rem;color:var(--mu);font-weight:600;line-height:1.5}
+.gi-gain{font-size:.72rem;font-weight:900;padding:3px 10px;border-radius:8px;
+  margin-top:5px;display:inline-block}
+.gg1{background:rgba(74,222,128,.15);color:#4ADE80}
+.gg2{background:rgba(167,139,250,.15);color:#A78BFA}
+.gg3{background:rgba(251,146,60,.15);color:#FB923C}
+.gg4{background:rgba(96,165,250,.15);color:#60A5FA}
+.gg5{background:rgba(245,158,11,.15);color:var(--gold)}
+
+/* FILLEULS */
+.filleuls-section{margin:0 12px 12px}
+.section-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:10px;
+  display:flex;align-items:center;gap:7px}
+.filleul-item{background:var(--card);border-radius:13px;padding:11px 13px;
+  margin-bottom:6px;border:1px solid var(--bd);
+  display:flex;align-items:center;gap:10px}
+.fi-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--p),#6D28D9);
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;
+  color:#fff;flex-shrink:0}
+.fi-info{flex:1;min-width:0}
+.fi-name{font-size:.78rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi-meta{font-size:.6rem;color:var(--mu);font-weight:600;margin-top:1px}
+.fi-right{text-align:right}
+.fi-vip{font-size:.62rem;font-weight:900;padding:2px 8px;border-radius:7px;background:rgba(74,222,128,.15);color:#4ADE80}
+.fi-gain{font-size:.75rem;font-weight:900;color:#4ADE80;margin-top:3px}
+
+/* UPGRADE BANNER */
+.upgrade-card{margin:0 12px 12px;border-radius:18px;overflow:hidden}
+.uc-inner{padding:18px;position:relative}
+.uc-pro{background:linear-gradient(135deg,#4c1d95,#6d28d9,#7c3aed)}
+.uc-biz{background:linear-gradient(135deg,#78350f,#b45309,#d97706)}
+.uc-title{font-size:.9rem;font-weight:900;color:#fff;margin-bottom:4px}
+.uc-sub{font-size:.68rem;color:rgba(255,255,255,.7);font-weight:600;
+  line-height:1.5;margin-bottom:14px}
+.uc-cond{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.uc-cond-item{display:flex;align-items:center;gap:8px;
+  font-size:.65rem;font-weight:700;color:rgba(255,255,255,.85)}
+.uc-cond-item::before{content:'✓';color:#4ADE80;font-weight:900;flex-shrink:0}
+.btn-upgrade{width:100%;padding:12px;border:none;border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:900;
+  color:#fff;cursor:pointer;transition:transform .15s}
+.btn-upgrade:active{transform:scale(.97)}
+.btn-up-pro{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35)}
+.btn-up-biz{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35)}
+
+/* BOTNAV */
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#13161E;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative}
+.bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:26px;height:3px;background:var(--p);border-radius:0 0 3px 3px}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.bn.on .bnl{color:#A78BFA}
+
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;
+  transform:translateX(-50%) translateY(-80px);background:#0F172A;color:#fff;
+  padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:#DC2626}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);
+  border-top-color:var(--p);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:24px;color:var(--mu);font-size:.72rem;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">‹</a>
+  <span class="tbt">🚀 Espace Marketing</span>
+  <div class="account-badge badge-standard" id="tb-badge">Standard</div>
+</div>
+<div class="tst" id="tst"></div>
+
+<div class="scroll">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg">
+      <div class="hero-label">Tableau de bord marketing</div>
+      <div class="hero-name" id="hero-name">—</div>
+      <div class="hero-type" id="hero-type">⭐ Compte Standard</div>
+      <div class="hero-grid">
+        <div class="hg"><div class="hg-v" id="hg-filleuls">0</div><div class="hg-l">Filleuls</div></div>
+        <div class="hg"><div class="hg-v" id="hg-invest">0</div><div class="hg-l">Investisseurs</div></div>
+        <div class="hg"><div class="hg-v" id="hg-comm">0 F</div><div class="hg-l">Commissions</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIEN PERSONNEL -->
+  <div class="lien-card">
+    <div class="lc-title">🔗 Votre lien de parrainage</div>
+    <div class="lc-url">
+      <span class="lc-url-txt" id="lien-txt">Chargement...</span>
+      <button class="btn-copy" onclick="copierLien()">📋 Copier</button>
+    </div>
+    <div class="share-btns">
+      <button class="share-btn sb-tg" onclick="partageTG()">✈️ Telegram</button>
+      <button class="share-btn sb-wa" onclick="partageWA()">📱 WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-section">
+    <div class="stats-title">📊 Vos statistiques</div>
+    <div class="stats-grid">
+      <div class="stat-card sc-purple">
+        <div class="stat-ico">👥</div>
+        <div class="stat-val p" id="stat-total-filleuls">0</div>
+        <div class="stat-lbl">Total filleuls</div>
+      </div>
+      <div class="stat-card sc-green">
+        <div class="stat-ico">💰</div>
+        <div class="stat-val g" id="stat-comm-total">0 F</div>
+        <div class="stat-lbl">Commissions totales</div>
+      </div>
+      <div class="stat-card sc-orange">
+        <div class="stat-ico">📈</div>
+        <div class="stat-val o" id="stat-filleuls-actifs">0</div>
+        <div class="stat-lbl">Filleuls actifs VIP</div>
+        <div class="stat-sub">Ont un plan actif</div>
+      </div>
+      <div class="stat-card sc-blue">
+        <div class="stat-ico">🎯</div>
+        <div class="stat-val b" id="stat-taux">2%</div>
+        <div class="stat-lbl">Votre taux actuel</div>
+        <div class="stat-sub">Sur chaque gain filleul</div>
+      </div>
+      <div class="stat-card sc-gold" style="grid-column:1/-1">
+        <div class="stat-ico">🏆</div>
+        <div class="stat-val gold" id="stat-comm-mois">0 F</div>
+        <div class="stat-lbl">Commissions ce mois</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAUX DE COMMISSION -->
+  <div class="taux-card">
+    <div class="taux-title">💸 Taux de commission par type de compte</div>
+    <div class="taux-list">
+      <div class="taux-row" id="row-standard">
+        <div class="taux-left">
+          <span class="taux-badge tb-std">Standard</span>
+          <span class="taux-name">Compte standard</span>
+        </div>
+        <span class="taux-pct">2%</span>
+      </div>
+      <div class="taux-row" id="row-pro">
+        <div class="taux-left">
+          <span class="taux-badge tb-pro">Pro</span>
+          <span class="taux-name">Compte Pro</span>
+        </div>
+        <span class="taux-pct">5%</span>
+      </div>
+      <div class="taux-row" id="row-business">
+        <div class="taux-left">
+          <span class="taux-badge tb-biz">Business</span>
+          <span class="taux-name">Compte Business</span>
+        </div>
+        <span class="taux-pct">8%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAÇONS DE GAGNER -->
+  <div class="gains-section">
+    <div class="gains-title">💡 Comment maximiser vos gains</div>
+
+    <div class="gain-item">
+      <div class="gi-ico" style="background:rgba(74,222,128,.15)">👥</div>
+      <div class="gi-info">
+        <div class="gi-title">Commissions sur les gains filleuls</div>
+        <div class="gi-desc">Recevez automatiquement un % sur chaque gain de vos filleuls (tâches, investissements). Plus ils gagnent, plus vous gagnez.</div>
+        <span class="gi-gain gg1">2% Standard · 5% Pro · 8% Business</span>
+      </div>
+    </div>
+
+    <div class="gain-item">
+      <div class="gi-ico" style="background:rgba(167,139,250,.15)">🎯</div>
+      <div class="gi-info">
+        <div class="gi-title">Recruter des investisseurs VIP</div>
+        <div class="gi-desc">Un filleul qui prend VIP 3 (168 000F) vous rapporte des commissions sur 5 600F/jour. Sur 30 jours = jusqu'à 13 440F de commissions.</div>
+        <span class="gi-gain gg2">Exemple VIP 3 Pro : +280 F/jour passif</span>
+      </div>
+    </div>
+
+    <div class="gain-item">
+      <div class="gi-ico" style="background:rgba(251,146,60,.15)">📈</div>
+      <div class="gi-info">
+        <div class="gi-title">Vos propres tâches quotidiennes</div>
+        <div class="gi-desc">Continuez vos tâches VIP en parallèle. Vos revenus de marketing s'ajoutent à vos revenus VIP habituels.</div>
+        <span class="gi-gain gg3">Revenus VIP + Commissions cumulés</span>
+      </div>
+    </div>
+
+    <div class="gain-item">
+      <div class="gi-ico" style="background:rgba(96,165,250,.15)">💼</div>
+      <div class="gi-info">
+        <div class="gi-title">Construire une équipe profonde</div>
+        <div class="gi-desc">Plus vos filleuls recrutent d'autres investisseurs, plus votre réseau grossit et vos commissions augmentent.</div>
+        <span class="gi-gain gg4">Croissance exponentielle du réseau</span>
+      </div>
+    </div>
+
+    <div class="gain-item">
+      <div class="gi-ico" style="background:rgba(245,158,11,.15)">🏆</div>
+      <div class="gi-info">
+        <div class="gi-title">Passer au compte Business</div>
+        <div class="gi-desc">Avec 8% de commission et un réseau de 50+ filleuls investisseurs, le compte Business génère des revenus passifs significatifs.</div>
+        <span class="gi-gain gg5">Jusqu'à 4x plus de commissions vs Standard</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MES FILLEULS -->
+  <div class="filleuls-section">
+    <div class="section-title">👥 Mes filleuls récents</div>
+    <div id="filleuls-list"><div class="empty-state"><div class="ld"></div></div></div>
+  </div>
+
+  <!-- UPGRADE PRO -->
+  <div class="upgrade-card" id="upgrade-pro-card">
+    <div class="uc-inner uc-pro">
+      <div class="uc-title">⭐ Passer au compte Pro</div>
+      <div class="uc-sub">Doublez vos commissions (2% → 5%) et accédez aux outils marketing avancés.</div>
+      <div class="uc-cond">
+        <div class="uc-cond-item">Avoir un groupe WhatsApp/Telegram actif de 30+ membres parlant de VGN</div>
+        <div class="uc-cond-item">Avoir parrainé au minimum 5 filleuls inscrits</div>
+        <div class="uc-cond-item">Au moins 2 filleuls ayant un plan VIP actif</div>
+        <div class="uc-cond-item">Avoir un plan VIP actif vous-même (VIP 1 minimum)</div>
+        <div class="uc-cond-item">Être actif sur la plateforme depuis 7 jours minimum</div>
+      </div>
+      <button class="btn-upgrade btn-up-pro" onclick="window.location.href='demande-pro.html?type=pro'">
+        🚀 Demander le compte Pro →
+      </button>
+    </div>
+  </div>
+
+  <!-- UPGRADE BUSINESS -->
+  <div class="upgrade-card" id="upgrade-biz-card">
+    <div class="uc-inner uc-biz">
+      <div class="uc-title">🏆 Passer au compte Business</div>
+      <div class="uc-sub">Commission maximale 8% — Pour les marketeurs sérieux avec un grand réseau.</div>
+      <div class="uc-cond">
+        <div class="uc-cond-item">Avoir un compte Pro actif depuis au moins 30 jours</div>
+        <div class="uc-cond-item">Avoir un groupe de 100+ membres actifs VGN</div>
+        <div class="uc-cond-item">Avoir parrainé 20+ filleuls inscrits</div>
+        <div class="uc-cond-item">Au moins 10 filleuls avec un plan VIP actif</div>
+        <div class="uc-cond-item">Généré 50 000+ FCFA de commissions au total</div>
+        <div class="uc-cond-item">Avoir un plan VIP 3 ou supérieur</div>
+      </div>
+      <button class="btn-upgrade btn-up-biz" onclick="window.location.href='demande-pro.html?type=business'">
+        🏆 Demander le compte Business →
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn on" href="compte-pro.html"><span class="bni">🚀</span><span class="bnl">Marketing</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' F';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)}
+function copier(txt,msg){
+  navigator.clipboard?.writeText(txt).then(()=>toast(msg,'ok')).catch(()=>{
+    const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast(msg,'ok');
+  });
+}
+
+const BASE='https://vgn-two.vercel.app';
+let U=null,P=null,monCode='';
+
+function getLien(){return BASE+'/index.html?ref='+monCode}
+
+function copierLien(){copier(getLien(),'✅ Lien copié !')}
+function partageTG(){window.open('https://t.me/share/url?url='+encodeURIComponent(getLien())+'&text='+encodeURIComponent('🌱 Rejoins VGN Agriculture et gagne dès aujourd\'hui ! Jusqu\'à 760 000 FCFA/mois 🚀'),'_blank')}
+function partageWA(){window.open('https://wa.me/?text='+encodeURIComponent('🌱 Rejoins VGN Agriculture et gagne dès aujourd\'hui !\n💰 Jusqu\'à 760 000 FCFA/mois\n👉 '+getLien()),'_blank')}
+
+function applyAccountType(type){
+  const types={
+    standard:{label:'⭐ Compte Standard',cls:'badge-standard',taux:'2%',rowId:'row-standard'},
+    pro:{label:'🚀 Compte Pro',cls:'badge-pro',taux:'5%',rowId:'row-pro'},
+    business:{label:'🏆 Compte Business',cls:'badge-business',taux:'8%',rowId:'row-business'},
+  };
+  const t=types[type]||types.standard;
+
+  // Badge topbar
+  const badge=$('tb-badge');
+  badge.className='account-badge '+t.cls;
+  badge.textContent=t.label.split(' ').slice(1).join(' ');
+
+  // Hero type
+  $s('hero-type',t.label);
+
+  // Taux
+  $s('stat-taux',t.taux);
+
+  // Highlight la ligne active
+  ['row-standard','row-pro','row-business'].forEach(id=>{
+    const el=$(id);if(el)el.classList.remove('active');
+  });
+  const activeRow=$(t.rowId);
+  if(activeRow)activeRow.classList.add('active');
+
+  // Masquer le bouton upgrade du compte actuel et inférieurs
+  if(type==='standard'){
+    $('upgrade-pro-card').style.display='block';
+    $('upgrade-biz-card').style.display='block';
+  }else if(type==='pro'){
+    $('upgrade-pro-card').style.display='none';
+    $('upgrade-biz-card').style.display='block';
+  }else{
+    $('upgrade-pro-card').style.display='none';
+    $('upgrade-biz-card').style.display='none';
+  }
+}
+
+async function chargerFilleuls(){
+  const{data:fils}=await SB.from('profiles')
+    .select('id,full_name,email,vip_niveau,gains_totaux,created_at')
+    .eq('code_parrain',monCode)
+    .order('created_at',{ascending:false}).limit(10);
+
+  const list=$('filleuls-list');
+  if(!fils||!fils.length){
+    list.innerHTML='<div class="empty-state">Aucun filleul pour le moment.<br>Partagez votre lien pour recruter !</div>';
+    return;
+  }
+
+  const actifs=fils.filter(f=>f.vip_niveau&&f.vip_niveau!=='VIP 0').length;
+  $s('stat-filleuls-actifs',actifs);
+  $s('hg-invest',actifs);
+
+  list.innerHTML=fils.map(f=>{
+    const initiale=(f.full_name||f.email||'?')[0].toUpperCase();
+    const isActif=f.vip_niveau&&f.vip_niveau!=='VIP 0';
+    const d=new Date(f.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    return `<div class="filleul-item">
+      <div class="fi-av">${initiale}</div>
+      <div class="fi-info">
+        <div class="fi-name">${f.full_name||f.email?.split('@')[0]||'—'}</div>
+        <div class="fi-meta">Inscrit le ${d}</div>
+      </div>
+      <div class="fi-right">
+        <div class="fi-vip" style="${isActif?'':'background:rgba(148,163,184,.1);color:var(--mu)'}">${f.vip_niveau||'VIP 0'}</div>
+        <div class="fi-gain" style="${isActif?'':'color:var(--mu)'}">${isActif?'+'+fmtF(f.gains_totaux||0):'Pas actif'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+
+  const{data:p}=await SB.from('profiles')
+    .select('*').eq('id',U.id).single();
+  P=p||{};
+  monCode=P.code_parrainage||'';
+
+  const name=P.full_name||U.email?.split('@')[0]||'Marketeur';
+  $s('hero-name',name);
+  $('lien-txt').textContent=getLien();
+
+  // Stats
+  const type=P.account_type||'standard';
+  const tauxMap={standard:2,pro:5,business:8};
+  const taux=tauxMap[type]||2;
+
+  $s('stat-total-filleuls','...');
+  $s('stat-comm-total',fmtF(P.gains_parrainage_total||P.commission_parrainage||0));
+
+  // Commissions ce mois
+  const debutMois=new Date();debutMois.setDate(1);debutMois.setHours(0,0,0,0);
+  const{data:txComm}=await SB.from('transactions')
+    .select('montant').eq('user_id',U.id).eq('type','commission')
+    .gte('created_at',debutMois.toISOString());
+  const commMois=(txComm||[]).reduce((s,t)=>s+(t.montant||0),0);
+  $s('stat-comm-mois',fmtF(commMois));
+
+  // Compter filleuls
+  const{count:nbFils}=await SB.from('profiles')
+    .select('id',{count:'exact',head:true}).eq('code_parrain',monCode);
+  $s('stat-total-filleuls',nbFils||0);
+  $s('hg-filleuls',nbFils||0);
+  $s('hg-comm',fmtF(P.gains_parrainage_total||P.commission_parrainage||0));
+
+  applyAccountType(type);
+  await chargerFilleuls();
+}
+
+init();
+</script>
+</body>
+</html>
