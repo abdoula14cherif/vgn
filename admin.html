@@ -48,8 +48,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .lock-btn{padding:14px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;
   border-radius:14px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;
   color:#000;cursor:pointer;letter-spacing:.02em}
-.lock-err{font-size:.8rem;color:var(--r);text-align:center;display:none;padding:8px;
-  background:rgba(239,68,68,.1);border-radius:8px;margin-top:6px}
+.lock-err{font-size:.73rem;color:var(--r);text-align:center;display:none;padding:2px}
 
 /* ════════════════════════════════════
    TOPBAR
@@ -318,6 +317,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .conv-body{display:none;border-top:1px solid var(--bd)}
 .conv-card.open .conv-body{display:block}
 
+/* Chat window dans admin */
 .achat-msgs{background:#0D1117;min-height:220px;max-height:300px;overflow-y:auto;
   padding:10px;display:flex;flex-direction:column;gap:8px}
 .achat-msgs::-webkit-scrollbar{width:3px}
@@ -330,6 +330,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .acm-meta{font-size:.55rem;color:#4B5563;margin-top:3px;font-weight:600}
 .acm.admin-sent .acm-meta{text-align:right;color:rgba(255,255,255,.5)}
 
+/* Zone réponse admin */
 .achat-reply{padding:10px 12px;background:var(--s1);border-top:1px solid var(--bd);display:flex;gap:8px;align-items:flex-end}
 .achat-inp{flex:1;background:var(--s2);border:1.5px solid var(--bd);border-radius:12px;
   padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--txt);
@@ -358,8 +359,8 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   <div class="lock-form">
     <input class="lock-inp" type="email" id="l-email" placeholder="Email administrateur" autocomplete="email">
     <input class="lock-inp" type="password" id="l-pass" placeholder="Mot de passe" autocomplete="current-password">
-    <div class="lock-err" id="l-err"></div>
-    <button class="lock-btn" id="lock-btn" onclick="login()">Connexion sécurisée →</button>
+    <div class="lock-err" id="l-err">Identifiants incorrects</div>
+    <button class="lock-btn" onclick="login()">Connexion sécurisée →</button>
   </div>
 </div>
 
@@ -391,12 +392,14 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="tab" id="tb-users" onclick="goTab('users')">👥 Utilisateurs</div>
     <div class="tab" id="tb-notifs" onclick="goTab('notifs')">🔔 Notifs</div>
     <div class="tab" id="tb-stats" onclick="goTab('stats')">📈 Statistiques</div>
-    <div class="tab" id="tb-support" onclick="goTab('support')">💬 Support <span class="tbadge" id="b-support" style="background:var(--r);color:#fff;display:none">0</span></div>
+    <div class="tab" id="tb-support" onclick="goTab('support')">💬 Support <span class="tbadge" id="b-support" style="background:var(--r);color:#fff">0</span></div>
+    <div class="tab" id="tb-pro" onclick="goTab('pro')">🚀 Comptes Pro <span class="tbadge" id="b-pro" style="background:#8B5CF6;color:#fff">0</span></div>
   </div>
 </div>
 
 <!-- ════════════════ DASHBOARD ════════════════ -->
 <div class="page on" id="p-dash">
+
   <div class="kpi-grid" style="margin-top:4px">
     <div class="kpi">
       <div class="kpi-glow" style="background:radial-gradient(var(--g),transparent)"></div>
@@ -427,10 +430,15 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
       <div class="kpi-sub cp" id="kpi-soldes"></div>
     </div>
   </div>
+
+  <!-- Recharges urgentes -->
   <div class="sh"><h3>⏳ Recharges urgentes</h3><span class="sh-link" onclick="goTab('rech')">Tout voir →</span></div>
   <div class="list" id="d-rech"></div>
+
+  <!-- Retraits urgents -->
   <div class="sh"><h3>💸 Retraits urgents</h3><span class="sh-link" onclick="goTab('retr')">Tout voir →</span></div>
   <div class="list" id="d-retr"></div>
+
 </div>
 
 <!-- ════════════════ RECHARGES ════════════════ -->
@@ -471,8 +479,11 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 
 <!-- ════════════════ NOTIFICATIONS ════════════════ -->
 <div class="page" id="p-notifs">
+
   <div class="notif-compose">
     <div class="nc-title">📢 Nouvelle notification</div>
+
+    <!-- Types -->
     <div style="font-size:.65rem;font-weight:600;color:var(--mu);margin-bottom:6px;letter-spacing:.04em">TYPE</div>
     <div class="ntype-grid">
       <div class="ntype sel" id="nt-info" onclick="setNType('info')"><div class="ntype-ico">ℹ️</div><div class="ntype-lbl">Info</div></div>
@@ -482,6 +493,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
       <div class="ntype" id="nt-payment" onclick="setNType('payment')"><div class="ntype-ico">💰</div><div class="ntype-lbl">Paiement</div></div>
       <div class="ntype" id="nt-urgent" onclick="setNType('urgent')"><div class="ntype-ico">🚨</div><div class="ntype-lbl">Urgent</div></div>
     </div>
+
     <div class="nf">
       <label>DESTINATAIRES</label>
       <select id="n-dest" onchange="onDestChange()">
@@ -496,12 +508,20 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
       <label>EMAIL DE L'UTILISATEUR</label>
       <input type="text" id="n-one-val" placeholder="email@exemple.com">
     </div>
-    <div class="nf"><label>TITRE</label><input type="text" id="n-titre" placeholder="Ex: Votre plan VIP 2 est actif !"></div>
-    <div class="nf"><label>MESSAGE</label><textarea id="n-msg" placeholder="Contenu de la notification..."></textarea></div>
+    <div class="nf">
+      <label>TITRE</label>
+      <input type="text" id="n-titre" placeholder="Ex: Votre plan VIP 2 est actif !">
+    </div>
+    <div class="nf">
+      <label>MESSAGE</label>
+      <textarea id="n-msg" placeholder="Contenu de la notification..."></textarea>
+    </div>
     <button class="send-btn" id="n-send" onclick="sendNotif()">📤 Envoyer</button>
   </div>
+
   <div class="sh"><h3>📋 Historique des envois</h3></div>
   <div id="notif-hist"><div style="text-align:center;padding:16px"><span class="ld"></span></div></div>
+
 </div>
 
 <!-- ════════════════ STATISTIQUES ════════════════ -->
@@ -514,33 +534,50 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="kpi"><div class="kpi-ico" style="background:var(--p2)">🎡</div><div class="kpi-val cp" id="s-roue">—</div><div class="kpi-lbl">Tours de roue</div></div>
     <div class="kpi"><div class="kpi-ico" style="background:var(--y2)">👥</div><div class="kpi-val cy" id="s-fil">—</div><div class="kpi-lbl">Parrainages actifs</div></div>
   </div>
+
+  <!-- Répartition VIP -->
   <div class="sh"><h3>📊 Répartition par niveau VIP</h3></div>
   <div id="vip-breakdown" class="list"></div>
+
+  <!-- Top utilisateurs -->
   <div class="sh"><h3>🏆 Top investisseurs</h3></div>
   <div id="top-users" class="list"></div>
 </div>
 
-<!-- ════════════════ SUPPORT ════════════════ -->
 <div class="page" id="p-support">
+
+  <!-- En-tête stats support -->
   <div class="kpi-grid" style="margin-top:4px">
     <div class="kpi"><div class="kpi-ico" style="background:var(--r2)">📨</div><div class="kpi-val cr" id="sup-nonlu">—</div><div class="kpi-lbl">Non lus</div></div>
     <div class="kpi"><div class="kpi-ico" style="background:var(--b2)">👥</div><div class="kpi-val cb" id="sup-users">—</div><div class="kpi-lbl">Utilisateurs</div></div>
     <div class="kpi"><div class="kpi-ico" style="background:var(--g2)">✅</div><div class="kpi-val cg" id="sup-rep">—</div><div class="kpi-lbl">Répondus</div></div>
   </div>
-  <div class="filters" id="f-support" style="margin-bottom:8px">
+
+  <!-- Filtre -->
+  <div class="f-bar" id="f-support" style="margin:6px 10px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none">
     <div class="chip on" onclick="filtSupport('nonlu',this)">🔴 Non lus</div>
     <div class="chip" onclick="filtSupport('all',this)">Tous</div>
     <div class="chip" onclick="filtSupport('replied',this)">✅ Répondus</div>
   </div>
-  <div class="search"><span class="search-ico">🔍</span><input id="q-support" placeholder="Rechercher un utilisateur..." oninput="filtSupport(currentSupportFilt,null)"></div>
+
+  <!-- Barre recherche -->
+  <div class="search-bar" style="margin:0 10px 8px">
+    <span class="si">🔍</span>
+    <input id="q-support" type="search" placeholder="Rechercher un utilisateur..." oninput="filtSupport(currentSupportFilt,null)">
+  </div>
+
+  <!-- Liste conversations -->
   <div class="list" id="list-support">
     <div class="empty"><div class="empty-ico">💬</div><div class="empty-t">Chargement...</div></div>
   </div>
+
 </div>
 
 </div><!-- /app -->
 
 <!-- ═══════════ MODALS ═══════════ -->
+
+<!-- Modal : Modifier profil -->
 <div class="modal-ov" id="m-edit">
   <div class="modal">
     <div class="mhandle"></div>
@@ -549,9 +586,17 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="mf"><label>SOLDE (FCFA)</label><input type="number" id="me-solde" placeholder="0"></div>
     <div class="mf"><label>NIVEAU VIP</label>
       <select id="me-vip">
-        <option>VIP 0</option><option>VIP 1</option><option>VIP 2</option><option>VIP 3</option>
+        <option>VIP 0</option><option>PROMO 1</option><option>PROMO 2</option>
+        <option>VIP 1</option><option>VIP 2</option><option>VIP 3</option>
         <option>VIP 4</option><option>VIP 5</option><option>VIP 6</option><option>VIP 7</option>
         <option>VIP 8</option><option>VIP 9</option>
+      </select>
+    </div>
+    <div class="mf"><label>TYPE DE COMPTE MARKETING</label>
+      <select id="me-account-type">
+        <option value="standard">⭐ Standard (2%)</option>
+        <option value="pro">🚀 Pro (5%)</option>
+        <option value="business">🏆 Business (8%)</option>
       </select>
     </div>
     <div class="mf"><label>GAINS TOTAUX (FCFA)</label><input type="number" id="me-gains" placeholder="0"></div>
@@ -563,6 +608,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   </div>
 </div>
 
+<!-- Modal : Rejeter -->
 <div class="modal-ov" id="m-reject">
   <div class="modal">
     <div class="mhandle"></div>
@@ -576,6 +622,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   </div>
 </div>
 
+<!-- Modal : Notif rapide -->
 <div class="modal-ov" id="m-qnotif">
   <div class="modal">
     <div class="mhandle"></div>
@@ -590,114 +637,110 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   </div>
 </div>
 
+<!-- PAGE COMPTES PRO -->
+<div class="page" id="p-pro" style="display:none">
+  <div style="padding:10px 10px 4px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:.78rem;font-weight:900;color:var(--txt)">Demandes de comptes Pro / Business</div>
+    <div id="pro-count" style="font-size:.65rem;color:var(--mu);font-weight:700"></div>
+  </div>
+  <div style="padding:0 10px 8px;display:flex;gap:6px;flex-wrap:wrap">
+    <button class="fil on" id="fp-all"  onclick="filtPro('all')">Toutes</button>
+    <button class="fil"    id="fp-pend" onclick="filtPro('en_attente')">⏳ En attente</button>
+    <button class="fil"    id="fp-app"  onclick="filtPro('approuve')">✅ Approuvées</button>
+    <button class="fil"    id="fp-rej"  onclick="filtPro('rejete')">❌ Rejetées</button>
+  </div>
+  <div id="list-pro"></div>
+</div>
+
+
 <script>
-'use strict';
 /* ══════════════════════════════════════
    SUPABASE + CONFIG
 ══════════════════════════════════════ */
-const SB = supabase.createClient(
+const SB=supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
   {auth:{persistSession:true,storageKey:'vgn-admin',storage:window.localStorage}}
 );
 
-const ADMINS = ['abdoula13cherif@gmail.com'];
+const ADMINS=['abdoula13cherif@gmail.com']; // ← ajouter les emails admin ici
 
-const PLANS_VIP = {
+const PLANS_VIP={
   'VIP 1':{gain:70,taches:5},'VIP 2':{gain:175,taches:8},'VIP 3':{gain:560,taches:10},
   'VIP 4':{gain:1300,taches:15},'VIP 5':{gain:2000,taches:20},'VIP 6':{gain:3500,taches:25},
   'VIP 7':{gain:6400,taches:30},'VIP 8':{gain:11000,taches:35},'VIP 9':{gain:19000,taches:40}
 };
 
 /* ── HELPERS ── */
-function $(id){ return document.getElementById(id); }
-function $s(id,v){ var e=$(id); if(e) e.textContent=v; }
-function fmt(n){ return Number(n||0).toLocaleString('fr-FR'); }
-function fmtF(n){ return fmt(n)+' FCFA'; }
-function dtf(s){ return new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}); }
-function dtfh(s){ return new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'}); }
-// BUG FIX #1 : escH défini UNE SEULE FOIS ici globalement
-// L'original l'avait en double (une fois dans le code global renderSupport, une fois implicite)
-function escH(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-var _toastT;
-function toast(m,t){
-  var el=$('tst');
-  el.textContent=m;
-  el.className='tst show'+(t?' '+t:'');
-  clearTimeout(_toastT);
-  _toastT=setTimeout(function(){ el.className='tst'; },3000);
-}
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+const dtf=s=>new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+const dtfh=s=>new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+const toast=(m,t='')=>{const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3000)};
 
 /* ── STATE ── */
-var ME=null;
-var RECHARGES=[],RETRAITS=[],USERS=[],NOTIFS=[];
-var FILT_RECH='en_attente',FILT_RETR='en_attente',FILT_USERS='all';
-var EDIT_ID=null,REJECT_ID=null,REJECT_TYPE=null,QNOTIF_UID=null;
-var NTYPE='info';
-var currentSupportFilt='nonlu';
-var SUPPORT_CONVS=[];
+let ME=null;
+let RECHARGES=[],RETRAITS=[],USERS=[],NOTIFS=[];
+let FILT_RECH='en_attente',FILT_RETR='en_attente',FILT_USERS='all';
+let EDIT_ID=null,REJECT_ID=null,REJECT_TYPE=null,QNOTIF_UID=null;
+let NTYPE='info';
 
 /* ══ LOGIN / LOGOUT ══ */
-// BUG FIX #2 : le bouton avait id="lock-btn" mais était sélectionné via querySelector
-// On utilise maintenant directement $('lock-btn')
 async function login(){
-  var email=($('l-email').value||'').trim();
-  var pass=$('l-pass').value||'';
-  if(!email||!pass){ showErr('Champs requis'); return; }
-  var btn=$('lock-btn');
+  const email=$('l-email').value.trim(), pass=$('l-pass').value;
+  if(!email||!pass){showErr('Champs requis');return}
+  const btn=$('lock').querySelector('.lock-btn');
   btn.textContent='⏳ Connexion...'; btn.disabled=true;
   try{
-    var res=await SB.auth.signInWithPassword({email:email,password:pass});
-    if(res.error){ showErr('Identifiants incorrects : '+res.error.message); return; }
-    if(!ADMINS.includes(res.data.user.email)){
+    const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
+    if(error){showErr('❌ '+error.message);return}
+    if(!ADMINS.includes(data.user.email)){
       await SB.auth.signOut();
-      showErr('Accès non autorisé pour : '+res.data.user.email);
+      showErr('⛔ Accès non autorisé — email : '+data.user.email);
       return;
     }
-    ME=res.data.user;
+    ME=data.user;
     $('lock').style.display='none';
     $('app').style.display='block';
     loadAll();
   }catch(e){
-    showErr('Erreur réseau : '+e.message);
+    showErr('❌ Erreur: '+e.message);
   }finally{
     btn.textContent='Connexion sécurisée →'; btn.disabled=false;
   }
 }
-
-// Permettre Entrée pour se connecter
-document.addEventListener('keydown',function(e){
-  if(e.key==='Enter' && $('lock').style.display!=='none') login();
-});
-
 function showErr(m){
-  var el=$('l-err');
+  const el=$('l-err');
   el.textContent=m;
   el.style.display='block';
+  el.style.fontSize='.8rem';
+  el.style.color='#ff4444';
+  el.style.padding='8px';
+  el.style.background='rgba(255,0,0,.1)';
+  el.style.borderRadius='8px';
+  el.style.marginTop='6px';
 }
+async function logout(){await SB.auth.signOut();location.reload()}
 
-async function logout(){ await SB.auth.signOut(); location.reload(); }
-
-// Vérifier session existante au chargement
-(async function checkSession(){
-  var res=await SB.auth.getSession();
-  if(res.data.session && ADMINS.includes(res.data.session.user?.email)){
-    ME=res.data.session.user;
-    $('lock').style.display='none';
-    $('app').style.display='block';
-    loadAll();
+// Vérifier session existante
+(async()=>{
+  const{data:{session}}=await SB.auth.getSession();
+  if(session&&ADMINS.includes(session.user?.email)){
+    ME=session.user;$('lock').style.display='none';$('app').style.display='block';loadAll();
   }
 })();
 
 /* ══ TABS ══ */
 function goTab(name){
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
-  var tb=$('tb-'+name); if(tb) tb.classList.add('on');
-  var pg=$('p-'+name); if(pg) pg.classList.add('on');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  $('tb-'+name)?.classList.add('on');
+  $('p-'+name)?.classList.add('on');
   if(name==='notifs') $('notif-dot').style.display='none';
-  if(name==='support'){ var bs=$('b-support'); if(bs) bs.style.display='none'; loadSupport(); }
+  if(name==='support'){ $('b-support').style.display='none'; loadSupport(); }
+  if(name==='pro') loadPro();
 }
 
 /* ══ LOAD ALL ══ */
@@ -707,700 +750,766 @@ async function loadAll(){
 
 /* ══ DASHBOARD ══ */
 async function loadDash(){
-  var r1=await SB.from('profiles').select('*',{count:'exact',head:true});
-  var r2=await SB.from('recharges').select('*').eq('statut','en_attente');
-  var r3=await SB.from('transactions').select('id,user_id,montant,statut').eq('type','retrait').eq('statut','en_attente');
-  var r4=await SB.from('profiles').select('solde,investissement,gains_totaux,created_at');
+  const[{count:nu},{data:rp},{data:tp},{data:prf}]=await Promise.all([
+    SB.from('profiles').select('*',{count:'exact',head:true}),
+    SB.from('recharges').select('*').eq('statut','en_attente'),
+    SB.from('transactions').select('id,user_id,montant,statut').eq('type','retrait').eq('statut','en_attente'),
+    SB.from('profiles').select('solde,investissement,gains_totaux,created_at'),
+  ]);
 
-  $s('kpi-users',r1.count||0);
-  var today=new Date().toISOString().slice(0,10);
-  var newToday=(r4.data||[]).filter(function(p){ return (p.created_at||'').slice(0,10)===today; }).length;
-  $s('kpi-users-new',newToday>0?'+'+newToday+" aujourd'hui":'—');
+  $s('kpi-users',nu||0);
+  const today=new Date().toISOString().slice(0,10);
+  const newToday=(prf||[]).filter(p=>p.created_at?.slice(0,10)===today).length;
+  $s('kpi-users-new',newToday>0?'+'+newToday+' aujourd\'hui':'—');
 
-  var rechPend=r2.data||[];
+  const rechPend=rp||[];
   $s('kpi-rech-pend',rechPend.length);
-  $s('kpi-rech-amt',rechPend.length?fmtF(rechPend.reduce(function(a,r){ return a+(r.montant_envoye||0); },0)):'');
+  $s('kpi-rech-amt',rechPend.length?fmtF(rechPend.reduce((a,r)=>a+(r.montant_envoye||0),0)):'');
   $s('b-rech',rechPend.length);
 
-  var retrPend=r3.data||[];
+  const retrPend=tp||[];
   $s('kpi-retr-pend',retrPend.length);
-  $s('kpi-retr-amt',retrPend.length?fmtF(retrPend.reduce(function(a,r){ return a+(r.montant||0); },0)):'');
+  $s('kpi-retr-amt',retrPend.length?fmtF(retrPend.reduce((a,r)=>a+(r.montant||0),0)):'');
   $s('b-retr',retrPend.length);
 
   if(rechPend.length>0||retrPend.length>0) $('notif-dot').style.display='block';
 
-  var totalInvest=(r4.data||[]).reduce(function(a,p){ return a+(p.investissement||0); },0);
-  var totalSolde=(r4.data||[]).reduce(function(a,p){ return a+(p.solde||0); },0);
+  const totalInvest=(prf||[]).reduce((a,p)=>a+(p.investissement||0),0);
+  const totalSolde=(prf||[]).reduce((a,p)=>a+(p.solde||0),0);
   $s('kpi-invest',fmtF(totalInvest));
   $s('kpi-soldes','Soldes: '+fmtF(totalSolde));
 
+  // Mini listes urgentes sur dashboard
   renderCardList($('d-rech'),rechPend.slice(0,4),'rech',true);
   renderCardList($('d-retr'),retrPend.slice(0,4),'retr',true);
 }
 
 /* ══ RECHARGES ══ */
 async function loadRecharges(){
-  var r=await SB.from('recharges').select('*, profiles(full_name,email)').order('created_at',{ascending:false}).limit(200);
-  var rc=await SB.from('recharges_crypto').select('*, profiles(full_name,email)').order('created_at',{ascending:false}).limit(100);
-  var cryptoNorm=((rc.data)||[]).map(function(r){
-    return Object.assign({},r,{
-      operateur:(r.crypto||'').toUpperCase()||'CRYPTO',
-      ref_transaction:r.payment_id||'NP-'+r.id,
-      montant_envoye:r.montant_fcfa||0,
-      plan_label:'Crypto '+(r.currency||'').toUpperCase(),
-      plan_depot:r.montant_fcfa||0,
-      plan_gain:0,plan_taches:0,
-      statut:r.statut==='finished'?'valide':(r.statut==='waiting'?'en_attente':'en_attente'),
-      _is_crypto:true
-    });
-  });
-  RECHARGES=((r.data||[]).concat(cryptoNorm)).sort(function(a,b){ return new Date(b.created_at)-new Date(a.created_at); });
+  const{data}=await SB.from('recharges')
+    .select('*, profiles(full_name,email)')
+    .order('created_at',{ascending:false}).limit(200);
+  // Aussi charger les recharges crypto en attente (statut='en_attente_crypto')
+  const{data:dataCrypto}=await SB.from('recharges_crypto')
+    .select('*, profiles(full_name,email)')
+    .order('created_at',{ascending:false}).limit(100);
+  // Normaliser les recharges_crypto pour les afficher comme des recharges normales
+  const cryptoAsRecharges=(dataCrypto||[]).map(r=>({
+    ...r,
+    operateur: r.crypto?.toUpperCase()||'CRYPTO',
+    ref_transaction: r.payment_id||'NP-'+r.id,
+    montant_envoye: r.montant_fcfa||0,
+    plan_label: 'Crypto '+r.currency?.toUpperCase(),
+    plan_depot: r.montant_fcfa||0,
+    plan_gain:0, plan_taches:0,
+    statut: r.statut==='finished'?'valide':r.statut==='waiting'?'en_attente':'en_attente',
+    _is_crypto: true
+  }));
+  RECHARGES=[...(data||[]),...cryptoAsRecharges]
+    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   renderRech();
 }
 
 function filtRech(f,el){
   FILT_RECH=f;
-  $('f-rech').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-  el.classList.add('on');
-  renderRech();
+  $('f-rech').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderRech();
 }
 function renderRech(){
-  var q=(($('q-rech')||{}).value||'').toLowerCase();
-  var d=RECHARGES.slice();
-  if(FILT_RECH!=='all') d=d.filter(function(r){
-    return FILT_RECH==='en_attente'
-      ?(r.statut==='en_attente'||r.statut==='en_attente_crypto'||r.statut==='waiting'||r.statut==='confirming')
-      :r.statut===FILT_RECH;
-  });
-  if(q) d=d.filter(function(r){ return ((r.profiles&&r.profiles.full_name||'')+(r.profiles&&r.profiles.email||'')+(r.ref_transaction||'')).toLowerCase().includes(q); });
+  const q=($('q-rech')?.value||'').toLowerCase();
+  let d=RECHARGES;
+  if(FILT_RECH!=='all') d=d.filter(r=>
+    FILT_RECH==='en_attente'
+      ? (r.statut==='en_attente'||r.statut==='en_attente_crypto'||r.statut==='waiting'||r.statut==='confirming')
+      : r.statut===FILT_RECH
+  );
+  if(q) d=d.filter(r=>(r.profiles?.full_name+r.profiles?.email+r.ref_transaction).toLowerCase().includes(q));
   renderCardList($('list-rech'),d,'rech');
 }
 
 async function validerRecharge(id,uid,planLabel,planGain,planTaches){
-  if(!confirm('Valider et activer '+planLabel+' ?')) return;
-  toast('Validation...');
-  var res=await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString()}).eq('id',id);
-  if(res.error){ toast('Erreur: '+res.error.message,'err'); return; }
+  if(!confirm('Valider et activer '+planLabel+' pour cet utilisateur ?'))return;
+  toast('⏳ Validation...');
+  const{error}=await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString()}).eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
   await insertNotif(uid,'payment','Plan '+planLabel+' active !',
-    'Votre recharge a ete validee. Vous pouvez effectuer vos taches.');
-  toast('Valide !','ok');
+    'Votre recharge a ete validee. Vous pouvez maintenant effectuer vos taches et gagner '+fmtF(planGain*planTaches)+' FCFA/jour.');
+  toast('✅ Validé et VIP activé !','ok');
   await loadAll();
 }
 
 /* ══ RETRAITS ══ */
 async function loadRetraits(){
-  var res=await SB.from('transactions')
-    .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at, profiles(full_name,email)')
-    .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
-  if(res.error){
-    var res2=await SB.from('transactions')
+  // On sélectionne id,user_id,type,montant,statut,created_at en sûr
+  // Les colonnes methode/frais/montant_net/compte/note peuvent manquer → on les récupère avec try
+  let data=[];
+  try{
+    const res=await SB.from('transactions')
+      .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at, profiles(full_name,email)')
+      .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
+    data=res.data||[];
+  }catch(e){
+    // Fallback si colonnes manquantes
+    const res=await SB.from('transactions')
       .select('id,user_id,type,montant,statut,created_at, profiles(full_name,email)')
       .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
-    RETRAITS=res2.data||[];
-  } else {
-    RETRAITS=res.data||[];
+    data=res.data||[];
   }
-  renderRetr();
+  RETRAITS=data;renderRetr();
 }
 
 function filtRetr(f,el){
   FILT_RETR=f;
-  $('f-retr').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-  el.classList.add('on');
-  renderRetr();
+  $('f-retr').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderRetr();
 }
 function renderRetr(){
-  var q=(($('q-retr')||{}).value||'').toLowerCase();
-  var d=RETRAITS.slice();
-  if(FILT_RETR!=='all') d=d.filter(function(r){ return r.statut===FILT_RETR; });
-  if(q) d=d.filter(function(r){ return ((r.profiles&&r.profiles.full_name||'')+(r.profiles&&r.profiles.email||'')+(r.methode||'')).toLowerCase().includes(q); });
+  const q=($('q-retr')?.value||'').toLowerCase();
+  let d=RETRAITS;
+  if(FILT_RETR!=='all') d=d.filter(r=>r.statut===FILT_RETR);
+  if(q) d=d.filter(r=>((r.profiles?.full_name||'')+(r.profiles?.email||'')+(r.methode||'')).toLowerCase().includes(q));
   renderCardList($('list-retr'),d,'retr');
 }
 
 async function validerRetrait(id,uid,montant,frais,montantNet){
-  if(!confirm('Confirmer le paiement de '+fmtF(montantNet||montant)+' ?')) return;
-  toast('Traitement...');
-  var res=await SB.from('transactions').update({statut:'valide'}).eq('id',id);
-  if(res.error){ toast('Erreur: '+res.error.message,'err'); return; }
+  if(!confirm('Confirmer le paiement de '+fmtF(montantNet||montant)+' FCFA ?'))return;
+  toast('⏳ Traitement...');
+
+  // Récupérer les détails du retrait pour savoir si c'est crypto
+  const{data:retr}=await SB.from('transactions').select('methode,compte,admin_note').eq('id',id).single();
+  const isCrypto = retr?.methode==='crypto';
+
+  if(isCrypto){
+    // Lancer le payout NOWPayments automatiquement
+    try{
+      const NP_KEY = '1XMWTJB-6KC46MV-HTNF9PS-5NH4JK7';
+      const amountUSD = ((montantNet||montant)/600).toFixed(4);
+      // Extraire réseau et adresse depuis admin_note ou compte
+      // compte format: "usdtbsc:0xADDRESS" ou juste "0xADDRESS"
+      const compte = retr?.compte||'';
+      const [currency,...addrParts] = compte.includes(':')?compte.split(':'):[null,compte];
+      const address = addrParts.join(':') || compte;
+      const cur = currency||'usdtbsc';
+
+      const res = await fetch('https://api.nowpayments.io/v1/payout',{
+        method:'POST',
+        headers:{'x-api-key':NP_KEY,'Content-Type':'application/json'},
+        body: JSON.stringify({
+          withdrawals:[{
+            address, currency: cur,
+            amount: amountUSD,
+            ipn_callback_url:'https://tgrfzybemuwvhkbpuzmz.supabase.co/functions/v1/nowpayments-webhook'
+          }]
+        })
+      });
+      const d = await res.json();
+      if(!res.ok) throw new Error(d.message||JSON.stringify(d));
+      toast('₿ Payout NP envoyé !','ok');
+    }catch(e){
+      // Continuer quand même avec validation manuelle
+      console.warn('NP payout error:',e);
+      toast('⚠️ Payout auto échoué — validation manuelle','err');
+    }
+  }
+
+  const{error}=await SB.from('transactions').update({statut:'valide'}).eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
   await insertNotif(uid,'payment','Retrait effectue',
-    'Votre retrait de '+fmtF(montant)+' FCFA a ete traite. Net : '+fmtF(montantNet||montant)+' FCFA.');
-  toast('Retrait valide !','ok');
+    'Votre retrait de '+fmtF(montant)+' FCFA a ete traite. Montant net : '+fmtF(montantNet||montant)+' FCFA. Les fonds sont en route.');
+  toast('✅ Retrait validé !','ok');
   await loadAll();
 }
 
-/* ══ RENDER CARDS ══ */
-// BUG FIX #3 : Suppression de tous les onclick inline avec guillemets imbriqués.
-// Chaque carte stocke son ID dans data-id et data-uid, les boutons d'action
-// stockent leurs paramètres dans des data-attributes. Un délégué global écoute les clics.
-function renderCardList(container,data,type,mini){
-  if(!container) return;
-  if(!data||!data.length){
-    container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucun élément</div></div>';
-    return;
-  }
-  var isRech=(type==='rech');
-  var stMap={
-    en_attente:{lbl:'En attente',cls:'cs-w',ico:'ci-w',em:'⏳'},
-    en_attente_crypto:{lbl:'Crypto ⏳',cls:'cs-w',ico:'ci-w',em:'₿'},
-    waiting:{lbl:'Crypto attente',cls:'cs-w',ico:'ci-w',em:'₿'},
-    confirming:{lbl:'Confirmation',cls:'cs-w',ico:'ci-w',em:'🔄'},
-    en_cours:{lbl:'En cours',cls:'cs-w',ico:'ci-w',em:'🔄'},
-    valide:{lbl:isRech?'Validé':'Payé',cls:'cs-g',ico:'ci-g',em:'✅'},
-    finished:{lbl:'Terminé',cls:'cs-g',ico:'ci-g',em:'✅'},
-    rejete:{lbl:'Rejeté',cls:'cs-r',ico:'ci-r',em:'❌'},
-    failed:{lbl:'Échoué',cls:'cs-r',ico:'ci-r',em:'❌'}
+/* ══ RENDER CARDS (recharges et retraits) ══ */
+function renderCardList(container,data,type,mini=false){
+  if(!container)return;
+  if(!data||!data.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucun élément</div></div>';return}
+  const isRech=type==='rech';
+  const stMap={
+    en_attente:       {lbl:'En attente',    cls:'cs-w',ico:'ci-w',em:'⏳'},
+    en_attente_crypto:{lbl:'Crypto⏳',      cls:'cs-w',ico:'ci-w',em:'₿'},
+    waiting:          {lbl:'Crypto attente',cls:'cs-w',ico:'ci-w',em:'₿'},
+    confirming:       {lbl:'Confirmation',  cls:'cs-w',ico:'ci-w',em:'🔄'},
+    en_cours:         {lbl:'En cours',      cls:'cs-w',ico:'ci-w',em:'🔄'},
+    valide:           {lbl:isRech?'Validé':'Payé',cls:'cs-g',ico:'ci-g',em:'✅'},
+    finished:         {lbl:'Terminé',       cls:'cs-g',ico:'ci-g',em:'✅'},
+    rejete:           {lbl:'Rejeté',        cls:'cs-r',ico:'ci-r',em:'❌'},
+    failed:           {lbl:'Échoué',        cls:'cs-r',ico:'ci-r',em:'❌'},
   };
+  const methIco={mtn:'📱',orange:'🍊',wave:'🌊',crypto:'₿',momo:'📱',bank:'🏦'};
 
-  container.innerHTML=data.map(function(r){
-    var st=r.statut||'en_attente';
-    var sm=stMap[st]||stMap.en_attente;
-    var nom=(r.profiles&&r.profiles.full_name)||(r.profiles&&r.profiles.email)||(r.user_id||'').slice(0,12)||'—';
-    var amt=isRech?r.montant_envoye:r.montant;
-    var methLabel=isRech?(r.operateur||r.methode||'—'):(r.methode||'—');
-    var uid=r.user_id||'';
-    var planLabel=isRech?(r.plan_label||'—'):'';
+  container.innerHTML=data.map(r=>{
+    const st=r.statut||'en_attente';
+    const sm=stMap[st]||stMap.en_attente;
+    const nom=r.profiles?.full_name||r.profiles?.email||r.user_id?.slice(0,12)||'—';
+    const amt=isRech?r.montant_envoye:r.montant;
+    const methLabel=isRech?(r.operateur||r.methode||'—'):(r.methode||'—');
+    const uid=r.user_id||'';
+    const planLabel=isRech?(r.plan_label||'—'):'';
 
-    var detailRows='';
+    let detailRows='';
     if(isRech){
-      detailRows='<div class="detail-row"><span class="dl">Email</span><span class="dv">'+escH((r.profiles&&r.profiles.email)||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Plan</span><span class="dv">'+escH(r.plan_label||'—')+' — '+fmtF(r.plan_depot)+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Opérateur</span><span class="dv">'+escH(r.operateur||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">N° expéditeur</span><span class="dv">'+escH(r.num_expediteur||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Référence</span><span class="dv">'+escH(r.ref_transaction||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Montant envoyé</span><span class="dv cg">'+fmtF(r.montant_envoye)+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Date</span><span class="dv">'+dtfh(r.created_at)+'</span></div>';
+      detailRows=`
+        <div class="detail-row"><span class="dl">Email</span><span class="dv">${r.profiles?.email||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Plan</span><span class="dv">${r.plan_label||'—'} — ${fmtF(r.plan_depot)}</span></div>
+        <div class="detail-row"><span class="dl">Opérateur</span><span class="dv">${r.operateur||'—'}</span></div>
+        <div class="detail-row"><span class="dl">N° expéditeur</span><span class="dv">${r.num_expediteur||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Référence</span><span class="dv">${r.ref_transaction||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Montant envoyé</span><span class="dv cg">${fmtF(r.montant_envoye)}</span></div>
+        <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
     } else {
-      detailRows='<div class="detail-row"><span class="dl">Utilisateur</span><span class="dv">'+escH((r.profiles&&r.profiles.full_name)||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Email</span><span class="dv">'+escH((r.profiles&&r.profiles.email)||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Pays/Note</span><span class="dv" style="font-weight:900;color:var(--g)">'+escH(r.note||'Cameroun')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Méthode</span><span class="dv">'+escH(r.methode||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Compte / N°</span><span class="dv">'+escH(r.compte||'—')+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Montant demandé</span><span class="dv">'+fmtF(r.montant)+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Frais (5%)</span><span class="dv">'+fmtF(r.frais||0)+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Net à payer</span><span class="dv cg" style="font-size:.9rem;font-weight:900">'+fmtF(r.montant_net||r.montant)+'</span></div>'+
-        '<div class="detail-row"><span class="dl">Date</span><span class="dv">'+dtfh(r.created_at)+'</span></div>';
+      detailRows=`
+        <div class="detail-row"><span class="dl">Utilisateur</span><span class="dv">${r.profiles?.full_name||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Email</span><span class="dv">${r.profiles?.email||'—'}</span></div>
+        <div class="detail-row"><span class="dl">🌍 Pays/Note</span><span class="dv" style="font-weight:900;color:var(--g)">${r.note||'Cameroun 🇨🇲'}</span></div>
+        <div class="detail-row"><span class="dl">Méthode</span><span class="dv">${r.methode==='crypto'?'₿ Crypto (NOWPayments auto)':r.methode||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Compte / Numéro</span><span class="dv">${r.compte||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Montant demandé</span><span class="dv">${fmtF(r.montant)}</span></div>
+        <div class="detail-row"><span class="dl">Frais (5%)</span><span class="dv">${fmtF(r.frais||0)}</span></div>
+        <div class="detail-row"><span class="dl">Net à payer</span><span class="dv cg" style="font-size:.9rem;font-weight:900">${fmtF(r.montant_net||r.montant)}</span></div>
+        <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
     }
 
-    var isPending=['en_attente','en_attente_crypto','waiting','confirming','en_cours'].includes(st);
-    var actionsHTML='';
-    if(isPending){
-      if(isRech){
-        actionsHTML='<div class="actions">'+
-          '<button class="abtn a-valider" data-action="val-rech" data-id="'+escH(r.id)+'" data-uid="'+escH(uid)+'" data-plan="'+escH(planLabel)+'" data-gain="'+(r.plan_gain||0)+'" data-taches="'+(r.plan_taches||0)+'">✅ Valider</button>'+
-          '<button class="abtn a-rejeter" data-action="reject" data-id="'+escH(r.id)+'" data-type="rech" data-nom="'+escH(nom)+'">❌ Rejeter</button>'+
-          '<button class="abtn a-notif" data-action="qnotif" data-uid="'+escH(uid)+'" data-nom="'+escH(nom)+'">🔔 Notifier</button>'+
-          '</div>';
-      } else {
-        actionsHTML='<div class="actions">'+
-          '<button class="abtn a-valider" data-action="val-retr" data-id="'+escH(r.id)+'" data-uid="'+escH(uid)+'" data-montant="'+(r.montant||0)+'" data-frais="'+(r.frais||0)+'" data-net="'+(r.montant_net||r.montant||0)+'">✅ Marquer payé</button>'+
-          '<button class="abtn a-rejeter" data-action="reject" data-id="'+escH(r.id)+'" data-type="retr" data-nom="'+escH(nom)+'">❌ Rejeter</button>'+
-          '<button class="abtn a-notif" data-action="qnotif" data-uid="'+escH(uid)+'" data-nom="'+escH(nom)+'">🔔 Notifier</button>'+
-          '</div>';
+    const isPending=['en_attente','en_attente_crypto','waiting','confirming','en_cours'].includes(st);
+    const actionsHTML=isPending?`<div class="actions" onclick="event.stopPropagation()">
+      ${isRech
+        ? `<button class="abtn a-valider" onclick="validerRecharge('${r.id}','${uid}','${escH(planLabel)}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
+        : `<button class="abtn a-valider" onclick="validerRetrait('${r.id}','${uid}',${r.montant||0},${r.frais||0},${r.montant_net||r.montant||0})">✅ Marquer payé</button>`
       }
-    }
+      <button class="abtn a-rejeter" onclick="openReject('${r.id}','${type}','${escH(nom)}','${isRech?'':'retrait'}')">❌ Rejeter</button>
+      <button class="abtn a-notif" onclick="openQNotif('${uid}','${escH(nom)}')">🔔 Notifier</button>
+    </div>`:'';
 
-    return '<div class="card" id="card-'+r.id+'" data-id="'+r.id+'">'+
-      '<div class="card-head">'+
-        '<div class="card-ico '+sm.ico+'">'+sm.em+'</div>'+
-        '<div class="card-info">'+
-          '<div class="card-name">'+escH(nom)+'</div>'+
-          '<div class="card-meta">'+escH(planLabel?planLabel+' · ':'')+escH(methLabel)+' · '+dtf(r.created_at)+'</div>'+
-        '</div>'+
-        '<div class="card-right">'+
-          '<div class="card-amount">'+fmtF(amt)+'</div>'+
-          '<span class="card-stat '+sm.cls+'">'+sm.lbl+'</span>'+
-        '</div>'+
-        '<span class="card-chevron">&#8250;</span>'+
-      '</div>'+
-      '<div class="card-body">'+
-        detailRows+
-        (r.note&&isRech?'<div class="admin-note-box">📝 '+escH(r.note)+'</div>':'')+
-        (r.admin_note?'<div class="admin-note-box" style="color:var(--r)">❌ Admin: '+escH(r.admin_note)+'</div>':'')+
-        actionsHTML+
-      '</div>'+
-    '</div>';
+    return `<div class="card" id="card-${r.id}">
+      <div class="card-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-ico ${sm.ico}">${sm.em}</div>
+        <div class="card-info">
+          <div class="card-name">${nom}</div>
+          <div class="card-meta">${planLabel?planLabel+' · ':''}${methLabel} · ${dtf(r.created_at)}</div>
+        </div>
+        <div class="card-right">
+          <div class="card-amount">${fmtF(amt)}</div>
+          <span class="card-stat ${sm.cls}">${sm.lbl}</span>
+        </div>
+        <span class="card-chevron">›</span>
+      </div>
+      <div class="card-body">
+        ${detailRows}
+        ${r.note?`<div class="admin-note-box">📝 ${r.note}</div>`:''}
+        ${r.admin_note?`<div class="admin-note-box" style="color:var(--r)">❌ Admin: ${r.admin_note}</div>`:''}
+        ${actionsHTML}
+      </div>
+    </div>`;
   }).join('');
 }
 
-// BUG FIX #3 (suite) : délégué unique sur document pour tous les boutons d'action
-document.addEventListener('click',function(e){
-  // Toggle carte
-  var head=e.target.closest('.card-head');
-  if(head){ head.parentElement.classList.toggle('open'); return; }
-
-  // Boutons d'action via data-action
-  var btn=e.target.closest('[data-action]');
-  if(!btn) return;
-  e.stopPropagation();
-  var a=btn.dataset.action;
-
-  if(a==='val-rech'){
-    validerRecharge(btn.dataset.id,btn.dataset.uid,btn.dataset.plan,parseFloat(btn.dataset.gain)||0,parseFloat(btn.dataset.taches)||0);
-  } else if(a==='val-retr'){
-    validerRetrait(btn.dataset.id,btn.dataset.uid,parseFloat(btn.dataset.montant)||0,parseFloat(btn.dataset.frais)||0,parseFloat(btn.dataset.net)||0);
-  } else if(a==='reject'){
-    openReject(btn.dataset.id,btn.dataset.type,btn.dataset.nom);
-  } else if(a==='qnotif'){
-    openQNotif(btn.dataset.uid,btn.dataset.nom);
-  } else if(a==='edit-user'){
-    var u=USERS.find(function(x){ return x.id===btn.dataset.uid; });
-    if(u) openEdit(u.id,u.full_name||u.email||'',u.solde||0,u.vip_niveau||'VIP 0',u.gains_totaux||0);
-  } else if(a==='del-user'){
-    delUser(btn.dataset.uid,btn.dataset.nom);
-  }
-});
-
 /* ══ UTILISATEURS ══ */
 async function loadUsers(){
-  var res=await SB.from('profiles').select('*').order('created_at',{ascending:false}).limit(300);
-  USERS=res.data||[];
-  renderUsers();
+  const{data}=await SB.from('profiles').select('*').order('created_at',{ascending:false}).limit(300);
+  USERS=data||[];renderUsers();
 }
 
 function filtUsers(f,el){
   FILT_USERS=f;
-  $('f-users').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-  el.classList.add('on');
-  renderUsers();
+  $('f-users').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderUsers();
 }
-
 function renderUsers(){
-  var q=(($('q-users')||{}).value||'').toLowerCase();
-  var d=USERS.slice();
-  if(FILT_USERS==='vip2') d=d.filter(function(u){ return parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=2; });
-  else if(FILT_USERS!=='all') d=d.filter(function(u){ return (u.vip_niveau||'VIP 0')===FILT_USERS; });
-  if(q) d=d.filter(function(u){ return ((u.full_name||'')+(u.email||'')).toLowerCase().includes(q); });
-  var container=$('list-users');
-  if(!d.length){ container.innerHTML='<div class="empty"><div class="empty-ico">👥</div><div class="empty-t">Aucun utilisateur</div></div>'; return; }
-  container.innerHTML=d.map(function(u){
-    var ini=((u.full_name||u.email||'?').charAt(0)).toUpperCase();
-    var vip=u.vip_niveau||'VIP 0';
-    // BUG FIX #3 : plus de guillemets imbriqués — data-uid sur les boutons
-    return '<div class="ucard" id="uc-'+u.id+'">'+
-      '<div class="uc-head">'+
-        '<div class="uc-av">'+ini+'</div>'+
-        '<div class="uc-info">'+
-          '<div class="uc-name">'+escH(u.full_name||'Sans nom')+'</div>'+
-          '<div class="uc-mail">'+escH(u.email||'—')+'</div>'+
-        '</div>'+
-        '<div class="uc-right">'+
-          '<div class="uc-vip">'+escH(vip)+'</div>'+
-          '<div class="uc-bal">'+fmtF(u.solde)+'</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="uc-body">'+
-        '<div class="uc-grid">'+
-          '<div class="uc-cell"><div class="uc-cl">SOLDE</div><div class="uc-cv cg">'+fmtF(u.solde)+'</div></div>'+
-          '<div class="uc-cell"><div class="uc-cl">GAINS TOTAUX</div><div class="uc-cv cp">'+fmtF(u.gains_totaux)+'</div></div>'+
-          '<div class="uc-cell"><div class="uc-cl">INVESTISSEMENT</div><div class="uc-cv cy">'+fmtF(u.investissement)+'</div></div>'+
-          '<div class="uc-cell"><div class="uc-cl">TÂCHES/JOUR</div><div class="uc-cv">'+(u.taches_total||0)+'</div></div>'+
-          '<div class="uc-cell"><div class="uc-cl">CODE PARRAIN</div><div class="uc-cv" style="font-size:.65rem">'+escH(u.code_parrainage||'—')+'</div></div>'+
-          '<div class="uc-cell"><div class="uc-cl">INSCRIT LE</div><div class="uc-cv" style="font-size:.65rem">'+dtf(u.created_at)+'</div></div>'+
-          '<div class="uc-cell"><div class="uc-cl">COMMISSIONS</div><div class="uc-cv cb">'+fmtF(u.commission_parrainage)+'</div></div>'+
-          '<div class="uc-cell"><div class="uc-cl">PARRAIN</div><div class="uc-cv" style="font-size:.65rem">'+escH(u.code_parrain||'—')+'</div></div>'+
-        '</div>'+
-        '<div class="actions">'+
-          '<button class="abtn a-edit" data-action="edit-user" data-uid="'+escH(u.id)+'">✏️ Modifier</button>'+
-          '<button class="abtn a-notif" data-action="qnotif" data-uid="'+escH(u.id)+'" data-nom="'+escH(u.full_name||u.email||'')+'">🔔 Notifier</button>'+
-          '<button class="abtn a-del" data-action="del-user" data-uid="'+escH(u.id)+'" data-nom="'+escH(u.full_name||u.email||'')+'">🗑️ Supprimer</button>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
+  const q=($('q-users')?.value||'').toLowerCase();
+  let d=USERS;
+  if(FILT_USERS==='vip2') d=d.filter(u=>parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=2);
+  else if(FILT_USERS!=='all') d=d.filter(u=>(u.vip_niveau||'VIP 0')===FILT_USERS);
+  if(q) d=d.filter(u=>((u.full_name||'')+(u.email||'')).toLowerCase().includes(q));
+  const container=$('list-users');
+  if(!d.length){container.innerHTML='<div class="empty"><div class="empty-ico">👥</div><div class="empty-t">Aucun utilisateur</div></div>';return}
+  container.innerHTML=d.map(u=>{
+    const ini=(u.full_name||u.email||'?').charAt(0).toUpperCase();
+    const vip=u.vip_niveau||'VIP 0';
+    const vipN=parseInt(vip.replace('VIP ',''))||0;
+    return `<div class="ucard" id="uc-${u.id}">
+      <div class="uc-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="uc-av">${ini}</div>
+        <div class="uc-info">
+          <div class="uc-name">${u.full_name||'Sans nom'}</div>
+          <div class="uc-mail">${u.email||'—'}</div>
+        </div>
+        <div class="uc-right">
+          <div class="uc-vip">${vip}</div>
+          <div class="uc-bal">${fmtF(u.solde)}</div>
+        </div>
+      </div>
+      <div class="uc-body">
+        <div class="uc-grid">
+          <div class="uc-cell"><div class="uc-cl">SOLDE</div><div class="uc-cv cg">${fmtF(u.solde)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">GAINS TOTAUX</div><div class="uc-cv cp">${fmtF(u.gains_totaux)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">INVESTISSEMENT</div><div class="uc-cv cy">${fmtF(u.investissement)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">TÂCHES/JOUR</div><div class="uc-cv">${u.taches_total||0}</div></div>
+          <div class="uc-cell"><div class="uc-cl">CODE PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrainage||'—'}</div></div>
+          <div class="uc-cell"><div class="uc-cl">INSCRIT LE</div><div class="uc-cv" style="font-size:.65rem">${dtf(u.created_at)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">COMMISSIONS</div><div class="uc-cv cb">${fmtF(u.commission_parrainage)}</div></div>
+          <div class="uc-cell"><div class="uc-cl">PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrain||'—'}</div></div>
+          <div class="uc-cell"><div class="uc-cl">TYPE COMPTE</div><div class="uc-cv" style="color:${u.account_type==='pro'?'#A78BFA':u.account_type==='business'?'#F59E0B':'var(--mu)';font-weight:900">${u.account_type==='pro'?'🚀 Pro':u.account_type==='business'?'🏆 Business':'⭐ Standard'}</div></div>
+          <div class="uc-cell"><div class="uc-cl">STATUT PRO</div><div class="uc-cv" style="font-size:.63rem">${u.compte_pro_statut||'—'}</div></div>
+        </div>
+        <div class="actions">
+          <button class="abtn a-edit" onclick="openEdit('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}',${u.solde||0},'${vip}',${u.gains_totaux||0},'${u.account_type||'standard'}')">✏️ Modifier</button>
+          <button class="abtn a-notif" onclick="openQNotif('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🔔 Notifier</button>
+          <button class="abtn a-del" onclick="delUser('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🗑️ Supprimer</button>
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
-// Toggle ucard via délégué
-document.addEventListener('click',function(e){
-  var head=e.target.closest('.uc-head');
-  if(head) head.parentElement.classList.toggle('open');
-});
-
 /* ══ MODIFIER PROFIL ══ */
-function openEdit(id,nom,solde,vip,gains){
-  EDIT_ID=id;
-  $s('me-sub',nom);
-  $('me-solde').value=solde;
-  $('me-vip').value=vip;
-  $('me-gains').value=gains;
-  $('me-note').value='';
+function openEdit(id,nom,solde,vip,gains,acct){
+  EDIT_ID=id;$s('me-sub',nom);
+  $('me-solde').value=solde;$('me-vip').value=vip;$('me-gains').value=gains;$('me-note').value='';
+  const at=$('me-account-type');if(at)at.value=acct||'standard';
   openM('m-edit');
 }
 async function saveEdit(){
-  var solde=parseFloat($('me-solde').value)||0;
-  var vip=$('me-vip').value;
-  var gains=parseFloat($('me-gains').value)||0;
-  var btn=$('me-save');
-  btn.disabled=true; btn.textContent='⏳...';
-  var plan=PLANS_VIP[vip]||null;
-  var upd={solde:solde,vip_niveau:vip,gains_totaux:gains};
-  if(plan){ upd.taches_total=plan.taches; upd.benefices_jour=plan.gain*plan.taches; }
-  var res=await SB.from('profiles').update(upd).eq('id',EDIT_ID);
-  if(res.error){ toast('Erreur: '+res.error.message,'err'); }
-  else{ closeM('m-edit'); toast('Profil mis à jour','ok'); await loadUsers(); }
-  btn.disabled=false; btn.textContent='💾 Sauvegarder';
+  const solde=parseFloat($('me-solde').value)||0;
+  const vip=$('me-vip').value;
+  const gains=parseFloat($('me-gains').value)||0;
+  const btn=$('me-save');btn.disabled=true;btn.textContent='⏳...';
+  const plan=PLANS_VIP[vip]||null;
+  const acct=($('me-account-type')?.value)||'standard';
+  const upd={solde,vip_niveau:vip,gains_totaux:gains,account_type:acct};
+  if(plan){upd.taches_total=plan.taches;upd.benefices_jour=plan.gain*plan.taches}
+  const{error}=await SB.from('profiles').update(upd).eq('id',EDIT_ID);
+  if(error){toast('❌ '+error.message,'err')}
+  else{closeM('m-edit');toast('✅ Profil mis à jour','ok');await loadUsers()}
+  btn.disabled=false;btn.textContent='💾 Sauvegarder';
 }
 async function delUser(id,nom){
-  if(!confirm('Supprimer le compte de '+nom+' ? Irréversible.')) return;
-  var res=await SB.from('profiles').delete().eq('id',id);
-  if(res.error) toast('Erreur: '+res.error.message,'err');
-  else{ toast('Supprimé','ok'); await loadUsers(); }
+  if(!confirm('Supprimer le compte de '+nom+' ? Irréversible.'))return;
+  const{error}=await SB.from('profiles').delete().eq('id',id);
+  if(error)toast('❌ '+error.message,'err');
+  else{toast('Supprimé','ok');await loadUsers()}
 }
 
-/* ══ REJETER ══
-   BUG FIX #4 : la logique de remboursement originale appelait SB.rpc() dans
-   un champ .update() ce qui est invalide. On fait maintenant un read-then-write
-   propre : lecture du solde → addition → écriture. */
-function openReject(id,type,nom){
-  REJECT_ID=id; REJECT_TYPE=type;
-  $s('mr-sub',nom);
-  $('mr-note').value='';
-  openM('m-reject');
+/* ══ REJETER ══ */
+let REJECT_EXTRA='';
+function openReject(id,type,nom,extra=''){
+  REJECT_ID=id;REJECT_TYPE=type;REJECT_EXTRA=extra;
+  $s('mr-sub',nom);$('mr-note').value='';openM('m-reject');
 }
 async function doReject(){
-  var note=($('mr-note').value||'').trim();
-  var btn=$('mr-ok');
-  btn.disabled=true; btn.textContent='⏳...';
-  var table=(REJECT_TYPE==='rech')?'recharges':'transactions';
-  var res=await SB.from(table).update({statut:'rejete',admin_note:note||null}).eq('id',REJECT_ID);
-  if(res.error){ toast('Erreur: '+res.error.message,'err'); btn.disabled=false; btn.textContent='❌ Confirmer'; return; }
+  const note=$('mr-note').value.trim();
+  const btn=$('mr-ok');btn.disabled=true;btn.textContent='⏳...';
+  const table=REJECT_TYPE==='rech'?'recharges':'transactions';
+  const{error}=await SB.from(table).update({statut:'rejete',admin_note:note||null}).eq('id',REJECT_ID);
+  if(error){toast('❌ '+error.message,'err');btn.disabled=false;btn.textContent='❌ Confirmer';return}
 
-  // Remboursement si rejet de retrait
-  if(REJECT_TYPE==='retr'){
-    var tr=RETRAITS.find(function(r){ return r.id===REJECT_ID; });
-    if(tr && tr.user_id && tr.montant){
-      var prof=await SB.from('profiles').select('solde').eq('id',tr.user_id).single();
-      if(prof.data){
-        await SB.from('profiles').update({solde:(prof.data.solde||0)+tr.montant}).eq('id',tr.user_id);
+  // Si rejet d'un retrait → rembourser le solde
+  if(REJECT_TYPE==='retr'||REJECT_EXTRA==='retrait'){
+    const tr=RETRAITS.find(r=>r.id===REJECT_ID);
+    if(tr&&tr.user_id&&tr.montant){
+      await SB.from('profiles').update({
+        solde:SB.rpc('increment_solde',{user_id_input:tr.user_id,amount:tr.montant})
+      }).eq('id',tr.user_id);
+      // Simple update si rpc non dispo
+      const{data:prof}=await SB.from('profiles').select('solde').eq('id',tr.user_id).single();
+      if(prof){
+        await SB.from('profiles').update({solde:(prof.solde||0)+tr.montant}).eq('id',tr.user_id);
       }
     }
   }
 
   closeM('m-reject');
   toast('Demande rejetée','ok');
-  btn.disabled=false; btn.textContent='❌ Confirmer';
   await loadAll();
+  btn.disabled=false;btn.textContent='❌ Confirmer';
 }
 
 /* ══ NOTIFICATIONS ══ */
 function setNType(t){
   NTYPE=t;
-  document.querySelectorAll('.ntype').forEach(function(el){ el.classList.remove('sel'); });
-  var el=$('nt-'+t); if(el) el.classList.add('sel');
+  document.querySelectorAll('.ntype').forEach(el=>el.classList.remove('sel'));
+  $('nt-'+t)?.classList.add('sel');
 }
 function onDestChange(){
-  $('n-one-field').style.display=($('n-dest').value==='one')?'block':'none';
+  $('n-one-field').style.display=$('n-dest').value==='one'?'block':'none';
 }
 async function sendNotif(){
-  var dest=$('n-dest').value;
-  var titre=($('n-titre').value||'').trim();
-  var msg=($('n-msg').value||'').trim();
-  if(!titre||!msg){ toast('Titre et message requis','err'); return; }
-  var btn=$('n-send'); btn.disabled=true; btn.textContent='⏳ Envoi...';
-  var uids=[];
-  if(dest==='all') uids=USERS.map(function(u){ return u.id; });
-  else if(dest==='stage') uids=USERS.filter(function(u){ return (u.vip_niveau||'VIP 0')==='VIP 0'; }).map(function(u){ return u.id; });
-  else if(dest==='vip1p') uids=USERS.filter(function(u){ return parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=1; }).map(function(u){ return u.id; });
-  else if(dest==='vip2p') uids=USERS.filter(function(u){ return parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=2; }).map(function(u){ return u.id; });
+  const dest=$('n-dest').value;
+  const titre=$('n-titre').value.trim();
+  const msg=$('n-msg').value.trim();
+  if(!titre||!msg){toast('⚠️ Titre et message requis','err');return}
+  const btn=$('n-send');btn.disabled=true;btn.textContent='⏳ Envoi...';
+  let uids=[];
+  if(dest==='all') uids=USERS.map(u=>u.id);
+  else if(dest==='stage') uids=USERS.filter(u=>(u.vip_niveau||'VIP 0')==='VIP 0').map(u=>u.id);
+  else if(dest==='vip1p') uids=USERS.filter(u=>parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=1).map(u=>u.id);
+  else if(dest==='vip2p') uids=USERS.filter(u=>parseInt((u.vip_niveau||'VIP 0').replace('VIP ',''))>=2).map(u=>u.id);
   else if(dest==='one'){
-    var v=($('n-one-val').value||'').trim();
-    var found=USERS.find(function(u){ return u.email===v||u.id===v; });
-    if(!found){ toast('Utilisateur introuvable','err'); btn.disabled=false; btn.textContent='📤 Envoyer'; return; }
+    const v=$('n-one-val').value.trim();
+    const found=USERS.find(u=>u.email===v||u.id===v);
+    if(!found){toast('⚠️ Utilisateur introuvable','err');btn.disabled=false;btn.textContent='📤 Envoyer';return}
     uids=[found.id];
   }
-  if(!uids.length){ toast('Aucun destinataire','err'); btn.disabled=false; btn.textContent='📤 Envoyer'; return; }
-  var now=new Date().toISOString();
-  var rows=uids.map(function(id){ return {user_id:id,type:NTYPE,titre:titre,message:msg,lue:false,created_at:now}; });
-  for(var i=0;i<rows.length;i+=50) await SB.from('notifications').insert(rows.slice(i,i+50));
-  toast(uids.length+' notification(s) envoyée(s) !','ok');
-  $('n-titre').value=''; $('n-msg').value='';
-  btn.disabled=false; btn.textContent='📤 Envoyer';
+  if(!uids.length){toast('⚠️ Aucun destinataire','err');btn.disabled=false;btn.textContent='📤 Envoyer';return}
+  const rows=uids.map(id=>({user_id:id,type:NTYPE,titre,message:msg,lue:false,created_at:new Date().toISOString()}));
+  // Insérer par batch de 50
+  for(let i=0;i<rows.length;i+=50) await SB.from('notifications').insert(rows.slice(i,i+50));
+  toast('✅ '+uids.length+' notification(s) envoyée(s) !','ok');
+  $('n-titre').value='';$('n-msg').value='';
+  btn.disabled=false;btn.textContent='📤 Envoyer';
   await loadNotifHist();
 }
 
+/* Notif auto après action */
 async function insertNotif(uid,type,titre,message){
-  try{
-    await SB.from('notifications').insert({user_id:uid,type:type,titre:titre,message:message,lue:false,created_at:new Date().toISOString()});
-  }catch(e){ console.warn('insertNotif:',e.message); }
+  await SB.from('notifications').insert({user_id:uid,type,titre,message,lue:false,created_at:new Date().toISOString()}).catch(()=>{});
 }
 
+/* Notif rapide depuis profil user */
 function openQNotif(uid,nom){
-  QNOTIF_UID=uid;
-  $s('qn-sub',nom);
-  $('qn-titre').value=''; $('qn-msg').value='';
-  openM('m-qnotif');
+  QNOTIF_UID=uid;$s('qn-sub',nom);$('qn-titre').value='';$('qn-msg').value='';openM('m-qnotif');
 }
 async function sendQNotif(){
-  var titre=($('qn-titre').value||'').trim(), msg=($('qn-msg').value||'').trim();
-  if(!titre||!msg){ toast('Requis','err'); return; }
+  const titre=$('qn-titre').value.trim(),msg=$('qn-msg').value.trim();
+  if(!titre||!msg){toast('⚠️ Requis','err');return}
   await insertNotif(QNOTIF_UID,'info',titre,msg);
-  closeM('m-qnotif');
-  toast('Notification envoyée !','ok');
+  closeM('m-qnotif');toast('🔔 Notification envoyée !','ok');
   await loadNotifHist();
 }
 
 async function loadNotifHist(){
-  var res=await SB.from('notifications').select('*').order('created_at',{ascending:false}).limit(80);
-  NOTIFS=res.data||[];
-  var container=$('notif-hist');
-  if(!NOTIFS.length){ container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune notification envoyée</div></div>'; return; }
-  var tIco={info:'ℹ️',success:'✅',warning:'⚠️',promo:'🎁',payment:'💰',urgent:'🚨'};
-  var tBg={info:'ci-b',success:'ci-g',warning:'ci-w',promo:'ci-o',payment:'ci-g',urgent:'ci-r'};
-  var grouped={};
-  NOTIFS.forEach(function(n){
-    var k=n.titre+'||'+(n.created_at||'').slice(0,16);
-    if(!grouped[k]) grouped[k]=Object.assign({},n,{count:0});
-    grouped[k].count++;
-  });
-  container.innerHTML=Object.values(grouped).slice(0,30).map(function(n){
-    var t=n.type||'info';
-    return '<div class="ni">'+
-      '<div class="ni-ico '+(tBg[t]||'ci-b')+'">'+(tIco[t]||'📢')+'</div>'+
-      '<div class="ni-info">'+
-        '<div class="ni-t">'+escH(n.titre)+'</div>'+
-        '<div class="ni-b">'+escH(n.message)+'</div>'+
-        '<div class="ni-m"><span>'+dtfh(n.created_at)+'</span><span>📬 '+n.count+' dest.</span><span class="tag tag-b">'+escH(t)+'</span></div>'+
-      '</div>'+
-    '</div>';
+  const{data}=await SB.from('notifications').select('*').order('created_at',{ascending:false}).limit(80);
+  NOTIFS=data||[];
+  const container=$('notif-hist');
+  if(!NOTIFS.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune notification envoyée</div></div>';return}
+  const tIco={info:'ℹ️',success:'✅',warning:'⚠️',promo:'🎁',payment:'💰',urgent:'🚨'};
+  const tBg={info:'ci-b',success:'ci-g',warning:'ci-w',promo:'ci-o',payment:'ci-g',urgent:'ci-r'};
+  // Grouper par titre + date
+  const grouped={};
+  NOTIFS.forEach(n=>{const k=n.titre+'||'+n.created_at?.slice(0,16);if(!grouped[k])grouped[k]={...n,count:0};grouped[k].count++});
+  container.innerHTML=Object.values(grouped).slice(0,30).map(n=>{
+    const t=n.type||'info';
+    return `<div class="ni">
+      <div class="ni-ico ${tBg[t]||'ci-b'}">${tIco[t]||'📢'}</div>
+      <div class="ni-info">
+        <div class="ni-t">${n.titre}</div>
+        <div class="ni-b">${n.message}</div>
+        <div class="ni-m"><span>${dtfh(n.created_at)}</span><span>📬 ${n.count} dest.</span><span class="tag tag-b">${t}</span></div>
+      </div>
+    </div>`;
   }).join('');
 }
 
 /* ══ STATISTIQUES ══ */
 async function loadStats(){
-  var results=await Promise.all([
+  const[{data:rVal},{data:rRej},{data:tVal},{data:nAll},{data:roue},{data:prf}]=await Promise.all([
     SB.from('recharges').select('id').eq('statut','valide'),
     SB.from('recharges').select('id').eq('statut','rejete'),
-    SB.from('transactions').select('id').eq('type','retrait').eq('statut','valide'),
+    SB.from('transactions').select('id').eq('type','retrait').eq('statut','valide').catch(()=>({data:[]})),
     SB.from('notifications').select('id'),
-    SB.from('roue_historique').select('id'),
-    SB.from('profiles').select('vip_niveau,investissement,code_parrain').order('investissement',{ascending:false})
+    SB.from('roue_historique').select('id').catch(()=>({data:[]})),
+    SB.from('profiles').select('vip_niveau,investissement').order('investissement',{ascending:false}),
   ]);
-  var rVal=results[0].data||[];
-  var rRej=results[1].data||[];
-  var tVal=results[2].data||[];
-  var nAll=results[3].data||[];
-  var roue=results[4].data||[];
-  var prf=results[5].data||[];
 
-  $s('s-rech-val',rVal.length);
-  $s('s-rech-rej',rRej.length);
-  $s('s-retr-val',tVal.length);
-  $s('s-notifs',nAll.length);
-  $s('s-roue',roue.length);
-  $s('s-fil',prf.filter(function(p){ return !!p.code_parrain; }).length);
+  $s('s-rech-val',(rVal||[]).length);
+  $s('s-rech-rej',(rRej||[]).length);
+  $s('s-retr-val',(tVal||[]).length);
+  $s('s-notifs',(nAll||[]).length);
+  $s('s-roue',(roue||[]).length);
+
+  // Parrainage : users avec code_parrain rempli
+  const filleuls=(prf||[]).filter(p=>p.code_parrain).length;
+  $s('s-fil',filleuls);
 
   // Répartition VIP
-  var vipCount={};
-  prf.forEach(function(p){ var v=p.vip_niveau||'VIP 0'; vipCount[v]=(vipCount[v]||0)+1; });
-  var sorted=Object.entries(vipCount).sort(function(a,b){ return parseInt(a[0].replace('VIP ',''))-parseInt(b[0].replace('VIP ','')); });
-  var total=prf.length||1;
-  $('vip-breakdown').innerHTML=sorted.map(function(entry){
-    var vip=entry[0], count=entry[1];
-    var pct=Math.round(count/total*100);
-    return '<div class="card"><div class="card-head" style="cursor:default">'+
-      '<div class="card-ico ci-g">'+escH(vip.replace('VIP ',''))+'</div>'+
-      '<div class="card-info"><div class="card-name">'+escH(vip)+'</div>'+
-        '<div style="height:4px;background:var(--bd);border-radius:2px;margin-top:6px;overflow:hidden">'+
-          '<div style="height:100%;width:'+pct+'%;background:var(--g);border-radius:2px"></div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="card-right"><div class="card-amount">'+count+'</div><div class="card-meta">'+pct+'%</div></div>'+
-    '</div></div>';
+  const vipCount={};
+  (prf||[]).forEach(p=>{const v=p.vip_niveau||'VIP 0';vipCount[v]=(vipCount[v]||0)+1});
+  const sorted=Object.entries(vipCount).sort((a,b)=>parseInt(a[0].replace('VIP ',''))-parseInt(b[0].replace('VIP ','')));
+  const total=(prf||[]).length||1;
+  $('vip-breakdown').innerHTML=sorted.map(([vip,count])=>{
+    const pct=Math.round(count/total*100);
+    return `<div class="card">
+      <div class="card-head" style="cursor:default">
+        <div class="card-ico ci-g">${vip.replace('VIP ','')}</div>
+        <div class="card-info"><div class="card-name">${vip}</div>
+          <div style="height:4px;background:var(--bd);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--g);border-radius:2px"></div></div>
+        </div>
+        <div class="card-right"><div class="card-amount">${count}</div><div class="card-meta">${pct}%</div></div>
+      </div>
+    </div>`;
   }).join('');
 
-  // BUG FIX #5 : `find(x=>true)` retournait toujours le premier user.
-  // On affiche maintenant les vraies données d'investissement depuis prf.
-  var topInv=prf.filter(function(p){ return (p.investissement||0)>0; }).slice(0,8);
-  $('top-users').innerHTML=topInv.length?topInv.map(function(p,i){
-    var medals=['🥇','🥈','🥉'];
-    return '<div class="card"><div class="card-head" style="cursor:default">'+
-      '<div class="card-ico ci-p">'+(medals[i]||'🏅')+'</div>'+
-      '<div class="card-info"><div class="card-name">'+escH(p.vip_niveau||'VIP 0')+'</div><div class="card-meta">Investissement</div></div>'+
-      '<div class="card-right"><div class="card-amount cy">'+fmtF(p.investissement)+'</div></div>'+
-    '</div></div>';
-  }).join(''):'<div class="empty"><div class="empty-t">Aucune donnée</div></div>';
+  // Top investisseurs
+  const topInv=(prf||[]).filter(p=>p.investissement>0).slice(0,8);
+  $('top-users').innerHTML=topInv.map((p,i)=>{
+    const u=USERS.find(x=>true)||{}; // just show data we have
+    return `<div class="card"><div class="card-head" style="cursor:default">
+      <div class="card-ico ci-p">${['🥇','🥈','🥉'][i]||'🏅'}</div>
+      <div class="card-info"><div class="card-name">${p.vip_niveau||'VIP 0'}</div><div class="card-meta">Investissement</div></div>
+      <div class="card-right"><div class="card-amount cy">${fmtF(p.investissement)}</div></div>
+    </div></div>`;
+  }).join('')||'<div class="empty"><div class="empty-t">Aucune donnée</div></div>';
 }
 
-/* ══ SUPPORT CHAT ══ */
+/* ══ UI HELPERS ══ */
+function toggleCard(id){
+  const el=$(id);if(!el)return;
+  const was=el.classList.contains('open');
+  document.querySelectorAll('.card.open,.ucard.open').forEach(e=>e.classList.remove('open'));
+  if(!was)el.classList.add('open');
+}
+function openM(id){$(id)?.classList.add('open')}
+function closeM(id){$(id)?.classList.remove('open')}
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+/* ══════════════════════════════════════
+   SUPPORT CHAT - ADMIN
+══════════════════════════════════════ */
+let SUPPORT_CONVS=[];
+let currentSupportFilt='nonlu';
+
 async function loadSupport(){
-  var res=await SB.from('support_messages').select('*').eq('direction','user').order('created_at',{ascending:false}).limit(200);
-  if(res.error){ console.warn('support:',res.error.message); return; }
-  var map={};
-  (res.data||[]).forEach(function(m){
-    if(!map[m.user_id]) map[m.user_id]={user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[],unread:0};
+  const{data:msgs,error}=await SB.from('support_messages')
+    .select('*').eq('direction','user')
+    .order('created_at',{ascending:false}).limit(200);
+  if(error){console.warn('support:',error.message);return;}
+  const map={};
+  (msgs||[]).forEach(m=>{
+    if(!map[m.user_id]){map[m.user_id]={user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[],unread:0};}
     map[m.user_id].msgs.push(m);
-    if(!m.lu_admin) map[m.user_id].unread++;
+    if(!m.lu_admin)map[m.user_id].unread++;
   });
   SUPPORT_CONVS=Object.values(map);
-  var totalNonLu=SUPPORT_CONVS.reduce(function(s,c){ return s+c.unread; },0);
-  $s('sup-nonlu',totalNonLu);
-  $s('sup-users',SUPPORT_CONVS.length);
-  $s('sup-rep',SUPPORT_CONVS.filter(function(c){ return c.unread===0; }).length);
-  var badge=$('b-support');
-  if(badge){ badge.textContent=totalNonLu; badge.style.display=totalNonLu>0?'inline':'none'; }
+  const totalNonLu=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
+  const totalUsers=SUPPORT_CONVS.length;
+  const replied=SUPPORT_CONVS.filter(c=>c.unread===0).length;
+  const $s2=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  $s2('sup-nonlu',totalNonLu);$s2('sup-users',totalUsers);$s2('sup-rep',replied);
+  const badge=document.getElementById('b-support');
+  if(badge){badge.textContent=totalNonLu;badge.style.display=totalNonLu>0?'inline':'none';}
   renderSupport();
 }
 
 function filtSupport(filt,el){
   currentSupportFilt=filt;
-  if(el){
-    $('f-support').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-    el.classList.add('on');
-  }
+  if(el){document.querySelectorAll('#f-support .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
   renderSupport();
 }
 
+function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function taAgo(iso){
-  var d=Math.floor((Date.now()-new Date(iso))/1000);
-  if(d<60) return 'Maintenant';
-  if(d<3600) return Math.floor(d/60)+'min';
-  if(d<86400) return Math.floor(d/3600)+'h';
-  return Math.floor(d/86400)+'j';
+  const d=Math.floor((Date.now()-new Date(iso))/1000);
+  if(d<60)return 'Maintenant';if(d<3600)return Math.floor(d/60)+'min';
+  if(d<86400)return Math.floor(d/3600)+'h';return Math.floor(d/86400)+'j';
 }
-function autoResizeA(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+function autoResizeA(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 
-// BUG FIX #6 : renderSupport() utilisait des guillemets simples imbriqués dans onclick="..."
-// Tous les handlers sont maintenant via data-uid sur les éléments + délégué.
 function renderSupport(){
-  var q=(($('q-support')||{}).value||'').toLowerCase();
-  var list=SUPPORT_CONVS.slice();
-  if(currentSupportFilt==='nonlu') list=list.filter(function(c){ return c.unread>0; });
-  else if(currentSupportFilt==='replied') list=list.filter(function(c){ return c.unread===0; });
-  if(q) list=list.filter(function(c){ return (c.user_nom||'').toLowerCase().includes(q); });
-  var el=$('list-support'); if(!el) return;
+  const q=(document.getElementById('q-support')?.value||'').toLowerCase();
+  let list=SUPPORT_CONVS;
+  if(currentSupportFilt==='nonlu')list=list.filter(c=>c.unread>0);
+  else if(currentSupportFilt==='replied')list=list.filter(c=>c.unread===0);
+  if(q)list=list.filter(c=>(c.user_nom||'').toLowerCase().includes(q));
+  const el=document.getElementById('list-support');if(!el)return;
   if(!list.length){
-    el.innerHTML='<div class="empty"><div class="empty-ico">'+(currentSupportFilt==='nonlu'?'🎉':'💬')+'</div>'+
-      '<div class="empty-t">'+(currentSupportFilt==='nonlu'?'Aucun message non lu !':'Aucune conversation')+'</div></div>';
-    return;
+    el.innerHTML='<div class="empty"><div class="empty-ico">'+
+      (currentSupportFilt==='nonlu'?'🎉':'💬')+'</div><div class="empty-t">'+
+      (currentSupportFilt==='nonlu'?'Aucun message non lu !':'Aucune conversation')+
+      '</div></div>';return;
   }
-  el.innerHTML=list.map(function(conv){
-    var last=conv.msgs[0];
-    var ini=(conv.user_nom||'U')[0].toUpperCase();
-    var lastMsg=(last&&last.message||'').slice(0,55);
-    var unreadBadge=conv.unread>0?'<div class="conv-badge">'+conv.unread+' nv</div>':'';
-    var uid=conv.user_id;
-    return '<div class="conv-card'+(conv.unread>0?' unread':'')+'" id="conv-'+uid+'" data-conv-uid="'+escH(uid)+'">'+
-      '<div class="conv-head" data-toggle-conv="'+escH(uid)+'">'+
-        '<div class="conv-av">'+ini+'</div>'+
-        '<div class="conv-info">'+
-          '<div class="conv-nom">'+escH(conv.user_nom)+'</div>'+
-          '<div class="conv-last">'+escH(lastMsg)+'</div>'+
-        '</div>'+
-        '<div class="conv-right">'+
-          '<div class="conv-time">'+taAgo(last&&last.created_at||'')+'</div>'+
-          unreadBadge+
-        '</div>'+
-        '<span style="font-size:.9rem;color:var(--mu);margin-left:6px">&#8250;</span>'+
-      '</div>'+
+  el.innerHTML=list.map(conv=>{
+    const last=conv.msgs[0];
+    const ini=(conv.user_nom||'U')[0].toUpperCase();
+    const lastMsg=(last?.message||'').slice(0,55);
+    const unreadBadge=conv.unread>0?'<div class="conv-badge">'+conv.unread+' nv</div>':'';
+    const uid=conv.user_id;
+    return '<div class="conv-card'+(conv.unread>0?' unread':'')+'" id="conv-'+uid+'">'+
+      '<div class="conv-head" onclick="this.parentElement.classList.toggle('open');ouvrirConv(''+uid+'')">'+
+      '<div class="conv-av">'+ini+'</div>'+
+      '<div class="conv-info"><div class="conv-nom">'+escH(conv.user_nom)+'</div>'+
+      '<div class="conv-last">'+escH(lastMsg)+'</div></div>'+
+      '<div class="conv-right"><div class="conv-time">'+taAgo(last?.created_at||'')+'</div>'+unreadBadge+'</div>'+
+      '<span style="font-size:.9rem;color:var(--mu);margin-left:6px">&#8250;</span></div>'+
       '<div class="conv-body" id="cb-'+uid+'">'+
-        '<div class="achat-msgs" id="msgs-'+uid+'"><div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Chargement...</div></div>'+
-        '<div class="achat-reply">'+
-          '<textarea class="achat-inp" id="rep-'+uid+'" placeholder="Répondre à '+escH(conv.user_nom)+'..." rows="1" oninput="autoResizeA(this)"></textarea>'+
-          '<button class="achat-send" data-send-uid="'+escH(uid)+'" data-send-nom="'+escH(conv.user_nom)+'">&#10148;</button>'+
-        '</div>'+
-        '<button class="achat-mark" data-mark-uid="'+escH(uid)+'">Marquer tout comme lu</button>'+
+      '<div class="achat-msgs" id="msgs-'+uid+'"><div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Chargement...</div></div>'+
+      '<div class="achat-reply">'+
+      '<textarea class="achat-inp" id="rep-'+uid+'" placeholder="Repondre a '+escH(conv.user_nom)+'..." rows="1" oninput="autoResizeA(this)"></textarea>'+
+      '<button class="achat-send" onclick="envoyerReponse(''+uid+'',''+escH(conv.user_nom)+'')">&#10148;</button>'+
       '</div>'+
-    '</div>';
+      '<button class="achat-mark" onclick="marquerLu(''+uid+'')">Marquer tout comme lu</button>'+
+      '</div></div>';
   }).join('');
 }
-
-// Délégué support
-document.addEventListener('click',function(e){
-  var toggleBtn=e.target.closest('[data-toggle-conv]');
-  if(toggleBtn){
-    var uid=toggleBtn.dataset.toggleConv;
-    var card=document.getElementById('conv-'+uid);
-    if(!card) return;
-    card.classList.toggle('open');
-    if(card.classList.contains('open')) ouvrirConv(uid);
-    return;
-  }
-  var sendBtn=e.target.closest('[data-send-uid]');
-  if(sendBtn){ envoyerReponse(sendBtn.dataset.sendUid,sendBtn.dataset.sendNom); return; }
-  var markBtn=e.target.closest('[data-mark-uid]');
-  if(markBtn){ marquerLu(markBtn.dataset.markUid); return; }
-});
 
 async function ouvrirConv(uid){
-  var msgsEl=document.getElementById('msgs-'+uid); if(!msgsEl) return;
-  var res=await SB.from('support_messages').select('*').eq('user_id',uid).order('created_at',{ascending:true}).limit(100);
-  var all=res.data||[];
-  if(!all.length){ msgsEl.innerHTML='<div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Aucun message</div>'; return; }
-  msgsEl.innerHTML=all.map(function(m){
-    var side=m.direction==='user'?'user':'admin-sent';
-    var nom=m.direction==='user'?(m.user_nom||'Utilisateur'):'Admin VGN';
-    var time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    var date=new Date(m.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
-    return '<div class="acm '+side+'">'+
-      '<div class="acm-bubble">'+escH(m.message)+'</div>'+
-      '<div class="acm-meta">'+escH(nom)+' · '+date+' '+time+(m.is_auto?' · auto':'')+'</div>'+
-    '</div>';
+  const msgsEl=document.getElementById('msgs-'+uid);if(!msgsEl)return;
+  const{data:all}=await SB.from('support_messages').select('*').eq('user_id',uid).order('created_at',{ascending:true}).limit(100);
+  if(!all||!all.length){msgsEl.innerHTML='<div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Aucun message</div>';return;}
+  msgsEl.innerHTML=all.map(m=>{
+    const side=m.direction==='user'?'user':'admin-sent';
+    const nom=m.direction==='user'?(m.user_nom||'Utilisateur'):'Admin VGN';
+    const time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const date=new Date(m.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    return '<div class="acm '+side+'"><div class="acm-bubble">'+escH(m.message)+'</div>'+
+      '<div class="acm-meta">'+escH(nom)+' · '+date+' '+time+(m.is_auto?' · auto':'')+' </div></div>';
   }).join('');
-  setTimeout(function(){ msgsEl.scrollTop=msgsEl.scrollHeight; },80);
+  setTimeout(()=>msgsEl.scrollTop=msgsEl.scrollHeight,80);
 }
 
 async function envoyerReponse(uid,userNom){
-  var inp=document.getElementById('rep-'+uid);
-  var txt=(inp&&inp.value||'').trim();
-  if(!txt){ toast('Message vide','err'); return; }
-  inp.value=''; autoResizeA(inp);
-  var res=await SB.from('support_messages').insert({
+  const inp=document.getElementById('rep-'+uid);
+  const txt=(inp?.value||'').trim();
+  if(!txt){toast('Message vide','err');return;}
+  inp.value='';autoResizeA(inp);
+  const{error}=await SB.from('support_messages').insert({
     user_id:uid,user_nom:'Support Admin VGN',message:txt,
     direction:'admin',lu_admin:true,is_auto:false,created_at:new Date().toISOString()
   });
-  if(res.error){ toast('Erreur: '+res.error.message,'err'); return; }
+  if(error){toast('Erreur: '+error.message,'err');return;}
   await SB.from('notifications').insert({
     user_id:uid,type:'info',titre:'Reponse du support VGN',
     message:txt,lue:false,created_at:new Date().toISOString()
   });
-  toast('Réponse envoyée à '+userNom,'ok');
+  toast('Reponse envoyee a '+userNom,'ok');
   await ouvrirConv(uid);
   await marquerLu(uid);
 }
 
 async function marquerLu(uid){
   await SB.from('support_messages').update({lu_admin:true}).eq('user_id',uid).eq('lu_admin',false);
-  var conv=SUPPORT_CONVS.find(function(c){ return c.user_id===uid; });
-  if(conv) conv.unread=0;
-  var card=document.getElementById('conv-'+uid);
-  if(card){
-    card.classList.remove('unread');
-    var badge=card.querySelector('.conv-badge');
-    if(badge) badge.remove();
-  }
-  var total=SUPPORT_CONVS.reduce(function(s,c){ return s+c.unread; },0);
-  var b=$('b-support');
-  if(b){ b.textContent=total; b.style.display=total>0?'inline':'none'; }
-  $s('sup-nonlu',total);
+  const conv=SUPPORT_CONVS.find(c=>c.user_id===uid);
+  if(conv)conv.unread=0;
+  const card=document.getElementById('conv-'+uid);
+  if(card){card.classList.remove('unread');card.querySelector('.conv-badge')?.remove();}
+  const total=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
+  const badge=document.getElementById('b-support');
+  if(badge){badge.textContent=total;badge.style.display=total>0?'inline':'none';}
+  const e2=document.getElementById('sup-nonlu');if(e2)e2.textContent=total;
 }
 
-/* ══ UI HELPERS ══ */
-function openM(id){ var el=$(id); if(el) el.classList.add('open'); }
-function closeM(id){ var el=$(id); if(el) el.classList.remove('open'); }
-document.querySelectorAll('.modal-ov').forEach(function(m){
-  m.addEventListener('click',function(e){ if(e.target===m) m.classList.remove('open'); });
-});
-
-/* ══ SUPPORT REALTIME ══ */
 function ecouterSupportRT(){
   SB.channel('admin-support-rt')
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'support_messages',filter:'direction=eq.user'},
-    async function(payload){
-      var m=payload.new;
-      var conv=SUPPORT_CONVS.find(function(c){ return c.user_id===m.user_id; });
-      if(conv){ conv.msgs.unshift(m); conv.unread++; }
-      else{ SUPPORT_CONVS.unshift({user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[m],unread:1}); }
-      var total=SUPPORT_CONVS.reduce(function(s,c){ return s+c.unread; },0);
-      var b=$('b-support');
-      if(b){ b.textContent=total; b.style.display='inline'; }
-      $s('sup-nonlu',total);
+    async payload=>{
+      const m=payload.new;
+      let conv=SUPPORT_CONVS.find(c=>c.user_id===m.user_id);
+      if(conv){conv.msgs.unshift(m);conv.unread++;}
+      else{SUPPORT_CONVS.unshift({user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[m],unread:1});}
+      const total=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
+      const badge=document.getElementById('b-support');
+      if(badge){badge.textContent=total;badge.style.display='inline';}
+      const e2=document.getElementById('sup-nonlu');if(e2)e2.textContent=total;
       toast('Nouveau message de '+(m.user_nom||'Utilisateur'),'ok');
-      var pg=$('p-support');
-      if(pg&&pg.classList.contains('on')) renderSupport();
-      var card=document.getElementById('conv-'+m.user_id);
-      if(card&&card.classList.contains('open')) await ouvrirConv(m.user_id);
+      if(document.getElementById('p-support')?.classList.contains('on'))renderSupport();
+      if(document.getElementById('conv-'+m.user_id)?.classList.contains('open'))await ouvrirConv(m.user_id);
     }).subscribe();
 }
+
 ecouterSupportRT();
+
+/* ════ COMPTES PRO / BUSINESS ════ */
+let PRO_DATA=[], FILT_PRO='all';
+
+async function loadPro(){
+  const{data}=await SB.from('demandes_compte_pro')
+    .select('*, profiles(full_name,email,vip_niveau,account_type)')
+    .order('created_at',{ascending:false}).limit(100);
+  PRO_DATA=data||[];
+  // Badge count en_attente
+  const nb=PRO_DATA.filter(d=>d.statut==='en_attente').length;
+  $s('b-pro',nb);
+  renderPro();
+}
+
+function filtPro(f){
+  FILT_PRO=f;
+  ['all','pend','app','rej'].forEach(k=>{const el=$('fp-'+k);if(el)el.classList.remove('on');});
+  const map={all:'fp-all',en_attente:'fp-pend',approuve:'fp-app',rejete:'fp-rej'};
+  const el=$(map[f]);if(el)el.classList.add('on');
+  renderPro();
+}
+
+function renderPro(){
+  const list=$('list-pro');if(!list)return;
+  let d=FILT_PRO==='all'?PRO_DATA:PRO_DATA.filter(x=>x.statut===FILT_PRO);
+  $s('pro-count',d.length+' demande'+(d.length>1?'s':''));
+  if(!d.length){list.innerHTML='<div class="empty"><div class="empty-ico">🚀</div><div class="empty-t">Aucune demande</div></div>';return}
+  const stlbl={en_attente:'⏳ En attente',approuve:'✅ Approuvée',rejete:'❌ Rejetée'};
+  const stcol={en_attente:'#F59E0B',approuve:'#22C55E',rejete:'#EF4444'};
+  list.innerHTML=d.map(dem=>{
+    const u=dem.profiles||{};
+    const dt=new Date(dem.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    const typeBadge=dem.type_demande==='pro'?'🚀 Pro':'🏆 Business';
+    const taux=dem.type_demande==='pro'?'5%':'8%';
+    return `<div class="rcard" style="border-left:3px solid ${stcol[dem.statut]||'#94A3B8'}">
+      <div class="rc-head">
+        <div>
+          <div class="rc-name">${u.full_name||u.email||'—'}</div>
+          <div class="rc-meta">${u.email||''} · ${u.vip_niveau||'VIP 0'} · Type actuel: ${u.account_type||'standard'}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.72rem;font-weight:900;padding:3px 10px;border-radius:8px;background:rgba(139,92,246,.15);color:#A78BFA;margin-bottom:4px">${typeBadge} → ${taux}</div>
+          <div style="font-size:.6rem;color:var(--mu)">${dt}</div>
+        </div>
+      </div>
+      <div class="rc-row"><span class="rc-lbl">Lien groupe</span>
+        <a href="${dem.lien_groupe||'#'}" target="_blank" style="color:var(--b);font-size:.68rem;font-weight:700;text-overflow:ellipsis;overflow:hidden;max-width:60%;display:inline-block;white-space:nowrap">${dem.lien_groupe||'—'}</a>
+      </div>
+      <div class="rc-row"><span class="rc-lbl">Taille groupe</span><span class="rc-val">${dem.taille_groupe||'—'} membres déclarés</span></div>
+      ${dem.description?`<div class="rc-row"><span class="rc-lbl">Description</span><span class="rc-val" style="font-size:.64rem">${dem.description}</span></div>`:''}
+      <div class="rc-row"><span class="rc-lbl">Statut</span>
+        <span style="color:${stcol[dem.statut]};font-weight:900;font-size:.72rem">${stlbl[dem.statut]||dem.statut}</span>
+      </div>
+      ${dem.statut==='en_attente'?`
+      <div class="rc-acts" style="margin-top:8px;display:flex;gap:6px">
+        <button class="abtn" style="background:#22C55E;color:#fff;flex:1" onclick="approvePro('${dem.id}','${dem.user_id}','${dem.type_demande}')">✅ Approuver</button>
+        <button class="abtn a-del" style="flex:1" onclick="rejectPro('${dem.id}','${dem.user_id}')">❌ Rejeter</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function approvePro(demandeId, userId, type){
+  if(!confirm('Approuver ce compte '+(type==='pro'?'Pro':'Business')+' ?'))return;
+  try{
+    // Mettre à jour la demande
+    await SB.from('demandes_compte_pro').update({statut:'approuve',traite_le:new Date().toISOString()}).eq('id',demandeId);
+    // Mettre à jour le profil
+    await SB.from('profiles').update({
+      account_type:type,
+      compte_pro_statut:'approuve',
+      compte_pro_approuve_le:new Date().toISOString()
+    }).eq('id',userId);
+    // Notification
+    await SB.from('notifications').insert({
+      user_id:userId, type:'success',
+      titre:'🎉 Compte '+(type==='pro'?'Pro':'Business')+' activé !',
+      message:'Félicitations ! Votre compte '+(type==='pro'?'Pro (5%)':'Business (8%)')+' est maintenant actif. Vos commissions sont mises à jour.',
+      created_at:new Date().toISOString()
+    });
+    toast('✅ Compte '+(type==='pro'?'Pro':'Business')+' approuvé !','ok');
+    await loadPro();
+    await loadUsers();
+  }catch(e){toast('❌ '+(e.message||'Erreur'),'err')}
+}
+
+async function rejectPro(demandeId, userId){
+  const note=prompt('Raison du rejet (optionnel) :');
+  try{
+    await SB.from('demandes_compte_pro').update({
+      statut:'rejete',traite_le:new Date().toISOString(),admin_note:note||null
+    }).eq('id',demandeId);
+    await SB.from('profiles').update({compte_pro_statut:'rejete'}).eq('id',userId);
+    await SB.from('notifications').insert({
+      user_id:userId,type:'error',
+      titre:'Demande compte Pro non approuvée',
+      message:note||'Votre demande ne remplit pas encore toutes les conditions. Réessayez ultérieurement.',
+      created_at:new Date().toISOString()
+    });
+    toast('Demande rejetée','ok');
+    await loadPro();
+  }catch(e){toast('❌ '+(e.message||'Erreur'),'err')}
+}
+
 </script>
 </body>
 </html>
