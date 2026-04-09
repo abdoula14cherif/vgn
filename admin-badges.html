@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN Admin – Gestion Badges</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#16A34A;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--gold:#F59E0B;--r:#EF4444;
+  --bg:#0F1117;--s1:#1A1D26;--s2:#21252F;--txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:#13161E;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;color:var(--mu)}
+.tbt{font-size:.9rem;font-weight:900;color:var(--txt)}
+.scroll{padding-top:calc(var(--H)+var(--sat)+12px);padding-bottom:30px;min-height:100svh}
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+.sec{margin:12px;background:var(--s1);border-radius:16px;padding:16px;border:1px solid var(--bd);margin-bottom:12px}
+.st{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.st::after{content:"";flex:1;height:1px;background:var(--bd)}
+.fld{margin-bottom:11px}
+.fld label{display:block;font-size:.65rem;font-weight:800;color:var(--mu);margin-bottom:5px;text-transform:uppercase}
+.fld input,.fld select{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;
+  padding:11px 13px;color:var(--txt);font-family:"Nunito",sans-serif;font-size:.85rem;font-weight:700;outline:none;-webkit-appearance:none}
+.fld select option{background:#1A1D26}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:"Nunito",sans-serif;
+  font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;margin-bottom:8px}
+.btn-g{background:linear-gradient(135deg,var(--g),#15803D)}
+.btn-b{background:linear-gradient(135deg,var(--b),#1D4ED8)}
+.btn-o{background:linear-gradient(135deg,var(--o),#EA580C)}
+.btn-r{background:linear-gradient(135deg,var(--r),#B91C1C)}
+.btn-p{background:linear-gradient(135deg,var(--p),#6D28D9)}
+.item{background:var(--s2);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--bd)}
+.item-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.item-t{font-size:.78rem;font-weight:900;color:var(--txt)}
+.item-s{font-size:.62rem;color:var(--mu);font-weight:600}
+.acts{display:flex;gap:6px;margin-top:9px}
+.ab{padding:8px 14px;border:none;border-radius:8px;font-family:"Nunito",sans-serif;font-size:.68rem;font-weight:800;cursor:pointer;flex:1}
+.ab-g{background:rgba(22,163,74,.2);color:#4ADE80;border:1px solid rgba(22,163,74,.2)}
+.ab-r{background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.2)}
+.ab-b{background:rgba(59,130,246,.15);color:#60A5FA;border:1px solid rgba(59,130,246,.2)}
+.ab-o{background:rgba(249,115,22,.15);color:#FB923C;border:1px solid rgba(249,115,22,.2)}
+.krow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--s2);border-radius:12px;padding:12px 8px;text-align:center}
+.kpiv{font-size:1.1rem;font-weight:900;color:var(--txt)}
+.kpil{font-size:.55rem;color:var(--mu);font-weight:700;margin-top:3px}
+.badge{font-size:.58rem;font-weight:900;padding:2px 8px;border-radius:6px}
+.bp{background:rgba(245,158,11,.2);color:var(--gold)}
+.bg{background:rgba(22,163,74,.2);color:#4ADE80}
+.br{background:rgba(239,68,68,.2);color:#F87171}
+.lock{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:20px;text-align:center}
+.lock-ico{font-size:3rem;margin-bottom:12px}
+.lock-t{font-size:1rem;font-weight:900;color:var(--txt);margin-bottom:6px}
+.lock-s{font-size:.72rem;color:var(--mu);font-weight:600;margin-bottom:18px}
+.inp-lock{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:12px;
+  padding:14px;color:var(--txt);font-family:"Nunito",sans-serif;font-size:.9rem;font-weight:700;
+  outline:none;margin-bottom:10px;text-align:center}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:22px;color:var(--mu);font-size:.72rem;font-weight:700}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tbk" href="admin.html">&#8249;</a>
+  <span class="tbt">🏅 Gestion Badges</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+<div class="scroll">
+  <div class="lock" id="lock">
+    <div class="lock-ico">🔐</div><div class="lock-t">Accès Admin</div><div class="lock-s">Email administrateur</div>
+    <input class="inp-lock" type="email" id="l-em" placeholder="admin@vgn.com">
+    <button class="btn btn-g" onclick="checkAdmin()">🔓 Accéder</button>
+  </div>
+  <div id="content" style="display:none">
+    <div class="sec">
+      <div class="st">📊 Statistiques badges</div>
+      <div class="krow">
+        <div class="kpi"><div class="kpiv" id="k-total-badges">0</div><div class="kpil">Total distribués</div></div>
+        <div class="kpi"><div class="kpiv" id="k-bonus">0</div><div class="kpil">Bonus payés F</div></div>
+        <div class="kpi"><div class="kpiv" id="k-users">0</div><div class="kpil">Utilisateurs</div></div>
+      </div>
+      <button class="btn btn-b" onclick="verifierTous()">🔍 Vérifier badges de tous les users</button>
+    </div>
+    <div class="sec">
+      <div class="st">🎁 Attribuer badge manuellement</div>
+      <div class="fld"><label>Email ou ID utilisateur</label><input type="text" id="ba-user" placeholder="email@..."></div>
+      <div class="fld"><label>Badge à attribuer</label>
+        <select id="ba-badge">
+          <option value="premiere_tache">🌱 Première Tâche</option>
+          <option value="semaine_1">📅 1 Semaine Active (+100F)</option>
+          <option value="mois_1">🏅 1 Mois Actif (+1500F)</option>
+          <option value="parrain_1">👥 Premier Filleul (+200F)</option>
+          <option value="parrain_5">🎯 Recruteur (+500F)</option>
+          <option value="parrain_20">🏆 Leader (+2000F)</option>
+          <option value="top3_semaine">🥇 Top 3 Semaine</option>
+          <option value="streak_100">💯 Centurion (+5000F)</option>
+          <option value="anniversaire_1">🎂 1 An sur VGN (+2000F)</option>
+        </select>
+      </div>
+      <button class="btn btn-p" onclick="attribuerBadge()">🏅 Attribuer le badge</button>
+    </div>
+    <div class="sec">
+      <div class="st">🏅 Catalogue des 15 badges</div>
+      <div id="catalogue-list"><div class="ld"></div></div>
+    </div>
+    <div class="sec">
+      <div class="st">👥 Derniers badges distribués</div>
+      <div id="recent-list"><div class="ld"></div></div>
+    </div>
+  </div>
+</div>
+<script>
+const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth-admin',storage:window.localStorage}});
+const $=id=>document.getElementById(id);const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+const ADMIN_EMAIL='abdoula13cherif@gmail.com';
+function checkAdmin(){const em=($('l-em')?.value||'').trim().toLowerCase();if(em===ADMIN_EMAIL){$('lock').style.display='none';$('content').style.display='block';init();}else toast('❌ Email incorrect','err');}
+
+async function init(){
+  const[{data:cat},{data:recent}]=await Promise.all([
+    SB.from('badges_catalogue').select('*').order('ordre'),
+    SB.from('badges_utilisateurs').select('*,profiles(full_name,email),badges_catalogue(nom,ico)').order('obtenu_le',{ascending:false}).limit(30)
+  ]);
+  const{count:totalBadges}=await SB.from('badges_utilisateurs').select('*',{count:'exact',head:true});
+  const{data:bonusStat}=await SB.from('badges_utilisateurs').select('bonus_recu');
+  const totalBonus=(bonusStat||[]).reduce((s,b)=>s+(b.bonus_recu||0),0);
+  const uniqUsers=new Set((recent||[]).map(b=>b.user_id)).size;
+  $s('k-total-badges',totalBadges||0);$s('k-bonus',fmt(totalBonus));$s('k-users',uniqUsers);
+  $('catalogue-list').innerHTML=(cat||[]).map(b=>`<div class="item">
+    <div class="item-h"><div class="item-t">${b.ico||'🏅'} ${b.nom}</div></div>
+    <div class="item-s">Condition: ${b.condition||'—'}</div>
+    <div class="item-s" style="color:var(--gold)">Avantage: ${b.avantage||'Aucun'}</div>
+  </div>`).join('');
+  $('recent-list').innerHTML=(recent&&recent.length)?recent.map(b=>{
+    const u=b.profiles||{};const bc=b.badges_catalogue||{};
+    const d=new Date(b.obtenu_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    return `<div class="item">
+      <div class="item-h">
+        <div class="item-t">${bc.ico||'🏅'} ${bc.nom||b.badge_id}</div>
+        ${b.bonus_recu>0?`<span class="badge bg">+${fmt(b.bonus_recu)}F</span>`:''}
+      </div>
+      <div class="item-s">${u.full_name||u.email||'—'} · ${d}</div>
+    </div>`;
+  }).join(''):'<div class="empty">Aucun badge distribué</div>';
+}
+async function attribuerBadge(){
+  const userInput=($('ba-user')?.value||'').trim();
+  const badgeId=$('ba-badge')?.value;
+  if(!userInput){toast('⚠️ Entrez un utilisateur','err');return}
+  let userId=userInput;
+  if(userInput.includes('@')){
+    const{data:u}=await SB.from('profiles').select('id').eq('email',userInput.toLowerCase()).single();
+    if(!u){toast('❌ Utilisateur non trouvé','err');return}
+    userId=u.id;
+  }
+  const bonusMap={semaine_1:100,mois_1:1500,parrain_1:200,parrain_5:500,parrain_20:2000,streak_100:5000,anniversaire_1:2000};
+  const bonus=bonusMap[badgeId]||0;
+  const{error}=await SB.from('badges_utilisateurs').insert({user_id:userId,badge_id:badgeId,bonus_recu:bonus});
+  if(error&&error.code==='23505'){toast('Badge déjà attribué','err');return}
+  if(error){toast('❌ '+error.message,'err');return}
+  if(bonus>0){
+    await SB.from('profiles').update({solde:SB.sql`solde+${bonus}`,gains_totaux:SB.sql`gains_totaux+${bonus}`}).eq('id',userId);
+    await SB.from('transactions').insert({user_id:userId,type:'gain_tache',montant:bonus,statut:'valide',note:'🏅 Badge attribué manuellement: '+badgeId,created_at:new Date().toISOString()});
+  }
+  toast('🏅 Badge attribué !','ok');$('ba-user').value='';await init();
+}
+async function verifierTous(){
+  if(!confirm('Vérifier et attribuer les badges manquants pour tous les utilisateurs ?'))return;
+  const{data:users}=await SB.from('profiles').select('id').limit(500);
+  let total=0;
+  for(const u of (users||[])){
+    const{data:nb}=await SB.rpc('verifier_badges',{p_user_id:u.id}).catch(()=>({data:0}));
+    total+=(nb||0);
+  }
+  toast('✅ '+total+' badges attribués','ok');await init();
+}
+</script></body></html>
