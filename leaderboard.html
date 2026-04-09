@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Classement</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--gold:#F59E0B;--r:#EF4444;
+  --bg:#0F1117;--card:#1A1D26;--card2:#21252F;--txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,#1c0a00,#451a03);
+  border-bottom:1px solid rgba(245,158,11,.2);display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;text-decoration:none}
+.tbt{font-size:.95rem;font-weight:900;color:var(--gold)}
+.scroll{padding-top:calc(var(--H)+var(--sat)+14px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+
+/* PRIMES BANNER */
+.primes-banner{margin:0 12px 14px;background:linear-gradient(135deg,#451a03,#78350f,#92400e);
+  border-radius:20px;padding:18px;box-shadow:0 6px 24px rgba(245,158,11,.25)}
+.pb-title{font-size:.72rem;color:rgba(255,255,255,.65);font-weight:800;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em}
+.primes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.prime-item{text-align:center;background:rgba(255,255,255,.1);border-radius:12px;padding:10px 6px;border:1px solid rgba(255,255,255,.15)}
+.prime-rang{font-size:1.3rem;line-height:1;margin-bottom:4px}
+.prime-mont{font-size:.88rem;font-weight:900;color:var(--gold)}
+.prime-lbl{font-size:.55rem;color:rgba(255,255,255,.55);font-weight:700;margin-top:2px}
+
+/* TABS */
+.tabs{display:flex;margin:0 12px 14px;background:var(--card2);border-radius:12px;padding:3px;gap:2px}
+.tab-btn{flex:1;padding:9px 0;border:none;background:transparent;font-family:"Nunito",sans-serif;
+  font-size:.72rem;font-weight:800;color:var(--mu);cursor:pointer;border-radius:10px;transition:all .2s}
+.tab-btn.on{background:var(--card);color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+
+/* MON RANG */
+.mon-rang-card{margin:0 12px 14px;background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.05));
+  border-radius:16px;padding:14px;border:1px solid rgba(245,158,11,.3)}
+.mr-title{font-size:.72rem;font-weight:800;color:var(--gold);margin-bottom:8px}
+.mr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mrg{text-align:center}
+.mrg-v{font-size:1.1rem;font-weight:900;color:#fff}
+.mrg-l{font-size:.57rem;color:var(--mu);font-weight:700;margin-top:2px}
+
+/* CLASSEMENT */
+.classement{margin:0 12px 14px}
+.st{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.st::after{content:"";flex:1;height:1px;background:var(--bd)}
+
+/* TOP 3 PODIUM */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin-bottom:14px;padding:0 8px}
+.pod{flex:1;text-align:center;border-radius:16px 16px 0 0;padding:14px 8px 12px;position:relative}
+.pod-1{background:linear-gradient(180deg,rgba(245,158,11,.25),rgba(245,158,11,.08));border:1px solid rgba(245,158,11,.4);order:2;padding-top:20px}
+.pod-2{background:linear-gradient(180deg,rgba(148,163,184,.15),rgba(148,163,184,.05));border:1px solid rgba(148,163,184,.3);order:1}
+.pod-3{background:linear-gradient(180deg,rgba(180,83,9,.15),rgba(180,83,9,.05));border:1px solid rgba(180,83,9,.3);order:3}
+.pod-av{width:44px;height:44px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;font-weight:900;color:#fff}
+.pod-av-1{background:linear-gradient(135deg,#F59E0B,#D97706)}
+.pod-av-2{background:linear-gradient(135deg,#94A3B8,#64748B)}
+.pod-av-3{background:linear-gradient(135deg,#B45309,#92400E)}
+.pod-name{font-size:.62rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pod-gains{font-size:.68rem;font-weight:900;margin-top:3px}
+.pod-gains-1{color:var(--gold)}.pod-gains-2{color:#94A3B8}.pod-gains-3{color:#B45309}
+.pod-crown{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:1.4rem}
+.pod-prime{font-size:.55rem;font-weight:800;background:rgba(245,158,11,.2);color:var(--gold);
+  padding:2px 6px;border-radius:5px;margin-top:3px;display:inline-block}
+
+/* LISTE */
+.rank-item{background:var(--card);border-radius:13px;padding:11px 13px;margin-bottom:7px;
+  border:1px solid var(--bd);display:flex;align-items:center;gap:10px;transition:border .2s}
+.rank-item.moi{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06)}
+.ri-rang{width:26px;text-align:center;font-size:.8rem;font-weight:900;color:var(--mu);flex-shrink:0}
+.ri-av{width:34px;height:34px;border-radius:50%;background:var(--card2);
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;
+  color:var(--txt);flex-shrink:0}
+.ri-info{flex:1;min-width:0}
+.ri-name{font-size:.78rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-meta{font-size:.6rem;color:var(--mu);font-weight:600;margin-top:1px}
+.ri-right{text-align:right;flex-shrink:0}
+.ri-gains{font-size:.78rem;font-weight:900;color:var(--gold)}
+.ri-taches{font-size:.6rem;color:var(--mu);margin-top:2px}
+
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#13161E;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);border-top-color:var(--gold);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:28px;color:var(--mu);font-size:.75rem;font-weight:700}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">&#8249;</a>
+  <span class="tbt">🏆 Classement VGN</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+<div class="scroll">
+
+  <!-- PRIMES -->
+  <div class="primes-banner">
+    <div class="pb-title">💰 Primes hebdomadaires (Top 10)</div>
+    <div class="primes-grid">
+      <div class="prime-item"><div class="prime-rang">🥇</div><div class="prime-mont">5 000 F</div><div class="prime-lbl">1er</div></div>
+      <div class="prime-item"><div class="prime-rang">🥈</div><div class="prime-mont">2 500 F</div><div class="prime-lbl">2e</div></div>
+      <div class="prime-item"><div class="prime-rang">🥉</div><div class="prime-mont">1 000 F</div><div class="prime-lbl">3e</div></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn on" id="tab-semaine" onclick="switchTab('semaine')">Cette semaine</button>
+    <button class="tab-btn" id="tab-mois" onclick="switchTab('mois')">Ce mois</button>
+    <button class="tab-btn" id="tab-total" onclick="switchTab('total')">Tout temps</button>
+  </div>
+
+  <!-- MON RANG -->
+  <div class="mon-rang-card">
+    <div class="mr-title">📍 Ma position</div>
+    <div class="mr-grid">
+      <div class="mrg"><div class="mrg-v" id="mr-rang">#—</div><div class="mrg-l">Mon rang</div></div>
+      <div class="mrg"><div class="mrg-v" id="mr-gains">0 F</div><div class="mrg-l">Mes gains</div></div>
+      <div class="mrg"><div class="mrg-v" id="mr-taches">0</div><div class="mrg-l">Mes tâches</div></div>
+    </div>
+  </div>
+
+  <!-- CLASSEMENT -->
+  <div class="classement">
+    <div class="st">🏆 Top joueurs</div>
+    <div id="podium-container"></div>
+    <div id="rank-list"><div class="empty-state"><div class="ld"></div></div></div>
+  </div>
+
+</div>
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' F';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+
+let U=null,P=null,TAB='semaine';
+
+function switchTab(t){
+  TAB=t;
+  ['semaine','mois','total'].forEach(k=>{
+    const btn=document.getElementById('tab-'+k);
+    if(btn)btn.classList.toggle('on',k===t);
+  });
+  chargerClassement();
+}
+
+function renderPodium(top3,myId){
+  const pod=$('podium-container');if(!pod)return;
+  if(top3.length<1){pod.innerHTML='';return}
+  const [p1,p2,p3]=top3;
+  const ini=u=>(u.full_name||u.email||'?').charAt(0).toUpperCase();
+  const nom=u=>(u.full_name||u.email?.split('@')[0]||'—').substring(0,10);
+  const gains=u=>fmtF(u.gains_semaine||u.gains_mois||u.gains_totaux||0);
+  const PRIMES=['5 000 F','2 500 F','1 000 F'];
+  pod.innerHTML=`<div class="podium">
+    ${p2?`<div class="pod pod-2"><div class="pod-av pod-av-2">${ini(p2)}</div><div class="pod-name">${nom(p2)}</div><div class="pod-gains pod-gains-2">${gains(p2)}</div><div class="pod-prime">${PRIMES[1]}</div></div>`:'<div class="pod"></div>'}
+    ${p1?`<div class="pod pod-1"><div class="pod-crown">👑</div><div class="pod-av pod-av-1">${ini(p1)}</div><div class="pod-name">${nom(p1)}</div><div class="pod-gains pod-gains-1">${gains(p1)}</div><div class="pod-prime">${PRIMES[0]}</div></div>`:'<div class="pod"></div>'}
+    ${p3?`<div class="pod pod-3"><div class="pod-av pod-av-3">${ini(p3)}</div><div class="pod-name">${nom(p3)}</div><div class="pod-gains pod-gains-3">${gains(p3)}</div><div class="pod-prime">${PRIMES[2]}</div></div>`:'<div class="pod"></div>'}
+  </div>`;
+}
+
+async function chargerClassement(){
+  const list=$('rank-list');
+  list.innerHTML='<div class="empty-state"><div class="ld"></div></div>';
+
+  let query=SB.from('profiles').select('id,full_name,email,gains_totaux,gains_semaine,gains_mois,taches_jour,vip_niveau');
+  let orderCol='gains_totaux';
+  if(TAB==='semaine') orderCol='gains_semaine';
+  else if(TAB==='mois') orderCol='gains_mois';
+
+  const{data:users}=await query
+    .gt(orderCol,0)
+    .order(orderCol,{ascending:false}).limit(20);
+
+  if(!users||!users.length){
+    list.innerHTML='<div class="empty-state">Aucun joueur classé cette période</div>';
+    return;
+  }
+
+  renderPodium(users.slice(0,3),U?.id);
+
+  // Trouver mon rang
+  const myIdx=users.findIndex(u=>u.id===U?.id);
+  if(myIdx>=0){
+    $s('mr-rang','#'+(myIdx+1));
+    $s('mr-gains',fmtF(users[myIdx][orderCol]||0));
+    $s('mr-taches',users[myIdx].taches_jour||0);
+  } else {
+    $s('mr-rang','#—');
+  }
+
+  const rangs=['🥇','🥈','🥉'];
+  list.innerHTML=users.slice(3).map((u,i)=>{
+    const rang=i+4;
+    const isMoi=u.id===U?.id;
+    const ini=(u.full_name||u.email||'?').charAt(0).toUpperCase();
+    return `<div class="rank-item${isMoi?' moi':''}">
+      <div class="ri-rang">${rang}</div>
+      <div class="ri-av">${ini}</div>
+      <div class="ri-info">
+        <div class="ri-name">${u.full_name||u.email?.split('@')[0]||'—'}${isMoi?' (vous)':''}</div>
+        <div class="ri-meta">${u.vip_niveau||'VIP 0'}</div>
+      </div>
+      <div class="ri-right">
+        <div class="ri-gains">${fmtF(u[orderCol]||0)}</div>
+        <div class="ri-taches">${u.taches_jour||0} tâches/j</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+  const{data:p}=await SB.from('profiles').select('full_name,email,gains_totaux,gains_semaine,gains_mois,taches_jour').eq('id',U.id).single();
+  P=p||{};
+  await chargerClassement();
+}
+init();
+</script>
+</body>
+</html>
