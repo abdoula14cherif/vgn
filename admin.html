@@ -689,38 +689,56 @@ let NTYPE='info';
 
 /* ══ LOGIN / LOGOUT ══ */
 async function login(){
-  const email=$('l-email').value.trim(), pass=$('l-pass').value;
-  if(!email||!pass){showErr('Champs requis');return}
-  const btn=$('lock').querySelector('.lock-btn');
-  btn.textContent='⏳ Connexion...'; btn.disabled=true;
+  const email=($('l-email')?.value||'').trim().toLowerCase();
+  const pass=$('l-pass')?.value||'';
+  if(!email){showErr('⚠️ Entrez votre email admin');return}
+  if(!pass){showErr('⚠️ Entrez votre mot de passe');return}
+  const btn=$('lock')?.querySelector('.lock-btn');
+  if(btn){btn.textContent='⏳ Connexion...';btn.disabled=true;}
   try{
+    await SB.auth.signOut().catch(()=>{});
     const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
-    if(error){showErr('❌ '+error.message);return}
-    if(!ADMINS.includes(data.user.email)){
+    if(error){
+      let msg='❌ '+error.message;
+      if(error.message.includes('Invalid login'))msg='❌ Email ou mot de passe incorrect';
+      if(error.message.includes('Email not confirmed'))msg='❌ Email non confirmé dans Supabase';
+      if(error.message.includes('rate limit'))msg='⏳ Trop de tentatives, patientez 1 minute';
+      showErr(msg);return;
+    }
+    if(!data?.user){showErr('❌ Connexion échouée (user null)');return}
+    const userEmail=(data.user.email||'').toLowerCase();
+    if(!ADMINS.map(a=>a.toLowerCase()).includes(userEmail)){
       await SB.auth.signOut();
-      showErr('⛔ Accès non autorisé — email : '+data.user.email);
+      showErr('⛔ Accès refusé pour : '+userEmail);
       return;
     }
     ME=data.user;
-    $('lock').style.display='none';
-    $('app').style.display='block';
+    const lock=$('lock');const app=$('app');
+    if(lock)lock.style.display='none';
+    if(app)app.style.display='block';
     loadAll();
   }catch(e){
-    showErr('❌ Erreur: '+e.message);
+    showErr('❌ '+(e.message||'Erreur réseau'));
+    console.error('login error:',e);
   }finally{
-    btn.textContent='Connexion sécurisée →'; btn.disabled=false;
+    if(btn){btn.textContent='Connexion sécurisée →';btn.disabled=false;}
   }
 }
 function showErr(m){
+  console.error('Admin login error:', m);
   const el=$('l-err');
+  if(!el)return;
   el.textContent=m;
   el.style.display='block';
   el.style.fontSize='.8rem';
   el.style.color='#ff4444';
-  el.style.padding='8px';
-  el.style.background='rgba(255,0,0,.1)';
+  el.style.padding='10px';
+  el.style.background='rgba(255,68,68,.12)';
   el.style.borderRadius='8px';
-  el.style.marginTop='6px';
+  el.style.marginTop='8px';
+  el.style.fontWeight='800';
+  el.style.border='1px solid rgba(255,68,68,.3)';
+  el.style.textAlign='center';
 }
 async function logout(){await SB.auth.signOut();location.reload()}
 
@@ -1048,7 +1066,7 @@ function renderUsers(){
           <div class="uc-cell"><div class="uc-cl">INSCRIT LE</div><div class="uc-cv" style="font-size:.65rem">${dtf(u.created_at)}</div></div>
           <div class="uc-cell"><div class="uc-cl">COMMISSIONS</div><div class="uc-cv cb">${fmtF(u.commission_parrainage)}</div></div>
           <div class="uc-cell"><div class="uc-cl">PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrain||'—'}</div></div>
-          <div class="uc-cell"><div class="uc-cl">TYPE COMPTE</div><div class="uc-cv" style="color:${u.account_type==='pro'?'#A78BFA':u.account_type==='business'?'#F59E0B':'var(--mu)';font-weight:900">${u.account_type==='pro'?'🚀 Pro':u.account_type==='business'?'🏆 Business':'⭐ Standard'}</div></div>
+          <div class="uc-cell"><div class="uc-cl">TYPE COMPTE</div><div class="uc-cv" style="font-weight:900;color:${u.account_type==='pro'?'#A78BFA':u.account_type==='business'?'#F59E0B':'#94A3B8'}">${u.account_type==='pro'?'🚀 Pro':u.account_type==='business'?'🏆 Business':'⭐ Standard'}</div></div>
           <div class="uc-cell"><div class="uc-cl">STATUT PRO</div><div class="uc-cv" style="font-size:.63rem">${u.compte_pro_statut||'—'}</div></div>
         </div>
         <div class="actions">
