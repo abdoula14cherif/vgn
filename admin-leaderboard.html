@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN Admin – Leaderboard Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#16A34A;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--gold:#F59E0B;--r:#EF4444;
+  --bg:#0F1117;--s1:#1A1D26;--s2:#21252F;--txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:#13161E;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;color:var(--mu)}
+.tbt{font-size:.9rem;font-weight:900;color:var(--txt)}
+.scroll{padding-top:calc(var(--H)+var(--sat)+12px);padding-bottom:30px;min-height:100svh}
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+.sec{margin:12px;background:var(--s1);border-radius:16px;padding:16px;border:1px solid var(--bd);margin-bottom:12px}
+.st{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.st::after{content:"";flex:1;height:1px;background:var(--bd)}
+.fld{margin-bottom:11px}
+.fld label{display:block;font-size:.65rem;font-weight:800;color:var(--mu);margin-bottom:5px;text-transform:uppercase}
+.fld input,.fld select{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;
+  padding:11px 13px;color:var(--txt);font-family:"Nunito",sans-serif;font-size:.85rem;font-weight:700;outline:none;-webkit-appearance:none}
+.fld select option{background:#1A1D26}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:"Nunito",sans-serif;
+  font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;margin-bottom:8px}
+.btn-g{background:linear-gradient(135deg,var(--g),#15803D)}
+.btn-b{background:linear-gradient(135deg,var(--b),#1D4ED8)}
+.btn-o{background:linear-gradient(135deg,var(--o),#EA580C)}
+.btn-r{background:linear-gradient(135deg,var(--r),#B91C1C)}
+.btn-p{background:linear-gradient(135deg,var(--p),#6D28D9)}
+.item{background:var(--s2);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--bd)}
+.item-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.item-t{font-size:.78rem;font-weight:900;color:var(--txt)}
+.item-s{font-size:.62rem;color:var(--mu);font-weight:600}
+.acts{display:flex;gap:6px;margin-top:9px}
+.ab{padding:8px 14px;border:none;border-radius:8px;font-family:"Nunito",sans-serif;font-size:.68rem;font-weight:800;cursor:pointer;flex:1}
+.ab-g{background:rgba(22,163,74,.2);color:#4ADE80;border:1px solid rgba(22,163,74,.2)}
+.ab-r{background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.2)}
+.ab-b{background:rgba(59,130,246,.15);color:#60A5FA;border:1px solid rgba(59,130,246,.2)}
+.ab-o{background:rgba(249,115,22,.15);color:#FB923C;border:1px solid rgba(249,115,22,.2)}
+.krow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--s2);border-radius:12px;padding:12px 8px;text-align:center}
+.kpiv{font-size:1.1rem;font-weight:900;color:var(--txt)}
+.kpil{font-size:.55rem;color:var(--mu);font-weight:700;margin-top:3px}
+.badge{font-size:.58rem;font-weight:900;padding:2px 8px;border-radius:6px}
+.bp{background:rgba(245,158,11,.2);color:var(--gold)}
+.bg{background:rgba(22,163,74,.2);color:#4ADE80}
+.br{background:rgba(239,68,68,.2);color:#F87171}
+.lock{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:20px;text-align:center}
+.lock-ico{font-size:3rem;margin-bottom:12px}
+.lock-t{font-size:1rem;font-weight:900;color:var(--txt);margin-bottom:6px}
+.lock-s{font-size:.72rem;color:var(--mu);font-weight:600;margin-bottom:18px}
+.inp-lock{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:12px;
+  padding:14px;color:var(--txt);font-family:"Nunito",sans-serif;font-size:.9rem;font-weight:700;
+  outline:none;margin-bottom:10px;text-align:center}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:22px;color:var(--mu);font-size:.72rem;font-weight:700}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tbk" href="admin.html">&#8249;</a>
+  <span class="tbt">🏆 Leaderboard Admin</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+<div class="scroll">
+  <div class="lock" id="lock">
+    <div class="lock-ico">🔐</div><div class="lock-t">Accès Admin</div><div class="lock-s">Email administrateur</div>
+    <input class="inp-lock" type="email" id="l-em" placeholder="admin@vgn.com">
+    <button class="btn btn-g" onclick="checkAdmin()">🔓 Accéder</button>
+  </div>
+  <div id="content" style="display:none">
+    <div class="sec">
+      <div class="st">📅 Semaine en cours</div>
+      <div id="semaine-info" style="font-size:.75rem;color:var(--mu);font-weight:700;margin-bottom:10px"></div>
+      <div class="krow">
+        <div class="kpi"><div class="kpiv" id="k-joueurs">0</div><div class="kpil">Joueurs</div></div>
+        <div class="kpi"><div class="kpiv" id="k-primes">0</div><div class="kpil">Primes F</div></div>
+        <div class="kpi"><div class="kpiv" id="k-payees">0</div><div class="kpil">Payées</div></div>
+      </div>
+      <button class="btn btn-o" onclick="distribuerPrimes()">💰 Distribuer les primes (Top 10)</button>
+    </div>
+    <div class="sec">
+      <div class="st">🏆 Classement cette semaine</div>
+      <div id="lead-list"><div class="ld"></div></div>
+    </div>
+    <div class="sec">
+      <div class="st">📊 Top utilisateurs (gains totaux)</div>
+      <div id="top-list"><div class="ld"></div></div>
+    </div>
+  </div>
+</div>
+<script>
+const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-auth-admin',storage:window.localStorage}});
+const $=id=>document.getElementById(id);const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+const ADMIN_EMAIL='abdoula13cherif@gmail.com';
+function checkAdmin(){const em=($('l-em')?.value||'').trim().toLowerCase();if(em===ADMIN_EMAIL){$('lock').style.display='none';$('content').style.display='block';init();}else toast('❌ Email incorrect','err');}
+
+function getSemaine(){
+  const now=new Date();
+  const j1=new Date(now.getFullYear(),0,1);
+  const sem=Math.ceil(((now-j1)/86400000+j1.getDay()+1)/7);
+  return now.getFullYear()+'-W'+String(sem).padStart(2,'0');
+}
+async function init(){
+  const sem=getSemaine();
+  $s('semaine-info','Semaine: '+sem);
+  const[{data:lead},{data:top}]=await Promise.all([
+    SB.from('leaderboard_semaines').select('*,profiles(full_name,email)').eq('semaine',sem).order('gains_semaine',{ascending:false}).limit(20),
+    SB.from('profiles').select('full_name,email,gains_totaux,gains_semaine,vip_niveau').gt('gains_totaux',0).order('gains_totaux',{ascending:false}).limit(10)
+  ]);
+  const payees=(lead||[]).filter(l=>l.prime_payee).length;
+  $s('k-joueurs',(lead||[]).length||(top||[]).length);
+  $s('k-primes',fmt((lead||[]).reduce((s,l)=>s+(l.prime||0),0)));
+  $s('k-payees',payees);
+  const rangs=['🥇','🥈','🥉'];
+  $('lead-list').innerHTML=(lead&&lead.length)?lead.map((l,i)=>{
+    const u=l.profiles||{};
+    return `<div class="item">
+      <div class="item-h">
+        <div class="item-t">${rangs[i]||'#'+(i+1)} ${u.full_name||u.email||'—'}</div>
+        ${l.prime_payee?'<span class="badge bg">Prime payée ✓</span>':'<span class="badge bp">En attente</span>'}
+      </div>
+      <div class="item-s">Gains: ${fmtF(l.gains_semaine)} · Rang: #${l.rang||i+1}</div>
+      ${!l.prime_payee&&l.prime>0?`<div class="item-s" style="color:var(--gold)">Prime à payer: ${fmtF(l.prime)}</div>`:''}
+    </div>`;
+  }).join(''):'<div class="empty">Pas encore de classement pour cette semaine</div>';
+  $('top-list').innerHTML=(top||[]).map((u,i)=>`<div class="item">
+    <div class="item-h">
+      <div class="item-t">${rangs[i]||'#'+(i+1)} ${u.full_name||u.email?.split('@')[0]||'—'}</div>
+      <span class="badge bg">${u.vip_niveau||'VIP 0'}</span>
+    </div>
+    <div class="item-s">Total: ${fmtF(u.gains_totaux)} · Semaine: ${fmtF(u.gains_semaine)}</div>
+  </div>`).join('');
+}
+async function distribuerPrimes(){
+  const sem=getSemaine();
+  if(!confirm('Distribuer les primes du top 10 pour '+sem+' ?'))return;
+  await SB.rpc('distribuer_primes_leaderboard',{p_semaine:sem});
+  toast('💰 Primes distribuées !','ok');await init();
+}
+</script></body></html>
