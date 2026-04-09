@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN Admin – Gestion Challenges</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--gold:#F59E0B;--r:#EF4444;
+  --bg:#0F1117;--s1:#1A1D26;--s2:#21252F;--txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:#13161E;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;color:var(--mu)}
+.tbt{font-size:.9rem;font-weight:900;color:var(--txt)}
+.scroll{padding-top:calc(var(--H)+var(--sat)+12px);padding-bottom:30px;min-height:100svh}
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+.section{margin:12px 12px 0;background:var(--s1);border-radius:16px;padding:16px;border:1px solid var(--bd);margin-bottom:12px}
+.st{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.st::after{content:"";flex:1;height:1px;background:var(--bd)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.68rem;font-weight:800;color:var(--mu);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field textarea,.field select{width:100%;background:var(--s2);border:1.5px solid var(--bd);
+  border-radius:10px;padding:11px 13px;color:var(--txt);font-family:"Nunito",sans-serif;
+  font-size:.85rem;font-weight:700;outline:none;-webkit-appearance:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--g)}
+.field textarea{resize:none;height:80px}
+.field select option{background:#1A1D26}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:"Nunito",sans-serif;
+  font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;margin-bottom:8px;transition:transform .15s}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-g{background:linear-gradient(135deg,var(--g),var(--gd))}
+.btn-b{background:linear-gradient(135deg,var(--b),#1D4ED8)}
+.btn-o{background:linear-gradient(135deg,var(--o),#EA580C)}
+.btn-p{background:linear-gradient(135deg,var(--p),#6D28D9)}
+.btn-r{background:linear-gradient(135deg,var(--r),#B91C1C)}
+.item{background:var(--s2);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--bd)}
+.item-title{font-size:.78rem;font-weight:900;color:var(--txt);margin-bottom:4px}
+.item-sub{font-size:.62rem;color:var(--mu);font-weight:600}
+.item-actions{display:flex;gap:6px;margin-top:10px}
+.abtn{padding:8px 14px;border:none;border-radius:8px;font-family:"Nunito",sans-serif;
+  font-size:.68rem;font-weight:800;cursor:pointer;flex:1}
+.abtn-g{background:rgba(22,163,74,.2);color:#4ADE80;border:1px solid rgba(22,163,74,.2)}
+.abtn-r{background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.2)}
+.abtn-b{background:rgba(59,130,246,.15);color:#60A5FA;border:1px solid rgba(59,130,246,.2)}
+.abtn-o{background:rgba(249,115,22,.15);color:#FB923C;border:1px solid rgba(249,115,22,.2)}
+.badge{font-size:.6rem;font-weight:900;padding:2px 9px;border-radius:6px}
+.bg-pend{background:rgba(245,158,11,.2);color:var(--gold)}
+.bg-ok{background:rgba(22,163,74,.2);color:#4ADE80}
+.bg-err{background:rgba(239,68,68,.2);color:#F87171}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.kpi{background:var(--s2);border-radius:12px;padding:12px 8px;text-align:center}
+.kpi-v{font-size:1.2rem;font-weight:900;color:var(--txt)}
+.kpi-l{font-size:.57rem;color:var(--mu);font-weight:700;margin-top:3px}
+.lock-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:80vh;padding:20px;text-align:center}
+.lock-ico{font-size:3rem;margin-bottom:12px}
+.lock-title{font-size:1rem;font-weight:900;color:var(--txt);margin-bottom:6px}
+.lock-sub{font-size:.75rem;color:var(--mu);font-weight:600;margin-bottom:20px}
+.inp-lock{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:12px;
+  padding:14px;color:var(--txt);font-family:"Nunito",sans-serif;font-size:.95rem;
+  font-weight:700;outline:none;margin-bottom:10px;text-align:center;letter-spacing:2px}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:24px;color:var(--mu);font-size:.72rem;font-weight:700}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tbk" href="admin.html">&#8249;</a>
+  <span class="tbt">🔥 Gestion Challenges</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+
+<div class="scroll" id="main">
+  <div class="lock-screen" id="lock-screen">
+    <div class="lock-ico">🔐</div>
+    <div class="lock-title">Accès Admin</div>
+    <div class="lock-sub">Entrez votre email admin</div>
+    <input class="inp-lock" type="email" id="l-email" placeholder="admin@vgn.com">
+    <button class="btn btn-g" onclick="checkAdmin()">🔓 Accéder</button>
+  </div>
+  <div id="admin-content" style="display:none">
+    <!-- KPIs -->
+    <div class="section">
+      <div class="st">📊 Vue d'ensemble</div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-v" id="kpi-total">0</div><div class="kpi-l">Challenges</div></div>
+        <div class="kpi"><div class="kpi-v" id="kpi-parts">0</div><div class="kpi-l">Participants</div></div>
+        <div class="kpi"><div class="kpi-v" id="kpi-cagnotte">0</div><div class="kpi-l">Cagnotte F</div></div>
+      </div>
+    </div>
+
+    <!-- CRÉER CHALLENGE -->
+    <div class="section">
+      <div class="st">➕ Créer un challenge</div>
+      <div class="field"><label>Titre</label><input type="text" id="c-titre" placeholder="Ex: Challenge de la semaine 🔥"></div>
+      <div class="field"><label>Description</label><textarea id="c-desc" placeholder="Décrivez l'objectif..."></textarea></div>
+      <div class="field"><label>Type</label>
+        <select id="c-type">
+          <option value="collectif">🌍 Collectif (tout le monde contribue)</option>
+          <option value="individuel">🎯 Individuel (chacun son objectif)</option>
+          <option value="quotidien">⚡ Quotidien (renouvellement 24h)</option>
+        </select>
+      </div>
+      <div class="field"><label>Objectif (valeur numérique)</label><input type="number" id="c-obj" placeholder="Ex: 2000"></div>
+      <div class="field"><label>Type d'objectif</label>
+        <select id="c-obj-type">
+          <option value="taches">✅ Tâches complétées</option>
+          <option value="gains">💰 Gains totaux (FCFA)</option>
+          <option value="filleuls">👥 Filleuls recrutés</option>
+          <option value="connexions">📅 Connexions journalières</option>
+        </select>
+      </div>
+      <div class="field"><label>Cagnotte totale (FCFA)</label><input type="number" id="c-cagnotte" placeholder="Ex: 50000"></div>
+      <div class="field"><label>Prime par participant (FCFA)</label><input type="number" id="c-prime" placeholder="Ex: 200"></div>
+      <div class="field"><label>Date de fin (optionnel)</label><input type="datetime-local" id="c-fin"></div>
+      <button class="btn btn-g" onclick="creerChallenge()">🔥 Créer le challenge</button>
+    </div>
+
+    <!-- LISTE CHALLENGES -->
+    <div class="section">
+      <div class="st">📋 Challenges actifs</div>
+      <div id="challenges-list"><div class="ld"></div></div>
+    </div>
+  </div>
+</div>
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth-admin',storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+const ADMIN_EMAIL='abdoula13cherif@gmail.com';
+
+async function checkAdmin(){
+  const email=($('l-email')?.value||'').trim().toLowerCase();
+  if(email===ADMIN_EMAIL){
+    $('lock-screen').style.display='none';
+    $('admin-content').style.display='block';
+    await charger();
+  } else toast('❌ Email admin incorrect','err');
+}
+
+async function creerChallenge(){
+  const titre=($('c-titre')?.value||'').trim();
+  const desc=($('c-desc')?.value||'').trim();
+  const type=$('c-type')?.value||'collectif';
+  const obj=parseInt($('c-obj')?.value)||0;
+  const objType=$('c-obj-type')?.value||'taches';
+  const cagnotte=parseFloat($('c-cagnotte')?.value)||0;
+  const prime=parseFloat($('c-prime')?.value)||0;
+  const fin=$('c-fin')?.value||null;
+  if(!titre||!obj||!cagnotte){toast('⚠️ Remplissez les champs requis','err');return}
+  const{error}=await SB.from('challenges').insert({
+    titre,description:desc,type,objectif_valeur:obj,objectif_type:objType,
+    cagnotte,prime_par_user:prime,statut:'en_cours',
+    fin_le:fin?new Date(fin).toISOString():null
+  });
+  if(error)toast('❌ '+error.message,'err');
+  else{toast('✅ Challenge créé !','ok');$('c-titre').value='';await charger();}
+}
+
+async function terminerChallenge(id){
+  if(!confirm('Terminer ce challenge et distribuer les primes ?'))return;
+  await SB.from('challenges').update({statut:'termine'}).eq('id',id);
+  toast('✅ Challenge terminé','ok');await charger();
+}
+
+async function supprimerChallenge(id){
+  if(!confirm('Supprimer définitivement ?'))return;
+  await SB.from('challenge_participants').delete().eq('challenge_id',id);
+  await SB.from('challenges').delete().eq('id',id);
+  toast('Supprimé','ok');await charger();
+}
+
+async function charger(){
+  const{data:ch}=await SB.from('challenges').select('*').order('created_at',{ascending:false});
+  $s('kpi-total',(ch||[]).length);
+  $s('kpi-parts',(ch||[]).reduce((s,c)=>s+(c.participants||0),0));
+  $s('kpi-cagnotte',fmt((ch||[]).reduce((s,c)=>s+(c.cagnotte||0),0)));
+  const list=$('challenges-list');
+  if(!ch||!ch.length){list.innerHTML='<div class="empty">Aucun challenge</div>';return}
+  const stMap={en_cours:'bg-ok',termine:'bg-err',annule:'bg-err'};
+  const stLbl={en_cours:'En cours',termine:'Terminé',annule:'Annulé'};
+  list.innerHTML=ch.map(c=>`<div class="item">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="item-title">${c.titre}</div>
+      <span class="badge ${stMap[c.statut]||'bg-pend'}">${stLbl[c.statut]||c.statut}</span>
+    </div>
+    <div class="item-sub">${c.type} · Objectif: ${fmt(c.progres_actuel)}/${fmt(c.objectif_valeur)} ${c.objectif_type} · ${c.participants||0} participants</div>
+    <div class="item-sub" style="margin-top:3px">Cagnotte: ${fmtF(c.cagnotte)} · Prime/user: ${fmtF(c.prime_par_user)}</div>
+    <div class="item-actions">
+      ${c.statut==='en_cours'?`<button class="abtn abtn-o" onclick="terminerChallenge('${c.id}')">✅ Terminer & Payer</button>`:''}
+      <button class="abtn abtn-r" onclick="supprimerChallenge('${c.id}')">🗑️ Supprimer</button>
+    </div>
+  </div>`).join('');
+}
+</script></body></html>
