@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Mes Badges</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--gold:#F59E0B;--r:#EF4444;
+  --bg:#0F1117;--card:#1A1D26;--card2:#21252F;--txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,#1e1b4b,#312e81);
+  border-bottom:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;text-decoration:none;color:#fff}
+.tbt{font-size:.95rem;font-weight:900;color:#fff}
+.scroll{padding-top:calc(var(--H)+var(--sat)+14px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh;background:var(--bg)}
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+
+/* HERO */
+.badges-hero{margin:0 12px 16px;background:linear-gradient(135deg,#1e1b4b,#312e81);
+  border-radius:20px;padding:20px 18px;text-align:center}
+.bh-count{font-size:3rem;font-weight:900;color:#fff;line-height:1}
+.bh-total{font-size:.72rem;color:rgba(255,255,255,.6);font-weight:700;margin-top:4px}
+.bh-bonus{font-size:.8rem;font-weight:900;color:#A78BFA;margin-top:10px;
+  background:rgba(139,92,246,.2);padding:6px 16px;border-radius:12px;display:inline-block}
+
+/* GRID BADGES */
+.badges-section{margin:0 12px 14px}
+.st{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.st::after{content:"";flex:1;height:1px;background:var(--bd)}
+.badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.badge-card{background:var(--card);border-radius:16px;padding:14px 10px;text-align:center;
+  border:1.5px solid var(--bd);position:relative;cursor:pointer;transition:transform .15s}
+.badge-card:active{transform:scale(.94)}
+.badge-card.obtenu{border-color:rgba(139,92,246,.5);background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(109,40,217,.05))}
+.badge-card.lock{opacity:.45;filter:grayscale(.7)}
+.bc-ico{font-size:2rem;line-height:1;margin-bottom:7px}
+.bc-name{font-size:.6rem;font-weight:900;color:var(--txt);line-height:1.3}
+.bc-bonus{font-size:.55rem;font-weight:800;color:#A78BFA;margin-top:4px}
+.bc-check{position:absolute;top:5px;right:6px;font-size:.7rem}
+.bc-date{font-size:.52rem;color:var(--mu);font-weight:600;margin-top:3px}
+
+/* MODAL BADGE */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10000;
+  display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal{background:#1A1D26;border-radius:24px 24px 0 0;width:100%;max-width:430px;
+  padding:0 0 calc(env(safe-area-inset-bottom,0px)+20px);
+  transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.1,.64,1)}
+.modal-ov.open .modal{transform:translateY(0)}
+.mhandle{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:12px auto 16px}
+.m-ico{font-size:3.5rem;text-align:center;display:block;margin-bottom:8px}
+.m-title{font-size:1.1rem;font-weight:900;color:var(--txt);text-align:center;margin-bottom:4px}
+.m-desc{font-size:.75rem;color:var(--mu);text-align:center;padding:0 20px;line-height:1.6;margin-bottom:10px}
+.m-avantage{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);border-radius:12px;
+  padding:10px 16px;margin:0 16px 16px;font-size:.75rem;font-weight:800;color:#A78BFA;text-align:center}
+.m-cond{font-size:.68rem;color:var(--mu);text-align:center;margin:0 16px 16px;font-weight:600}
+.m-bonus{font-size:.85rem;font-weight:900;color:#4ADE80;text-align:center;margin-bottom:14px}
+.m-close{width:calc(100% - 32px);margin:0 16px;padding:13px;background:var(--card2);
+  border:1px solid var(--bd);border-radius:12px;font-family:"Nunito",sans-serif;
+  font-size:.88rem;font-weight:800;color:var(--txt);cursor:pointer}
+
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#13161E;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);border-top-color:var(--p);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:28px;color:var(--mu);font-size:.75rem;font-weight:700}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">&#8249;</a>
+  <span class="tbt">🏅 Mes Badges</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="badge-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <span class="m-ico" id="m-ico">🏅</span>
+    <div class="m-title" id="m-title">—</div>
+    <div class="m-desc" id="m-desc">—</div>
+    <div class="m-avantage" id="m-avantage">—</div>
+    <div class="m-cond" id="m-cond">—</div>
+    <div class="m-bonus" id="m-bonus"></div>
+    <button class="m-close" onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+
+<div class="scroll">
+  <div class="badges-hero">
+    <div class="bh-count" id="bh-count">0</div>
+    <div class="bh-total" id="bh-total">badges obtenus sur 15</div>
+    <div class="bh-bonus" id="bh-bonus">0 FCFA de bonus reçus</div>
+  </div>
+
+  <div class="badges-section">
+    <div class="st">🏅 Tous les badges</div>
+    <div class="badges-grid" id="badges-grid">
+      <div class="empty-state" style="grid-column:1/-1"><div class="ld"></div></div>
+    </div>
+  </div>
+</div>
+
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+function closeModal(){$('badge-modal')?.classList.remove('open')}
+
+let CATALOGUE=[], MES_BADGES=[];
+
+function openBadge(id){
+  const b=CATALOGUE.find(x=>x.id===id);if(!b)return;
+  const obtained=MES_BADGES.find(x=>x.badge_id===id);
+  $s('m-ico',b.ico||'🏅');
+  $s('m-title',b.nom);
+  $s('m-desc',b.description||'');
+  $s('m-avantage','🎁 Avantage : '+(b.avantage||'Aucun'));
+  $s('m-cond','📋 Condition : '+(b.condition||''));
+  const bonusEl=$('m-bonus');
+  if(obtained){
+    const d=new Date(obtained.obtenu_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+    bonusEl.textContent=obtained.bonus_recu>0?'+'+fmt(obtained.bonus_recu)+' FCFA reçus · Obtenu le '+d:'Obtenu le '+d;
+    bonusEl.style.color='#4ADE80';
+  } else {
+    bonusEl.textContent='Non encore obtenu';
+    bonusEl.style.color='var(--mu)';
+  }
+  $('badge-modal')?.classList.add('open');
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  const U=session.user;
+
+  const [{data:cat},{data:mes}] = await Promise.all([
+    SB.from('badges_catalogue').select('*').order('ordre'),
+    SB.from('badges_utilisateurs').select('*').eq('user_id',U.id)
+  ]);
+
+  CATALOGUE=cat||[];
+  MES_BADGES=mes||[];
+
+  // Vérifier nouveaux badges
+  await SB.rpc('verifier_badges',{p_user_id:U.id}).catch(()=>{});
+  const{data:mesRefresh}=await SB.from('badges_utilisateurs').select('*').eq('user_id',U.id);
+  MES_BADGES=mesRefresh||[];
+
+  const totalBonus=MES_BADGES.reduce((s,b)=>s+(b.bonus_recu||0),0);
+  $s('bh-count',MES_BADGES.length);
+  $s('bh-total','badges obtenus sur '+CATALOGUE.length);
+  $s('bh-bonus',fmt(totalBonus)+' FCFA de bonus reçus');
+
+  const grid=$('badges-grid');
+  grid.innerHTML=CATALOGUE.map(b=>{
+    const obtained=MES_BADGES.find(x=>x.badge_id===b.id);
+    const d=obtained?new Date(obtained.obtenu_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}):null;
+    return `<div class="badge-card ${obtained?'obtenu':'lock'}" onclick="openBadge('${b.id}')">
+      ${obtained?'<div class="bc-check">✅</div>':''}
+      <div class="bc-ico">${b.ico||'🏅'}</div>
+      <div class="bc-name">${b.nom}</div>
+      ${obtained&&d?`<div class="bc-date">${d}</div>`:''}
+      ${b.avantage&&b.avantage!=='Aucun'?`<div class="bc-bonus">${b.avantage.substring(0,20)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+init();
+</script>
+</body>
+</html>
