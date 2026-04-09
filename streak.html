@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Streak & Fidélité</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--gold:#F59E0B;--r:#EF4444;
+  --bg:#0F1117;--card:#1A1D26;--card2:#21252F;--txt:#F1F5F9;--mu:#94A3B8;--bd:#2D3344;
+  --H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,#0F1117,#1a1230);
+  border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:var(--card2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;text-decoration:none}
+.tbt{font-size:.95rem;font-weight:900;color:var(--txt)}
+.scroll{padding-top:calc(var(--H)+var(--sat)+14px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh}
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+
+/* FLAME HERO */
+.flame-hero{margin:0 12px 16px;border-radius:22px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,#1c0a00,#3d1500,#5c2000);
+  box-shadow:0 8px 32px rgba(249,115,22,.3)}
+.flame-hero::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,rgba(249,115,22,.4),transparent 70%)}
+.fh-inner{padding:24px 20px 20px;position:relative;text-align:center}
+.fh-flame{font-size:3.5rem;line-height:1;margin-bottom:8px;
+  animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.fh-streak{font-size:3.2rem;font-weight:900;color:#fff;line-height:1;
+  text-shadow:0 0 30px rgba(249,115,22,.8)}
+.fh-label{font-size:.72rem;color:rgba(255,255,255,.65);font-weight:700;margin-top:4px}
+.fh-best{font-size:.68rem;color:rgba(255,255,255,.5);font-weight:600;margin-top:6px}
+.fh-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.fhg{background:rgba(255,255,255,.08);border-radius:12px;padding:10px 8px;text-align:center;border:1px solid rgba(255,255,255,.1)}
+.fhg-v{font-size:.88rem;font-weight:900;color:#fff}
+.fhg-l{font-size:.55rem;color:rgba(255,255,255,.55);font-weight:700;margin-top:2px}
+
+/* PALIERS STREAK */
+.paliers{margin:0 12px 14px}
+.pt{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px}
+.pt::after{content:"";flex:1;height:1px;background:var(--bd)}
+.palier-item{background:var(--card);border-radius:14px;padding:12px 14px;
+  margin-bottom:8px;border:1px solid var(--bd);display:flex;align-items:center;gap:12px}
+.palier-item.done{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)}
+.palier-item.next{border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.06)}
+.pi-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:1.2rem;flex-shrink:0}
+.pi-ico-done{background:rgba(74,222,128,.2)}
+.pi-ico-next{background:rgba(249,115,22,.2)}
+.pi-ico-lock{background:rgba(148,163,184,.1)}
+.pi-info{flex:1}
+.pi-jours{font-size:.8rem;font-weight:900;color:var(--txt)}
+.pi-bonus{font-size:.7rem;font-weight:900;margin-top:2px}
+.pi-bonus.done{color:#4ADE80}.pi-bonus.next{color:#FB923C}.pi-bonus.lock{color:var(--mu)}
+.pi-check{font-size:.9rem}
+.pi-prog{flex:0 0 auto;text-align:right}
+.pi-pct{font-size:.65rem;font-weight:800;color:var(--mu)}
+
+/* CALENDRIER SEMAINE */
+.cal-section{margin:0 12px 14px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:var(--card);border:1px solid var(--bd)}
+.cal-day.done{background:linear-gradient(135deg,rgba(249,115,22,.3),rgba(239,68,68,.2));border-color:rgba(249,115,22,.4)}
+.cal-day.today{border-color:var(--o);box-shadow:0 0 0 2px rgba(249,115,22,.3)}
+.cd-label{font-size:.5rem;font-weight:800;color:var(--mu);margin-bottom:2px}
+.cd-ico{font-size:.85rem}
+
+/* NIVEAU FIDÉLITÉ */
+.fidelite-section{margin:0 12px 14px}
+.fidelite-card{border-radius:18px;padding:16px;position:relative;overflow:hidden}
+.fc-bronze{background:linear-gradient(135deg,#431407,#7c2d12)}
+.fc-argent{background:linear-gradient(135deg,#1e293b,#334155)}
+.fc-or{background:linear-gradient(135deg,#451a03,#78350f)}
+.fc-diamant{background:linear-gradient(135deg,#1e1b4b,#4c1d95)}
+.fc-title{font-size:.75rem;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:4px}
+.fc-name{font-size:1.1rem;font-weight:900;color:#fff;margin-bottom:3px}
+.fc-avantages{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.fca{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.85);
+  display:flex;align-items:center;gap:7px}
+.fca::before{content:"✓";color:#4ADE80;font-weight:900}
+.fc-prochain{margin-top:12px;font-size:.65rem;color:rgba(255,255,255,.55);font-weight:600}
+.fc-prog-wrap{background:rgba(255,255,255,.1);border-radius:6px;height:6px;margin-top:6px;overflow:hidden}
+.fc-prog-fill{height:100%;border-radius:6px;background:rgba(255,255,255,.5);transition:width .5s}
+
+/* GROUPES */
+.groupes-section{margin:0 12px 14px}
+.groupe-card{background:var(--card);border-radius:16px;padding:14px;
+  border:1px solid var(--bd);display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.gc-ico{width:44px;height:44px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.gc-wa{background:rgba(37,211,102,.15)}
+.gc-tg{background:rgba(0,136,204,.15)}
+.gc-info{flex:1}
+.gc-title{font-size:.82rem;font-weight:900;color:var(--txt)}
+.gc-sub{font-size:.63rem;color:var(--mu);font-weight:600;margin-top:2px}
+.gc-btn{padding:8px 14px;border-radius:10px;border:none;font-family:"Nunito",sans-serif;
+  font-size:.7rem;font-weight:900;cursor:pointer;flex-shrink:0;text-decoration:none;display:block}
+.btn-wa{background:rgba(37,211,102,.2);color:#4ADE80;border:1px solid rgba(37,211,102,.3)}
+.btn-tg{background:rgba(0,136,204,.2);color:#38BDF8;border:1px solid rgba(0,136,204,.3)}
+
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#13161E;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);border-top-color:var(--o);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">&#8249;</a>
+  <span class="tbt">🔥 Streak & Fidélité</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+<div class="scroll">
+
+  <!-- FLAME HERO -->
+  <div class="flame-hero">
+    <div class="fh-inner">
+      <div class="fh-flame">🔥</div>
+      <div class="fh-streak" id="streak-count">0</div>
+      <div class="fh-label">jours de connexion consécutifs</div>
+      <div class="fh-best" id="streak-best">Meilleur : 0 jours</div>
+      <div class="fh-grid">
+        <div class="fhg"><div class="fhg-v" id="fh-total">0</div><div class="fhg-l">Jours actif total</div></div>
+        <div class="fhg"><div class="fhg-v" id="fh-bonus">0 F</div><div class="fhg-l">Bonus streak reçus</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDRIER 7 DERNIERS JOURS -->
+  <div class="cal-section">
+    <div class="pt">📅 Cette semaine</div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <!-- PALIERS BONUS -->
+  <div class="paliers">
+    <div class="pt">🎁 Paliers de bonus streak</div>
+    <div id="paliers-list"></div>
+  </div>
+
+  <!-- NIVEAU FIDÉLITÉ -->
+  <div class="fidelite-section">
+    <div class="pt">🏅 Votre niveau de fidélité</div>
+    <div id="fidelite-card">
+      <div class="fidelite-card fc-bronze">
+        <div class="fc-title">Niveau actuel</div>
+        <div class="fc-name" id="fidelite-name">🥉 Bronze</div>
+        <div class="fc-avantages" id="fidelite-avantages"></div>
+        <div class="fc-prochain" id="fidelite-prochain"></div>
+        <div class="fc-prog-wrap"><div class="fc-prog-fill" id="fidelite-prog" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUPES OFFICIELS -->
+  <div class="groupes-section">
+    <div class="pt">📲 Groupes officiels VGN</div>
+    <div class="groupe-card">
+      <div class="gc-ico gc-wa">📱</div>
+      <div class="gc-info">
+        <div class="gc-title">Groupe WhatsApp officiel</div>
+        <div class="gc-sub">Annonces, offres exclusives, support</div>
+      </div>
+      <a class="gc-btn btn-wa" href="https://chat.whatsapp.com/GBg5XxvBQWrDsjULeYJgvF" target="_blank">Rejoindre</a>
+    </div>
+    <div class="groupe-card">
+      <div class="gc-ico gc-tg">✈️</div>
+      <div class="gc-info">
+        <div class="gc-title">Canal Telegram officiel</div>
+        <div class="gc-sub">Actualités VGN, codes bonus, mises à jour</div>
+      </div>
+      <a class="gc-btn btn-tg" href="https://t.me/valuegrownetwork" target="_blank">Rejoindre</a>
+    </div>
+  </div>
+
+</div>
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+
+const PALIERS=[
+  {j:3,  bonus:100,  ico:'🌱'},
+  {j:7,  bonus:500,  ico:'📅'},
+  {j:14, bonus:1000, ico:'🔥'},
+  {j:30, bonus:3000, ico:'🏅'},
+  {j:60, bonus:5000, ico:'💎'},
+  {j:100,bonus:8000, ico:'💯'},
+];
+
+const FIDELITE={
+  bronze: {name:'🥉 Bronze',   cls:'fc-bronze',  avantages:['Accès à toutes les tâches','Parrainage standard 2%'],              prochain:'Argent',  cond:'30j actif + VIP 1', pct:0},
+  argent: {name:'🥈 Argent',   cls:'fc-argent',  avantages:['-5% frais de retrait','Parrainage 5% (Pro)'],                       prochain:'Or',      cond:'90j actif + VIP 2', pct:33},
+  or:     {name:'🥇 Or',       cls:'fc-or',       avantages:['+1 tâche bonus/jour','Roue de la chance 2x/jour'],                  prochain:'Diamant', cond:'180j actif + VIP 4',pct:66},
+  diamant:{name:'💎 Diamant',  cls:'fc-diamant',  avantages:['-10% frais retrait','+1% commission parrainage','Badge exclusif'],  prochain:null,      cond:null,                pct:100},
+};
+
+const JOURS_FR=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+
+function renderCalendrier(streakData){
+  const grid=$('cal-grid');if(!grid)return;
+  const today=new Date();
+  grid.innerHTML='';
+  for(let i=6;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const dateStr=d.toISOString().slice(0,10);
+    const isDone=streakData.some(s=>s.date_connexion===dateStr);
+    const isToday=i===0;
+    const div=document.createElement('div');
+    div.className='cal-day'+(isDone?' done':'')+(isToday?' today':'');
+    div.innerHTML=`<div class="cd-label">${JOURS_FR[d.getDay()]}</div><div class="cd-ico">${isDone?'🔥':'·'}</div>`;
+    grid.appendChild(div);
+  }
+}
+
+function renderPaliers(streak){
+  const list=$('paliers-list');if(!list)return;
+  list.innerHTML=PALIERS.map(p=>{
+    const done=streak>=p.j;
+    const isNext=!done&&PALIERS.filter(x=>streak>=x.j).length===PALIERS.indexOf(p)-1||(!done&&streak<p.j);
+    const first=PALIERS.find(x=>x.j>streak);
+    const isNextPalier=first&&p.j===first.j;
+    const cls=done?'done':isNextPalier?'next':'';
+    const icoCls=done?'pi-ico-done':isNextPalier?'pi-ico-next':'pi-ico-lock';
+    const bonusCls=done?'done':isNextPalier?'next':'lock';
+    const pct=Math.min(100,Math.round(streak/p.j*100));
+    return `<div class="palier-item ${cls}">
+      <div class="pi-ico ${icoCls}">${p.ico}</div>
+      <div class="pi-info">
+        <div class="pi-jours">${p.j} jours de streak</div>
+        <div class="pi-bonus ${bonusCls}">+${fmt(p.bonus)} FCFA offerts${done?' ✓':''}</div>
+      </div>
+      ${done?'<span class="pi-check">✅</span>':`<div class="pi-prog"><div class="pi-pct">${pct}%</div></div>`}
+    </div>`;
+  }).join('');
+}
+
+function renderFidelite(niveau,jours){
+  const f=FIDELITE[niveau]||FIDELITE.bronze;
+  const card=$('fidelite-card');if(!card)return;
+  const niveaux=['bronze','argent','or','diamant'];
+  const idx=niveaux.indexOf(niveau);
+  const pct=niveau==='diamant'?100:Math.min(100,Math.round((jours/(idx===0?30:idx===1?90:180))*100));
+  card.innerHTML=`<div class="fidelite-card ${f.cls}">
+    <div class="fc-title">Votre niveau de fidélité</div>
+    <div class="fc-name">${f.name}</div>
+    <div class="fc-avantages">${f.avantages.map(a=>`<div class="fca">${a}</div>`).join('')}</div>
+    ${f.prochain?`<div class="fc-prochain">Prochain niveau : ${f.prochain} (${f.cond})</div>
+    <div class="fc-prog-wrap"><div class="fc-prog-fill" style="width:${pct}%"></div></div>`:'<div class="fc-prochain" style="color:#4ADE80;margin-top:8px">🏆 Niveau maximum atteint !</div>'}
+  </div>`;
+}
+
+async function enregistrerStreak(userId){
+  await SB.rpc('maj_streak',{p_user_id:userId}).catch(()=>{});
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  const U=session.user;
+
+  const{data:p}=await SB.from('profiles')
+    .select('streak_actuel,meilleur_streak,jours_actif_total,niveau_fidelite,gains_totaux')
+    .eq('id',U.id).single();
+  const P=p||{};
+
+  const streak=P.streak_actuel||0;
+  const best=P.meilleur_streak||0;
+  const jours=P.jours_actif_total||0;
+
+  $s('streak-count',streak);
+  $s('streak-best','Meilleur : '+best+' jours');
+  $s('fh-total',jours);
+
+  // Bonus streak totaux depuis transactions
+  const{data:bonusTx}=await SB.from('transactions')
+    .select('montant').eq('user_id',U.id).eq('type','gain_tache')
+    .ilike('note','%streak%');
+  const totalBonus=(bonusTx||[]).reduce((s,t)=>s+(t.montant||0),0);
+  $s('fh-bonus',fmt(totalBonus)+' F');
+
+  // Calendrier 7 derniers jours
+  const semAgo=new Date();semAgo.setDate(semAgo.getDate()-7);
+  const{data:streakDays}=await SB.from('streaks')
+    .select('date_connexion').eq('user_id',U.id)
+    .gte('date_connexion',semAgo.toISOString().slice(0,10));
+  renderCalendrier(streakDays||[]);
+  renderPaliers(streak);
+  renderFidelite(P.niveau_fidelite||'bronze',jours);
+
+  // Enregistrer la connexion du jour
+  await enregistrerStreak(U.id);
+}
+init();
+</script>
+</body>
+</html>
