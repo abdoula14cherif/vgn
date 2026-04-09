@@ -60,6 +60,8 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .ai{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:transform .18s}
 .al{font-size:.62rem;font-weight:800;color:var(--txt);text-align:center;line-height:1.2}
 .c1{background:linear-gradient(135deg,#F97316,#EA580C)}.c2{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}.c3{background:linear-gradient(135deg,#16A34A,#15803D)}.c4{background:linear-gradient(135deg,#84CC16,#65A30D)}.c5{background:linear-gradient(135deg,#F43F5E,#BE123C)}.c6{background:linear-gradient(135deg,#EAB308,#CA8A04)}.c7{background:linear-gradient(135deg,#8B5CF6,#6D28D9)}
+.c8{background:linear-gradient(135deg,#EA580C,#DC2626)}.c9{background:linear-gradient(135deg,#B45309,#D97706)}
+.c10{background:linear-gradient(135deg,#0891B2,#0E7490)}.c11{background:linear-gradient(135deg,#7C3AED,#5B21B6)}
 
 /* ── SOLDE CARDS ── */
 .cards2{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 11px;margin-bottom:12px}
@@ -190,6 +192,22 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <a class="ab" href="inviter.html"><div class="ai c5">👥</div><span class="al">Inviter</span></a>
     <a class="ab" href="vip.html"><div class="ai c6">💎</div><span class="al">VIP</span></a>
     <a class="ab" href="compte-pro.html"><div class="ai c7">🚀</div><span class="al">Marketing</span></a>
+    <a class="ab" href="streak.html"><div class="ai c8">🔥</div><span class="al">Streak</span></a>
+    <a class="ab" href="leaderboard.html"><div class="ai c9">🏆</div><span class="al">Classement</span></a>
+    <a class="ab" href="challenges.html"><div class="ai c10">⚡</div><span class="al">Challenges</span></a>
+    <a class="ab" href="badges.html"><div class="ai c11">🏅</div><span class="al">Badges</span></a>
+  </div>
+
+  <!-- STREAK BANNER -->
+  <div id="streak-dash" style="display:none;margin:0 12px 12px;background:linear-gradient(135deg,#1c0a00,#3d1500);border-radius:16px;padding:13px 16px;cursor:pointer" onclick="window.location.href='streak.html'">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:1.8rem" id="sd-flame">🔥</div>
+      <div style="flex:1">
+        <div style="font-size:.8rem;font-weight:900;color:#fff"><span id="sd-count">0</span> jours de streak !</div>
+        <div style="font-size:.62rem;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px" id="sd-sub">Continuez à vous connecter chaque jour</div>
+      </div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.5);font-weight:800">›</div>
+    </div>
   </div>
 
   <div class="sh"><h3>Mon Portefeuille</h3></div>
@@ -414,6 +432,30 @@ async function init(){
   }
 }
 
+// Streak banner dans init
+const _origInit=init;
+async function initWithStreak(){
+  await _origInit();
+  try{
+    await SB.rpc('maj_streak',{p_user_id:(await SB.auth.getSession()).data.session?.user?.id}).catch(()=>{});
+    const uid=(await SB.auth.getSession()).data.session?.user?.id;
+    if(!uid)return;
+    const{data:sp}=await SB.from('profiles').select('streak_actuel').eq('id',uid).single();
+    if(sp&&sp.streak_actuel>0){
+      const sd=document.getElementById('streak-dash');
+      if(sd){
+        sd.style.display='block';
+        const sc=document.getElementById('sd-count');if(sc)sc.textContent=sp.streak_actuel;
+        const sf=document.getElementById('sd-flame');
+        if(sf)sf.textContent=sp.streak_actuel>=30?'🔥🔥🔥':sp.streak_actuel>=7?'🔥🔥':'🔥';
+        const ss=document.getElementById('sd-sub');
+        if(ss)ss.textContent=sp.streak_actuel>=30?'Incroyable ! '+sp.streak_actuel+' jours !':
+          sp.streak_actuel>=7?'Prochain bonus à '+(sp.streak_actuel>=14?30:14)+' jours !':'Prochain bonus à 3 jours → +100 FCFA';
+      }
+    }
+  }catch(e){}
+}
+init=initWithStreak;
 init();
 </script>
 
@@ -432,6 +474,9 @@ init();
       </a>
       <a class="pop-btn-cond" href="conditions.html">
         📋 Lire nos Conditions d'utilisation
+      </a>
+      <a class="pop-btn-cond" href="https://chat.whatsapp.com/GBg5XxvBQWrDsjULeYJgvF" target="_blank" style="background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.3);color:#15803D" onclick="joinedTelegram()">
+        📱 Rejoindre le groupe WhatsApp VGN
       </a>
       <span class="pop-close" onclick="closePopup()">Plus tard →</span>
     </div>
