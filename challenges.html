@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN – Challenges</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--g:#16A34A;--gd:#15803D;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--gold:#F59E0B;--r:#EF4444;
+  --bg:#F0F4F0;--card:#fff;--card2:#F8FAF8;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
+  --H:56px;--B:58px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html{font-family:"Nunito",sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;overflow-x:hidden}
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999;
+  box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.tbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#fff;text-decoration:none}
+.tbt{font-size:.95rem;font-weight:900;color:#fff}
+.scroll{padding-top:calc(var(--H)+var(--sat)+14px);padding-bottom:calc(var(--B)+var(--sab)+24px);min-height:100svh;background:var(--bg)}
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#0F172A;color:#fff;padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+
+/* CHALLENGE CARD */
+.challenge-card{margin:0 12px 14px;background:var(--card);border-radius:20px;overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.ch-header{padding:18px 16px 14px;position:relative}
+.ch-header.collectif{background:linear-gradient(135deg,#0f4c25,#166534)}
+.ch-header.quotidien{background:linear-gradient(135deg,#1e3a8a,#1d4ed8)}
+.ch-header.individuel{background:linear-gradient(135deg,#4c1d95,#6d28d9)}
+.ch-type-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;
+  font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:8px;margin-bottom:8px}
+.ch-title{font-size:.95rem;font-weight:900;color:#fff;margin-bottom:4px}
+.ch-desc{font-size:.7rem;color:rgba(255,255,255,.75);font-weight:600;line-height:1.5}
+.ch-time{font-size:.62rem;color:rgba(255,255,255,.6);font-weight:700;margin-top:8px}
+.ch-body{padding:14px 16px}
+.ch-prog-wrap{background:#F1F5F9;border-radius:8px;height:10px;overflow:hidden;margin-bottom:8px}
+.ch-prog-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--g),var(--gl));transition:width .5s}
+.ch-prog-txt{display:flex;justify-content:space-between;font-size:.65rem;font-weight:800;margin-bottom:12px}
+.ch-pt-cur{color:var(--g)}.ch-pt-obj{color:var(--mu)}
+.ch-cagnotte{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;
+  padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  border:1px solid #FCD34D}
+.cc-ico{font-size:1.3rem}
+.cc-info{flex:1}
+.cc-mont{font-size:.88rem;font-weight:900;color:#92400E}
+.cc-lbl{font-size:.6rem;color:#B45309;font-weight:700}
+.ch-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.chs{background:var(--card2);border-radius:10px;padding:9px 10px;text-align:center}
+.chs-v{font-size:.88rem;font-weight:900;color:var(--txt)}
+.chs-l{font-size:.57rem;color:var(--mu);font-weight:700;margin-top:2px}
+.btn-join{width:100%;padding:13px;border:none;border-radius:12px;font-family:"Nunito",sans-serif;
+  font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;transition:transform .15s}
+.btn-join:active{transform:scale(.97)}
+.btn-join.g{background:linear-gradient(135deg,var(--g),var(--gd));box-shadow:0 4px 14px rgba(22,163,74,.3)}
+.btn-join.b{background:linear-gradient(135deg,var(--b),#1D4ED8);box-shadow:0 4px 14px rgba(59,130,246,.3)}
+.btn-join.p{background:linear-gradient(135deg,var(--p),#6D28D9);box-shadow:0 4px 14px rgba(139,92,246,.3)}
+.btn-join.joined{background:#F1F5F9;color:var(--mu);box-shadow:none;cursor:default}
+
+/* BOOST SECTION */
+.boost-section{margin:0 12px 14px}
+.st{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.st::after{content:"";flex:1;height:1px;background:var(--bd)}
+.boost-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.boost-card{background:var(--card);border-radius:16px;padding:14px 12px;text-align:center;
+  border:1px solid var(--bd);cursor:pointer;transition:all .18s}
+.boost-card:active{transform:scale(.95)}
+.bc-ico{font-size:1.5rem;margin-bottom:6px}
+.bc-name{font-size:.75rem;font-weight:900;color:var(--txt)}
+.bc-multi{font-size:1rem;font-weight:900;color:var(--o);margin-top:2px}
+.bc-duree{font-size:.62rem;color:var(--mu);font-weight:700;margin-top:2px}
+.bc-prix{display:inline-block;background:#FEF3C7;color:#92400E;font-size:.7rem;font-weight:900;
+  padding:3px 10px;border-radius:8px;margin-top:6px;border:1px solid #FCD34D}
+.boost-actif-banner{margin:0 12px 14px;background:linear-gradient(135deg,#FF6B00,#F97316);
+  border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.bab-ico{font-size:1.5rem;flex-shrink:0}
+.bab-info{flex:1}
+.bab-title{font-size:.82rem;font-weight:900;color:#fff}
+.bab-sub{font-size:.65rem;color:rgba(255,255,255,.8);font-weight:600;margin-top:2px}
+.bab-time{font-size:.7rem;font-weight:900;color:#FEF3C7;margin-top:4px}
+
+.botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--B)+var(--sab));padding-bottom:var(--sab);background:#fff;
+  border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07)}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;text-decoration:none;position:relative}
+.bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:28px;color:var(--mu);font-size:.75rem;font-weight:700}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tbk" href="dashboard.html">&#8249;</a>
+  <span class="tbt">🔥 Challenges & Boosts</span>
+  <div style="width:34px"></div>
+</div>
+<div class="tst" id="tst"></div>
+<div class="scroll">
+
+  <!-- BOOST ACTIF -->
+  <div id="boost-actif-wrap" style="display:none">
+    <div class="boost-actif-banner">
+      <div class="bab-ico">⚡</div>
+      <div class="bab-info">
+        <div class="bab-title">Boost actif — ×<span id="ba-multi">1.5</span> sur vos gains</div>
+        <div class="bab-sub">Vos gains de tâches sont multipliés !</div>
+        <div class="bab-time">⏱ Expire dans : <span id="ba-timer">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHALLENGES -->
+  <div id="challenges-list">
+    <div class="empty-state"><div class="ld"></div></div>
+  </div>
+
+  <!-- BOOSTS -->
+  <div class="boost-section">
+    <div class="st">⚡ Boosts de gains</div>
+    <div class="boost-grid" id="boosts-grid">
+      <div class="empty-state" style="grid-column:1/-1"><div class="ld"></div></div>
+    </div>
+  </div>
+
+</div>
+<nav class="botnav">
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
+</nav>
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const fmt=n=>Number(n||0).toLocaleString('fr-FR');
+const fmtF=n=>fmt(n)+' FCFA';
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+
+let U=null,P=null,MES_PARTICIPATIONS=[];
+
+function tempsRestant(fin){
+  const diff=new Date(fin)-Date.now();
+  if(diff<=0)return'Terminé';
+  const j=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  return j>0?j+'j '+h+'h':h>0?h+'h '+m+'min':m+'min';
+}
+
+function renderChallenges(challenges){
+  const list=$('challenges-list');
+  if(!challenges.length){list.innerHTML='<div class="empty-state">Aucun challenge actif pour le moment</div>';return}
+  const typeMap={collectif:'collectif',quotidien:'quotidien',individuel:'individuel'};
+  const btnColor={collectif:'g',quotidien:'b',individuel:'p'};
+  const typeLbl={collectif:'🌍 Collectif',quotidien:'⚡ Quotidien',individuel:'🎯 Individuel'};
+  list.innerHTML=challenges.map(c=>{
+    const pct=Math.min(100,Math.round((c.progres_actuel/c.objectif_valeur)*100));
+    const isJoined=MES_PARTICIPATIONS.includes(c.id);
+    const fin=c.fin_le?tempsRestant(c.fin_le):'Sans limite';
+    return `<div class="challenge-card">
+      <div class="ch-header ${typeMap[c.type]||'collectif'}">
+        <div class="ch-type-badge">${typeLbl[c.type]||'Challenge'}</div>
+        <div class="ch-title">${c.titre}</div>
+        <div class="ch-desc">${c.description||''}</div>
+        <div class="ch-time">⏱ ${fin}</div>
+      </div>
+      <div class="ch-body">
+        <div class="ch-prog-wrap"><div class="ch-prog-fill" style="width:${pct}%"></div></div>
+        <div class="ch-prog-txt">
+          <span class="ch-pt-cur">${fmt(c.progres_actuel)} / ${fmt(c.objectif_valeur)} ${c.objectif_type}</span>
+          <span class="ch-pt-obj">${pct}%</span>
+        </div>
+        <div class="ch-cagnotte">
+          <div class="cc-ico">🏆</div>
+          <div class="cc-info">
+            <div class="cc-mont">${fmtF(c.cagnotte)} à partager</div>
+            <div class="cc-lbl">${fmtF(c.prime_par_user)} par participant actif</div>
+          </div>
+        </div>
+        <div class="ch-stats">
+          <div class="chs"><div class="chs-v">${c.participants||0}</div><div class="chs-l">Participants</div></div>
+          <div class="chs"><div class="chs-v">${pct}%</div><div class="chs-l">Progression</div></div>
+        </div>
+        <button class="btn-join ${isJoined?'joined':btnColor[c.type]||'g'}"
+          onclick="${isJoined?'':('rejoindreChallenge(''+c.id+'')')}"
+          data-cid="${c.id}">
+          ${isJoined?'✅ Vous participez':'🔥 Rejoindre le challenge'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderBoosts(boosts){
+  const grid=$('boosts-grid');
+  grid.innerHTML=boosts.map(b=>`
+    <div class="boost-card" onclick="acheterBoost('${b.id}','${b.nom}',${b.prix})">
+      <div class="bc-ico">${b.ico||'⚡'}</div>
+      <div class="bc-name">${b.nom}</div>
+      <div class="bc-multi">×${b.multiplicateur}</div>
+      <div class="bc-duree">${b.duree_heures}h de boost</div>
+      <div class="bc-prix">${fmt(b.prix)} FCFA</div>
+    </div>`).join('');
+}
+
+async function rejoindreChallenge(cid){
+  const btn=document.querySelector('[data-cid="'+cid+'"]');
+  if(btn){btn.disabled=true;btn.textContent='⏳...'}
+  try{
+    await SB.from('challenge_participants').insert({challenge_id:cid,user_id:U.id});
+    await SB.from('challenges').update({participants:SB.sql`participants+1`}).eq('id',cid).catch(()=>{});
+    MES_PARTICIPATIONS.push(cid);
+    if(btn){btn.className='btn-join joined';btn.textContent='✅ Vous participez';btn.disabled=false}
+    toast('🔥 Vous participez au challenge !','ok');
+  }catch(e){
+    if(btn){btn.disabled=false;btn.textContent='🔥 Rejoindre le challenge'}
+    if(e.code==='23505'){toast('Vous participez déjà','err')}
+    else toast('❌ '+(e.message||'Erreur'),'err');
+  }
+}
+
+async function acheterBoost(id,nom,prix){
+  if(!confirm('Acheter "'+nom+'" pour '+fmt(prix)+' FCFA ?'))return;
+  const{data,error}=await SB.rpc('acheter_boost',{p_user_id:U.id,p_boost_id:id});
+  if(error||data!=='OK'){
+    const msg=data==='SOLDE_INSUFFISANT'?'Solde insuffisant':data==='BOOST_INTROUVABLE'?'Boost introuvable':'Erreur';
+    toast('❌ '+msg,'err');return;
+  }
+  toast('⚡ Boost activé !','ok');
+  await chargerBoostActif();
+}
+
+async function chargerBoostActif(){
+  const{data:boost}=await SB.from('boosts_actifs')
+    .select('*').eq('user_id',U.id).eq('actif',true).gt('expire_le',new Date().toISOString())
+    .order('multiplicateur',{ascending:false}).limit(1).maybeSingle();
+  const wrap=$('boost-actif-wrap');
+  if(boost&&wrap){
+    wrap.style.display='block';
+    $s('ba-multi',boost.multiplicateur);
+    $s('ba-timer',tempsRestant(boost.expire_le));
+  } else if(wrap){
+    wrap.style.display='none';
+  }
+}
+
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){window.location.href='index.html';return}
+  U=session.user;
+
+  const[{data:challenges},{data:boosts},{data:parts}]=await Promise.all([
+    SB.from('challenges').select('*').eq('statut','en_cours').order('created_at',{ascending:false}),
+    SB.from('boosts_catalogue').select('*').order('prix'),
+    SB.from('challenge_participants').select('challenge_id').eq('user_id',U.id)
+  ]);
+
+  MES_PARTICIPATIONS=(parts||[]).map(p=>p.challenge_id);
+  renderChallenges(challenges||[]);
+  renderBoosts(boosts||[]);
+  await chargerBoostActif();
+}
+init();
+</script>
+</body>
+</html>
