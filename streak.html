@@ -281,7 +281,12 @@ function renderFidelite(niveau,jours){
 }
 
 async function enregistrerStreak(userId){
-  await SB.rpc('maj_streak',{p_user_id:userId}).catch(()=>{});
+  // Si la table streaks n'existe pas encore, pas d'erreur
+  try{
+    await SB.rpc('maj_streak',{p_user_id:userId});
+  }catch(e){
+    console.warn('Streak SQL non disponible:', e.message);
+  }
 }
 
 async function init(){
@@ -310,11 +315,15 @@ async function init(){
   $s('fh-bonus',fmt(totalBonus)+' F');
 
   // Calendrier 7 derniers jours
-  const semAgo=new Date();semAgo.setDate(semAgo.getDate()-7);
-  const{data:streakDays}=await SB.from('streaks')
-    .select('date_connexion').eq('user_id',U.id)
-    .gte('date_connexion',semAgo.toISOString().slice(0,10));
-  renderCalendrier(streakDays||[]);
+  let streakDays=[];
+  try{
+    const semAgo=new Date();semAgo.setDate(semAgo.getDate()-7);
+    const{data:sd,error:sde}=await SB.from('streaks')
+      .select('date_connexion').eq('user_id',U.id)
+      .gte('date_connexion',semAgo.toISOString().slice(0,10));
+    if(!sde) streakDays=sd||[];
+  }catch(e){console.warn('streaks table:', e.message);}
+  renderCalendrier(streakDays);
   renderPaliers(streak);
   renderFidelite(P.niveau_fidelite||'bronze',jours);
 
