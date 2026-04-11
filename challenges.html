@@ -256,23 +256,49 @@ async function chargerBoostActif(){
   }
 }
 
+// Données statiques si SQL pas encore exécuté
+const BOOSTS_STATIQUES=[
+  {id:'boost_12h', nom:'Boost 12h ×1.5',  multiplicateur:1.5, duree_heures:12,  prix:300,  ico:'⚡'},
+  {id:'boost_24h', nom:'Boost 24h ×1.5',  multiplicateur:1.5, duree_heures:24,  prix:500,  ico:'🚀'},
+  {id:'boost_48h', nom:'Boost 48h ×2',    multiplicateur:2.0, duree_heures:48,  prix:1500, ico:'💥'},
+  {id:'boost_week',nom:'Boost Semaine ×2', multiplicateur:2.0, duree_heures:168, prix:4000, ico:'👑'},
+];
+
+// Données par défaut si SQL pas encore exécuté
+const BOOSTS_DEFAULT=[
+  {id:'boost_12h', nom:'Boost 12h x1.5',  ico:'⚡',multiplicateur:1.5,duree_heures:12, prix:300},
+  {id:'boost_24h', nom:'Boost 24h x1.5',  ico:'🚀',multiplicateur:1.5,duree_heures:24, prix:500},
+  {id:'boost_48h', nom:'Boost 48h x2.0',  ico:'💥',multiplicateur:2.0,duree_heures:48, prix:1500},
+  {id:'boost_week',nom:'Boost Semaine x2', ico:'👑',multiplicateur:2.0,duree_heures:168,prix:4000},
+];
+
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session){window.location.href='index.html';return}
   U=session.user;
 
-  const[{data:challenges},{data:boosts},{data:parts}]=await Promise.all([
-    SB.from('challenges').select('*').eq('statut','en_cours').order('created_at',{ascending:false}),
-    SB.from('boosts_catalogue').select('*').order('prix'),
-    SB.from('challenge_participants').select('challenge_id').eq('user_id',U.id)
-  ]);
+  let challenges=[], boosts=BOOSTS_DEFAULT;
 
-  MES_PARTICIPATIONS=(parts||[]).map(p=>p.challenge_id);
-  renderChallenges(challenges||[]);
-  renderBoosts(boosts||[]);
+  try{
+    const[chRes,boRes,parRes]=await Promise.all([
+      SB.from('challenges').select('*').eq('statut','en_cours').order('created_at',{ascending:false}),
+      SB.from('boosts_catalogue').select('*').order('prix'),
+      SB.from('challenge_participants').select('challenge_id').eq('user_id',U.id)
+    ]);
+    challenges=chRes.data||[];
+    if(boRes.data&&boRes.data.length>0)boosts=boRes.data;
+    MES_PARTICIPATIONS=(parRes.data||[]).map(function(p){return p.challenge_id});
+  }catch(e){
+    console.warn('challenges init:',e);
+    challenges=[];
+    boosts=BOOSTS_DEFAULT;
+  }
+
+  renderChallenges(challenges);
+  renderBoosts(boosts);
   await chargerBoostActif();
 }
+
 init();
-</script>
 </body>
 </html>
