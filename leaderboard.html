@@ -196,10 +196,14 @@ async function chargerClassement(){
   if(TAB==='semaine') orderCol='gains_semaine';
   else if(TAB==='mois') orderCol='gains_mois';
 
-  const{data:users}=await query
+  const{data:users,error:uerr}=await query
     .gt(orderCol,0)
     .order(orderCol,{ascending:false}).limit(20);
 
+  if(uerr){
+    list.innerHTML='<div class="empty-state" style="padding:24px">📊 Chargement des données en cours...</div>';
+    return;
+  }
   if(!users||!users.length){
     list.innerHTML='<div class="empty-state">Aucun joueur classé cette période</div>';
     return;
