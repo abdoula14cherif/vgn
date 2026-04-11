@@ -157,43 +157,122 @@ function openBadge(id){
   $('badge-modal')?.classList.add('open');
 }
 
+// Badges statiques si SQL pas encore exécuté
+const BADGES_STATIQUES=[
+  {id:'premiere_tache', nom:'Première Tâche',  ico:'🌱', avantage:'Aucun',          condition:'1 tâche complétée'},
+  {id:'semaine_1',      nom:'1 Semaine Active', ico:'📅', avantage:'+100 FCFA',       condition:'Streak 7 jours'},
+  {id:'mois_1',         nom:'1 Mois Actif',     ico:'🏅', avantage:'+1 500 FCFA',     condition:'Streak 30 jours'},
+  {id:'parrain_1',      nom:'Premier Filleul',  ico:'👥', avantage:'+200 FCFA',       condition:'1 filleul inscrit'},
+  {id:'parrain_5',      nom:'Recruteur',         ico:'🎯', avantage:'+500 FCFA',       condition:'5 filleuls inscrits'},
+  {id:'parrain_20',     nom:'Leader',            ico:'🏆', avantage:'+2 000 FCFA',     condition:'20 filleuls inscrits'},
+  {id:'vip1',           nom:'Investisseur',      ico:'💼', avantage:'-5% retrait',     condition:'VIP 1 actif'},
+  {id:'vip3',           nom:'Manager',           ico:'⭐', avantage:'+1 tâche bonus',  condition:'VIP 3 actif'},
+  {id:'vip5',           nom:'Directeur',         ico:'💎', avantage:'Roue x2/jour',    condition:'VIP 5 actif'},
+  {id:'investisseur_1', nom:'Fonds Actif',       ico:'📈', avantage:'+1% rendement',   condition:'1 fond investi'},
+  {id:'top3_semaine',   nom:'Top 3 Semaine',     ico:'🥇', avantage:'Prime bonus',     condition:'Top 3 classement'},
+  {id:'streak_100',     nom:'Centurion',         ico:'💯', avantage:'+5 000 FCFA',     condition:'100 jours streak'},
+  {id:'gains_50k',      nom:'50 000 FCFA',       ico:'💰', avantage:'Badge doré',      condition:'50 000F gagnés'},
+  {id:'anniversaire_1', nom:'1 An sur VGN',      ico:'🎂', avantage:'+2 000 FCFA',     condition:'365 jours membre'},
+  {id:'challenge_1',    nom:'Challenger',        ico:'🔥', avantage:'+50 FCFA',        condition:'1 challenge rejoint'},
+];
+
+const BADGES_DEFAULT=[
+  {id:'premiere_tache',nom:'Premiere Tache',  ico:'🌱',description:'Completer sa premiere tache',condition:'1 tache completee',avantage:'Aucun'},
+  {id:'semaine_1',     nom:'1 Semaine Active',ico:'📅',description:'7 jours de streak',          condition:'Streak 7 jours',   avantage:'+100 FCFA'},
+  {id:'mois_1',        nom:'1 Mois Actif',    ico:'🏅',description:'30 jours consecutifs',       condition:'Streak 30 jours',  avantage:'+1500 FCFA'},
+  {id:'parrain_1',     nom:'Premier Filleul', ico:'👥',description:'Parrainer 1 personne',        condition:'1 filleul inscrit',avantage:'+200 FCFA'},
+  {id:'parrain_5',     nom:'Recruteur',        ico:'🎯',description:'Parrainer 5 personnes',       condition:'5 filleuls',       avantage:'+500 FCFA'},
+  {id:'parrain_20',    nom:'Leader',           ico:'🏆',description:'Parrainer 20 personnes',      condition:'20 filleuls',      avantage:'+2000 FCFA'},
+  {id:'vip1',          nom:'Investisseur',     ico:'💼',description:'Atteindre VIP 1',             condition:'VIP 1 actif',      avantage:'-5% frais'},
+  {id:'vip3',          nom:'Manager',          ico:'⭐',description:'Atteindre VIP 3',             condition:'VIP 3 actif',      avantage:'+1 tache/jour'},
+  {id:'vip5',          nom:'Directeur',        ico:'💎',description:'Atteindre VIP 5',             condition:'VIP 5 actif',      avantage:'Roue x2/jour'},
+  {id:'investisseur_1',nom:'Fonds Actif',      ico:'📈',description:'Creer un premier fond',       condition:'1 fond investi',   avantage:'+1% rendement'},
+  {id:'top3_semaine',  nom:'Top 3 Semaine',    ico:'🥇',description:'Finir dans le top 3',         condition:'Top 3 classement', avantage:'Prime bonus'},
+  {id:'streak_100',    nom:'Centurion',        ico:'💯',description:'100 jours de connexion',       condition:'100 jours streak', avantage:'+5000 FCFA'},
+  {id:'gains_50k',     nom:'50k FCFA gagnes',  ico:'💰',description:'Cumuler 50 000 FCFA',          condition:'50k gains totaux', avantage:'Badge dore'},
+  {id:'anniversaire_1',nom:'1 An sur VGN',     ico:'🎂',description:'1 an d anciennete',            condition:'365 jours membre', avantage:'+2000 FCFA'},
+  {id:'challenge_1',   nom:'Challenger',       ico:'🔥',description:'Participer a un challenge',   condition:'1 challenge rejoint',avantage:'+50 FCFA'},
+];
+
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session){window.location.href='index.html';return}
   const U=session.user;
+  const grid=document.getElementById('badges-grid');
 
-  const [{data:cat},{data:mes}] = await Promise.all([
-    SB.from('badges_catalogue').select('*').order('ordre'),
-    SB.from('badges_utilisateurs').select('*').eq('user_id',U.id)
-  ]);
+  try{
+    // Charger catalogue
+    const{data:cat,error:ce}=await SB.from('badges_catalogue').select('*').order('ordre');
+    CATALOGUE=(cat&&cat.length>0)?cat:BADGES_DEFAULT;
 
-  CATALOGUE=cat||[];
-  MES_BADGES=mes||[];
+    // Charger mes badges
+    const{data:mes}=await SB.from('badges_utilisateurs').select('*').eq('user_id',U.id);
+    MES_BADGES=mes||[];
 
-  // Vérifier nouveaux badges
-  await SB.rpc('verifier_badges',{p_user_id:U.id}).catch(()=>{});
-  const{data:mesRefresh}=await SB.from('badges_utilisateurs').select('*').eq('user_id',U.id);
-  MES_BADGES=mesRefresh||[];
+    // Verifier nouveaux badges si table existe
+    if(cat&&cat.length>0){
+      await SB.rpc('verifier_badges',{p_user_id:U.id}).catch(()=>{});
+      const{data:ref}=await SB.from('badges_utilisateurs').select('*').eq('user_id',U.id);
+      if(ref)MES_BADGES=ref;
+    }
+  }catch(e){
+    console.warn('badges:',e);
+    CATALOGUE=BADGES_DEFAULT;
+    MES_BADGES=[];
+  }
 
-  const totalBonus=MES_BADGES.reduce((s,b)=>s+(b.bonus_recu||0),0);
-  $s('bh-count',MES_BADGES.length);
-  $s('bh-total','badges obtenus sur '+CATALOGUE.length);
-  $s('bh-bonus',fmt(totalBonus)+' FCFA de bonus reçus');
+  const totalBonus=MES_BADGES.reduce(function(s,b){return s+(b.bonus_recu||0)},0);
+  const bh=document.getElementById('bh-count');if(bh)bh.textContent=MES_BADGES.length;
+  const bt=document.getElementById('bh-total');if(bt)bt.textContent='badges obtenus sur '+CATALOGUE.length;
+  const bb=document.getElementById('bh-bonus');if(bb)bb.textContent=fmt(totalBonus)+' FCFA de bonus recus';
 
-  const grid=$('badges-grid');
-  grid.innerHTML=CATALOGUE.map(b=>{
-    const obtained=MES_BADGES.find(x=>x.badge_id===b.id);
+  if(!grid)return;
+  if(!CATALOGUE.length){
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1">Aucun badge disponible<br><small>Executez le SQL pour activer les badges</small></div>';
+    return;
+  }
+
+  grid.innerHTML=CATALOGUE.map(function(b){
+    const obtained=MES_BADGES.find(function(x){return x.badge_id===b.id});
     const d=obtained?new Date(obtained.obtenu_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}):null;
-    return `<div class="badge-card ${obtained?'obtenu':'lock'}" onclick="openBadge('${b.id}')">
-      ${obtained?'<div class="bc-check">✅</div>':''}
-      <div class="bc-ico">${b.ico||'🏅'}</div>
-      <div class="bc-name">${b.nom}</div>
-      ${obtained&&d?`<div class="bc-date">${d}</div>`:''}
-      ${b.avantage&&b.avantage!=='Aucun'?`<div class="bc-bonus">${b.avantage.substring(0,20)}</div>`:''}
-    </div>`;
+    const oid=b.id.replace(/[^a-z0-9]/gi,'_');
+    return '<div class="badge-card '+(obtained?'obtenu':'lock')+'" onclick="openBadge(''+oid+'')" data-bid="'+b.id+'">'
+      +(obtained?'<div class="bc-check">✅</div>':'')
+      +'<div class="bc-ico">'+(b.ico||'🏅')+'</div>'
+      +'<div class="bc-name">'+(b.nom||'Badge')+'</div>'
+      +(obtained&&d?'<div class="bc-date">'+d+'</div>':'')
+      +(b.avantage&&b.avantage!=='Aucun'?'<div class="bc-bonus">'+(b.avantage||'').substring(0,20)+'</div>':'')
+      +'</div>';
   }).join('');
+
+  // Correction openBadge pour utiliser data-bid
+  document.querySelectorAll('.badge-card').forEach(function(el){
+    el.addEventListener('click',function(){openBadge(el.dataset.bid)});
+  });
 }
+
+function openBadge(id){
+  const b=CATALOGUE.find(function(x){return x.id===id});if(!b)return;
+  const obtained=MES_BADGES.find(function(x){return x.badge_id===id});
+  const mico=document.getElementById('m-ico');if(mico)mico.textContent=b.ico||'🏅';
+  const mt=document.getElementById('m-title');if(mt)mt.textContent=b.nom;
+  const md=document.getElementById('m-desc');if(md)md.textContent=b.description||'';
+  const ma=document.getElementById('m-avantage');if(ma)ma.textContent='Avantage : '+(b.avantage||'Aucun');
+  const mc=document.getElementById('m-cond');if(mc)mc.textContent='Condition : '+(b.condition||'');
+  const mb=document.getElementById('m-bonus');
+  if(mb){
+    if(obtained){
+      const d=new Date(obtained.obtenu_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+      mb.textContent=(obtained.bonus_recu>0?'+'+fmt(obtained.bonus_recu)+' FCFA recus · ':'')+' Obtenu le '+d;
+      mb.style.color='#4ADE80';
+    }else{
+      mb.textContent='Non encore obtenu';
+      mb.style.color='#94A3B8';
+    }
+  }
+  const modal=document.getElementById('badge-modal');if(modal)modal.classList.add('open');
+}
+
 init();
-</script>
 </body>
 </html>
