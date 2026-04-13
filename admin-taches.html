@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>VGN Admin – Gestion Tâches</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#16A34A;--gd:#15803D;--o:#F97316;--b:#3B82F6;--p:#8B5CF6;--r:#EF4444;--gold:#F59E0B;
+  --bg:#0A0D14;--s1:#111827;--s2:#1F2937;--s3:#374151;
+  --txt:#F9FAFB;--mu:#9CA3AF;--bd:#1F2937;
+  --H:56px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+}
+html{font-family:'Nunito',sans-serif;background:var(--bg)}
+body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  height:calc(var(--H)+var(--sat));background:#0A0D14;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;z-index:999}
+.tbk{width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;color:var(--mu)}
+.tbt{font-size:.9rem;font-weight:900;color:var(--txt)}
+.tbadge{background:var(--g);color:#fff;font-size:.6rem;font-weight:900;padding:3px 9px;border-radius:10px}
+
+.scroll{padding-top:calc(var(--H)+var(--sat)+20px);padding-bottom:40px;min-height:100svh}
+
+/* LOCK */
+.lock{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:80vh;padding:20px;text-align:center}
+.lock-ico{font-size:3.5rem;margin-bottom:14px}
+.lock-t{font-size:1.1rem;font-weight:900;color:var(--txt);margin-bottom:6px}
+.lock-s{font-size:.75rem;color:var(--mu);font-weight:600;margin-bottom:20px}
+.inp-lock{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:14px;
+  padding:14px 16px;color:var(--txt);font-family:'Nunito',sans-serif;font-size:.95rem;
+  font-weight:700;outline:none;margin-bottom:10px;text-align:center;letter-spacing:1px;
+  -webkit-appearance:none}
+.inp-lock:focus{border-color:var(--g)}
+.lock-err{display:none;font-size:.75rem;color:var(--r);font-weight:800;
+  padding:8px 12px;background:rgba(239,68,68,.1);border-radius:8px;
+  border:1px solid rgba(239,68,68,.2);margin-bottom:8px;text-align:center}
+
+/* SECTIONS */
+.sec{margin:12px;background:var(--s1);border-radius:18px;padding:16px;
+  border:1px solid var(--bd);margin-bottom:12px}
+.st{font-size:.8rem;font-weight:900;color:var(--txt);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px}
+.st::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* KPIs */
+.krow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--s2);border-radius:12px;padding:12px 8px;text-align:center}
+.kpiv{font-size:1.3rem;font-weight:900;color:var(--txt)}
+.kpil{font-size:.57rem;color:var(--mu);font-weight:700;margin-top:3px}
+
+/* FORMULAIRE AJOUT */
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:.65rem;font-weight:900;color:var(--mu);
+  margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.fld input,.fld textarea,.fld select{
+  width:100%;background:var(--s2);border:1.5px solid var(--bd);
+  border-radius:12px;padding:12px 14px;color:var(--txt);font-family:'Nunito',sans-serif;
+  font-size:.85rem;font-weight:700;outline:none;transition:border .2s;-webkit-appearance:none}
+.fld input:focus,.fld textarea:focus,.fld select:focus{border-color:var(--g)}
+.fld textarea{resize:none;height:76px}
+.fld select option{background:#1F2937;color:var(--txt)}
+.fld-hint{font-size:.6rem;color:var(--mu);font-weight:600;margin-top:5px;line-height:1.5}
+
+/* PREVIEW VIDÉO */
+.video-preview{margin-top:10px;border-radius:14px;overflow:hidden;
+  background:var(--s3);aspect-ratio:16/9;display:none;position:relative}
+.video-preview iframe,.video-preview video{width:100%;height:100%;border:none}
+.vp-placeholder{display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;color:var(--mu);font-size:.75rem;font-weight:700;height:160px}
+
+/* BOUTONS */
+.btn{width:100%;padding:14px;border:none;border-radius:13px;font-family:'Nunito',sans-serif;
+  font-size:.92rem;font-weight:900;color:#fff;cursor:pointer;transition:transform .15s;margin-bottom:8px}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-g{background:linear-gradient(135deg,var(--g),var(--gd));box-shadow:0 4px 16px rgba(22,163,74,.3)}
+.btn-b{background:linear-gradient(135deg,var(--b),#1D4ED8)}
+.btn-r{background:linear-gradient(135deg,var(--r),#B91C1C)}
+.btn-o{background:linear-gradient(135deg,var(--o),#EA580C)}
+.btn-ghost{background:transparent;border:1.5px solid var(--bd);color:var(--mu)}
+
+/* LISTE DES TÂCHES */
+.tache-card{background:var(--s2);border-radius:16px;overflow:hidden;margin-bottom:10px;
+  border:1px solid var(--bd);transition:border .2s}
+.tache-card.inactive{opacity:.55;border-style:dashed}
+.tc-thumb{width:100%;aspect-ratio:16/9;background:var(--s3);position:relative;overflow:hidden}
+.tc-thumb img{width:100%;height:100%;object-fit:cover}
+.tc-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.tc-play-btn{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.6);
+  border:2.5px solid rgba(255,255,255,.7);display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;cursor:pointer;transition:transform .2s}
+.tc-play-btn:active{transform:scale(.9)}
+.tc-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.75);
+  color:#fff;font-size:.57rem;font-weight:900;padding:3px 9px;border-radius:6px;
+  backdrop-filter:blur(8px)}
+.tc-badge.yt{background:rgba(255,0,0,.75)}
+.tc-badge.mp4{background:rgba(59,130,246,.75)}
+.tc-badge.off{background:rgba(239,68,68,.75)}
+.tc-body{padding:12px 14px}
+.tc-nom{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:3px}
+.tc-cat{font-size:.62rem;font-weight:700;color:var(--mu)}
+.tc-meta{display:flex;gap:8px;margin-top:7px;flex-wrap:wrap}
+.tc-tag{font-size:.57rem;font-weight:800;padding:2px 9px;border-radius:6px}
+.tag-on{background:rgba(22,163,74,.2);color:#4ADE80;border:1px solid rgba(22,163,74,.2)}
+.tag-off{background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.2)}
+.tag-dur{background:rgba(59,130,246,.15);color:#60A5FA;border:1px solid rgba(59,130,246,.15)}
+.tag-vip{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.15)}
+.tc-actions{display:flex;gap:6px;margin-top:10px}
+.ab{padding:9px 0;border:none;border-radius:9px;font-family:'Nunito',sans-serif;
+  font-size:.68rem;font-weight:800;cursor:pointer;flex:1;transition:transform .15s}
+.ab:active{transform:scale(.95)}
+.ab-on{background:rgba(22,163,74,.2);color:#4ADE80;border:1px solid rgba(22,163,74,.2)}
+.ab-off{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.15)}
+.ab-del{background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.15)}
+.ab-edit{background:rgba(59,130,246,.15);color:#60A5FA;border:1px solid rgba(59,130,246,.15)}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--s1);border-radius:24px 24px 0 0;width:100%;max-width:430px;
+  padding:0 0 calc(env(safe-area-inset-bottom,0px)+20px);
+  transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.1,.64,1);
+  max-height:90vh;overflow-y:auto}
+.modal-ov.open .modal{transform:translateY(0)}
+.mhandle{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:12px auto 14px}
+.mpad{padding:0 16px}
+.mtitle{font-size:.95rem;font-weight:900;color:var(--txt);margin-bottom:14px}
+
+/* TOAST */
+.tst{position:fixed;top:calc(var(--H)+var(--sat)+10px);left:50%;
+  transform:translateX(-50%) translateY(-80px);background:#0F172A;color:#fff;
+  padding:10px 22px;border-radius:24px;font-size:.77rem;font-weight:700;
+  z-index:9999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.tst.show{transform:translateX(-50%) translateY(0)}.tst.ok{background:var(--g)}.tst.err{background:var(--r)}
+.ld{display:inline-block;width:14px;height:14px;border:2.5px solid var(--bd);
+  border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:28px;color:var(--mu);font-size:.75rem;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tbk" href="admin.html">‹</a>
+  <span class="tbt">🎬 Gestion des Tâches</span>
+  <div class="tbadge" id="tb-count">0</div>
+</div>
+<div class="tst" id="tst"></div>
+
+<!-- MODAL ÉDITION -->
+<div class="modal-ov" id="modal-edit" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mpad">
+      <div class="mtitle">✏️ Modifier la tâche</div>
+      <input type="hidden" id="edit-id">
+      <div class="fld"><label>Nom de la tâche</label><input type="text" id="edit-nom" placeholder="Ex: Visite de la ferme VGN"></div>
+      <div class="fld"><label>Description</label><textarea id="edit-desc" placeholder="Décrivez la tâche..."></textarea></div>
+      <div class="fld"><label>Catégorie</label>
+        <select id="edit-cat">
+          <option>Agriculture</option><option>Élevage bovin</option><option>Aquaculture</option>
+          <option>Maraîchage</option><option>Apiculture</option><option>Arboriculture</option>
+          <option>Agroforesterie</option><option>Aviculture</option><option>Laiterie</option>
+          <option>Hydroponique</option><option>Formation</option><option>Actualités VGN</option>
+        </select>
+      </div>
+      <div class="fld"><label>Lien vidéo (YouTube ou MP4)</label><input type="url" id="edit-url" placeholder="https://youtube.com/watch?v=..."></div>
+      <div class="fld"><label>Durée min à regarder (secondes)</label><input type="number" id="edit-dur" placeholder="15" min="5" max="300"></div>
+      <div class="fld"><label>Niveau VIP minimum</label>
+        <select id="edit-vip">
+          <option value="VIP 0">VIP 0 (Tous)</option><option value="VIP 1">VIP 1+</option>
+          <option value="VIP 2">VIP 2+</option><option value="VIP 3">VIP 3+</option>
+        </select>
+      </div>
+      <button class="btn btn-g" onclick="sauvegarderEdit()">💾 Sauvegarder</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div class="scroll" id="main-scroll">
+
+  <!-- LOCK SCREEN -->
+  <div class="lock" id="lock-screen">
+    <div class="lock-ico">🎬</div>
+    <div class="lock-t">Gestion des Tâches</div>
+    <div class="lock-s">Accès réservé à l'administrateur VGN</div>
+    <div class="lock-err" id="lock-err">Email incorrect</div>
+    <input class="inp-lock" type="email" id="l-email" placeholder="abdoula13cherif@gmail.com"
+      onkeydown="if(event.key==='Enter')checkAdmin()">
+    <button class="btn btn-g" onclick="checkAdmin()">🔓 Accéder au panneau</button>
+  </div>
+
+  <!-- CONTENU ADMIN (caché jusqu'à connexion) -->
+  <div id="admin-content" style="display:none">
+
+    <!-- KPIs -->
+    <div class="sec">
+      <div class="st">📊 Vue d'ensemble</div>
+      <div class="krow">
+        <div class="kpi"><div class="kpiv" id="k-total">0</div><div class="kpil">Total tâches</div></div>
+        <div class="kpi"><div class="kpiv" id="k-actives">0</div><div class="kpil">Actives</div></div>
+        <div class="kpi"><div class="kpiv" id="k-completes">0</div><div class="kpil">Complétions</div></div>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE AJOUT -->
+    <div class="sec">
+      <div class="st">➕ Ajouter une nouvelle tâche</div>
+
+      <div class="fld">
+        <label>Nom de la tâche *</label>
+        <input type="text" id="n-nom" placeholder="Ex: Visite ferme bovine VGN">
+      </div>
+
+      <div class="fld">
+        <label>Description</label>
+        <textarea id="n-desc" placeholder="Décrivez ce que l'utilisateur va regarder..."></textarea>
+      </div>
+
+      <div class="fld">
+        <label>Catégorie</label>
+        <select id="n-cat">
+          <option>Agriculture</option><option>Élevage bovin</option><option>Aquaculture</option>
+          <option>Maraîchage</option><option>Apiculture</option><option>Arboriculture</option>
+          <option>Agroforesterie</option><option>Aviculture</option><option>Laiterie</option>
+          <option>Hydroponique</option><option>Formation</option><option>Actualités VGN</option>
+        </select>
+      </div>
+
+      <div class="fld">
+        <label>🎬 Lien vidéo (YouTube ou MP4 direct) *</label>
+        <input type="url" id="n-url" placeholder="https://youtube.com/watch?v=XXXXX"
+          oninput="previewVideo()">
+        <div class="fld-hint">
+          ✅ YouTube : https://youtube.com/watch?v=ID_VIDEO<br>
+          ✅ YouTube court : https://youtu.be/ID_VIDEO<br>
+          ✅ MP4 direct : https://monserveur.com/video.mp4<br>
+          ✅ Autre lien : n'importe quelle URL vidéo
+        </div>
+        <!-- APERÇU VIDÉO -->
+        <div class="video-preview" id="video-preview">
+          <div class="vp-placeholder" id="vp-placeholder">
+            <span style="font-size:2rem">🎬</span>
+            <span>Entrez un lien pour prévisualiser</span>
+          </div>
+          <div id="vp-frame"></div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label>Miniature (URL image, optionnel)</label>
+        <input type="url" id="n-thumb" placeholder="https://... (laissez vide pour auto)">
+        <div class="fld-hint">Laissez vide pour utiliser la miniature YouTube automatique</div>
+      </div>
+
+      <div class="fld">
+        <label>⏱ Durée minimum à regarder (secondes)</label>
+        <input type="number" id="n-dur" value="15" min="5" max="300"
+          placeholder="15">
+        <div class="fld-hint">L'utilisateur doit regarder au moins X secondes avant de valider</div>
+      </div>
+
+      <div class="fld">
+        <label>Niveau VIP minimum pour voir cette tâche</label>
+        <select id="n-vip">
+          <option value="VIP 0">VIP 0 — Tous les utilisateurs</option>
+          <option value="VIP 1">VIP 1 minimum</option>
+          <option value="VIP 2">VIP 2 minimum</option>
+          <option value="VIP 3">VIP 3 minimum</option>
+        </select>
+      </div>
+
+      <div class="fld">
+        <label>Ordre d'affichage (1 = en premier)</label>
+        <input type="number" id="n-ordre" value="0" min="0" placeholder="0">
+      </div>
+
+      <button class="btn btn-g" id="btn-add" onclick="ajouterTache()">
+        🎬 Publier la tâche
+      </button>
+    </div>
+
+    <!-- LISTE DES TÂCHES CUSTOM -->
+    <div class="sec">
+      <div class="st">🎬 Mes tâches vidéo</div>
+      <div id="taches-list">
+        <div class="empty"><div class="ld"></div></div>
+      </div>
+    </div>
+
+    <!-- INFO TÂCHES EXISTANTES -->
+    <div class="sec" style="border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.04)">
+      <div class="st" style="color:var(--gold)">ℹ️ Tâches existantes (non modifiables)</div>
+      <p style="font-size:.7rem;color:var(--mu);font-weight:600;line-height:1.7">
+        Les <strong style="color:var(--txt)">36 tâches agricoles</strong> avec images Unsplash sont intégrées en dur dans le code de la plateforme. Elles ne peuvent pas être modifiées depuis cette interface.<br><br>
+        Vos nouvelles tâches vidéo apparaissent <strong style="color:var(--gl)">EN PLUS</strong> des tâches existantes pour les utilisateurs.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SB=supabase.createClient(
+  'https://tgrfzybemuwvhkbpuzmz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
+  {auth:{persistSession:true,storageKey:'vgn-auth-admin',storage:window.localStorage}}
+);
+const $=id=>document.getElementById(id);
+const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
+function closeModal(){$('modal-edit')?.classList.remove('open')}
+
+const ADMIN_EMAIL='abdoula13cherif@gmail.com';
+
+/* ── CONNEXION ADMIN ── */
+async function checkAdmin(){
+  const email=($('l-email')?.value||'').trim().toLowerCase();
+  const err=$('lock-err');
+  if(!email){if(err){err.textContent='Entrez votre email';err.style.display='block';}return}
+  if(email!==ADMIN_EMAIL){
+    if(err){err.textContent='⛔ Accès non autorisé';err.style.display='block';}return;
+  }
+  // Connexion Supabase
+  const btn=document.querySelector('.lock .btn');
+  if(btn){btn.textContent='⏳ Connexion...';btn.disabled=true;}
+  try{
+    // Vérifier la session active
+    const{data:{session}}=await SB.auth.getSession();
+    if(session&&session.user?.email?.toLowerCase()===ADMIN_EMAIL){
+      ouvrirAdmin();return;
+    }
+    // Pas de session — demander le mot de passe
+    const pass=prompt('Mot de passe Supabase :');
+    if(!pass){if(btn){btn.textContent='🔓 Accéder';btn.disabled=false;}return;}
+    const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
+    if(error){
+      if(err){err.textContent='❌ '+(error.message.includes('Invalid login')?'Mot de passe incorrect':error.message);err.style.display='block';}
+      if(btn){btn.textContent='🔓 Accéder';btn.disabled=false;}
+      return;
+    }
+    ouvrirAdmin();
+  }catch(e){
+    if(err){err.textContent='❌ Erreur: '+e.message;err.style.display='block';}
+    if(btn){btn.textContent='🔓 Accéder';btn.disabled=false;}
+  }
+}
+
+function ouvrirAdmin(){
+  $('lock-screen').style.display='none';
+  $('admin-content').style.display='block';
+  charger();
+}
+
+// Vérifier session existante au chargement
+(async()=>{
+  const{data:{session}}=await SB.auth.getSession();
+  if(session&&session.user?.email?.toLowerCase()===ADMIN_EMAIL)ouvrirAdmin();
+})();
+
+/* ── PRÉVISUALISATION VIDÉO ── */
+function getVideoInfo(url){
+  if(!url)return null;
+  // YouTube
+  const ytMatch=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  if(ytMatch)return{type:'youtube',id:ytMatch[1],embed:'https://www.youtube.com/embed/'+ytMatch[1],thumb:'https://img.youtube.com/vi/'+ytMatch[1]+'/mqdefault.jpg'};
+  // MP4 ou autre
+  if(url.match(/\.(mp4|webm|ogg)(\?|$)/i))return{type:'mp4',embed:url,thumb:null};
+  // Lien général
+  return{type:'lien',embed:url,thumb:null};
+}
+
+function previewVideo(){
+  const url=($('n-url')?.value||'').trim();
+  const prev=$('video-preview');
+  const frame=$('vp-frame');
+  const ph=$('vp-placeholder');
+  if(!prev||!frame)return;
+  if(!url){prev.style.display='none';return}
+  const info=getVideoInfo(url);
+  if(!info){prev.style.display='none';return}
+  prev.style.display='block';
+  if(ph)ph.style.display='none';
+  if(info.type==='youtube'){
+    frame.innerHTML=`<iframe src="${info.embed}?rel=0&modestbranding=1" allowfullscreen></iframe>`;
+  }else if(info.type==='mp4'){
+    frame.innerHTML=`<video src="${info.embed}" controls style="width:100%;height:100%;object-fit:contain;background:#000"></video>`;
+  }else{
+    frame.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:160px;color:#9CA3AF;font-size:.75rem;font-weight:700">🔗 Lien externe enregistré</div>`;
+  }
+}
+
+/* ── AJOUTER TÂCHE ── */
+async function ajouterTache(){
+  const nom=($('n-nom')?.value||'').trim();
+  const url=($('n-url')?.value||'').trim();
+  if(!nom){toast('⚠️ Entrez le nom de la tâche','err');return}
+  if(!url){toast('⚠️ Entrez le lien vidéo','err');return}
+
+  const btn=$('btn-add');
+  btn.innerHTML='<span class="ld"></span>';btn.disabled=true;
+
+  const info=getVideoInfo(url);
+  const thumb=($('n-thumb')?.value||'').trim()||(info?.thumb||'');
+  const desc=($('n-desc')?.value||'').trim();
+  const cat=$('n-cat')?.value||'Agriculture';
+  const dur=parseInt($('n-dur')?.value)||15;
+  const vip=$('n-vip')?.value||'VIP 0';
+  const ordre=parseInt($('n-ordre')?.value)||0;
+
+  const{error}=await SB.from('taches_custom').insert({
+    nom,description:desc||null,categorie:cat,
+    video_url:url,video_type:info?.type||'lien',
+    thumbnail_url:thumb||null,
+    duree_secs:dur,actif:true,ordre,vip_min:vip
+  });
+
+  if(error){
+    toast('❌ '+(error.message.includes('does not exist')?'Exécutez SQL_taches_custom.sql d\'abord':error.message),'err');
+    btn.textContent='🎬 Publier la tâche';btn.disabled=false;return;
+  }
+
+  toast('✅ Tâche publiée !','ok');
+  // Reset form
+  ['n-nom','n-desc','n-url','n-thumb'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  if($('n-dur'))$('n-dur').value='15';
+  if($('video-preview'))$('video-preview').style.display='none';
+  btn.textContent='🎬 Publier la tâche';btn.disabled=false;
+  await charger();
+}
+
+/* ── CHARGER TÂCHES ── */
+async function charger(){
+  const{data:taches,error}=await SB.from('taches_custom').select('*').order('ordre').order('created_at',{ascending:false});
+
+  if(error){
+    $('taches-list').innerHTML='<div class="empty" style="color:#F87171">⚠️ Table non créée — exécutez SQL_taches_custom.sql</div>';
+    return;
+  }
+
+  const total=(taches||[]).length;
+  const actives=(taches||[]).filter(t=>t.actif).length;
+  $s('k-total',total);$s('k-actives',actives);$s('tb-count',total);
+
+  // Compter complétions
+  const{count}=await SB.from('taches_completees').select('*',{count:'exact',head:true})
+    .not('custom_tache_id','is',null);
+  $s('k-completes',count||0);
+
+  const list=$('taches-list');
+  if(!total){
+    list.innerHTML='<div class="empty">Aucune tâche créée.<br>Ajoutez votre première tâche vidéo !</div>';
+    return;
+  }
+
+  list.innerHTML=(taches||[]).map(t=>{
+    const info=getVideoInfo(t.video_url||'');
+    const thumb=t.thumbnail_url||(info?.thumb)||'';
+    const typeLbl=t.video_type==='youtube'?'YouTube':t.video_type==='mp4'?'MP4':'Lien';
+    const typeCls=t.video_type==='youtube'?'yt':t.video_type==='mp4'?'mp4':'';
+    const nomSafe=(t.nom||'').replace(/'/g,'`');
+    return `<div class="tache-card${t.actif?'':' inactive'}" id="tc-${t.id}">
+      <div class="tc-thumb">
+        ${thumb?`<img src="${thumb}" alt="${t.nom}" onerror="this.style.display='none'">`
+          :`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6B7280;font-size:2rem;background:#1F2937">🎬</div>`}
+        <div class="tc-play">
+          <div class="tc-play-btn" onclick="ouvrirVideo('${(t.video_url||'').replace(/'/g,"\\'")}')">▶</div>
+        </div>
+        <div class="tc-badge ${typeCls}${t.actif?'':' off'}">${t.actif?typeLbl:'DÉSACTIVÉE'}</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-nom">${t.nom}</div>
+        <div class="tc-cat">${t.categorie||'Agriculture'}</div>
+        <div class="tc-meta">
+          <span class="tc-tag ${t.actif?'tag-on':'tag-off'}">${t.actif?'✅ Active':'⏸ Inactive'}</span>
+          <span class="tc-tag tag-dur">⏱ ${t.duree_secs||15}s</span>
+          ${t.vip_min&&t.vip_min!=='VIP 0'?`<span class="tc-tag tag-vip">💎 ${t.vip_min}+</span>`:''}
+        </div>
+        <div class="tc-actions">
+          <button class="ab ab-edit" onclick="ouvrirEdit('${t.id}','${nomSafe}','${(t.description||'').replace(/'/g,'`')}','${t.categorie}','${(t.video_url||'').replace(/'/g,"\\'")}',${t.duree_secs||15},'${t.vip_min||'VIP 0'}')">✏️ Modifier</button>
+          <button class="ab ${t.actif?'ab-off':'ab-on'}" onclick="toggleActif('${t.id}',${t.actif})">${t.actif?'⏸ Désactiver':'▶ Activer'}</button>
+          <button class="ab ab-del" onclick="supprimerTache('${t.id}','${nomSafe}')">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── OUVRIR VIDÉO ── */
+function ouvrirVideo(url){
+  if(!url)return;
+  window.open(url,'_blank');
+}
+
+/* ── ÉDITER ── */
+function ouvrirEdit(id,nom,desc,cat,url,dur,vip){
+  $('edit-id').value=id;
+  $('edit-nom').value=nom;
+  $('edit-desc').value=desc;
+  $('edit-cat').value=cat;
+  $('edit-url').value=url;
+  $('edit-dur').value=dur;
+  $('edit-vip').value=vip;
+  $('modal-edit')?.classList.add('open');
+}
+
+async function sauvegarderEdit(){
+  const id=$('edit-id')?.value;
+  const nom=($('edit-nom')?.value||'').trim();
+  const desc=($('edit-desc')?.value||'').trim();
+  const cat=$('edit-cat')?.value;
+  const url=($('edit-url')?.value||'').trim();
+  const dur=parseInt($('edit-dur')?.value)||15;
+  const vip=$('edit-vip')?.value;
+  if(!nom||!url){toast('⚠️ Nom et lien requis','err');return}
+  const info=getVideoInfo(url);
+  const{error}=await SB.from('taches_custom').update({
+    nom,description:desc||null,categorie:cat,
+    video_url:url,video_type:info?.type||'lien',
+    thumbnail_url:info?.thumb||null,
+    duree_secs:dur,vip_min:vip
+  }).eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
+  toast('✅ Tâche mise à jour !','ok');
+  closeModal();
+  await charger();
+}
+
+/* ── TOGGLE ACTIF ── */
+async function toggleActif(id,actuel){
+  const{error}=await SB.from('taches_custom').update({actif:!actuel}).eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
+  toast(actuel?'⏸ Tâche désactivée':'✅ Tâche activée','ok');
+  await charger();
+}
+
+/* ── SUPPRIMER ── */
+async function supprimerTache(id,nom){
+  if(!confirm('Supprimer "'+nom+'" ? Cette action est irréversible.'))return;
+  const{error}=await SB.from('taches_custom').delete().eq('id',id);
+  if(error){toast('❌ '+error.message,'err');return}
+  toast('Tâche supprimée','ok');
+  await charger();
+}
+</script>
+</body>
+</html>
