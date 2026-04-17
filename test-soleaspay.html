@@ -3,160 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Debug SoleasPay — Réponse complète</title>
+<title>Debug SoleasPay v3</title>
 <style>
-body{font-family:sans-serif;max-width:430px;margin:0 auto;padding:16px;background:#f5f5f5}
-h3{margin-bottom:4px}
-p{font-size:12px;color:#555;margin-bottom:12px;line-height:1.5}
-select,input{width:100%;padding:11px;margin-bottom:8px;border:1px solid #ccc;border-radius:9px;font-size:14px;box-sizing:border-box}
-button{width:100%;padding:13px;border:none;border-radius:9px;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:6px;color:#fff}
-.g{background:#16A34A}.b{background:#3B82F6}.o{background:#F97316}
+body{font-family:sans-serif;max-width:430px;margin:0 auto;padding:14px;background:#f5f5f5}
+h3{margin-bottom:8px}
+select,input{width:100%;padding:10px;margin-bottom:8px;border:1px solid #ccc;border-radius:8px;font-size:14px;box-sizing:border-box}
+button{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:6px;color:#fff}
+.g{background:#16A34A}.b{background:#3B82F6}.r{background:#DC2626}.o{background:#F97316}
 button:disabled{opacity:.5}
-pre{background:#0d1117;padding:13px;border-radius:9px;font-size:11.5px;
-    overflow-x:auto;white-space:pre-wrap;margin-top:10px;max-height:400px;overflow-y:auto;color:#c9d1d9}
-.ok{color:#56d364!important}.err{color:#ff7b72!important}.warn{color:#e3b341!important}
-.box{background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px;margin-bottom:10px;font-size:12px;line-height:1.7}
-.box b{color:#16A34A}
+pre{background:#0d1117;color:#c9d1d9;padding:12px;border-radius:8px;font-size:11px;
+    overflow-x:auto;white-space:pre-wrap;margin-top:10px;max-height:500px;overflow-y:auto}
+.ok{color:#56d364}.err{color:#ff7b72}.warn{color:#e3b341}
+.info{background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px;font-size:12px;margin-bottom:10px;line-height:1.6}
 </style>
 </head>
 <body>
-
-<h3>🔬 Debug SoleasPay — Réponse complète</h3>
-<div class="box">
-  Ce test affiche la <b>réponse JSON complète</b> de SoleasPay pour comprendre pourquoi le paiement ne démarre pas.
+<h3>🔬 Debug SoleasPay v3</h3>
+<div class="info">
+  Affiche la <b>réponse RAW complète</b> incluant headers.<br>
+  Si <code>_raw: "{}"</code> → le problème vient de SoleasPay lui-même.
 </div>
 
 <select id="op">
-  <option value="ORANGE_CM">🍊 Orange Money CM</option>
-  <option value="MTN_CM">📱 MTN MoMo CM</option>
-  <option value="WAVE_CM">🌊 Wave CM</option>
+  <option value="ORANGE_CM">🍊 ORANGE_CM</option>
+  <option value="MTN_CM">📱 MTN_CM</option>
+  <option value="WAVE_CM">🌊 WAVE_CM</option>
 </select>
-<input type="tel"    id="phone"  value="658033690" placeholder="Numéro">
-<input type="number" id="amount" value="100"       placeholder="Montant (FCFA)">
+<input type="tel"    id="phone"  value="658033690">
+<input type="number" id="amount" value="100">
 
-<button class="g" id="btn1" onclick="tester('ORANGE_CM')">⚡ Tester Orange Money</button>
-<button class="b" id="btn2" onclick="tester('MTN_CM')">📱 Tester MTN MoMo</button>
-<button class="o" id="btn3" onclick="testerAutres()">🔄 Tester autres formats opérateur</button>
+<button class="g" onclick="tester()">⚡ Tester (afficher réponse RAW)</button>
+<button class="o" onclick="testerTousFormats()">🔄 Tester tous formats + numéros</button>
 
 <pre id="res">En attente...</pre>
 
 <script>
-let lastTxId = null;
+function getParams(){
+  return {
+    op:     document.getElementById('op').value,
+    phone:  document.getElementById('phone').value.replace(/\D/g,''),
+    amount: parseInt(document.getElementById('amount').value)||100
+  };
+}
 
-async function tester(opOverride){
-  const op     = opOverride || document.getElementById('op').value;
-  const phone  = document.getElementById('phone').value.replace(/\D/g,'');
-  const amount = parseInt(document.getElementById('amount').value)||100;
-  const ref    = 'TEST-'+Date.now();
+async function callProxy(op, phone, amount){
+  const r = await fetch('/api/soleaspay?action=collect',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      amount, currency:'XAF', operator:op,
+      phone, reference:'T-'+Date.now(),
+      description:'Test VGN',
+      customer_name:'Test', customer_email:'t@t.cm'
+    })
+  });
+  const text = await r.text();
+  let data = {};
+  try{ data = JSON.parse(text); }catch(e){ data = {raw_text: text}; }
+  return { status: r.status, data };
+}
 
-  log('⏳ Envoi à /api/soleaspay...\nOpérateur: '+op+'\nNuméro: '+phone+'\nMontant: '+amount+' XAF\n');
+async function tester(){
+  const {op, phone, amount} = getParams();
+  const el = document.getElementById('res');
+  el.className=''; el.textContent='⏳ Appel en cours...\n';
 
   try{
-    const r = await fetch('/api/soleaspay?action=collect',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        amount, currency:'XAF', operator:op,
-        phone, reference:ref,
-        description:'Test VGN',
-        customer_name:'Test',
-        customer_email:'test@vgn.cm'
-      })
-    });
+    const {status, data} = await callProxy(op, phone, amount);
 
-    const raw  = await r.text();
-    let parsed = {};
-    try{ parsed = JSON.parse(raw); }catch(e){}
+    const raw     = data._raw || JSON.stringify(data);
+    const txId    = data?.data?.transaction_id || data?.transaction_id || data?.id;
+    const headers = data._headers || {};
+    const ct      = headers['content-type'] || '?';
 
-    // Extraire les infos clés
-    const txId   = parsed?.data?.transaction_id || parsed?.transaction_id || parsed?.id || '❌ aucun';
-    const status = parsed?.data?.status  || parsed?.status  || '?';
-    const msg    = parsed?.data?.message || parsed?.message  || parsed?.error || '';
-    const code   = parsed?.data?.code    || parsed?.code     || '';
+    el.className = status===200 && txId ? 'ok' : (status>=400 ? 'err' : 'warn');
+    el.textContent =
+      `HTTP Status : ${status}\n`+
+      `Content-Type: ${ct}\n`+
+      `TX ID       : ${txId || '❌ AUCUN'}\n`+
+      `\n── _raw (réponse brute SoleasPay) ──\n${raw}\n`+
+      `\n── JSON complet ──\n${JSON.stringify(data, null, 2)}`;
 
-    lastTxId = (txId !== '❌ aucun') ? txId : null;
-
-    const cls = r.ok ? 'ok' : 'err';
-    log(
-      `HTTP ${r.status}\n`+
-      `TX ID  : ${txId}\n`+
-      `Status : ${status}\n`+
-      `Code   : ${code}\n`+
-      `Message: ${msg}\n`+
-      `\n── Réponse brute ──\n`+
-      JSON.stringify(parsed, null, 2),
-      cls
-    );
-
-    // Diagnostics
-    if(r.status === 200 && !lastTxId){
-      logAppend('\n⚠️  HTTP 200 mais pas de transaction_id — le paiement n\'a pas été initié.'+
-        '\nCause probable : format du numéro ou nom du champ "operator" incorrect.');
-    }
-    if(msg.toLowerCase().includes('phone')){
-      logAppend('\n⚠️  Erreur liée au numéro de téléphone.');
-    }
-    if(msg.toLowerCase().includes('operator') || msg.toLowerCase().includes('opérateur')){
-      logAppend('\n⚠️  Erreur liée au code opérateur. Essayez d\'autres formats ci-dessous.');
-    }
-
-    if(lastTxId){
-      logAppend('\n✅ Transaction créée ! Vérification du statut dans 5s...');
-      setTimeout(()=>checkStatus(lastTxId), 5000);
+    if(!txId && status === 200){
+      el.textContent += '\n\n⚠️ HTTP 200 mais réponse vide ou sans transaction_id.\n'
+        + 'Cela signifie que SoleasPay accepte la requête mais ne démarre pas le paiement.\n'
+        + '→ Problèmes possibles :\n'
+        + '  1. Compte SoleasPay non activé pour les paiements sortants\n'
+        + '  2. Clé API en mode TEST (pas Live)\n'
+        + '  3. Format du numéro attendu différent (avec indicatif 237?)\n'
+        + '  4. SoleasPay nécessite un compte Pro/vérifié\n';
     }
 
   }catch(e){
-    log('❌ Erreur réseau:\n'+e.message, 'err');
+    el.className='err';
+    el.textContent='❌ Erreur réseau:\n'+e.message;
   }
 }
 
-// Tester tous les codes opérateurs possibles
-async function testerAutres(){
-  const phone  = document.getElementById('phone').value.replace(/\D/g,'');
-  const amount = parseInt(document.getElementById('amount').value)||100;
-  const formats = [
-    'CM_ORANGE','CM_MTN','ORANGE','MTN','orangemoney','mtnmomo',
-    'orange_money','mtn_momo','ORANGE_MONEY','MTN_MOMO'
+async function testerTousFormats(){
+  const {phone, amount} = getParams();
+  const el = document.getElementById('res');
+  el.className=''; el.textContent='🔄 Test formats opérateur + numéros...\n\n';
+
+  // Formats opérateurs à tester
+  const ops = ['ORANGE_CM','MTN_CM','WAVE_CM','CM_ORANGE','CM_MTN'];
+  // Formats de numéros à tester
+  const phones = [
+    phone,
+    '237'+phone,
+    '+237'+phone,
+    phone.replace(/^0/,''),
   ];
 
-  log('🔄 Test de '+formats.length+' formats d\'opérateur...\n');
-
-  for(const op of formats){
-    try{
-      const r = await fetch('/api/soleaspay?action=collect',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({amount,currency:'XAF',operator:op,phone,
-          reference:'T-'+Date.now(),description:'Test',customer_name:'Test',customer_email:'t@t.cm'})
-      });
-      const d = await r.json().catch(()=>({}));
-      const ok = r.ok && (d?.data?.transaction_id || d?.transaction_id);
-      const msg = d?.message||d?.data?.message||d?.error||'';
-      logAppend(`${ok?'✅':'❌'} ${op.padEnd(20)} → HTTP ${r.status} | ${msg.slice(0,60)}\n`);
-      if(ok){ logAppend('   🎉 SUCCÈS avec format: '+op); break; }
-    }catch(e){
-      logAppend(`❌ ${op.padEnd(20)} → ERREUR: ${e.message}\n`);
+  for(const op of ops){
+    for(const ph of phones){
+      try{
+        const {status, data} = await callProxy(op, ph, amount);
+        const raw  = data._raw || JSON.stringify(data).slice(0,80);
+        const txId = data?.data?.transaction_id || data?.transaction_id || data?.id;
+        const ok   = txId ? '✅' : (status>=400 ? '❌' : '⚠️ ');
+        el.textContent += `${ok} ${op.padEnd(12)} | ${ph.padEnd(14)} | HTTP ${status} | ${raw.slice(0,60)}\n`;
+        if(txId){
+          el.textContent += `\n🎉 SUCCÈS ! op=${op} phone=${ph} txId=${txId}\n`;
+          return;
+        }
+      }catch(e){
+        el.textContent += `💥 ${op} | ${ph} | ERREUR: ${e.message}\n`;
+      }
+      await new Promise(r=>setTimeout(r,400));
     }
-    await new Promise(r=>setTimeout(r,300));
   }
-}
-
-async function checkStatus(txId){
-  try{
-    const r = await fetch('/api/soleaspay?action=status&txId='+encodeURIComponent(txId));
-    const d = await r.json().catch(()=>({}));
-    const s = d?.data?.status||d?.status||'inconnu';
-    logAppend('\n── Statut après 5s ──\n'+JSON.stringify(d,null,2));
-  }catch(e){ logAppend('\nErreur statut: '+e.message); }
-}
-
-function log(txt, cls=''){
-  const el = document.getElementById('res');
-  el.textContent = txt;
-  el.className = cls;
-}
-function logAppend(txt){
-  document.getElementById('res').textContent += txt;
+  el.textContent += '\n⚠️ Aucun format n\'a déclenché de transaction.\n'
+    + 'Le problème vient du compte SoleasPay, pas du code.';
 }
 </script>
 </body>
