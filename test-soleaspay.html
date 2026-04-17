@@ -3,119 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Test SoleasPay — Debug</title>
+<title>Test SoleasPay ✅</title>
 <style>
-body{font-family:sans-serif;max-width:440px;margin:20px auto;padding:16px;background:#f5f5f5}
-h3{margin-bottom:6px}
-p{font-size:12px;color:#666;margin-bottom:14px;line-height:1.5}
-input,select{width:100%;padding:10px;margin-bottom:8px;border:1px solid #ccc;border-radius:8px;font-size:14px;box-sizing:border-box}
-button{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:6px;color:#fff}
-.g{background:#16A34A}.b{background:#3B82F6}.r{background:#EF4444}.o{background:#F97316}
-button:disabled{opacity:.5}
-pre{background:#111;color:#aaffaa;padding:12px;border-radius:8px;font-size:11px;
-  overflow-x:auto;white-space:pre-wrap;margin-top:10px;max-height:300px;overflow-y:auto}
-pre.err{color:#ffaaaa}
-.tag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-bottom:10px}
-.tag.ok{background:#DCFCE7;color:#15803D}.tag.ko{background:#FEE2E2;color:#B91C1C}
+body{font-family:sans-serif;max-width:420px;margin:20px auto;padding:16px;background:#f5f5f5}
+h3{margin-bottom:4px}p{font-size:12px;color:#555;margin-bottom:14px;line-height:1.5}
+input,select{width:100%;padding:11px;margin-bottom:9px;border:1px solid #ccc;border-radius:9px;font-size:14px;box-sizing:border-box}
+button{width:100%;padding:13px;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:6px;color:#fff}
+.g{background:#16A34A}.b{background:#3B82F6}
+button:disabled{opacity:.5;cursor:not-allowed}
+pre{background:#0d1117;color:#7ee787;padding:13px;border-radius:9px;font-size:11px;
+  overflow-x:auto;white-space:pre-wrap;margin-top:10px;max-height:320px;overflow-y:auto}
+pre.err{color:#ff7b72}pre.ok{color:#7ee787}
+.badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:800;margin-bottom:12px}
+.badge.ok{background:#DCFCE7;color:#166534}.badge.ko{background:#FEE2E2;color:#991B1B}
+.info{background:#EFF6FF;border:1px solid #93C5FD;border-radius:8px;padding:10px 12px;font-size:12px;color:#1D4ED8;margin-bottom:12px;line-height:1.6}
 </style>
 </head>
 <body>
-
-<h3>🔬 Debug SoleasPay</h3>
-<p>Ce test essaie <b>plusieurs URLs possibles</b> pour trouver la bonne. Regarde laquelle renvoie un résultat non-400.</p>
+<h3>🧪 Test SoleasPay Production</h3>
+<div class="badge ok">✅ URL confirmée : app.soleaspay.com</div>
+<div class="info">
+  Le proxy <b>/api/soleaspay.js</b> utilise :<br>
+  <code>https://app.soleaspay.com/api/v1/payment/collect</code>
+</div>
 
 <select id="op">
   <option value="ORANGE_CM">🍊 Orange Money CM</option>
   <option value="MTN_CM">📱 MTN MoMo CM</option>
   <option value="WAVE_CM">🌊 Wave CM</option>
-  <option value="CM_ORANGEMONEY">CM_ORANGEMONEY</option>
-  <option value="CM_MTNMOBILEMONEY">CM_MTNMOBILEMONEY</option>
 </select>
-<input type="tel" id="phone" value="658033690" placeholder="Numéro">
-<input type="number" id="amount" value="100" placeholder="Montant">
+<input type="tel"    id="phone"  placeholder="Votre numéro (ex: 658033690)" value="658033690">
+<input type="number" id="amount" placeholder="Montant FCFA" value="100" min="1">
 
-<button class="b" onclick="testerURLs()">🔍 Tester toutes les URLs</button>
-<button class="g" onclick="testerProxy()" id="btnProxy">⚡ Tester via Proxy Vercel</button>
+<button class="g" id="btnTest" onclick="tester()">⚡ Tester le prélèvement (via proxy)</button>
+<button class="b"  id="btnStatus" onclick="verifierStatut()" style="display:none">🔍 Vérifier le statut</button>
 
-<div id="result"><pre>Cliquez sur un bouton pour tester...</pre></div>
+<pre id="result">En attente...</pre>
 
 <script>
-const SP_KEY = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
+let lastTxId = null;
 
-// ── URLs candidates à tester ──
-const URLS = [
-  'https://soleaspay.com/api/v1/payment/collect',
-  'https://api.soleaspay.com/v1/payment/collect',
-  'https://soleaspay.com/api/payment/collect',
-  'https://soleaspay.com/v1/payment/collect',
-  'https://app.soleaspay.com/api/v1/payment/collect',
-  'https://gateway.soleaspay.com/api/v1/payment/collect',
-];
+async function tester(){
+  const btn = document.getElementById('btnTest');
+  const res = document.getElementById('result');
+  const phone  = document.getElementById('phone').value.replace(/\s/g,'');
+  const op     = document.getElementById('op').value;
+  const amount = parseInt(document.getElementById('amount').value)||100;
 
-function getBody(){
-  return {
-    amount:    parseInt(document.getElementById('amount').value)||100,
-    currency:  'XAF',
-    operator:  document.getElementById('op').value,
-    phone:     document.getElementById('phone').value.replace(/\s/g,''),
-    reference: 'TEST-'+Date.now(),
-    description:'Test VGN',
-    customer_name:'Test Client',
-    customer_email:'test@vgn.cm'
-  };
-}
-
-function log(html){ document.getElementById('result').innerHTML = html; }
-
-async function testerURLs(){
-  const btn = document.querySelector('.b');
-  btn.disabled=true; btn.textContent='⏳ Test en cours...';
-  let html = '<pre>';
-  for(const url of URLS){
-    html += `\n🔗 ${url}\n`;
-    document.getElementById('result').innerHTML = html + '</pre>';
-    try{
-      const r = await fetch(url,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+SP_KEY,
-          'Accept':'application/json'
-        },
-        body:JSON.stringify(getBody()),
-        signal: AbortSignal.timeout(8000)
-      });
-      const text = await r.text();
-      let data;
-      try{ data = JSON.parse(text); }catch{ data = text; }
-      const marker = r.ok ? '✅ HTTP '+r.status : (r.status===400?'⚠️ HTTP 400':'❌ HTTP '+r.status);
-      html += `   ${marker}\n   ${JSON.stringify(data).slice(0,120)}\n`;
-    }catch(e){
-      html += `   ❌ ERREUR: ${e.message}\n`;
-    }
+  if(!phone || phone.length < 8){
+    res.className='err';
+    res.textContent='⚠️ Numéro invalide';
+    return;
   }
-  html += '\n</pre>';
-  document.getElementById('result').innerHTML = html;
-  btn.disabled=false; btn.textContent='🔍 Tester toutes les URLs';
-}
 
-async function testerProxy(){
-  const btn = document.getElementById('btnProxy');
-  btn.disabled=true; btn.textContent='⏳...';
-  log('<pre>Appel via /api/soleaspay...</pre>');
+  btn.disabled=true; btn.textContent='⏳ Envoi au proxy...';
+  res.className=''; res.textContent='Appel /api/soleaspay?action=collect...';
+
   try{
     const r = await fetch('/api/soleaspay?action=collect',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(getBody())
+      body: JSON.stringify({
+        amount,
+        currency:      'XAF',
+        operator:      op,
+        phone,
+        reference:     'TEST-'+Date.now(),
+        description:   'Test paiement VGN',
+        customer_name: 'Test Client',
+        customer_email:'test@vgn.cm'
+      })
     });
+
     const data = await r.json().catch(()=>({}));
-    const cls = r.ok ? '' : 'err';
-    log(`<pre class="${cls}">HTTP ${r.status}\n\n${JSON.stringify(data,null,2)}</pre>`);
+    lastTxId = data.data?.transaction_id || data.transaction_id || data.id || null;
+
+    res.className = r.ok ? 'ok' : 'err';
+    res.textContent = `HTTP ${r.status}\n`
+      + (lastTxId ? `TX ID: ${lastTxId}\n` : '')
+      + '\n' + JSON.stringify(data, null, 2);
+
+    if(r.ok && lastTxId){
+      document.getElementById('btnStatus').style.display = 'block';
+    }
+
+    if(r.ok){
+      res.textContent += '\n\n✅ Demande envoyée ! Vérifiez votre téléphone.';
+    }
+
   }catch(e){
-    log(`<pre class="err">❌ ${e.message}\n\nLe fichier /api/soleaspay.js n'est peut-être pas encore déployé.</pre>`);
+    res.className='err';
+    res.textContent = '❌ Erreur réseau:\n' + e.message
+      + '\n\nVérifiez que /api/soleaspay.js est bien déployé sur Vercel.';
   }
-  btn.disabled=false; btn.textContent='⚡ Tester via Proxy Vercel';
+
+  btn.disabled=false; btn.textContent='⚡ Tester le prélèvement (via proxy)';
+}
+
+async function verifierStatut(){
+  if(!lastTxId) return;
+  const res = document.getElementById('result');
+  const btn = document.getElementById('btnStatus');
+  btn.disabled=true; btn.textContent='⏳ Vérification...';
+  res.textContent = 'Vérification statut ' + lastTxId + '...';
+
+  try{
+    const r = await fetch('/api/soleaspay?action=status&txId='+encodeURIComponent(lastTxId));
+    const data = await r.json().catch(()=>({}));
+    const status = (data.data?.status || data.status || '').toLowerCase();
+    const emoji = ['success','successful','completed','paid'].includes(status) ? '✅'
+                : ['failed','rejected','declined'].includes(status) ? '❌' : '⏳';
+    res.className = emoji === '✅' ? 'ok' : '';
+    res.textContent = `${emoji} Statut: ${status || 'en attente'}\n\n` + JSON.stringify(data, null, 2);
+  }catch(e){
+    res.className='err';
+    res.textContent='Erreur: ' + e.message;
+  }
+
+  btn.disabled=false; btn.textContent='🔍 Vérifier le statut';
 }
 </script>
 </body>
