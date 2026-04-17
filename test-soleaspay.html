@@ -7,57 +7,87 @@
 <style>
 body{font-family:sans-serif;max-width:400px;margin:30px auto;padding:16px;background:#f5f5f5}
 input,select{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;box-sizing:border-box}
-button{width:100%;padding:12px;background:#16A34A;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:800;cursor:pointer}
+button{width:100%;padding:12px;background:#16A34A;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:8px}
+button.sec{background:#3B82F6}
 button:disabled{opacity:.5}
 pre{background:#111;color:#0f0;padding:12px;border-radius:8px;font-size:11px;overflow-x:auto;white-space:pre-wrap;margin-top:12px}
-.err{color:#ef4444}.ok{color:#22c55e}
+.err{color:#ef4444!important}.ok{color:#22c55e!important}
+.info{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:10px;font-size:12px;color:#1E40AF;margin-bottom:12px;line-height:1.6}
 </style>
 </head>
 <body>
-<h3>🧪 Test SoleasPay</h3>
-<p style="font-size:12px;color:#666;margin-bottom:12px">Teste si l'API fonctionne avec un montant de 1 FCFA</p>
+<h3>🧪 Test SoleasPay via Proxy</h3>
+
+<div class="info">
+  ℹ️ Ce test passe par <strong>/api/soleaspay</strong> (proxy Vercel) pour éviter l'erreur CORS.<br>
+  Assurez-vous d'avoir déployé <strong>api/soleaspay.js</strong> sur Vercel.
+</div>
 
 <select id="op">
   <option value="ORANGE_CM">🍊 Orange Money CM</option>
   <option value="MTN_CM">📱 MTN MoMo CM</option>
   <option value="WAVE_CM">🌊 Wave CM</option>
 </select>
-<input type="tel" id="phone" placeholder="Numéro (ex: 655000000)">
-<button onclick="tester()" id="btn">🧪 Tester (1 FCFA)</button>
+<input type="tel" id="phone" placeholder="Numéro (ex: 655000000)" value="658033690">
+<input type="number" id="amount" placeholder="Montant" value="100" min="1">
+<button onclick="testerCollect()" id="btn1">⚡ Tester le prélèvement</button>
+<button class="sec" onclick="testerStatus()" id="btn2" style="display:none">🔍 Vérifier le statut</button>
 <pre id="result">En attente du test...</pre>
 
 <script>
-async function tester(){
-  const btn=document.getElementById('btn');
+let lastTxId = null;
+
+async function testerCollect(){
+  const btn=document.getElementById('btn1');
   const res=document.getElementById('result');
   const phone=document.getElementById('phone').value.replace(/\s/g,'');
   const op=document.getElementById('op').value;
+  const amount=parseInt(document.getElementById('amount').value)||100;
   if(!phone||phone.length<8){res.textContent='⚠️ Entrez un numéro valide';return;}
-  btn.disabled=true;btn.textContent='⏳ Test en cours...';
-  res.textContent='Envoi de la requête...';
+  btn.disabled=true; btn.textContent='⏳ Envoi...';
+  res.className=''; res.textContent='Appel du proxy /api/soleaspay...';
   try{
-    const r=await fetch('https://soleaspay.com/api/v1/payment/collect',{
+    const r=await fetch('/api/soleaspay?action=collect',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP',
-        'Accept':'application/json'
-      },
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        amount:1,currency:'XAF',operator:op,phone:phone,
-        reference:'TEST-'+Date.now(),description:'Test API',
-        customer_name:'Test VGN',customer_email:'test@vgn.cm'
+        amount, currency:'XAF', operator:op, phone,
+        reference:'TEST-'+Date.now(),
+        description:'Test API VGN',
+        customer_name:'Test Client',
+        customer_email:'test@vgn.cm'
       })
     });
     const status=r.status;
     const data=await r.json().catch(()=>({}));
-    res.className=r.ok?'ok':'err';
-    res.textContent='HTTP '+status+'\n\n'+JSON.stringify(data,null,2);
+    lastTxId = data.data?.transaction_id || data.transaction_id || data.id;
+    res.className = r.ok ? 'ok' : 'err';
+    res.textContent='HTTP '+status+(lastTxId?'\nTX ID: '+lastTxId:'')+'\n\n'+JSON.stringify(data,null,2);
+    if(lastTxId) document.getElementById('btn2').style.display='block';
   }catch(e){
     res.className='err';
-    res.textContent='❌ Erreur réseau:\n'+e.message;
+    if(e.message.includes('fetch')){
+      res.textContent='❌ Proxy introuvable\n\nLe fichier /api/soleaspay.js n\'est pas encore déployé sur Vercel.\n\nSolution :\n1. Créer le dossier /api/ dans votre projet\n2. Ajouter api/soleaspay.js\n3. Redéployer sur Vercel';
+    } else {
+      res.textContent='❌ Erreur: '+e.message;
+    }
   }
-  btn.disabled=false;btn.textContent='🧪 Tester (1 FCFA)';
+  btn.disabled=false; btn.textContent='⚡ Tester le prélèvement';
+}
+
+async function testerStatus(){
+  if(!lastTxId){alert('Pas de TX ID');return;}
+  const res=document.getElementById('result');
+  res.textContent='Vérification statut '+lastTxId+'...';
+  try{
+    const r=await fetch('/api/soleaspay?action=status&txId='+encodeURIComponent(lastTxId));
+    const data=await r.json().catch(()=>({}));
+    res.className=r.ok?'ok':'err';
+    res.textContent='Statut TX '+lastTxId+':\n\n'+JSON.stringify(data,null,2);
+  }catch(e){
+    res.className='err';
+    res.textContent='Erreur: '+e.message;
+  }
 }
 </script>
 </body>
