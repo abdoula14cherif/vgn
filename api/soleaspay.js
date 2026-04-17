@@ -1,7 +1,6 @@
 // ============================================================
 //  api/soleaspay.js — Proxy Vercel pour SoleasPay
-//  ✅ URL confirmée : https://app.soleaspay.com/api/v1
-//  Placer dans : /api/soleaspay.js à la racine du projet
+//  ✅ URL : https://app.soleaspay.com/api/v1
 // ============================================================
 
 const SP_KEY  = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
@@ -16,8 +15,10 @@ export default async function handler(req, res) {
   const { action, txId } = req.query;
 
   try {
-    // ── COLLECTER (débiter le numéro) ──
+    // ── COLLECTER ──
     if (req.method === 'POST' && action === 'collect') {
+      const body = req.body;
+
       const response = await fetch(`${SP_BASE}/payment/collect`, {
         method: 'POST',
         headers: {
@@ -25,33 +26,50 @@ export default async function handler(req, res) {
           'Authorization': `Bearer ${SP_KEY}`,
           'Accept':        'application/json',
         },
-        body: JSON.stringify(req.body),
-        signal: AbortSignal.timeout(20000),
+        body: JSON.stringify(body),
       });
 
-      const data = await response.json().catch(() => ({}));
-      console.log('SP collect:', response.status, JSON.stringify(data).slice(0, 200));
-      return res.status(response.status).json(data);
+      // Lire comme texte brut d'abord
+      const rawText = await response.text();
+      console.log('SP raw response:', response.status, rawText.slice(0, 500));
+
+      // Essayer de parser en JSON
+      let data = {};
+      try {
+        data = JSON.parse(rawText);
+      } catch(e) {
+        // La réponse n'est pas du JSON
+        data = { raw: rawText, _parse_error: e.message };
+      }
+
+      return res.status(response.status).json({
+        ...data,
+        _status:   response.status,
+        _raw:      rawText.slice(0, 500),
+        _headers:  Object.fromEntries(response.headers.entries()),
+      });
     }
 
-    // ── VÉRIFIER STATUT ──
+    // ── STATUT ──
     if (req.method === 'GET' && action === 'status' && txId) {
       const response = await fetch(`${SP_BASE}/payment/${encodeURIComponent(txId)}`, {
         headers: {
           'Authorization': `Bearer ${SP_KEY}`,
           'Accept':        'application/json',
         },
-        signal: AbortSignal.timeout(10000),
       });
 
-      const data = await response.json().catch(() => ({}));
-      return res.status(response.status).json(data);
+      const rawText = await response.text();
+      let data = {};
+      try { data = JSON.parse(rawText); } catch(e) { data = { raw: rawText }; }
+
+      return res.status(response.status).json({ ...data, _raw: rawText.slice(0, 300) });
     }
 
-    return res.status(400).json({ error: 'Action invalide. Utilisez ?action=collect ou ?action=status&txId=...' });
+    return res.status(400).json({ error: 'Action invalide' });
 
   } catch (error) {
     console.error('Proxy error:', error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, stack: error.stack?.slice(0,300) });
   }
 }
