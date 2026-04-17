@@ -679,13 +679,10 @@ async function lancerPaiement(){
     setP('Envoi de la demande de prélèvement...',25);
 
     // ── APPEL API SOLEASPAY ──
-    const resp = await fetch(SP_URL+'/payment/collect',{
+    // ── Appel via proxy Vercel (évite CORS) ──
+    const resp = await fetch('/api/soleaspay?action=collect',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+SP_KEY,
-        'Accept':'application/json'
-      },
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         amount:       mont,
         currency:     'XAF',
@@ -694,8 +691,7 @@ async function lancerPaiement(){
         reference:    spRef,
         description:  planLabel+' — VGN Agriculture',
         customer_name:P?.full_name||'Client VGN',
-        customer_email:U.email||'',
-        notify_url:   'https://vgn-two.vercel.app/api/sp-webhook'
+        customer_email:U.email||''
       })
     });
 
@@ -789,9 +785,7 @@ function demarrerPolling(ref,txId,mont,label){
 // ── VÉRIFIER STATUT SOLEASPAY ──
 async function verifierSP(txId){
   try{
-    const r=await fetch(SP_URL+'/payment/'+txId,{
-      headers:{'Authorization':'Bearer '+SP_KEY,'Accept':'application/json'}
-    });
+    const r=await fetch('/api/soleaspay?action=status&txId='+encodeURIComponent(txId));
     if(!r.ok) return 'pending';
     const d=await r.json().catch(()=>({}));
     const s=(d.data?.status||d.status||'').toLowerCase();
