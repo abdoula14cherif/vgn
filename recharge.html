@@ -9,13 +9,15 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --g:#16A34A;--gd:#15803D;--gl:#22C55E;--o:#F97316;--b:#3B82F6;--r:#EF4444;--gold:#F59E0B;
+  --g:#16A34A;--gd:#15803D;--gl:#22C55E;--o:#F97316;--r:#EF4444;
   --bg:#F0F4F0;--card:#fff;--txt:#111827;--mu:#6B7280;--bd:#E5E7EB;
   --H:56px;--B:58px;
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
 }
 html{font-family:'Nunito',sans-serif;background:var(--bg)}
 body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
+
+/* TOPBAR */
 .topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
   height:calc(var(--H)+var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
   display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;
@@ -47,8 +49,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 
 /* PLANS */
 .plans-sec{margin:0 12px 14px}
-.sec-title{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:10px;
-  display:flex;align-items:center;gap:7px}
+.sec-title{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--bd)}
 .p-card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:8px;
   border:2px solid var(--bd);box-shadow:0 1px 8px rgba(0,0,0,.06);cursor:pointer;
@@ -56,8 +57,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .p-card:active{transform:scale(.97)}
 .p-card.sel{border-color:var(--g);background:linear-gradient(135deg,#F0FDF4,#DCFCE7)}
 .p-card.promo.sel{border-color:var(--o);background:linear-gradient(135deg,#FFF7ED,#FED7AA)}
-.pc-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;
-  justify-content:center;font-size:1.2rem;flex-shrink:0}
+.pc-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
 .pc-info{flex:1}
 .pc-name{font-size:.82rem;font-weight:900;color:var(--txt)}
 .pc-sub{font-size:.62rem;color:var(--mu);font-weight:600;margin-top:2px}
@@ -74,35 +74,29 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .f-card{background:var(--card);border-radius:16px;padding:14px 10px;border:2px solid var(--bd);
   cursor:pointer;text-align:center;transition:all .18s;user-select:none}
 .f-card:active{transform:scale(.95)}
-.f-card.sel{border-color:var(--b);background:linear-gradient(135deg,#EFF6FF,#DBEAFE)}
+.f-card.sel{border-color:#3B82F6;background:linear-gradient(135deg,#EFF6FF,#DBEAFE)}
 .fc-ico{font-size:1.6rem;margin-bottom:5px}
 .fc-j{font-size:1rem;font-weight:900;color:var(--txt)}
 .fc-t{font-size:.88rem;font-weight:900;margin-top:2px;color:var(--g)}
 .fc-d{font-size:.58rem;color:var(--mu);font-weight:600;margin-top:3px}
-.fond-inp{background:var(--card);border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid var(--bd)}
+.fond-inp,.solde-inp{background:var(--card);border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid var(--bd)}
 .fi-lbl{font-size:.72rem;font-weight:900;color:var(--txt);margin-bottom:8px}
 .fi-row{display:flex;align-items:center;background:#F8FAFB;border:2px solid var(--bd);
   border-radius:12px;overflow:hidden;transition:border .2s}
-.fi-row:focus-within{border-color:var(--b)}
+.fi-row:focus-within{border-color:#3B82F6}
 .fi-curr{padding:0 13px;font-size:.82rem;font-weight:900;color:var(--mu);border-right:1px solid var(--bd);
   height:50px;display:flex;align-items:center;background:#fff;flex-shrink:0}
 .fi-inp{flex:1;padding:0 13px;border:none;outline:none;font-family:'Nunito',sans-serif;
   font-size:1rem;font-weight:800;color:var(--txt);background:transparent;height:50px}
-.fi-simu{margin-top:7px;font-size:.68rem;font-weight:700;color:var(--b)}
-.solde-inp{background:var(--card);border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid var(--bd)}
-
-/* BTN CONTINUER */
+.fi-simu{margin-top:7px;font-size:.68rem;font-weight:700;color:#3B82F6}
 .btn-continue{display:block;width:calc(100% - 24px);margin:0 12px 20px;padding:15px;
   background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:14px;
   font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;cursor:pointer;
   box-shadow:0 4px 16px rgba(22,163,74,.3);transition:transform .15s}
 .btn-continue:active{transform:scale(.97)}
 .btn-continue:disabled{opacity:.38;cursor:not-allowed;transform:none}
-.btn-back{display:block;width:calc(100% - 24px);margin:0 12px 14px;padding:13px;
-  background:rgba(0,0,0,.05);border:1px solid var(--bd);border-radius:13px;
-  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:var(--mu);cursor:pointer}
 
-/* PAGE 2 */
+/* PAGE 2 — PAIEMENT DIRECT */
 .amount-hero{background:linear-gradient(135deg,#0f2718,#1a3d24);margin:0 12px 14px;
   border-radius:20px;padding:20px 18px;text-align:center;
   box-shadow:0 6px 24px rgba(22,163,74,.25);position:relative;overflow:hidden}
@@ -111,12 +105,14 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .ah-plan{font-size:.85rem;color:rgba(255,255,255,.8);font-weight:700;margin-bottom:6px}
 .ah-amount{font-size:2.5rem;font-weight:900;color:#fff;line-height:1}
 .ah-currency{font-size:.62rem;color:rgba(255,255,255,.5);font-weight:700;margin-top:4px}
-.paiement-card{background:var(--card);border-radius:18px;margin:0 12px 14px;padding:18px 16px;
+
+.pay-card{background:var(--card);border-radius:18px;margin:0 12px 14px;padding:18px 16px;
   box-shadow:0 2px 12px rgba(0,0,0,.07);border:1px solid var(--bd)}
-.pc-ttl{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:14px;
-  display:flex;align-items:center;gap:7px}
-.pc-ttl::after{content:'';flex:1;height:1px;background:var(--bd)}
-.ops-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.pay-ttl{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.pay-ttl::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* OPÉRATEURS */
+.ops-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
 .op-btn{padding:13px 6px;border:2px solid var(--bd);border-radius:14px;background:#F8FAFB;
   cursor:pointer;text-align:center;transition:all .18s;user-select:none}
 .op-btn:active{transform:scale(.93)}
@@ -126,6 +122,8 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .ob-ico{font-size:1.6rem;margin-bottom:4px;line-height:1}
 .ob-name{font-size:.6rem;font-weight:900;color:var(--txt)}
 .ob-tag{font-size:.52rem;font-weight:800;color:var(--g);margin-top:2px}
+
+/* NUMÉRO */
 .num-lbl{font-size:.72rem;font-weight:900;color:var(--txt);margin-bottom:7px;display:block}
 .num-row{display:flex;align-items:center;background:#F8FAFB;border:2.5px solid var(--bd);
   border-radius:14px;overflow:hidden;transition:border .2s;margin-bottom:6px}
@@ -135,23 +133,39 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .num-inp{flex:1;padding:0 13px;border:none;outline:none;font-family:'Nunito',sans-serif;
   font-size:1rem;font-weight:800;color:var(--txt);background:transparent;height:52px}
 .num-inp::placeholder{color:#CBD5E1;font-size:.88rem;font-weight:600}
-.num-hint{font-size:.62rem;color:var(--mu);font-weight:600;margin-bottom:12px}
+.num-hint{font-size:.62rem;font-weight:600;margin-bottom:16px}
+
+/* INFO AUTOMATIQUE */
+.auto-info{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;
+  border-radius:13px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px}
+.ai-ico{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+.ai-txt{font-size:.68rem;font-weight:700;color:#166534;line-height:1.6}
+.ai-txt strong{color:#14532D}
+
+/* RECAP */
 .recap{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;
   border-radius:13px;padding:12px 14px;margin-bottom:14px;display:none}
 .recap-t{font-size:.65rem;font-weight:900;color:#15803D;margin-bottom:7px}
 .recap-r{display:flex;justify-content:space-between;font-size:.7rem;font-weight:700;margin-bottom:4px}
 .rc-l{color:#166534}.rc-v{color:#14532D;font-weight:900}
+
+/* BTN PAYER */
 .btn-pay{width:100%;padding:16px;background:linear-gradient(135deg,#16A34A,#15803D);border:none;
   border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#fff;
   cursor:pointer;box-shadow:0 4px 18px rgba(22,163,74,.35);transition:transform .15s;
   display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-pay:active{transform:scale(.97)}.btn-pay:disabled{opacity:.38;cursor:not-allowed;transform:none}
+.btn-pay:active{transform:scale(.97)}
+.btn-pay:disabled{opacity:.38;cursor:not-allowed;transform:none}
+.btn-back{display:block;width:calc(100% - 24px);margin:14px 12px 0;padding:13px;
+  background:rgba(0,0,0,.05);border:1px solid var(--bd);border-radius:13px;
+  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:var(--mu);cursor:pointer}
 
-/* PAGE 3 */
+/* PAGE 3 — TRAITEMENT */
 .traitement{background:var(--card);border-radius:20px;margin:0 12px 14px;
   padding:28px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.08)}
-.t3-ico{font-size:4rem;margin-bottom:12px;animation:pulse 1.5s ease-in-out infinite;display:block}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.t3-ico{font-size:4rem;margin-bottom:12px;display:block}
+.t3-ico.spin{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .t3-title{font-size:1.1rem;font-weight:900;color:var(--txt);margin-bottom:6px}
 .t3-sub{font-size:.75rem;color:var(--mu);font-weight:600;line-height:1.7;margin-bottom:18px}
 .t3-infos{background:var(--bg);border-radius:12px;padding:11px 14px;margin-bottom:16px;text-align:left}
@@ -160,16 +174,10 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .t3-l{color:var(--mu)}.t3-v{color:var(--txt);font-weight:800}
 .prog-track{background:var(--bd);border-radius:8px;height:8px;overflow:hidden;margin-bottom:7px}
 .prog-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--g),var(--gl));
-  transition:width 1.5s ease;width:0%}
+  transition:width 1s ease;width:0%}
 .prog-txt{font-size:.62rem;font-weight:700;color:var(--mu);margin-bottom:16px}
-.btn-verif{width:100%;padding:13px;background:rgba(22,163,74,.1);border:1.5px solid rgba(22,163,74,.25);
-  border-radius:12px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:900;
-  color:var(--g);cursor:pointer;margin-bottom:8px;transition:transform .15s}
-.btn-verif:active{transform:scale(.97)}.btn-verif:disabled{opacity:.4}
-.btn-cancel{background:transparent;border:none;color:var(--mu);font-family:'Nunito',sans-serif;
-  font-size:.72rem;font-weight:700;cursor:pointer;width:100%;padding:6px}
 
-/* PAGE 4 */
+/* PAGE 4 — SUCCÈS */
 .success-wrap{background:var(--card);border-radius:20px;margin:0 12px 14px;
   padding:32px 20px;text-align:center;box-shadow:0 4px 20px rgba(22,163,74,.1)}
 .suc-emoji{font-size:4rem;display:block;margin-bottom:14px}
@@ -178,6 +186,8 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .suc-badge{display:inline-block;background:linear-gradient(135deg,var(--g),var(--gd));
   color:#fff;font-size:.82rem;font-weight:900;padding:8px 22px;border-radius:12px;
   box-shadow:0 4px 14px rgba(22,163,74,.3);margin-bottom:20px}
+
+/* HISTORIQUE */
 .hist-sec{margin:0 12px}
 .hist-item{background:var(--card);border-radius:13px;padding:11px 13px;margin-bottom:7px;
   border:1px solid var(--bd);display:flex;align-items:center;gap:10px}
@@ -209,12 +219,15 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 </style>
 </head>
 <body>
+
 <div class="topbar">
   <a class="tbk" href="dashboard.html">&#8249;</a>
   <span class="tbt">💰 Recharge</span>
-  <div class="tb-badge" id="tb-solde">&#8212; F</div>
+  <div class="tb-badge" id="tb-solde">— F</div>
 </div>
+
 <div class="tst" id="tst"></div>
+
 <div class="scroll">
 
   <!-- STEPS -->
@@ -228,84 +241,84 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="step"><div class="step-dot" id="sd4">4</div><div class="step-lbl" id="sl4">Confirmé</div></div>
   </div>
 
-  <!-- PAGE 1 -->
+  <!-- ════ PAGE 1 : CHOIX DU PLAN ════ -->
   <div id="page1">
     <div class="type-switch">
-      <button class="type-btn on" id="btn-vip"   onclick="switchType('vip')">&#128142; VIP</button>
-      <button class="type-btn"    id="btn-fond"  onclick="switchType('fond')">&#128200; Fonds</button>
-      <button class="type-btn"    id="btn-solde" onclick="switchType('solde')">&#128176; Solde</button>
+      <button class="type-btn on" id="btn-vip"   onclick="switchType('vip')">💎 VIP</button>
+      <button class="type-btn"    id="btn-fond"  onclick="switchType('fond')">📈 Fonds</button>
+      <button class="type-btn"    id="btn-solde" onclick="switchType('solde')">💵 Solde</button>
     </div>
 
     <!-- VIP -->
     <div id="sec-vip">
       <div class="plans-sec">
-        <div class="sec-title">&#128293; Plans Promo</div>
+        <div class="sec-title">🔥 Plans Promo</div>
         <div class="p-card promo" data-n="-1" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#FFF7ED">&#128293;</div>
-          <div class="pc-info"><div class="pc-name">PROMO 1</div><div class="pc-sub">1 tache/jour · 30 jours</div></div>
+          <div class="pc-ico" style="background:#FFF7ED">🔥</div>
+          <div class="pc-info"><div class="pc-name">PROMO 1</div><div class="pc-sub">1 tâche/jour · 30 jours</div></div>
           <div class="pc-right"><div class="pc-depot">3 000 F</div><div class="pc-gain">+200F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card promo" data-n="-2" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#FDF4FF">&#128293;</div>
-          <div class="pc-info"><div class="pc-name">PROMO 2</div><div class="pc-sub">1 tache/jour · 30 jours</div></div>
+          <div class="pc-ico" style="background:#FDF4FF">🔥</div>
+          <div class="pc-info"><div class="pc-name">PROMO 2</div><div class="pc-sub">1 tâche/jour · 30 jours</div></div>
           <div class="pc-right"><div class="pc-depot">5 000 F</div><div class="pc-gain">+450F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
       </div>
       <div class="plans-sec">
-        <div class="sec-title">&#128142; Plans VIP</div>
+        <div class="sec-title">💎 Plans VIP</div>
         <div class="p-card" data-n="1" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#F0FDF4">&#128188;</div>
-          <div class="pc-info"><div class="pc-name">VIP 1 — Job 1</div><div class="pc-sub">5 taches/j · 70F/tache</div></div>
+          <div class="pc-ico" style="background:#F0FDF4">💼</div>
+          <div class="pc-info"><div class="pc-name">VIP 1 — Job 1</div><div class="pc-sub">5 tâches/j · 70F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">10 500 F</div><div class="pc-gain">350F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="2" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#F0FDF4">&#128188;</div>
-          <div class="pc-info"><div class="pc-name">VIP 2 — Job 2</div><div class="pc-sub">8 taches/j · 175F/tache</div></div>
+          <div class="pc-ico" style="background:#F0FDF4">💼</div>
+          <div class="pc-info"><div class="pc-name">VIP 2 — Job 2</div><div class="pc-sub">8 tâches/j · 175F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">42 000 F</div><div class="pc-gain">1 400F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="3" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#DCFCE7">&#11088;</div>
-          <div class="pc-info"><div class="pc-name">VIP 3 — Job 3</div><div class="pc-sub">10 taches/j · 560F/tache</div></div>
+          <div class="pc-ico" style="background:#DCFCE7">⭐</div>
+          <div class="pc-info"><div class="pc-name">VIP 3 — Job 3</div><div class="pc-sub">10 tâches/j · 560F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">168 000 F</div><div class="pc-gain">5 600F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="4" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#DCFCE7">&#11088;</div>
-          <div class="pc-info"><div class="pc-name">VIP 4 — Job 4</div><div class="pc-sub">15 taches/j · 1 300F/tache</div></div>
+          <div class="pc-ico" style="background:#DCFCE7">⭐</div>
+          <div class="pc-info"><div class="pc-name">VIP 4 — Job 4</div><div class="pc-sub">15 tâches/j · 1 300F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">585 000 F</div><div class="pc-gain">19 500F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="5" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#BBF7D0">&#128142;</div>
-          <div class="pc-info"><div class="pc-name">VIP 5 — Job 5</div><div class="pc-sub">20 taches/j · 2 000F/tache</div></div>
+          <div class="pc-ico" style="background:#BBF7D0">💎</div>
+          <div class="pc-info"><div class="pc-name">VIP 5 — Job 5</div><div class="pc-sub">20 tâches/j · 2 000F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">1 200 000 F</div><div class="pc-gain">40 000F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="6" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#A7F3D0">&#128142;</div>
-          <div class="pc-info"><div class="pc-name">VIP 6 — Job 6</div><div class="pc-sub">25 taches/j · 3 500F/tache</div></div>
+          <div class="pc-ico" style="background:#A7F3D0">💎</div>
+          <div class="pc-info"><div class="pc-name">VIP 6 — Job 6</div><div class="pc-sub">25 tâches/j · 3 500F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">2 625 000 F</div><div class="pc-gain">87 500F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="7" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#6EE7B7">&#127942;</div>
-          <div class="pc-info"><div class="pc-name">VIP 7 — Job 7</div><div class="pc-sub">30 taches/j · 6 400F/tache</div></div>
+          <div class="pc-ico" style="background:#6EE7B7">🏆</div>
+          <div class="pc-info"><div class="pc-name">VIP 7 — Job 7</div><div class="pc-sub">30 tâches/j · 6 400F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">5 760 000 F</div><div class="pc-gain">192 000F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="8" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#34D399">&#127942;</div>
-          <div class="pc-info"><div class="pc-name">VIP 8 — Job 8</div><div class="pc-sub">35 taches/j · 11 000F/tache</div></div>
+          <div class="pc-ico" style="background:#34D399">🏆</div>
+          <div class="pc-info"><div class="pc-name">VIP 8 — Job 8</div><div class="pc-sub">35 tâches/j · 11 000F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">11 550 000 F</div><div class="pc-gain">385 000F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
         <div class="p-card" data-n="9" onclick="selPlan(this)">
-          <div class="pc-ico" style="background:#FDE68A">&#128081;</div>
-          <div class="pc-info"><div class="pc-name">VIP 9 — Job 9</div><div class="pc-sub">40 taches/j · 19 000F/tache</div></div>
+          <div class="pc-ico" style="background:#FDE68A">👑</div>
+          <div class="pc-info"><div class="pc-name">VIP 9 — Job 9</div><div class="pc-sub">40 tâches/j · 19 000F/tâche</div></div>
           <div class="pc-right"><div class="pc-depot">22 800 000 F</div><div class="pc-gain">760 000F/jour</div></div>
           <div class="pc-radio"></div>
         </div>
@@ -315,15 +328,15 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <!-- FONDS -->
     <div id="sec-fond" style="display:none">
       <div class="plans-sec">
-        <div class="sec-title">&#128200; Choisir la duree</div>
+        <div class="sec-title">📈 Choisir la durée</div>
         <div class="fonds-grid">
-          <div class="f-card" data-j="1"  data-t="1"   onclick="selFond(this)"><div class="fc-ico">&#127807;</div><div class="fc-j">1 jour</div><div class="fc-t">+1%</div><div class="fc-d">Court terme</div></div>
-          <div class="f-card" data-j="7"  data-t="7.5" onclick="selFond(this)"><div class="fc-ico">&#127806;</div><div class="fc-j">7 jours</div><div class="fc-t">+7,5%</div><div class="fc-d">Hebdomadaire</div></div>
-          <div class="f-card" data-j="14" data-t="18"  onclick="selFond(this)"><div class="fc-ico">&#127807;</div><div class="fc-j">14 jours</div><div class="fc-t">+18%</div><div class="fc-d">Bi-mensuel</div></div>
-          <div class="f-card" data-j="30" data-t="24"  onclick="selFond(this)"><div class="fc-ico">&#128142;</div><div class="fc-j">30 jours</div><div class="fc-t">+24%</div><div class="fc-d">Mensuel</div></div>
+          <div class="f-card" data-j="1"  data-t="1"   onclick="selFond(this)"><div class="fc-ico">🌱</div><div class="fc-j">1 jour</div><div class="fc-t">+1%</div><div class="fc-d">Court terme</div></div>
+          <div class="f-card" data-j="7"  data-t="7.5" onclick="selFond(this)"><div class="fc-ico">🌿</div><div class="fc-j">7 jours</div><div class="fc-t">+7,5%</div><div class="fc-d">Hebdomadaire</div></div>
+          <div class="f-card" data-j="14" data-t="18"  onclick="selFond(this)"><div class="fc-ico">🌳</div><div class="fc-j">14 jours</div><div class="fc-t">+18%</div><div class="fc-d">Bi-mensuel</div></div>
+          <div class="f-card" data-j="30" data-t="24"  onclick="selFond(this)"><div class="fc-ico">💎</div><div class="fc-j">30 jours</div><div class="fc-t">+24%</div><div class="fc-d">Mensuel</div></div>
         </div>
         <div class="fond-inp">
-          <div class="fi-lbl">Montant a investir (min. 100 FCFA)</div>
+          <div class="fi-lbl">Montant à investir (min. 100 FCFA)</div>
           <div class="fi-row">
             <div class="fi-curr">FCFA</div>
             <input class="fi-inp" type="number" id="inp-fond" placeholder="Ex: 5 000" inputmode="numeric" oninput="calcFond()">
@@ -336,9 +349,9 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <!-- SOLDE -->
     <div id="sec-solde" style="display:none">
       <div class="plans-sec">
-        <div class="sec-title">&#128176; Recharger mon solde</div>
+        <div class="sec-title">💵 Recharger mon solde</div>
         <div class="solde-inp">
-          <div class="fi-lbl">Montant a recharger (min. 500 FCFA)</div>
+          <div class="fi-lbl">Montant à recharger (min. 500 FCFA)</div>
           <div class="fi-row">
             <div class="fi-curr">FCFA</div>
             <input class="fi-inp" type="number" id="inp-solde" placeholder="Ex: 10 000" inputmode="numeric" oninput="checkSolde()">
@@ -347,180 +360,212 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
       </div>
     </div>
 
-    <button class="btn-continue" id="btn-p1" onclick="goPage(2)" disabled>Continuer &#8594;</button>
+    <button class="btn-continue" id="btn-p1" onclick="goPage(2)" disabled>Continuer →</button>
   </div>
 
-  <!-- PAGE 2 -->
+  <!-- ════ PAGE 2 : PAIEMENT AUTOMATIQUE ════ -->
   <div id="page2" style="display:none">
+
     <div class="amount-hero">
-      <div class="ah-lbl">MONTANT DU PAIEMENT</div>
-      <div class="ah-plan" id="ah-plan">&#8212;</div>
-      <div class="ah-amount" id="ah-amount">&#8212;</div>
+      <div class="ah-lbl">MONTANT DU PRÉLÈVEMENT</div>
+      <div class="ah-plan" id="ah-plan">—</div>
+      <div class="ah-amount" id="ah-amount">—</div>
       <div class="ah-currency">Francs CFA · XAF</div>
     </div>
-    <div class="paiement-card">
-      <div class="pc-ttl">&#128241; Operateur Mobile Money</div>
+
+    <div class="pay-card">
+      <div class="pay-ttl">📲 Opérateur Mobile Money</div>
+
       <div class="ops-grid">
         <div class="op-btn" id="op-orange" onclick="selOp('orange')">
-          <div class="ob-ico">&#127818;</div>
+          <div class="ob-ico">🍊</div>
           <div class="ob-name">Orange Money</div>
-          <div class="ob-tag">&#10003; Disponible</div>
+          <div class="ob-tag">✓ Disponible</div>
         </div>
         <div class="op-btn" id="op-mtn" onclick="selOp('mtn')">
-          <div class="ob-ico">&#128241;</div>
+          <div class="ob-ico">📱</div>
           <div class="ob-name">MTN MoMo</div>
-          <div class="ob-tag">&#10003; Disponible</div>
+          <div class="ob-tag">✓ Disponible</div>
         </div>
         <div class="op-btn" id="op-wave" onclick="selOp('wave')">
-          <div class="ob-ico">&#127754;</div>
+          <div class="ob-ico">🌊</div>
           <div class="ob-name">Wave</div>
-          <div class="ob-tag">&#10003; Disponible</div>
+          <div class="ob-tag">✓ Disponible</div>
         </div>
       </div>
-      <label class="num-lbl" id="num-lbl">Votre numero Mobile Money</label>
+
+      <label class="num-lbl" id="num-lbl">Votre numéro Mobile Money</label>
       <div class="num-row" id="num-row">
-        <div class="num-flag" id="num-flag">&#128241;</div>
-        <input class="num-inp" type="tel" id="num-phone" placeholder="6XX XX XX XX"
-          inputmode="tel" oninput="onPhone(this.value)">
+        <div class="num-flag" id="num-flag">📱</div>
+        <input class="num-inp" type="tel" id="num-phone"
+          placeholder="6XX XX XX XX" inputmode="tel"
+          oninput="onPhone(this.value)">
       </div>
-      <div class="num-hint" id="num-hint">Ce numero sera directement debite via SoleasPay</div>
+      <div class="num-hint" id="num-hint" style="color:var(--mu)">
+        Entrez le numéro à débiter
+      </div>
+
+      <!-- INFO PRÉLÈVEMENT AUTOMATIQUE -->
+      <div class="auto-info">
+        <div class="ai-ico">⚡</div>
+        <div class="ai-txt">
+          <strong>Prélèvement automatique</strong><br>
+          Le montant sera débité directement depuis votre compte Mobile Money via SoleasPay. 
+          Aucune action supplémentaire requise — validez simplement la demande sur votre téléphone.
+        </div>
+      </div>
+
+      <!-- RÉCAP -->
       <div class="recap" id="recap">
-        <div class="recap-t">&#128203; Recapitulatif</div>
-        <div class="recap-r"><span class="rc-l">Plan</span><span class="rc-v" id="rc-plan">&#8212;</span></div>
-        <div class="recap-r"><span class="rc-l">Montant</span><span class="rc-v" id="rc-mont">&#8212;</span></div>
-        <div class="recap-r"><span class="rc-l">Operateur</span><span class="rc-v" id="rc-op">&#8212;</span></div>
-        <div class="recap-r"><span class="rc-l">Numero debite</span><span class="rc-v" id="rc-phone">&#8212;</span></div>
+        <div class="recap-t">📋 Récapitulatif</div>
+        <div class="recap-r"><span class="rc-l">Plan</span><span class="rc-v" id="rc-plan">—</span></div>
+        <div class="recap-r"><span class="rc-l">Montant</span><span class="rc-v" id="rc-mont">—</span></div>
+        <div class="recap-r"><span class="rc-l">Opérateur</span><span class="rc-v" id="rc-op">—</span></div>
+        <div class="recap-r"><span class="rc-l">Numéro débité</span><span class="rc-v" id="rc-phone">—</span></div>
       </div>
+
       <button class="btn-pay" id="btn-pay" onclick="lancerPaiement()" disabled>
-        &#128179; Payer maintenant
+        ⚡ Payer automatiquement
       </button>
     </div>
-    <button class="btn-back" onclick="goPage(1)">&#8592; Retour</button>
+
+    <button class="btn-back" onclick="goPage(1)">← Retour</button>
   </div>
 
-  <!-- PAGE 3 -->
+  <!-- ════ PAGE 3 : TRAITEMENT AUTOMATIQUE ════ -->
   <div id="page3" style="display:none">
     <div class="traitement">
-      <span class="t3-ico" id="t3-ico">&#9203;</span>
-      <div class="t3-title" id="t3-title">Traitement en cours...</div>
-      <div class="t3-sub" id="t3-sub">Un message vous a ete envoye.<br><b>Validez sur votre telephone pour finaliser.</b></div>
+      <span class="t3-ico spin" id="t3-ico">⚡</span>
+      <div class="t3-title" id="t3-title">Prélèvement en cours...</div>
+      <div class="t3-sub" id="t3-sub">
+        Votre compte Mobile Money est en cours de débit.<br>
+        <b>Validez la demande sur votre téléphone.</b>
+      </div>
       <div class="t3-infos">
-        <div class="t3-r"><span class="t3-l">Operateur</span><span class="t3-v" id="t3-op">&#8212;</span></div>
-        <div class="t3-r"><span class="t3-l">Numero</span><span class="t3-v" id="t3-ph">&#8212;</span></div>
-        <div class="t3-r"><span class="t3-l">Montant</span><span class="t3-v" id="t3-amt">&#8212;</span></div>
+        <div class="t3-r"><span class="t3-l">Opérateur</span><span class="t3-v" id="t3-op">—</span></div>
+        <div class="t3-r"><span class="t3-l">Numéro</span><span class="t3-v" id="t3-ph">—</span></div>
+        <div class="t3-r"><span class="t3-l">Montant</span><span class="t3-v" id="t3-amt">—</span></div>
+        <div class="t3-r"><span class="t3-l">Plan</span><span class="t3-v" id="t3-plan">—</span></div>
       </div>
       <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
-      <div class="prog-txt" id="prog-txt">Connexion a SoleasPay...</div>
-      <button class="btn-verif" id="btn-verif" onclick="verifierManuellement()">
-        &#128269; J'ai valide, verifier maintenant
-      </button>
-      <button class="btn-cancel" onclick="annulerPaiement()">&#8592; Annuler</button>
+      <div class="prog-txt" id="prog-txt">Connexion à SoleasPay...</div>
     </div>
   </div>
 
-  <!-- PAGE 4 -->
+  <!-- ════ PAGE 4 : SUCCÈS ════ -->
   <div id="page4" style="display:none">
     <div class="success-wrap">
-      <span class="suc-emoji" id="suc-emoji">&#127881;</span>
-      <div class="suc-title" id="suc-title">Paiement confirme !</div>
-      <div class="suc-sub" id="suc-sub">Votre plan a ete active automatiquement.</div>
+      <span class="suc-emoji" id="suc-emoji">🎉</span>
+      <div class="suc-title" id="suc-title">Paiement confirmé !</div>
+      <div class="suc-sub" id="suc-sub">Votre plan a été activé automatiquement.</div>
       <div class="suc-badge" id="suc-badge">Activation en cours...</div>
       <button class="btn-continue" style="margin:0;width:100%" onclick="window.location.href='dashboard.html'">
-        &#127968; Retour a l'accueil
+        🏠 Retour à l'accueil
       </button>
     </div>
     <div class="hist-sec">
-      <div class="sec-title" style="margin-bottom:10px">&#128203; Historique des recharges</div>
+      <div class="sec-title" style="margin-bottom:10px">📋 Historique des recharges</div>
       <div id="hist-list"></div>
     </div>
   </div>
 
-</div>
+</div><!-- /scroll -->
+
 <nav class="botnav">
-  <a class="bn" href="dashboard.html"><span class="bni">&#127968;</span><span class="bnl">Accueil</span></a>
-  <a class="bn" href="taches.html"><span class="bni">&#9989;</span><span class="bnl">Taches</span></a>
-  <a class="bn" href="rapport.html"><span class="bni">&#128202;</span><span class="bnl">Rapports</span></a>
-  <a class="bn" href="profil.html"><span class="bni">&#128100;</span><span class="bnl">Mon Compte</span></a>
+  <a class="bn" href="dashboard.html"><span class="bni">🏠</span><span class="bnl">Accueil</span></a>
+  <a class="bn" href="taches.html"><span class="bni">✅</span><span class="bnl">Tâches</span></a>
+  <a class="bn" href="rapport.html"><span class="bni">📊</span><span class="bnl">Rapports</span></a>
+  <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
 </nav>
 
 <script>
-const SB=supabase.createClient(
+// ── SUPABASE ──
+const SB = supabase.createClient(
   'https://tgrfzybemuwvhkbpuzmz.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
-const $=id=>document.getElementById(id);
-const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
-const fmt=n=>Number(n||0).toLocaleString('fr-FR');
-const fmtF=n=>fmt(n)+' FCFA';
-function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3200)}
 
-/* ═══ SOLEASPAY ═══ */
-const SP_KEY='SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
-const SP_URL='https://soleaspay.com/api/v1';
-const SP_OPS={
-  orange:{code:'ORANGE_CM',label:'Orange Money',flag:'🍊',color:'#FF6600'},
-  mtn:   {code:'MTN_CM',   label:'MTN MoMo',    flag:'📱',color:'#FFCC00'},
-  wave:  {code:'WAVE_CM',  label:'Wave',         flag:'🌊',color:'#06B6D4'},
-};
-const VIP_PLANS={
-  '-1':{n:-1,label:'PROMO 1',depot:3000,   gain:200,  taches:1},
-  '-2':{n:-2,label:'PROMO 2',depot:5000,   gain:450,  taches:1},
-  '1': {n:1, label:'VIP 1', depot:10500,  gain:70,   taches:5},
-  '2': {n:2, label:'VIP 2', depot:42000,  gain:175,  taches:8},
-  '3': {n:3, label:'VIP 3', depot:168000, gain:560,  taches:10},
-  '4': {n:4, label:'VIP 4', depot:585000, gain:1300, taches:15},
-  '5': {n:5, label:'VIP 5', depot:1200000,gain:2000, taches:20},
-  '6': {n:6, label:'VIP 6', depot:2625000,gain:3500, taches:25},
-  '7': {n:7, label:'VIP 7', depot:5760000,gain:6400, taches:30},
-  '8': {n:8, label:'VIP 8', depot:11550000,gain:11000,taches:35},
-  '9': {n:9, label:'VIP 9', depot:22800000,gain:19000,taches:40},
+// ── SOLEASPAY ──
+const SP_KEY = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
+const SP_URL = 'https://soleaspay.com/api/v1';
+const SP_OPS = {
+  orange: {code:'ORANGE_CM', label:'Orange Money', flag:'🍊', color:'#FF6600'},
+  mtn:    {code:'MTN_CM',    label:'MTN MoMo',     flag:'📱', color:'#EAB308'},
+  wave:   {code:'WAVE_CM',   label:'Wave',          flag:'🌊', color:'#06B6D4'},
 };
 
-let U=null,P=null;
-let selType='vip',planData=null,fondData=null;
-let opSel=null,phoneNum='';
-let spTxId=null,spRef=null,spInterval=null,spPoll=0;
+// ── PLANS ──
+const PLANS = {
+  '-1':{n:-1, label:'PROMO 1',   depot:3000,      gain:200,   taches:1},
+  '-2':{n:-2, label:'PROMO 2',   depot:5000,      gain:450,   taches:1},
+  '1': {n:1,  label:'VIP 1',     depot:10500,     gain:70,    taches:5},
+  '2': {n:2,  label:'VIP 2',     depot:42000,     gain:175,   taches:8},
+  '3': {n:3,  label:'VIP 3',     depot:168000,    gain:560,   taches:10},
+  '4': {n:4,  label:'VIP 4',     depot:585000,    gain:1300,  taches:15},
+  '5': {n:5,  label:'VIP 5',     depot:1200000,   gain:2000,  taches:20},
+  '6': {n:6,  label:'VIP 6',     depot:2625000,   gain:3500,  taches:25},
+  '7': {n:7,  label:'VIP 7',     depot:5760000,   gain:6400,  taches:30},
+  '8': {n:8,  label:'VIP 8',     depot:11550000,  gain:11000, taches:35},
+  '9': {n:9,  label:'VIP 9',     depot:22800000,  gain:19000, taches:40},
+};
 
-/* ═══ STEPS ═══ */
+// ── STATE ──
+const $ = id => document.getElementById(id);
+const $s = (id,v) => { const e=$(id); if(e) e.textContent=v; };
+const fmt = n => Number(n||0).toLocaleString('fr-FR');
+const fmtF = n => fmt(n)+' FCFA';
+function toast(m,t=''){
+  const el=$('tst'); el.textContent=m;
+  el.className='tst show'+(t?' '+t:'');
+  setTimeout(()=>el.className='tst',3500);
+}
+
+let U=null, P=null;
+let selType='vip', planData=null, fondData=null;
+let opSel=null, phoneNum='';
+let spTxId=null, spRef=null, spInterval=null, spPoll=0;
+
+// ── STEPS ──
 function setStep(n){
   [1,2,3,4].forEach(i=>{
-    const d=$('sd'+i),l=$('sl'+i);
-    if(d)d.className='step-dot'+(i===n?' on':i<n?' done':'');
-    if(l)l.className='step-lbl'+(i===n?' on':'');
+    const d=$('sd'+i), l=$('sl'+i);
+    if(d) d.className='step-dot'+(i===n?' on':i<n?' done':'');
+    if(l) l.className='step-lbl'+(i===n?' on':'');
   });
   [['12',1],['23',2],['34',3]].forEach(([id,th])=>{
-    const el=$('sl'+id);if(el)el.className='step-line'+(n>th?' done':'');
+    const el=$('sl'+id); if(el) el.className='step-line'+(n>th?' done':'');
   });
 }
 
 function goPage(n){
-  [1,2,3,4].forEach(i=>{const e=$('page'+i);if(e)e.style.display=(i===n?'block':'none');});
+  [1,2,3,4].forEach(i=>{
+    const e=$('page'+i); if(e) e.style.display=(i===n?'block':'none');
+  });
   setStep(n);
   window.scrollTo({top:0,behavior:'smooth'});
-  if(n===2)initPage2();
+  if(n===2) initPage2();
 }
 
-/* ═══ TYPE ═══ */
+// ── TYPE ──
 function switchType(t){
-  selType=t;planData=null;fondData=null;
+  selType=t; planData=null; fondData=null;
   ['vip','fond','solde'].forEach(k=>{
-    const b=$('btn-'+k);if(b)b.className='type-btn'+(k===t?' on':'');
-    const s=$('sec-'+k);if(s)s.style.display=(k===t?'block':'none');
+    const b=$('btn-'+k); if(b) b.className='type-btn'+(k===t?' on':'');
+    const s=$('sec-'+k); if(s) s.style.display=(k===t?'block':'none');
   });
   $('btn-p1').disabled=true;
-  if(t==='solde'){const v=parseFloat($('inp-solde')?.value)||0;if(v>=500)$('btn-p1').disabled=false;}
 }
 
-/* ═══ PLAN VIP ═══ */
+// ── PLAN VIP ──
 function selPlan(el){
   document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
-  planData=VIP_PLANS[el.dataset.n]||null;
-  $('btn-p1').disabled=!planData;
+  planData = PLANS[el.dataset.n]||null;
+  $('btn-p1').disabled = !planData;
 }
 
-/* ═══ FOND ═══ */
+// ── FOND ──
 function selFond(el){
   document.querySelectorAll('.f-card').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
@@ -540,201 +585,301 @@ function checkSolde(){
   $('btn-p1').disabled=(parseFloat($('inp-solde')?.value)||0)<500;
 }
 
-/* ═══ PAGE 2 ═══ */
+// ── PAGE 2 ──
 function initPage2(){
-  opSel=null;phoneNum='';spTxId=null;spRef=null;spPoll=0;
+  opSel=null; phoneNum=''; spTxId=null; spRef=null; spPoll=0;
   clearInterval(spInterval);
   Object.keys(SP_OPS).forEach(k=>{const e=$('op-'+k);if(e)e.className='op-btn';});
-  const ph=$('num-phone');if(ph)ph.value='';
-  const nf=$('num-flag');if(nf)nf.textContent='📱';
-  const nr=$('num-row');if(nr)nr.style.borderColor='var(--bd)';
-  const rc=$('recap');if(rc)rc.style.display='none';
-  const bp=$('btn-pay');if(bp)bp.disabled=true;
-  const nh=$('num-hint');if(nh){nh.textContent='Ce numéro sera directement débité via SoleasPay';nh.style.color='var(--mu)';}
-  // Hero montant
+  const ph=$('num-phone'); if(ph) ph.value='';
+  const nf=$('num-flag');  if(nf) nf.textContent='📱';
+  const nr=$('num-row');   if(nr) nr.style.borderColor='var(--bd)';
+  const rc=$('recap');     if(rc) rc.style.display='none';
+  const bp=$('btn-pay');   if(bp) bp.disabled=true;
+  const nh=$('num-hint');
+  if(nh){nh.textContent='Entrez le numéro à débiter';nh.style.color='var(--mu)';}
+  // Montant
   let mont=0,label='';
-  if(selType==='vip'&&planData){mont=planData.depot;label=planData.label;}
+  if(selType==='vip'&&planData)      {mont=planData.depot;label=planData.label;}
   else if(selType==='fond'&&fondData){mont=parseFloat($('inp-fond')?.value)||0;label=fondData.nom+' +'+fondData.taux+'%';}
-  else{mont=parseFloat($('inp-solde')?.value)||0;label='Recharge Solde';}
+  else                               {mont=parseFloat($('inp-solde')?.value)||0;label='Recharge Solde';}
   $s('ah-plan',label);$s('ah-amount',fmtF(mont));
 }
 
-/* ═══ OPÉRATEUR ═══ */
+// ── OPÉRATEUR ──
 function selOp(id){
   opSel=id;
-  Object.keys(SP_OPS).forEach(k=>{const e=$('op-'+k);if(e)e.className='op-btn'+(k===id?' sel-'+k:'');});
-  const nf=$('num-flag');if(nf)nf.textContent=SP_OPS[id].flag;
-  const nl=$('num-lbl');if(nl)nl.textContent='Votre numéro '+SP_OPS[id].label;
-  const nr=$('num-row');if(nr)nr.style.borderColor=SP_OPS[id].color;
-  mettreAJourRecap();checkPeutPayer();
+  Object.keys(SP_OPS).forEach(k=>{
+    const e=$('op-'+k);if(e)e.className='op-btn'+(k===id?' sel-'+k:'');
+  });
+  const nf=$('num-flag'); if(nf) nf.textContent=SP_OPS[id].flag;
+  const nl=$('num-lbl');  if(nl) nl.textContent='Votre numéro '+SP_OPS[id].label;
+  const nr=$('num-row');  if(nr) nr.style.borderColor=SP_OPS[id].color;
+  updateRecap(); checkPeutPayer();
 }
 
-/* ═══ NUMÉRO ═══ */
+// ── NUMÉRO ──
 function onPhone(v){
   phoneNum=v.replace(/\s/g,'');
   const nh=$('num-hint');
   if(nh){
-    if(phoneNum.length>=8){nh.textContent='✅ Numéro valide';nh.style.color='var(--g)';}
-    else{nh.textContent='Ce numéro sera directement débité via SoleasPay';nh.style.color='var(--mu)';}
+    if(phoneNum.length>=8){nh.textContent='✅ Numéro valide — le montant sera débité automatiquement';nh.style.color='var(--g)';}
+    else{nh.textContent='Entrez le numéro à débiter';nh.style.color='var(--mu)';}
   }
-  mettreAJourRecap();checkPeutPayer();
-}
-function checkPeutPayer(){
-  const bp=$('btn-pay');
-  if(bp){const ok=opSel&&phoneNum.length>=8;bp.disabled=!ok;}
-}
-function mettreAJourRecap(){
-  const rc=$('recap');if(!rc)return;
-  if(!opSel||phoneNum.length<8){rc.style.display='none';return;}
-  let mont=0,label='';
-  if(selType==='vip'&&planData){mont=planData.depot;label=planData.label;}
-  else if(selType==='fond'&&fondData){mont=parseFloat($('inp-fond')?.value)||0;label=fondData.nom;}
-  else{mont=parseFloat($('inp-solde')?.value)||0;label='Recharge Solde';}
-  rc.style.display='block';
-  $s('rc-plan',label);$s('rc-mont',fmtF(mont));
-  $s('rc-op',SP_OPS[opSel]?.label);$s('rc-phone',phoneNum);
+  updateRecap(); checkPeutPayer();
 }
 
-/* ═══ LANCER PAIEMENT ═══ */
+function checkPeutPayer(){
+  const bp=$('btn-pay');
+  if(bp) bp.disabled=!(opSel && phoneNum.length>=8);
+}
+
+function updateRecap(){
+  const rc=$('recap'); if(!rc) return;
+  if(!opSel||phoneNum.length<8){rc.style.display='none';return;}
+  let mont=0,label='';
+  if(selType==='vip'&&planData)      {mont=planData.depot;label=planData.label;}
+  else if(selType==='fond'&&fondData){mont=parseFloat($('inp-fond')?.value)||0;label=fondData.nom;}
+  else                               {mont=parseFloat($('inp-solde')?.value)||0;label='Recharge Solde';}
+  rc.style.display='block';
+  $s('rc-plan',label);
+  $s('rc-mont',fmtF(mont));
+  $s('rc-op',SP_OPS[opSel]?.label);
+  $s('rc-phone',phoneNum);
+}
+
+// ════════════════════════════════════════
+//  ⚡ LANCER PAIEMENT AUTOMATIQUE
+// ════════════════════════════════════════
 async function lancerPaiement(){
   if(!opSel){toast('⚠️ Choisissez un opérateur','err');return;}
   if(phoneNum.length<8){toast('⚠️ Numéro invalide','err');return;}
+
   let mont=0,planLabel='';
-  if(selType==='vip'&&planData){mont=planData.depot;planLabel=planData.label;}
+  if(selType==='vip'&&planData)      {mont=planData.depot;planLabel=planData.label;}
   else if(selType==='fond'&&fondData){mont=parseFloat($('inp-fond')?.value)||0;planLabel=fondData.nom;}
-  else{mont=parseFloat($('inp-solde')?.value)||0;planLabel='Recharge Solde';}
+  else                               {mont=parseFloat($('inp-solde')?.value)||0;planLabel='Recharge Solde';}
   if(mont<=0){toast('⚠️ Montant invalide','err');return;}
+
+  // Désactiver le bouton
   const bp=$('btn-pay');
-  if(bp){bp.innerHTML='<span class="ld"></span>';bp.disabled=true;}
+  if(bp){bp.innerHTML='<span class="ld"></span> Connexion...';bp.disabled=true;}
+
+  // Aller page 3
   goPage(3);
-  $s('t3-op',SP_OPS[opSel]?.label);$s('t3-ph',phoneNum);$s('t3-amt',fmtF(mont));
+  $s('t3-op',SP_OPS[opSel]?.label);
+  $s('t3-ph',phoneNum);
+  $s('t3-amt',fmtF(mont));
+  $s('t3-plan',planLabel);
   setP('Connexion à SoleasPay...',10);
+
+  // Référence unique
   spRef='VGN-'+Date.now()+'-'+U.id.slice(0,6).toUpperCase();
+
   try{
-    const resp=await fetch(SP_URL+'/payment/collect',{
+    setP('Envoi de la demande de prélèvement...',25);
+
+    // ── APPEL API SOLEASPAY ──
+    const resp = await fetch(SP_URL+'/payment/collect',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SP_KEY,'Accept':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+SP_KEY,
+        'Accept':'application/json'
+      },
       body:JSON.stringify({
-        amount:mont,currency:'XAF',
-        operator:SP_OPS[opSel].code,
-        phone:phoneNum,
-        reference:spRef,
-        description:planLabel+' — VGN Agriculture',
+        amount:       mont,
+        currency:     'XAF',
+        operator:     SP_OPS[opSel].code,
+        phone:        phoneNum,
+        reference:    spRef,
+        description:  planLabel+' — VGN Agriculture',
         customer_name:P?.full_name||'Client VGN',
         customer_email:U.email||'',
-        notify_url:'https://vgn-two.vercel.app/api/sp-webhook'
+        notify_url:   'https://vgn-two.vercel.app/api/sp-webhook'
       })
     });
-    const data=await resp.json().catch(()=>({}));
-    console.log('SoleasPay:',resp.status,data);
-    if(resp.ok){
-      spTxId=data.data?.transaction_id||data.transaction_id||data.id||spRef;
-      await saveRecharge(spRef,spTxId,mont,planLabel,'en_attente_paiement');
-      setP('📲 Validez sur votre téléphone...',40);
+
+    const data = await resp.json().catch(()=>({}));
+    console.log('SoleasPay réponse:',resp.status,data);
+
+    if(resp.ok && (resp.status===200||resp.status===201)){
+      // ✅ Demande acceptée
+      spTxId = data.data?.transaction_id || data.transaction_id || data.id || spRef;
+      setP('✅ Demande envoyée — attente de confirmation...',45);
+
+      // Sauvegarder en base
+      await sauvegarderRecharge(spRef,spTxId,mont,planLabel,'en_attente_paiement');
+
+      // Démarrer le polling automatique
       demarrerPolling(spRef,spTxId,mont,planLabel);
+
     }else{
-      throw new Error(data.message||data.error||'Erreur '+resp.status);
+      // ❌ Erreur API
+      const errMsg = data.message||data.error||data.detail||'Erreur '+resp.status;
+      throw new Error(errMsg);
     }
+
   }catch(e){
-    console.error('SP error:',e);
-    await saveRecharge(spRef,spRef,mont,planLabel,'en_attente');
-    setP('⚠️ Demande enregistrée',70);
-    toast('⚠️ '+(e.message||'Erreur réseau')+' — Demande enregistrée manuellement','err');
-    setTimeout(()=>{$s('suc-badge','⏳ '+planLabel+' — Validation sous 24h');chargerHistorique();goPage(4);},2000);
+    console.error('Erreur SoleasPay:',e);
+    // En cas d'erreur réseau, enregistrer manuellement
+    await sauvegarderRecharge(spRef,spRef,mont,planLabel,'en_attente');
+    setP('⚠️ Erreur réseau — demande enregistrée manuellement',0);
+    toast('⚠️ Erreur réseau — votre demande a été enregistrée. Contactez le support.','err');
+    setTimeout(()=>{
+      $s('suc-emoji','⏳');
+      $s('suc-title','Demande enregistrée');
+      $s('suc-sub','Votre demande a été enregistrée. Un administrateur va valider sous 24h.');
+      $s('suc-badge','⏳ '+planLabel+' — En attente');
+      chargerHistorique();
+      goPage(4);
+    },2500);
   }
-  if(bp){bp.textContent='💳 Payer maintenant';bp.disabled=false;}
+
+  // Réactiver bouton si on revient
+  if(bp){bp.innerHTML='⚡ Payer automatiquement';bp.disabled=false;}
 }
 
-/* ═══ POLLING ═══ */
+// ════════════════════════════════════════
+//  🔄 POLLING AUTOMATIQUE
+// ════════════════════════════════════════
 function demarrerPolling(ref,txId,mont,label){
-  spPoll=0;clearInterval(spInterval);
+  spPoll=0;
+  clearInterval(spInterval);
+
+  // Progression visuelle
+  let pct=45;
   spInterval=setInterval(async()=>{
     spPoll++;
-    setP('⏳ Vérification '+spPoll+'...',Math.min(40+spPoll*2,88));
-    const st=await checkSP(txId);
-    if(st==='success'){clearInterval(spInterval);await activerPlan(ref,txId,mont,label);return;}
-    if(st==='failed'){
-      clearInterval(spInterval);setP('❌ Paiement refusé',0);
-      toast('❌ Paiement refusé','err');setTimeout(()=>goPage(2),1500);return;
+    pct=Math.min(pct+3,88);
+    setP('⏳ Vérification du paiement ('+spPoll+')...',pct);
+
+    const statut = await verifierSP(txId);
+
+    if(statut==='success'){
+      clearInterval(spInterval);
+      await confirmerPlan(ref,txId,mont,label);
+      return;
     }
-    if(spPoll>=24){
-      clearInterval(spInterval);setP('⏳ En attente...',90);
-      toast('⚠️ Appuyez sur "J\'ai validé" après confirmation','ok');
+    if(statut==='failed'){
+      clearInterval(spInterval);
+      setP('❌ Paiement refusé par l\'opérateur',0);
+      toast('❌ Paiement refusé — vérifiez votre solde Mobile Money','err');
+      await SB.from('recharges').update({statut:'rejete'}).eq('ref_transaction',ref).eq('user_id',U.id);
+      setTimeout(()=>goPage(2),2000);
+      return;
     }
-  },5000);
+    // Pending — continuer
+    if(spPoll>=30){
+      // 2.5 minutes dépassées
+      clearInterval(spInterval);
+      setP('⏳ Délai dépassé — demande en attente',90);
+      toast('⏳ Délai dépassé — nous vérifierons manuellement','ok');
+      setTimeout(()=>{
+        $s('suc-emoji','⏳');
+        $s('suc-title','En attente de confirmation');
+        $s('suc-sub','Le paiement est en cours de traitement. Votre plan sera activé dès confirmation.');
+        $s('suc-badge','⏳ '+label+' — En cours');
+        chargerHistorique();
+        goPage(4);
+      },1500);
+    }
+  },5000); // Vérifier toutes les 5 secondes
 }
 
-async function checkSP(txId){
+// ── VÉRIFIER STATUT SOLEASPAY ──
+async function verifierSP(txId){
   try{
-    const r=await fetch(SP_URL+'/payment/'+txId,{headers:{'Authorization':'Bearer '+SP_KEY,'Accept':'application/json'}});
-    if(!r.ok)return'pending';
+    const r=await fetch(SP_URL+'/payment/'+txId,{
+      headers:{'Authorization':'Bearer '+SP_KEY,'Accept':'application/json'}
+    });
+    if(!r.ok) return 'pending';
     const d=await r.json().catch(()=>({}));
     const s=(d.data?.status||d.status||'').toLowerCase();
-    if(['success','successful','completed','paid'].includes(s))return'success';
-    if(['failed','failure','cancelled','rejected','declined'].includes(s))return'failed';
-    return'pending';
-  }catch{return'pending';}
+    console.log('SP status:',s);
+    if(['success','successful','completed','paid','SUCCESSFUL'].includes(s)) return 'success';
+    if(['failed','failure','cancelled','rejected','declined','FAILED'].includes(s)) return 'failed';
+    return 'pending';
+  }catch(e){
+    console.warn('Polling error:',e.message);
+    return 'pending';
+  }
 }
 
-async function verifierManuellement(){
-  const b=$('btn-verif');if(b){b.textContent='⏳...';b.disabled=true;}
-  const st=await checkSP(spTxId||'x');
-  if(b){b.textContent='🔍 J\'ai validé, vérifier maintenant';b.disabled=false;}
-  if(st==='success'){
-    clearInterval(spInterval);
-    let mont=0,label='';
-    if(selType==='vip'&&planData){mont=planData.depot;label=planData.label;}
-    else if(selType==='fond'&&fondData){mont=parseFloat($('inp-fond')?.value)||0;label=fondData.nom;}
-    else{mont=parseFloat($('inp-solde')?.value)||0;label='Recharge Solde';}
-    await activerPlan(spRef||'manual',spTxId,mont,label);
-  }else if(st==='failed'){toast('❌ Paiement non confirmé','err');setTimeout(()=>goPage(2),1500);}
-  else toast('⏳ Toujours en attente — patientez','ok');
-}
+// ── CONFIRMER & ACTIVER ──
+async function confirmerPlan(ref,txId,mont,label){
+  clearInterval(spInterval);
+  setP('✅ Paiement confirmé ! Activation du plan...',100);
+  const ico=$('t3-ico');
+  if(ico){ico.textContent='✅';ico.classList.remove('spin');}
+  $s('t3-title','Paiement confirmé !');
+  $s('t3-sub','Votre plan est en cours d\'activation...');
 
-function annulerPaiement(){clearInterval(spInterval);goPage(2);}
-
-/* ═══ ACTIVER LE PLAN ═══ */
-async function activerPlan(ref,txId,mont,label){
-  clearInterval(spInterval);setP('✅ Paiement confirmé !',100);
+  // Mettre à jour en base
   await SB.from('recharges')
     .update({statut:'valide',valide_le:new Date().toISOString(),ref_transaction:txId||ref})
-    .eq('ref_transaction',ref).eq('user_id',U.id);
+    .eq('ref_transaction',ref)
+    .eq('user_id',U.id);
+
+  // Rafraîchir solde
   const{data:np}=await SB.from('profiles').select('solde,vip_niveau').eq('id',U.id).single();
-  if(np)$s('tb-solde',fmt(np.solde||0)+' F');
-  $s('suc-emoji','🎉');$s('suc-title','Paiement confirmé !');
-  $s('suc-sub','Votre plan a été activé automatiquement.');
+  if(np) $s('tb-solde',fmt(np.solde||0)+' F');
+
+  // Page succès
+  $s('suc-emoji','🎉');
+  $s('suc-title','Paiement confirmé !');
+  $s('suc-sub','Votre plan a été activé automatiquement. Bonne chance !');
   $s('suc-badge','✅ '+label+' — Activé !');
-  toast('🎉 Plan activé !','ok');
+
+  toast('🎉 Paiement confirmé et plan activé !','ok');
   await chargerHistorique();
   setTimeout(()=>goPage(4),1200);
 }
 
-/* ═══ SAUVEGARDER ═══ */
-async function saveRecharge(ref,txId,mont,label,statut){
-  let p={user_id:U.id,operateur:opSel,num_expediteur:phoneNum,ref_transaction:txId||ref,
-    montant_envoye:mont,pays:'cm',statut:statut,created_at:new Date().toISOString()};
-  if(selType==='vip'&&planData)
-    p={...p,plan_niveau:planData.n,plan_label:planData.label,plan_depot:planData.depot,
-       plan_gain:planData.gain,plan_taches:planData.taches,type_recharge:'vip'};
-  else if(selType==='fond'&&fondData)
-    p={...p,plan_niveau:0,plan_label:fondData.nom,plan_depot:mont,plan_gain:0,plan_taches:0,
-       fond_id:fondData.jours,fond_taux:fondData.taux,fond_jours:fondData.jours,type_recharge:'fond'};
-  else
-    p={...p,plan_niveau:0,plan_label:'Recharge Solde',plan_depot:mont,plan_gain:0,plan_taches:0,type_recharge:'solde'};
-  await SB.from('recharges').insert(p).catch(e=>console.error(e));
+// ── SAUVEGARDER EN BASE ──
+async function sauvegarderRecharge(ref,txId,mont,label,statut){
+  let rec={
+    user_id:U.id,
+    operateur:opSel,
+    num_expediteur:phoneNum,
+    ref_transaction:txId||ref,
+    montant_envoye:mont,
+    pays:'cm',
+    statut:statut,
+    created_at:new Date().toISOString()
+  };
+  if(selType==='vip'&&planData){
+    rec={...rec,plan_niveau:planData.n,plan_label:planData.label,
+         plan_depot:planData.depot,plan_gain:planData.gain,
+         plan_taches:planData.taches,type_recharge:'vip'};
+  }else if(selType==='fond'&&fondData){
+    rec={...rec,plan_niveau:0,plan_label:fondData.nom,plan_depot:mont,
+         plan_gain:0,plan_taches:0,fond_jours:fondData.jours,
+         fond_taux:fondData.taux,type_recharge:'fond'};
+  }else{
+    rec={...rec,plan_niveau:0,plan_label:'Recharge Solde',plan_depot:mont,
+         plan_gain:0,plan_taches:0,type_recharge:'solde'};
+  }
+  const{error}=await SB.from('recharges').insert(rec);
+  if(error) console.error('Save recharge error:',error);
 }
 
+// ── PROGRESSION ──
 function setP(msg,pct){
   const f=$('prog-fill'),t=$('prog-txt');
-  if(f)f.style.width=(pct||0)+'%';if(t)t.textContent=msg;
+  if(f) f.style.width=(pct||0)+'%';
+  if(t) t.textContent=msg;
 }
 
-/* ═══ HISTORIQUE ═══ */
+// ── HISTORIQUE ──
 async function chargerHistorique(){
-  const{data:h}=await SB.from('recharges').select('*').eq('user_id',U.id)
+  const{data:h}=await SB.from('recharges')
+    .select('*').eq('user_id',U.id)
     .order('created_at',{ascending:false}).limit(10);
-  const list=$('hist-list');if(!list)return;
-  if(!h||!h.length){list.innerHTML='<div style="text-align:center;padding:16px;color:var(--mu);font-size:.72rem">Aucune recharge</div>';return;}
+  const list=$('hist-list'); if(!list) return;
+  if(!h||!h.length){
+    list.innerHTML='<div style="text-align:center;padding:16px;color:var(--mu);font-size:.72rem">Aucune recharge</div>';
+    return;
+  }
   const stm={'valide':'s-ok','en_attente':'s-wait','en_attente_paiement':'s-wait','rejete':'s-err'};
   const stl={'valide':'✅ Validé','en_attente':'⏳ En attente','en_attente_paiement':'⏳ En cours','rejete':'❌ Rejeté'};
   list.innerHTML=h.map(r=>{
@@ -754,7 +899,7 @@ async function chargerHistorique(){
   }).join('');
 }
 
-/* ═══ INIT ═══ */
+// ── INIT ──
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
   if(!session){window.location.href='index.html';return;}
