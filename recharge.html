@@ -487,7 +487,7 @@ const SB = supabase.createClient(
 );
 
 // ── SOLEASPAY ──
-// ✅ Paiement via proxy /api/soleaspay (URL: https://app.soleaspay.com/api/v1)
+// ✅ Paiement via MoneyFusion — proxy /api/moneyfusion
 const SP_OPS = {
   orange: {code:'ORANGE_CM', label:'Orange Money', flag:'🍊', color:'#FF6600'},
   mtn:    {code:'MTN_CM',    label:'MTN MoMo',     flag:'📱', color:'#EAB308'},
@@ -647,7 +647,7 @@ function updateRecap(){
 }
 
 // ════════════════════════════════════════
-//  ⚡ LANCER PAIEMENT AUTOMATIQUE
+//  ⚡ LANCER PAIEMENT MONEYFUSION
 // ════════════════════════════════════════
 async function lancerPaiement(){
   if(!opSel){toast('⚠️ Choisissez un opérateur','err');return;}
@@ -669,53 +669,52 @@ async function lancerPaiement(){
   $s('t3-ph',phoneNum);
   $s('t3-amt',fmtF(mont));
   $s('t3-plan',planLabel);
-  setP('Connexion à SoleasPay...',10);
+  setP('Connexion à MoneyFusion...',10);
 
   // Référence unique
   spRef='VGN-'+Date.now()+'-'+U.id.slice(0,6).toUpperCase();
 
   try{
-    setP('Envoi de la demande de prélèvement...',25);
+    setP('Préparation du paiement...',25);
 
-    // ── APPEL API SOLEASPAY ──
-    // ── Appel via proxy Vercel (évite CORS) ──
-    const resp = await fetch('/api/soleaspay?action=collect',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        amount:       mont,
-        currency:     'XAF',
-        operator:     SP_OPS[opSel].code,
-        phone:        phoneNum,
-        reference:    spRef,
-        description:  planLabel+' — VGN Agriculture',
-        customer_name:P?.full_name||'Client VGN',
-        customer_email:U.email||''
+    // ── APPEL MONEYFUSION ──
+    const resp = await fetch('/api/moneyfusion?action=pay', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        montant:  mont,
+        phone:    phoneNum,
+        nom:      P?.full_name || 'Client VGN',
+        plan:     planLabel,
+        userId:   U.id,
+        orderId:  spRef
       })
     });
 
     const data = await resp.json().catch(()=>({}));
-    console.log('SoleasPay réponse:',resp.status,data);
+    console.log('MoneyFusion:', resp.status, data);
 
-    if(resp.ok && (resp.status===200||resp.status===201)){
-      // ✅ Demande acceptée
-      spTxId = data.data?.transaction_id || data.transaction_id || data.id || spRef;
-      setP('✅ Demande envoyée — attente de confirmation...',45);
+    if(data.statut === true && data.url) {
+      // ✅ MoneyFusion retourne une URL de paiement
+      spTxId = data.token || spRef;
+      setP('✅ Redirection vers la page de paiement...', 50);
 
       // Sauvegarder en base
-      await sauvegarderRecharge(spRef,spTxId,mont,planLabel,'en_attente_paiement');
+      await sauvegarderRecharge(spRef, spTxId, mont, planLabel, 'en_attente_paiement');
 
-      // Démarrer le polling automatique
-      demarrerPolling(spRef,spTxId,mont,planLabel);
+      // Démarrer polling en arrière-plan
+      demarrerPolling(spRef, spTxId, mont, planLabel);
 
-    }else{
-      // ❌ Erreur API
-      const errMsg = data.message||data.error||data.detail||'Erreur '+resp.status;
+      // Rediriger vers la page de paiement MoneyFusion
+      setTimeout(() => { window.location.href = data.url; }, 800);
+
+    } else {
+      const errMsg = data.message || data.error || 'Réponse inattendue: '+JSON.stringify(data).slice(0,100);
       throw new Error(errMsg);
     }
 
   }catch(e){
-    console.error('Erreur SoleasPay:',e);
+    console.error('Erreur MoneyFusion:',e);
     // En cas d'erreur réseau, enregistrer manuellement
     await sauvegarderRecharge(spRef,spRef,mont,planLabel,'en_attente');
     setP('⚠️ Erreur réseau — demande enregistrée manuellement',0);
@@ -784,16 +783,16 @@ function demarrerPolling(ref,txId,mont,label){
 // ── VÉRIFIER STATUT SOLEASPAY ──
 async function verifierSP(txId){
   try{
-    const r=await fetch('/api/soleaspay?action=status&txId='+encodeURIComponent(txId));
+    const r = await fetch('/api/moneyfusion?action=status&token='+encodeURIComponent(txId));
     if(!r.ok) return 'pending';
-    const d=await r.json().catch(()=>({}));
-    const s=(d.data?.status||d.status||'').toLowerCase();
-    console.log('SP status:',s);
-    if(['success','successful','completed','paid','SUCCESSFUL'].includes(s)) return 'success';
-    if(['failed','failure','cancelled','rejected','declined','FAILED'].includes(s)) return 'failed';
+    const d = await r.json().catch(()=>({}));
+    const s = (d.data?.statut || '').toLowerCase();
+    console.log('MoneyFusion status:', s);
+    if(s === 'paid') return 'success';
+    if(['failure','cancelled','no paid'].includes(s)) return 'failed';
     return 'pending';
   }catch(e){
-    console.warn('Polling error:',e.message);
+    console.warn('Polling error:', e.message);
     return 'pending';
   }
 }
