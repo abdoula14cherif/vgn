@@ -643,11 +643,15 @@ function renderOps(pays){
   const grid = $('ops-grid');
   if(!grid) return;
   grid.innerHTML = ops.map(op=>`
-    <div class="op-btn" id="op-${op.id}" onclick="selOp('${op.id}')" style="--op-color:${op.color}">
+    <div class="op-btn${opSel===op.id?' sel-op':''}" id="op-${op.id}" onclick="selOp('${op.id}')">
       <div class="ob-ico">${op.flag}</div>
       <div class="ob-name">${op.label}</div>
       <div class="ob-tag">✓ Actif</div>
     </div>`).join('');
+  // Si un seul opérateur dans le pays → le sélectionner automatiquement
+  if(ops.length === 1 && !opSel){
+    selOp(ops[0].id);
+  }
 }
 
 // ── OPÉRATEUR ──
@@ -675,6 +679,14 @@ function onPhone(v){
 }
 
 function checkPeutPayer(){
+  // Auto-sélectionner le premier opérateur si aucun choisi
+  if(!opSel && phoneNum.length>=8){
+    const ops = SP_OPS_BY_PAYS[currentPays]||[];
+    if(ops.length > 0){
+      selOp(ops[0].id);
+      return; // selOp appelle checkPeutPayer à nouveau
+    }
+  }
   const bp=$('btn-pay');
   if(bp) bp.disabled=!(opSel && phoneNum.length>=8);
 }
