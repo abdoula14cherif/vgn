@@ -492,9 +492,7 @@ const SB = supabase.createClient(
 // → On utilise un proxy CORS public pour contourner ça sur Vercel (site statique)
 const SP_API_KEY  = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
 // Endpoint SoleasPay réel (source: github.com/MYSOLEAS/laravel-payment-package)
-const SP_API_BASE = 'https://app.soleaspay.com/api';
-const SP_API_PAY  = SP_API_BASE + '/collect';
-const SP_API_STATUS = SP_API_BASE + '/status/';
+// Appels API via proxy Vercel /api/soleaspay (pas de CORS)
 
 // Operator IDs EXACTS selon doc officielle SoleasPay (GitHub MYSOLEAS)
 const SP_OPS = {
@@ -686,64 +684,34 @@ async function lancerPaiement(){
   try{
     setP('Préparation du paiement...',25);
 
-    // ── APPEL SOLEASPAY API ──
-    setP('Connexion à SoleasPay...', 20);
+    // ── APPEL PROXY VERCEL → SoleasPay ──
+    // Le proxy /api/soleaspay évite le blocage CORS
+    setP('Connexion au serveur de paiement...', 20);
     const opCode = SP_OPS[opSel]?.code || 'mtn_mobile_money_CM';
 
-    // Corps de la requête selon doc SoleasPay officielle
-    const payBody = {
-      service:    opCode,
-      wallet:     phoneNum,
-      amount:     mont,
-      currency:   'XAF',
-      order_id:   spRef
-    };
+    const resp = await fetch('/api/soleaspay?action=pay', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        service:  opCode,
+        wallet:   phoneNum,
+        amount:   mont,
+        currency: 'XAF',
+        order_id: spRef
+      })
+    });
 
-    // Essai 1 : appel direct (si SoleasPay a activé CORS)
-    let resp, data;
-    try {
-      resp = await fetch(SP_API_PAY, {
-        method:  'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key':    SP_API_KEY,
-          'Authorization':'Bearer ' + SP_API_KEY
-        },
-        body: JSON.stringify(payBody)
-      });
-      data = await resp.json().catch(()=>({}));
-    } catch(corsErr) {
-      // Essai 2 : proxy CORS de secours
-      console.warn('Direct CORS blocked, trying proxy...', corsErr.message);
-      try {
-        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SP_API_PAY);
-        resp = await fetch(proxyUrl, {
-          method:  'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key':    SP_API_KEY,
-            'Authorization':'Bearer ' + SP_API_KEY
-          },
-          body: JSON.stringify(payBody)
-        });
-        data = await resp.json().catch(()=>({}));
-      } catch(proxyErr) {
-        throw new Error('Impossible de joindre SoleasPay. Vérifiez votre connexion.');
-      }
-    }
+    const data = await resp.json().catch(()=>({}));
+    console.log('SoleasPay via proxy:', resp.status, data);
 
-    console.log('SoleasPay réponse:', resp?.status, data);
+    // Détecter succès — SoleasPay peut retourner plusieurs formats
+    const ok = data?.status === 'success'
+            || data?.success === true
+            || data?.statut  === true
+            || (resp.status >= 200 && resp.status < 300 && !data?.error && !data?.message?.toLowerCase().includes('error'));
 
-    // SoleasPay retourne: { status: 'success'|'failed', token, url?, message }
-    // ou: { success: true/false, data: {...} }
-    const ok   = data?.status === 'success'
-              || data?.success === true
-              || data?.statut  === true
-              || (resp?.status >= 200 && resp?.status < 300 && !data?.error);
-
-    const txId  = data?.token || data?.data?.token
-               || data?.transaction_id || data?.data?.transaction_id
-               || data?.id || spRef;
+    const txId   = data?.token || data?.data?.token
+                || data?.transaction_id || data?.id || spRef;
     const payUrl = data?.url || data?.data?.url || data?.payment_url || null;
 
     if(ok) {
@@ -761,13 +729,13 @@ async function lancerPaiement(){
         setP('✅ Redirection vers SoleasPay...', 65);
         setTimeout(() => { window.location.href = payUrl; }, 800);
       } else {
-        // STK push envoyé → polling
-        setP('📱 Validez sur votre téléphone Mobile Money...', 65);
+        // STK push → attendre validation sur téléphone
+        setP('📱 Validez la demande sur votre téléphone...', 65);
         demarrerPolling(spRef, spTxId, mont, planLabel);
       }
     } else {
       const errMsg = data?.message || data?.error || data?.data?.message
-                  || 'Erreur SoleasPay ('+(resp?.status||'?')+')';
+                  || 'Erreur paiement (code ' + resp.status + ')';
       throw new Error(errMsg);
     }
 
@@ -829,31 +797,14 @@ function demarrerPolling(ref,txId,mont,label){
   },5000); // Vérifier toutes les 5 secondes
 }
 
-// ── VÉRIFIER STATUT SOLEASPAY ──
+// ── VÉRIFIER STATUT SOLEASPAY (via proxy Vercel) ──
 async function verifierSP(txId){
   try{
-    const statusUrl = SP_API_STATUS + encodeURIComponent(txId);
-    let r, d;
+    const r = await fetch('/api/soleaspay?action=status&token=' + encodeURIComponent(txId));
+    if(!r.ok) return 'pending';
+    const d = await r.json().catch(()=>({}));
+    console.log('SoleasPay status:', d);
 
-    // Essai direct
-    try {
-      r = await fetch(statusUrl, {
-        headers: { 'x-api-key': SP_API_KEY, 'Authorization': 'Bearer ' + SP_API_KEY }
-      });
-      d = await r.json().catch(()=>({}));
-    } catch {
-      // Fallback proxy
-      try {
-        r = await fetch('https://corsproxy.io/?' + encodeURIComponent(statusUrl), {
-          headers: { 'x-api-key': SP_API_KEY, 'Authorization': 'Bearer ' + SP_API_KEY }
-        });
-        d = await r.json().catch(()=>({}));
-      } catch { return 'pending'; }
-    }
-
-    console.log('SoleasPay status check:', d);
-
-    // Format réponse SoleasPay: { status: 'success'|'pending'|'failed', token, ... }
     const s = (d?.status || d?.data?.status || d?.statut || '').toLowerCase();
     if(['success','successful','paid','completed','approved'].includes(s)) return 'success';
     if(['failed','failure','cancelled','rejected','declined','no_paid','no paid'].includes(s)) return 'failed';
