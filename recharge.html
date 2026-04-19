@@ -633,7 +633,7 @@ function demarrerPolling(ref,txId,mont,label){
     pct=Math.min(pct+1.2,88);
     const msgs=['📱 Validez sur votre téléphone...','⏳ En attente de confirmation...','🔄 Vérification en cours...','📲 Avez-vous validé ?','⏳ Toujours en attente...'];
     setP(msgs[Math.floor((spPoll-1)/4)%msgs.length]+' ('+spPoll+')',pct);
-    const st=await verifierSP(txId,ref);
+    const st=await verifierSP(spTxId||txId, ref);
     if(st==='success'){clearInterval(spInterval);await confirmerPlan(ref,txId,mont,label);return;}
     if(st==='failed'){
       clearInterval(spInterval);
@@ -658,14 +658,23 @@ function demarrerPolling(ref,txId,mont,label){
 
 async function verifierSP(txId,orderId){
   try{
-    const url='/api/soleaspay?action=status&token='+encodeURIComponent(txId)+'&order_id='+encodeURIComponent(orderId||txId);
+    // txId = payId SoleasPay, orderId = notre référence VGN-xxx
+    const payId   = txId   || '';
+    const orderIdP = orderId || txId || '';
+    const url='/api/soleaspay?action=status'
+            +'&token='+encodeURIComponent(payId)
+            +'&order_id='+encodeURIComponent(orderIdP);
     const r=await fetch(url);
     const d=await r.json().catch(()=>({}));
+    console.log('[POLL verif]',d?.status,'succès=',d?._succes_raw,'raw=',d?._raw_status,'full=',d);
     const s=(d?.status||'').toLowerCase();
     if(s==='success') return 'success';
     if(s==='failed')  return 'failed';
     return 'pending';
-  }catch(e){return 'pending';}
+  }catch(e){
+    console.warn('[POLL error]',e.message);
+    return 'pending';
+  }
 }
 
 async function confirmerPlan(ref,txId,mont,label){
