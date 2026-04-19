@@ -30,6 +30,7 @@ h2{color:#4ade80;margin:16px 0 8px;}
   <input id="inp-orderid" placeholder="order_id (ex: VGN-1745123-ABC)" style="background:#111;color:#0f0;border:1px solid #333;padding:6px;border-radius:5px;width:100%;margin:4px 0;font-family:monospace;font-size:12px"/>
   <input id="inp-payid"   placeholder="payId retourné par SoleasPay (optionnel)" style="background:#111;color:#0f0;border:1px solid #333;padding:6px;border-radius:5px;width:100%;margin:4px 0;font-family:monospace;font-size:12px"/>
   <button onclick="testStatut()" style="background:#1D4ED8;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;width:100%;margin-top:4px">🔎 Vérifier statut</button>
+  <button onclick="chargerDernierRef()" style="background:#374151;color:#fff;border:none;padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;width:100%;margin-top:4px">📋 Charger dernière référence</button>
 </div>
 
 <div style="margin:12px 0">
@@ -85,6 +86,19 @@ async function scanEndpoints() {
   } catch(e) {
     log('❌ ' + e.message, 'err');
   }
+}
+
+function chargerDernierRef() {
+  const orderId = localStorage.getItem('mf_last_order') || localStorage.getItem('mf_ref') || '';
+  const payId   = localStorage.getItem('mf_last_token') || '';
+  const label   = localStorage.getItem('mf_plan_label') || '';
+  const montant = localStorage.getItem('mf_montant') || '';
+
+  if(!orderId) { log('⚠️ Aucune référence trouvée dans localStorage', 'warn'); return; }
+
+  document.getElementById('inp-orderid').value = orderId;
+  document.getElementById('inp-payid').value   = payId;
+  log('📋 Dernière réf chargée:\n  order_id: '+orderId+'\n  payId: '+(payId||'(vide)')+'\n  Plan: '+label+'\n  Montant: '+montant+' FCFA', 'ok');
 }
 
 async function testStatut() {
