@@ -128,28 +128,69 @@ module.exports = async function handler(req, res) {
       const order_id = req.query?.order_id || body.order_id;
       if (!token && !order_id) return res.status(400).json({ error: 'token ou order_id requis' });
 
-      const url = `https://soleaspay.com/api/agent/verif-pay?orderId=${encodeURIComponent(order_id || token)}&payId=${encodeURIComponent(token || '')}`;
+      // SoleasPay verif-pay attend orderId + payId
+      // orderId = notre référence VGN-xxx, payId = token retourné au paiement
+      const orderId = order_id || token;
+      const payId   = token || '';
+
+      const url = `https://soleaspay.com/api/agent/verif-pay?orderId=${encodeURIComponent(orderId)}&payId=${encodeURIComponent(payId)}`;
       console.log('[SP status] URL:', url);
 
       const r = await fetch(url, {
-        headers: { 'x-api-key': SP_KEY },
+        method: 'GET',
+        headers: {
+          'x-api-key':    SP_KEY,
+          'Content-Type': 'application/json',
+        },
       });
 
       const text = await r.text();
       let json;
       try { json = JSON.parse(text); } catch { json = { raw: text }; }
-      console.log('[SP status] HTTP=' + r.status, text.slice(0, 400));
+      console.log('[SP status] HTTP=' + r.status + ' FULL=' + text.slice(0, 600));
 
-      const raw = (json?.status || json?.statut || json?.etat || '').toLowerCase();
+      // SoleasPay retourne { "succès": true/false } pour verif-pay (même clé que pour pay)
+      // Vérifier TOUS les champs possibles
+      const rawStatus = (
+        json?.status     ||
+        json?.statut     ||
+        json?.etat       ||
+        json?.state      ||
+        json?.payment_status ||
+        ''
+      ).toLowerCase();
+
+      const estSucces = json?.succès === true
+                     || json?.success === true
+                     || json?.paid    === true
+                     || rawStatus === 'success'
+                     || rawStatus === 'paid'
+                     || rawStatus === 'successful'
+                     || rawStatus === 'completed'
+                     || rawStatus === 'approved'
+                     || rawStatus === 'paye'
+                     || rawStatus === 'succes';
+
+      const estEchec  = json?.succès === false && json?.success === false
+                     || rawStatus === 'failed'
+                     || rawStatus === 'failure'
+                     || rawStatus === 'cancelled'
+                     || rawStatus === 'rejected'
+                     || rawStatus === 'declined'
+                     || rawStatus === 'echec'
+                     || rawStatus === 'annule';
+
       let normalized = 'pending';
-      if (['success','successful','paid','completed','approved','paye','succes'].includes(raw)) normalized = 'success';
-      if (['failed','failure','cancelled','rejected','declined','echec','annule'].includes(raw)) normalized = 'failed';
+      if (estSucces) normalized = 'success';
+      if (estEchec && !estSucces) normalized = 'failed';
 
       return res.status(200).json({
         ...json,
         status:      normalized,
-        _raw_status: raw,
+        _raw_status: rawStatus,
+        _succes_raw: json?.succès,
         _http:       r.status,
+        _full:       json, // debug complet
       });
     }
 
