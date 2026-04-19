@@ -599,15 +599,19 @@ async function lancerPaiement(){
     console.log('SoleasPay response:',resp.status,data);
 
     const ok=data?.succès===true||data?.success===true||data?.statut===true||(resp.status>=200&&resp.status<300&&!data?.error&&data?.status!=='failed');
-    const txId=data?.payId||data?.pay_id||data?.token||data?.id||spRef;
-    const payUrl=data?.url||data?.payment_url||null;
+    // Le proxy retourne data.payId = vrai ID SoleasPay, data.token = même chose
+    const txId = data?.payId || data?.token || data?.pay_id || data?.id || spRef;
+    const payUrl = data?.url || data?.payment_url || null;
+    console.log('[PAY] payId='+txId+' orderId='+spRef+' tous champs='+JSON.stringify(data?._all_fields));
 
     if(ok){
       spTxId=txId;
       setP('✅ Demande envoyée — validez sur votre téléphone...',60);
       await sauvegarderRecharge(spRef,spTxId,mont,planLabel,'en_attente_paiement');
-      localStorage.setItem('mf_last_token',spTxId||spRef);
-      localStorage.setItem('mf_last_order',spRef);
+      // spTxId = payId SoleasPay, spRef = notre order_id VGN-xxx
+      spTxId = txId; // mettre à jour avec le vrai payId
+      localStorage.setItem('mf_last_token', txId);    // payId SoleasPay
+      localStorage.setItem('mf_last_order', spRef);   // notre order_id
       localStorage.setItem('mf_plan_label',planLabel);
       localStorage.setItem('mf_montant',String(mont));
       localStorage.setItem('mf_ref',spRef);
