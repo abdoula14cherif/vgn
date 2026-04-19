@@ -392,9 +392,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
       </div>
 
       <!-- OPÉRATEURS PAR PAYS -->
-      <div class="ops-grid" id="ops-grid">
-        <!-- rempli dynamiquement -->
-      </div>
+      <div class="ops-grid" id="ops-grid"></div>
 
       <label class="num-lbl" id="num-lbl">Votre numéro Mobile Money</label>
       <div class="num-row" id="num-row">
@@ -412,7 +410,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
         <div class="ai-ico">⚡</div>
         <div class="ai-txt">
           <strong>Prélèvement automatique</strong><br>
-          Le montant sera débité directement depuis votre compte Mobile Money via SoleasPay. 
+          Le montant sera débité directement depuis votre compte Mobile Money via SoleasPay.
           Aucune action supplémentaire requise — validez simplement la demande sur votre téléphone.
         </div>
       </div>
@@ -489,18 +487,31 @@ const SB = supabase.createClient(
 );
 
 // ── SOLEASPAY ──
-// ✅ Paiement via SoleasPay
-// ⚠️ CORS : l'API SoleasPay ne peut PAS être appelée directement depuis le navigateur
-// → On utilise un proxy CORS public pour contourner ça sur Vercel (site statique)
-const SP_API_KEY  = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
-// Endpoint SoleasPay réel (source: github.com/MYSOLEAS/laravel-payment-package)
-// Appels API via proxy Vercel /api/soleaspay (pas de CORS)
+const SP_API_KEY = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
 
-// Operator IDs EXACTS selon doc officielle SoleasPay (GitHub MYSOLEAS)
+// ── FIX #1 : SP_OPS complet avec champ `code` (vrai code API SoleasPay) ──
 const SP_OPS = {
-  orange: {code:'orange_money_CM',    label:'Orange Money', flag:'🍊', color:'#FF6600'},
-  mtn:    {code:'mtn_mobile_money_CM', label:'MTN MoMo',   flag:'📱', color:'#EAB308'},
-  wave:   {code:'wave_CM',            label:'Wave',         flag:'🌊', color:'#06B6D4'},
+  orange_CM: {id:'orange_CM', label:'Orange Money', flag:'🍊', color:'#FF6600', code:'orange_money_CM'},
+  mtn_CM:    {id:'mtn_CM',    label:'MTN MoMo',     flag:'📱', color:'#EAB308', code:'mtn_mobile_money_CM'},
+  wave_CM:   {id:'wave_CM',   label:'Wave',          flag:'🌊', color:'#06B6D4', code:'wave_CM'},
+  orange_CI: {id:'orange_CI', label:'Orange Money',  flag:'🍊', color:'#FF6600', code:'orange_money_CI'},
+  mtn_CI:    {id:'mtn_CI',    label:'MTN MoMo',      flag:'📱', color:'#EAB308', code:'mtn_mobile_money_CI'},
+  wave_CI:   {id:'wave_CI',   label:'Wave',           flag:'🌊', color:'#06B6D4', code:'wave_CI'},
+  orange_BF: {id:'orange_BF', label:'Orange Money',  flag:'🍊', color:'#FF6600', code:'orange_money_BF'},
+  wave_BF:   {id:'wave_BF',   label:'Wave',           flag:'🌊', color:'#06B6D4', code:'wave_BF'},
+  mtn_BJ:    {id:'mtn_BJ',    label:'MTN MoMo',      flag:'📱', color:'#EAB308', code:'mtn_mobile_money_BJ'},
+  wave_BJ:   {id:'wave_BJ',   label:'Wave',           flag:'🌊', color:'#06B6D4', code:'wave_BJ'},
+  tmoney_TG: {id:'tmoney_TG', label:'T-Money',       flag:'💙', color:'#1D4ED8', code:'tmoney_TG'},
+  flooz_TG:  {id:'flooz_TG',  label:'Flooz',          flag:'🟣', color:'#7C3AED', code:'flooz_TG'},
+};
+
+// ── FIX #2 : SP_OPS_BY_PAYS (manquant → crash renderOps) ──
+const SP_OPS_BY_PAYS = {
+  CM: [SP_OPS.orange_CM, SP_OPS.mtn_CM, SP_OPS.wave_CM],
+  CI: [SP_OPS.orange_CI, SP_OPS.mtn_CI, SP_OPS.wave_CI],
+  BF: [SP_OPS.orange_BF, SP_OPS.wave_BF],
+  BJ: [SP_OPS.mtn_BJ,    SP_OPS.wave_BJ],
+  TG: [SP_OPS.tmoney_TG, SP_OPS.flooz_TG],
 };
 
 // ── PLANS ──
@@ -531,7 +542,8 @@ function toast(m,t=''){
 
 let U=null, P=null;
 let selType='vip', planData=null, fondData=null;
-let opSel=null, phoneNum='';
+// ── FIX #3 : currentPays initialisé (manquant → selPays/renderOps crash) ──
+let opSel=null, phoneNum='', currentPays='CM';
 let spTxId=null, spRef=null, spInterval=null, spPoll=0;
 
 // ── STEPS ──
@@ -552,7 +564,6 @@ function goPage(n){
   });
   setStep(n);
   window.scrollTo({top:0,behavior:'smooth'});
-  // initPage2 APRÈS que la page soit visible (sinon les éléments sont hidden)
   if(n===2) setTimeout(initPage2, 0);
 }
 
@@ -599,7 +610,6 @@ function initPage2(){
   opSel=null; phoneNum=''; spTxId=null; spRef=null; spPoll=0;
   clearInterval(spInterval);
 
-  // Reset UI
   const ph=$('num-phone'); if(ph) ph.value='';
   const nf=$('num-flag');  if(nf) nf.textContent='📱';
   const nr=$('num-row');   if(nr) nr.style.borderColor='var(--bd)';
@@ -608,28 +618,25 @@ function initPage2(){
   const nh=$('num-hint');
   if(nh){nh.textContent='Entrez le numéro à débiter';nh.style.color='var(--mu)';}
 
-  // Afficher montant et plan
   let mont=0, label='';
   if(selType==='vip'&&planData)       { mont=planData.depot;  label=planData.label; }
   else if(selType==='fond'&&fondData) { mont=parseFloat($('inp-fond')?.value)||0; label=fondData.nom+' +'+fondData.taux+'%'; }
   else                                { mont=parseFloat($('inp-solde')?.value)||0; label='Recharge Solde'; }
 
-  const elPlan = $('ah-plan');   if(elPlan)   elPlan.textContent   = label;
-  const elAmt  = $('ah-amount'); if(elAmt)    elAmt.textContent    = fmtF(mont);
+  const elPlan=$('ah-plan');   if(elPlan)  elPlan.textContent  = label;
+  const elAmt =$('ah-amount'); if(elAmt)   elAmt.textContent   = fmtF(mont);
 
-  // Afficher les opérateurs du pays courant (après que page2 est visible)
   renderOps(currentPays);
 }
 
 // ── PAYS ──
 function selPays(pays){
   currentPays = pays;
-  // Mettre à jour les boutons pays
   document.querySelectorAll('.pays-btn').forEach((b,i)=>{
     const codes=['CM','CI','BF','BJ','TG'];
     b.className='pays-btn'+(codes[i]===pays?' on':'');
   });
-  opSel = null;
+  opSel=null;
   renderOps(pays);
   const nf=$('num-flag'); if(nf) nf.textContent='📱';
   const nl=$('num-lbl');  if(nl) nl.textContent='Votre numéro Mobile Money';
@@ -640,7 +647,7 @@ function selPays(pays){
 
 function renderOps(pays){
   const ops = SP_OPS_BY_PAYS[pays]||[];
-  const grid = $('ops-grid');
+  const grid=$('ops-grid');
   if(!grid) return;
   grid.innerHTML = ops.map(op=>`
     <div class="op-btn${opSel===op.id?' sel-op':''}" id="op-${op.id}" onclick="selOp('${op.id}')">
@@ -648,10 +655,7 @@ function renderOps(pays){
       <div class="ob-name">${op.label}</div>
       <div class="ob-tag">✓ Actif</div>
     </div>`).join('');
-  // Si un seul opérateur dans le pays → le sélectionner automatiquement
-  if(ops.length === 1 && !opSel){
-    selOp(ops[0].id);
-  }
+  if(ops.length===1 && !opSel) selOp(ops[0].id);
 }
 
 // ── OPÉRATEUR ──
@@ -679,13 +683,9 @@ function onPhone(v){
 }
 
 function checkPeutPayer(){
-  // Auto-sélectionner le premier opérateur si aucun choisi
   if(!opSel && phoneNum.length>=8){
-    const ops = SP_OPS_BY_PAYS[currentPays]||[];
-    if(ops.length > 0){
-      selOp(ops[0].id);
-      return; // selOp appelle checkPeutPayer à nouveau
-    }
+    const ops=SP_OPS_BY_PAYS[currentPays]||[];
+    if(ops.length>0){ selOp(ops[0].id); return; }
   }
   const bp=$('btn-pay');
   if(bp) bp.disabled=!(opSel && phoneNum.length>=8);
@@ -706,7 +706,7 @@ function updateRecap(){
 }
 
 // ════════════════════════════════════════
-//  ⚡ LANCER PAIEMENT MONEYFUSION
+//  ⚡ LANCER PAIEMENT SOLEASPAY
 // ════════════════════════════════════════
 async function lancerPaiement(){
   if(!opSel){toast('⚠️ Choisissez un opérateur','err');return;}
@@ -718,11 +718,9 @@ async function lancerPaiement(){
   else                               {mont=parseFloat($('inp-solde')?.value)||0;planLabel='Recharge Solde';}
   if(mont<=0){toast('⚠️ Montant invalide','err');return;}
 
-  // Désactiver le bouton
   const bp=$('btn-pay');
   if(bp){bp.innerHTML='<span class="ld"></span> Connexion...';bp.disabled=true;}
 
-  // Aller page 3
   goPage(3);
   $s('t3-op',SP_OPS[opSel]?.label);
   $s('t3-ph',phoneNum);
@@ -730,20 +728,20 @@ async function lancerPaiement(){
   $s('t3-plan',planLabel);
   setP('Connexion à SoleasPay...',10);
 
-  // Référence unique
   spRef='VGN-'+Date.now()+'-'+U.id.slice(0,6).toUpperCase();
 
   try{
     setP('Préparation du paiement...',25);
 
-    // ── APPEL PROXY VERCEL → SoleasPay ──
-    // Le proxy /api/soleaspay évite le blocage CORS
-    setP('Connexion au serveur de paiement...', 20);
-    const op = SP_OPS[opSel]; const opCode = op?.id || opSel; const serviceId = op?.serviceId || 1;
+    // ── FIX #4 : utiliser op.code (vrai code API) au lieu de op.id ──
+    const op      = SP_OPS[opSel];
+    const opCode  = op?.code || opSel;   // ex: 'orange_money_CM' au lieu de 'orange_CM'
+    const serviceId = op?.serviceId || 1;
 
+    setP('Connexion au serveur de paiement...',30);
     const resp = await fetch('/api/soleaspay?action=pay', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         service:    opCode,
         serviceId:  serviceId,
@@ -759,55 +757,47 @@ async function lancerPaiement(){
     const data = await resp.json().catch(()=>({}));
     console.log('SoleasPay via proxy:', resp.status, data);
 
-    // Détecter succès — le proxy normalise déjà le status
-    const httpOk = resp.status >= 200 && resp.status < 300;
-    const spStatus = (data?.status || '').toLowerCase();
-    const hasError = data?.error || spStatus === 'failed';
-
-    const ok = (spStatus === 'success' || data?.success === true || data?.statut === true)
-            || (httpOk && !hasError && spStatus !== 'failed');
+    const httpOk  = resp.status >= 200 && resp.status < 300;
+    const spStatus= (data?.status || '').toLowerCase();
+    const hasError= data?.error || spStatus === 'failed';
+    const ok = (spStatus==='success' || data?.success===true || data?.statut===true)
+            || (httpOk && !hasError && spStatus!=='failed');
 
     const txId   = data?.token || data?.data?.token
                 || data?.transaction_id || data?.id || spRef;
     const payUrl = data?.url || data?.data?.url || data?.payment_url || null;
 
-    // Logger pour debug
-    console.log('[PAY result]', {status: spStatus, ok, txId, payUrl, data});
+    console.log('[PAY result]',{status:spStatus,ok,txId,payUrl,data});
 
-    if(ok) {
-      spTxId = txId;
-      setP('✅ Demande envoyée — en attente de confirmation...', 55);
-
-      await sauvegarderRecharge(spRef, spTxId, mont, planLabel, 'en_attente_paiement');
-
-      localStorage.setItem('mf_last_token', spTxId || spRef);
+    if(ok){
+      spTxId=txId;
+      setP('✅ Demande envoyée — en attente de confirmation...',55);
+      await sauvegarderRecharge(spRef,spTxId,mont,planLabel,'en_attente_paiement');
+      localStorage.setItem('mf_last_token', spTxId||spRef);
       localStorage.setItem('mf_last_order', spRef);
       localStorage.setItem('mf_plan_label', planLabel);
-      localStorage.setItem('mf_montant', String(mont));
-      localStorage.setItem('mf_ref', spRef);
+      localStorage.setItem('mf_montant',    String(mont));
+      localStorage.setItem('mf_ref',        spRef);
 
-      if(payUrl) {
-        setP('✅ Redirection vers SoleasPay...', 65);
-        setTimeout(() => { window.location.href = payUrl; }, 800);
-      } else {
-        // STK push → attendre validation sur téléphone
-        setP('📱 Validez la demande sur votre téléphone...', 65);
-        demarrerPolling(spRef, spTxId, mont, planLabel);
+      if(payUrl){
+        setP('✅ Redirection vers SoleasPay...',65);
+        setTimeout(()=>{ window.location.href=payUrl; },800);
+      }else{
+        setP('📱 Validez la demande sur votre téléphone...',65);
+        demarrerPolling(spRef,spTxId,mont,planLabel);
       }
-    } else {
+    }else{
       const errMsg = data?.message || data?.error || data?.data?.message
-                  || 'Erreur paiement (code ' + resp.status + ')';
+                  || 'Erreur paiement (code '+resp.status+')';
       throw new Error(errMsg);
     }
-
   }catch(e){
     console.error('Erreur SoleasPay:',e);
-    setP('❌ Erreur: '+e.message, 0);
+    setP('❌ Erreur: '+e.message,0);
     toast('❌ '+(e.message||'Erreur de connexion. Réessayez.'),'err');
-    setTimeout(()=>goPage(2), 2000);
+    setTimeout(()=>goPage(2),2000);
   }
 
-  // Réactiver bouton si on revient
   if(bp){bp.innerHTML='⚡ Payer automatiquement';bp.disabled=false;}
 }
 
@@ -818,21 +808,20 @@ function demarrerPolling(ref,txId,mont,label){
   spPoll=0;
   clearInterval(spInterval);
 
-  // Progression visuelle
   let pct=45;
   spInterval=setInterval(async()=>{
     spPoll++;
-    pct = Math.min(pct + 1.2, 88);
-    const msgs = [
+    pct=Math.min(pct+1.2,88);
+    const msgs=[
       '📱 Validez la demande sur votre téléphone...',
       '⏳ En attente de confirmation Mobile Money...',
       '🔄 Vérification en cours...',
       '📲 Avez-vous validé sur votre téléphone ?',
       '⏳ Toujours en attente de votre validation...',
     ];
-    setP(msgs[Math.floor((spPoll-1)/4) % msgs.length] + ' ('+spPoll+')', pct);
+    setP(msgs[Math.floor((spPoll-1)/4)%msgs.length]+' ('+spPoll+')',pct);
 
-    const statut = await verifierSP(txId);
+    const statut=await verifierSP(txId);
     console.log('[POLL '+spPoll+'] statut='+statut+' ref='+txId);
 
     if(statut==='success'){
@@ -848,7 +837,6 @@ function demarrerPolling(ref,txId,mont,label){
       setTimeout(()=>goPage(2),2500);
       return;
     }
-    // Après 60 tentatives (5 minutes) → attente manuelle
     if(spPoll>=60){
       clearInterval(spInterval);
       setP('⏳ Validation en attente...',92);
@@ -862,30 +850,25 @@ function demarrerPolling(ref,txId,mont,label){
         goPage(4);
       },1200);
     }
-  },5000); // toutes les 5 secondes — 60×5 = 5 minutes
+  },5000);
 }
 
-// ── VÉRIFIER STATUT SOLEASPAY (via proxy Vercel) ──
+// ── VÉRIFIER STATUT ──
 async function verifierSP(txId){
   try{
-    const url = '/api/soleaspay?action=status&token=' + encodeURIComponent(txId) + '&order_id=' + encodeURIComponent(txId);
-    const r = await fetch(url);
-    const d = await r.json().catch(()=>({}));
-    console.log('[POLL status]', d?.status, d?._raw_status, d);
-
-    // Le proxy normalise déjà → d.status vaut 'success', 'failed' ou 'pending'
-    const s = (d?.status || '').toLowerCase();
-    if(s === 'success') return 'success';
-    if(s === 'failed')  return 'failed';
-
-    // Vérification brute en cas de format inattendu
-    const raw = (d?._raw_status || d?.data?.status || d?.statut || '').toLowerCase();
+    const url='/api/soleaspay?action=status&token='+encodeURIComponent(txId)+'&order_id='+encodeURIComponent(txId);
+    const r=await fetch(url);
+    const d=await r.json().catch(()=>({}));
+    console.log('[POLL status]',d?.status,d?._raw_status,d);
+    const s=(d?.status||'').toLowerCase();
+    if(s==='success') return 'success';
+    if(s==='failed')  return 'failed';
+    const raw=(d?._raw_status||d?.data?.status||d?.statut||'').toLowerCase();
     if(['success','successful','paid','completed','approved'].includes(raw)) return 'success';
     if(['failed','failure','cancelled','rejected','declined','no_paid','no paid'].includes(raw)) return 'failed';
-
     return 'pending';
   }catch(e){
-    console.warn('[POLL error]', e.message);
+    console.warn('[POLL error]',e.message);
     return 'pending';
   }
 }
@@ -899,17 +882,14 @@ async function confirmerPlan(ref,txId,mont,label){
   $s('t3-title','Paiement confirmé !');
   $s('t3-sub','Votre plan est en cours d\'activation...');
 
-  // Mettre à jour en base
   await SB.from('recharges')
     .update({statut:'valide',valide_le:new Date().toISOString(),ref_transaction:txId||ref})
     .eq('ref_transaction',ref)
     .eq('user_id',U.id);
 
-  // Rafraîchir solde
   const{data:np}=await SB.from('profiles').select('solde,vip_niveau').eq('id',U.id).single();
   if(np) $s('tb-solde',fmt(np.solde||0)+' F');
 
-  // Page succès
   $s('suc-emoji','🎉');
   $s('suc-title','Paiement confirmé !');
   $s('suc-sub','Votre plan a été activé automatiquement. Bonne chance !');
@@ -928,7 +908,7 @@ async function sauvegarderRecharge(ref,txId,mont,label,statut){
     num_expediteur:phoneNum,
     ref_transaction:txId||ref,
     montant_envoye:mont,
-    pays:'cm',
+    pays:currentPays.toLowerCase(),
     statut:statut,
     created_at:new Date().toISOString()
   };
@@ -969,7 +949,7 @@ async function chargerHistorique(){
   const stl={'valide':'✅ Validé','en_attente':'⏳ En attente','en_attente_paiement':'⏳ En cours','rejete':'❌ Rejeté'};
   list.innerHTML=h.map(r=>{
     const d=new Date(r.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-    const ico=r.operateur==='wave'?'🌊':r.operateur==='orange'?'🍊':r.operateur==='mtn'?'📱':'💳';
+    const ico=r.operateur?.includes('wave')?'🌊':r.operateur?.includes('orange')?'🍊':r.operateur?.includes('mtn')?'📱':r.operateur?.includes('tmoney')?'💙':r.operateur?.includes('flooz')?'🟣':'💳';
     return `<div class="hist-item">
       <div class="hi-ico">${ico}</div>
       <div class="hi-info">
@@ -998,41 +978,36 @@ init();
 
 // ── Détecter retour depuis SoleasPay ──
 (function checkRetourMF(){
-  const params = new URLSearchParams(window.location.search);
-  const status = params.get('status');
-  const token  = params.get('token') || localStorage.getItem('mf_last_token');
+  const params=new URLSearchParams(window.location.search);
+  const status=params.get('status');
+  const token =params.get('token')||localStorage.getItem('mf_last_token');
 
-  if(status === 'success' && token){
-    // L'utilisateur revient de la page SoleasPay après paiement
+  if(status==='success'&&token){
     localStorage.removeItem('mf_last_token');
-    const planLabel = localStorage.getItem('mf_plan_label') || 'Plan VGN';
-    const mont      = parseInt(localStorage.getItem('mf_montant') || '0');
-    const ref       = localStorage.getItem('mf_ref') || token;
+    const planLabel=localStorage.getItem('mf_plan_label')||'Plan VGN';
+    const mont     =parseInt(localStorage.getItem('mf_montant')||'0');
+    const ref      =localStorage.getItem('mf_ref')||token;
 
-    // Afficher page succès directement
     goPage(4);
     $s('suc-emoji','🎉');
     $s('suc-title','Paiement confirmé !');
     $s('suc-sub','Votre plan a été activé automatiquement.');
     $s('suc-badge','✅ '+planLabel+' — Activé !');
 
-    // Mettre à jour en base
     (async()=>{
       const{data:{session}}=await SB.auth.getSession();
       if(session?.user?.id){
         await SB.from('recharges')
-          .update({statut:'valide', valide_le:new Date().toISOString(), ref_transaction:token})
-          .eq('ref_transaction', ref)
-          .eq('user_id', session.user.id);
-        // Rafraîchir solde
+          .update({statut:'valide',valide_le:new Date().toISOString(),ref_transaction:token})
+          .eq('ref_transaction',ref)
+          .eq('user_id',session.user.id);
         const{data:np}=await SB.from('profiles').select('solde').eq('id',session.user.id).single();
         if(np) $s('tb-solde',fmt(np.solde||0)+' F');
       }
       await chargerHistorique();
     })();
 
-    // Nettoyer l'URL
-    window.history.replaceState({}, '', window.location.pathname);
+    window.history.replaceState({},'',window.location.pathname);
     toast('🎉 Paiement confirmé !','ok');
   }
 })();
