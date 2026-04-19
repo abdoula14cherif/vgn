@@ -111,17 +111,23 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .pay-ttl{font-size:.82rem;font-weight:900;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:7px}
 .pay-ttl::after{content:'';flex:1;height:1px;background:var(--bd)}
 
+/* PAYS SELECTOR */
+.pays-scroll{display:flex;gap:7px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;margin-bottom:14px;padding-bottom:2px}
+.pays-scroll::-webkit-scrollbar{display:none}
+.pays-btn{flex-shrink:0;padding:6px 13px;border:2px solid var(--bd);border-radius:99px;
+  background:#F8FAFB;font-family:'Nunito',sans-serif;font-size:.65rem;font-weight:800;
+  color:var(--mu);cursor:pointer;transition:all .18s;white-space:nowrap}
+.pays-btn.on{background:var(--g);border-color:var(--g);color:#fff}
+
 /* OPÉRATEURS */
 .ops-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
-.op-btn{padding:13px 6px;border:2px solid var(--bd);border-radius:14px;background:#F8FAFB;
+.op-btn{padding:11px 5px;border:2px solid var(--bd);border-radius:14px;background:#F8FAFB;
   cursor:pointer;text-align:center;transition:all .18s;user-select:none}
 .op-btn:active{transform:scale(.93)}
-.op-btn.sel-orange{border-color:#FF6600;background:#FFF7ED;box-shadow:0 3px 12px rgba(255,102,0,.2)}
-.op-btn.sel-mtn{border-color:#EAB308;background:#FEFCE8;box-shadow:0 3px 12px rgba(234,179,8,.2)}
-.op-btn.sel-wave{border-color:#06B6D4;background:#ECFEFF;box-shadow:0 3px 12px rgba(6,182,212,.2)}
-.ob-ico{font-size:1.6rem;margin-bottom:4px;line-height:1}
-.ob-name{font-size:.6rem;font-weight:900;color:var(--txt)}
-.ob-tag{font-size:.52rem;font-weight:800;color:var(--g);margin-top:2px}
+.op-btn.sel-op{border-color:var(--g);background:#F0FDF4;box-shadow:0 3px 12px rgba(22,163,74,.2)}
+.ob-ico{font-size:1.5rem;margin-bottom:3px;line-height:1}
+.ob-name{font-size:.58rem;font-weight:900;color:var(--txt);line-height:1.2}
+.ob-tag{font-size:.5rem;font-weight:800;color:var(--g);margin-top:2px}
 
 /* NUMÉRO */
 .num-lbl{font-size:.72rem;font-weight:900;color:var(--txt);margin-bottom:7px;display:block}
@@ -376,22 +382,18 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="pay-card">
       <div class="pay-ttl">📲 Opérateur Mobile Money</div>
 
-      <div class="ops-grid">
-        <div class="op-btn" id="op-orange" onclick="selOp('orange')">
-          <div class="ob-ico">🍊</div>
-          <div class="ob-name">Orange Money</div>
-          <div class="ob-tag">✓ Disponible</div>
-        </div>
-        <div class="op-btn" id="op-mtn" onclick="selOp('mtn')">
-          <div class="ob-ico">📱</div>
-          <div class="ob-name">MTN MoMo</div>
-          <div class="ob-tag">✓ Disponible</div>
-        </div>
-        <div class="op-btn" id="op-wave" onclick="selOp('wave')">
-          <div class="ob-ico">🌊</div>
-          <div class="ob-name">Wave</div>
-          <div class="ob-tag">✓ Disponible</div>
-        </div>
+      <!-- SÉLECTEUR PAYS -->
+      <div class="pays-scroll" id="pays-scroll">
+        <button class="pays-btn on" onclick="selPays('CM')">🇨🇲 Cameroun</button>
+        <button class="pays-btn" onclick="selPays('CI')">🇨🇮 Côte d'Ivoire</button>
+        <button class="pays-btn" onclick="selPays('BF')">🇧🇫 Burkina Faso</button>
+        <button class="pays-btn" onclick="selPays('BJ')">🇧🇯 Bénin</button>
+        <button class="pays-btn" onclick="selPays('TG')">🇹🇬 Togo</button>
+      </div>
+
+      <!-- OPÉRATEURS PAR PAYS -->
+      <div class="ops-grid" id="ops-grid">
+        <!-- rempli dynamiquement -->
       </div>
 
       <label class="num-lbl" id="num-lbl">Votre numéro Mobile Money</label>
@@ -593,9 +595,11 @@ function checkSolde(){
 
 // ── PAGE 2 ──
 function initPage2(){
+  // Afficher les opérateurs du pays courant
+  renderOps(currentPays);
   opSel=null; phoneNum=''; spTxId=null; spRef=null; spPoll=0;
   clearInterval(spInterval);
-  Object.keys(SP_OPS).forEach(k=>{const e=$('op-'+k);if(e)e.className='op-btn';});
+  document.querySelectorAll('.op-btn').forEach(b=>b.classList.remove('sel-op'));
   const ph=$('num-phone'); if(ph) ph.value='';
   const nf=$('num-flag');  if(nf) nf.textContent='📱';
   const nr=$('num-row');   if(nr) nr.style.borderColor='var(--bd)';
@@ -611,15 +615,45 @@ function initPage2(){
   $s('ah-plan',label);$s('ah-amount',fmtF(mont));
 }
 
+// ── PAYS ──
+function selPays(pays){
+  currentPays = pays;
+  // Mettre à jour les boutons pays
+  document.querySelectorAll('.pays-btn').forEach((b,i)=>{
+    const codes=['CM','CI','BF','BJ','TG'];
+    b.className='pays-btn'+(codes[i]===pays?' on':'');
+  });
+  opSel = null;
+  renderOps(pays);
+  const nf=$('num-flag'); if(nf) nf.textContent='📱';
+  const nl=$('num-lbl');  if(nl) nl.textContent='Votre numéro Mobile Money';
+  const nr=$('num-row');  if(nr) nr.style.borderColor='var(--bd)';
+  const rc=$('recap');    if(rc) rc.style.display='none';
+  const bp=$('btn-pay');  if(bp) bp.disabled=true;
+}
+
+function renderOps(pays){
+  const ops = SP_OPS_BY_PAYS[pays]||[];
+  const grid = $('ops-grid');
+  if(!grid) return;
+  grid.innerHTML = ops.map(op=>`
+    <div class="op-btn" id="op-${op.id}" onclick="selOp('${op.id}')" style="--op-color:${op.color}">
+      <div class="ob-ico">${op.flag}</div>
+      <div class="ob-name">${op.label}</div>
+      <div class="ob-tag">✓ Actif</div>
+    </div>`).join('');
+}
+
 // ── OPÉRATEUR ──
 function selOp(id){
   opSel=id;
-  Object.keys(SP_OPS).forEach(k=>{
-    const e=$('op-'+k);if(e)e.className='op-btn'+(k===id?' sel-'+k:'');
-  });
-  const nf=$('num-flag'); if(nf) nf.textContent=SP_OPS[id].flag;
-  const nl=$('num-lbl');  if(nl) nl.textContent='Votre numéro '+SP_OPS[id].label;
-  const nr=$('num-row');  if(nr) nr.style.borderColor=SP_OPS[id].color;
+  document.querySelectorAll('.op-btn').forEach(b=>b.classList.remove('sel-op'));
+  const el=$('op-'+id); if(el) el.classList.add('sel-op');
+  const op=SP_OPS[id];
+  if(!op) return;
+  const nf=$('num-flag'); if(nf) nf.textContent=op.flag;
+  const nl=$('num-lbl');  if(nl) nl.textContent='Votre numéro '+op.label;
+  const nr=$('num-row');  if(nr) nr.style.borderColor=op.color;
   updateRecap(); checkPeutPayer();
 }
 
@@ -687,13 +721,14 @@ async function lancerPaiement(){
     // ── APPEL PROXY VERCEL → SoleasPay ──
     // Le proxy /api/soleaspay évite le blocage CORS
     setP('Connexion au serveur de paiement...', 20);
-    const opCode = SP_OPS[opSel]?.code || 'mtn_mobile_money_CM';
+    const op = SP_OPS[opSel]; const opCode = op?.id || opSel; const serviceId = op?.serviceId || 1;
 
     const resp = await fetch('/api/soleaspay?action=pay', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         service:    opCode,
+        serviceId:  serviceId,
         wallet:     phoneNum,
         amount:     mont,
         currency:   'XAF',
