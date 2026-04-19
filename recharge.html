@@ -704,15 +704,20 @@ async function lancerPaiement(){
     const data = await resp.json().catch(()=>({}));
     console.log('SoleasPay via proxy:', resp.status, data);
 
-    // Détecter succès — SoleasPay peut retourner plusieurs formats
-    const ok = data?.status === 'success'
-            || data?.success === true
-            || data?.statut  === true
-            || (resp.status >= 200 && resp.status < 300 && !data?.error && !data?.message?.toLowerCase().includes('error'));
+    // Détecter succès — le proxy normalise déjà le status
+    const httpOk = resp.status >= 200 && resp.status < 300;
+    const spStatus = (data?.status || '').toLowerCase();
+    const hasError = data?.error || spStatus === 'failed';
+
+    const ok = (spStatus === 'success' || data?.success === true || data?.statut === true)
+            || (httpOk && !hasError && spStatus !== 'failed');
 
     const txId   = data?.token || data?.data?.token
                 || data?.transaction_id || data?.id || spRef;
     const payUrl = data?.url || data?.data?.url || data?.payment_url || null;
+
+    // Logger pour debug
+    console.log('[PAY result]', {status: spStatus, ok, txId, payUrl, data});
 
     if(ok) {
       spTxId = txId;
@@ -794,23 +799,30 @@ function demarrerPolling(ref,txId,mont,label){
         goPage(4);
       },1500);
     }
-  },5000); // Vérifier toutes les 5 secondes
+  },6000); // Vérifier toutes les 6 secondes
 }
 
 // ── VÉRIFIER STATUT SOLEASPAY (via proxy Vercel) ──
 async function verifierSP(txId){
   try{
-    const r = await fetch('/api/soleaspay?action=status&token=' + encodeURIComponent(txId));
-    if(!r.ok) return 'pending';
+    const url = '/api/soleaspay?action=status&token=' + encodeURIComponent(txId);
+    const r = await fetch(url);
     const d = await r.json().catch(()=>({}));
-    console.log('SoleasPay status:', d);
+    console.log('[POLL status]', d?.status, d?._raw_status, d);
 
-    const s = (d?.status || d?.data?.status || d?.statut || '').toLowerCase();
-    if(['success','successful','paid','completed','approved'].includes(s)) return 'success';
-    if(['failed','failure','cancelled','rejected','declined','no_paid','no paid'].includes(s)) return 'failed';
+    // Le proxy normalise déjà → d.status vaut 'success', 'failed' ou 'pending'
+    const s = (d?.status || '').toLowerCase();
+    if(s === 'success') return 'success';
+    if(s === 'failed')  return 'failed';
+
+    // Vérification brute en cas de format inattendu
+    const raw = (d?._raw_status || d?.data?.status || d?.statut || '').toLowerCase();
+    if(['success','successful','paid','completed','approved'].includes(raw)) return 'success';
+    if(['failed','failure','cancelled','rejected','declined','no_paid','no paid'].includes(raw)) return 'failed';
+
     return 'pending';
   }catch(e){
-    console.warn('Polling error:', e.message);
+    console.warn('[POLL error]', e.message);
     return 'pending';
   }
 }
