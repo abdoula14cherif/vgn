@@ -1,10 +1,19 @@
 {
+  "version": 2,
   "functions": {
-    "api/*.js": {
-      "runtime": "nodejs20.x"
+    "api/soleaspay.js": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 30
     }
   },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+  "routes": [
+    {
+      "src": "/api/soleaspay",
+      "dest": "/api/soleaspay.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 }
