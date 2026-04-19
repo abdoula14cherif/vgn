@@ -4,13 +4,25 @@
 
 const SP_KEY = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
 
-// Operator IDs SoleasPay (service ID dans le header)
-// Orange Money CM = à récupérer depuis SoleasPay dashboard
-// MTN MoMo CM = à récupérer depuis SoleasPay dashboard
-// On va d'abord récupérer la liste des services disponibles
+// IDs CONFIRMÉS depuis SoleasPay /api/agent/services
 const SERVICE_IDS = {
-  orange_money_CM:    2,  // à confirmer
-  mtn_mobile_money_CM: 1, // à confirmer
+  // Cameroun
+  mtn_CM:    1,   // MOMO CM — MTN MOBILE MONEY CM
+  orange_CM: 2,   // OM CM — ORANGE MONEY CM
+  // Côte d'Ivoire
+  orange_CI: 29,  // OM CI — ORANGE MONEY COTE D'IVOIRE
+  mtn_CI:    30,  // MOMO CI — MTN MONEY COTE D'IVOIRE
+  moov_CI:   31,  // MOOV CI
+  wave_CI:   32,  // WAVE CI
+  // Burkina Faso
+  moov_BF:   33,  // MOOV BF
+  orange_BF: 34,  // OM BF
+  // Bénin
+  mtn_BJ:    35,  // MOMO BJ
+  moov_BJ:   36,  // MOOV BJ
+  // Togo
+  tmoney_TG: 37,  // T-MONEY TG
+  moov_TG:   38,  // MOOV TG
 };
 
 module.exports = async function handler(req, res) {
@@ -52,8 +64,9 @@ module.exports = async function handler(req, res) {
       if (!service || !wallet || !amount)
         return res.status(400).json({ error: 'Champs requis: service, wallet, amount' });
 
-      // Récupérer le service ID (numérique) selon l'opérateur
-      const serviceId = SERVICE_IDS[service] || service;
+      // Utiliser le serviceId numérique passé directement depuis le frontend
+      // (confirmé depuis /api/agent/services)
+      const serviceId = body.serviceId || SERVICE_IDS[service] || service;
 
       const payload = {
         wallet:      String(wallet),
