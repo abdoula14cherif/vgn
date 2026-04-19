@@ -79,6 +79,10 @@ async function testPay() {
     const ok = d.status === 'success' || d.success === true;
     log('Réponse HTTP ' + r.status + ':\n' + JSON.stringify(d, null, 2), ok ? 'ok' : 'warn');
     
+    // Afficher quel endpoint a fonctionné
+    if(d._endpoint_used) log('🔗 Endpoint valide: ' + d._endpoint_used, 'ok');
+    if(d._endpoints_tried) log('❌ Tous ces endpoints ont échoué:\n' + d._endpoints_tried.join('\n'), 'err');
+
     if(d.token || d.transaction_id) {
       const token = d.token || d.transaction_id;
       log('🔑 Token: ' + token + '\n→ Lance le test statut dans 10s...', 'ok');
