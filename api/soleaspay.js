@@ -109,16 +109,34 @@ module.exports = async function handler(req, res) {
       try { json = JSON.parse(text); } catch { json = { raw: text }; }
       console.log('[SP pay] Réponse HTTP=' + r.status, text.slice(0, 500));
 
-      // SoleasPay retourne { "succès": true/false, ... } selon le dev Python
+      // SoleasPay retourne { "succès": true/false, "payId": "xxx", ... }
       const ok = json?.succès === true || json?.success === true
               || json?.statut === true || r.ok;
+
+      // Chercher le payId dans TOUS les champs possibles
+      const payId = json?.payId
+                 || json?.pay_id
+                 || json?.payid
+                 || json?.PayId
+                 || json?.transaction_id
+                 || json?.transactionId
+                 || json?.token
+                 || json?.id
+                 || json?.ref
+                 || json?.reference
+                 || null;
+
+      console.log('[SP pay] TOUS LES CHAMPS:', JSON.stringify(json));
+      console.log('[SP pay] payId trouvé:', payId);
 
       return res.status(200).json({
         ...json,
         status:  ok ? 'success' : 'failed',
-        token:   json?.payId || json?.pay_id || json?.token || json?.id || null,
-        url:     json?.url   || json?.payment_url || null,
+        token:   payId,  // le vrai payId pour la vérification
+        payId:   payId,
+        url:     json?.url || json?.payment_url || null,
         _http:   r.status,
+        _all_fields: Object.keys(json), // liste des champs pour debug
       });
     }
 
@@ -133,7 +151,11 @@ module.exports = async function handler(req, res) {
       const orderId = order_id || token;
       const payId   = token || '';
 
-      const url = `https://soleaspay.com/api/agent/verif-pay?orderId=${encodeURIComponent(orderId)}&payId=${encodeURIComponent(payId)}`;
+      // Si payId == orderId, c'est qu'on n'a pas eu le vrai payId → essayer sans payId
+      const isSameId = payId === orderId || payId === '';
+      const url = isSameId
+        ? `https://soleaspay.com/api/agent/verif-pay?orderId=${encodeURIComponent(orderId)}`
+        : `https://soleaspay.com/api/agent/verif-pay?orderId=${encodeURIComponent(orderId)}&payId=${encodeURIComponent(payId)}`;
       console.log('[SP status] URL:', url);
 
       const r = await fetch(url, {
