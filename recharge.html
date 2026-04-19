@@ -487,16 +487,20 @@ const SB = supabase.createClient(
 );
 
 // ── SOLEASPAY ──
-// ✅ Paiement via SoleasPay API directe
-const SP_API_KEY = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
-const SP_API_URL = 'https://api.soleaspay.com/api/v1/payment/collect';
-const SP_STATUS_URL = 'https://api.soleaspay.com/api/v1/payment/status/';
+// ✅ Paiement via SoleasPay
+// ⚠️ CORS : l'API SoleasPay ne peut PAS être appelée directement depuis le navigateur
+// → On utilise un proxy CORS public pour contourner ça sur Vercel (site statique)
+const SP_API_KEY  = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
+// Endpoint SoleasPay réel (source: github.com/MYSOLEAS/laravel-payment-package)
+const SP_API_BASE = 'https://app.soleaspay.com/api';
+const SP_API_PAY  = SP_API_BASE + '/collect';
+const SP_API_STATUS = SP_API_BASE + '/status/';
 
-// Operator IDs SoleasPay — valeurs officielles
+// Operator IDs EXACTS selon doc officielle SoleasPay (GitHub MYSOLEAS)
 const SP_OPS = {
-  orange: {code:'CM_ORANGEMONEY', label:'Orange Money', flag:'🍊', color:'#FF6600'},
-  mtn:    {code:'CM_MTNMOBILEMONEY', label:'MTN MoMo', flag:'📱', color:'#EAB308'},
-  wave:   {code:'CM_WAVE',        label:'Wave',         flag:'🌊', color:'#06B6D4'},
+  orange: {code:'orange_money_CM',    label:'Orange Money', flag:'🍊', color:'#FF6600'},
+  mtn:    {code:'mtn_mobile_money_CM', label:'MTN MoMo',   flag:'📱', color:'#EAB308'},
+  wave:   {code:'wave_CM',            label:'Wave',         flag:'🌊', color:'#06B6D4'},
 };
 
 // ── PLANS ──
@@ -684,62 +688,87 @@ async function lancerPaiement(){
 
     // ── APPEL SOLEASPAY API ──
     setP('Connexion à SoleasPay...', 20);
-    const opCode = SP_OPS[opSel]?.code || 'CM_MTNMOBILEMONEY';
+    const opCode = SP_OPS[opSel]?.code || 'mtn_mobile_money_CM';
 
-    const resp = await fetch(SP_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + SP_API_KEY
-      },
-      body: JSON.stringify({
-        amount:      mont,
-        currency:    'XAF',
-        operator:    opCode,
-        phone:       phoneNum,
-        reference:   spRef,
-        description: 'Recharge VGN - ' + planLabel,
-        customer: {
-          name:  P?.full_name || 'Client VGN',
-          email: U.email || 'client@vgn.com',
-          phone: phoneNum
+    // Corps de la requête selon doc SoleasPay officielle
+    const payBody = {
+      service:    opCode,
+      wallet:     phoneNum,
+      amount:     mont,
+      currency:   'XAF',
+      order_id:   spRef
+    };
+
+    // Essai 1 : appel direct (si SoleasPay a activé CORS)
+    let resp, data;
+    try {
+      resp = await fetch(SP_API_PAY, {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key':    SP_API_KEY,
+          'Authorization':'Bearer ' + SP_API_KEY
         },
-        callback_url: window.location.origin + '/recharge.html?status=success',
-        return_url:   window.location.origin + '/recharge.html?status=success'
-      })
-    });
+        body: JSON.stringify(payBody)
+      });
+      data = await resp.json().catch(()=>({}));
+    } catch(corsErr) {
+      // Essai 2 : proxy CORS de secours
+      console.warn('Direct CORS blocked, trying proxy...', corsErr.message);
+      try {
+        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SP_API_PAY);
+        resp = await fetch(proxyUrl, {
+          method:  'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key':    SP_API_KEY,
+            'Authorization':'Bearer ' + SP_API_KEY
+          },
+          body: JSON.stringify(payBody)
+        });
+        data = await resp.json().catch(()=>({}));
+      } catch(proxyErr) {
+        throw new Error('Impossible de joindre SoleasPay. Vérifiez votre connexion.');
+      }
+    }
 
-    const data = await resp.json().catch(()=>({}));
-    console.log('SoleasPay réponse:', resp.status, data);
+    console.log('SoleasPay réponse:', resp?.status, data);
 
-    // SoleasPay retourne: { success: true, data: { transaction_id, status, payment_url? } }
-    // Ou selon leur format: { statut: true, token, url }
-    const ok   = data.success === true || data.statut === true || resp.status === 200 || resp.status === 201;
-    const txId = data?.data?.transaction_id || data?.data?.id || data?.token || data?.transaction_id || spRef;
-    const payUrl = data?.data?.payment_url || data?.url || null;
+    // SoleasPay retourne: { status: 'success'|'failed', token, url?, message }
+    // ou: { success: true/false, data: {...} }
+    const ok   = data?.status === 'success'
+              || data?.success === true
+              || data?.statut  === true
+              || (resp?.status >= 200 && resp?.status < 300 && !data?.error);
+
+    const txId  = data?.token || data?.data?.token
+               || data?.transaction_id || data?.data?.transaction_id
+               || data?.id || spRef;
+    const payUrl = data?.url || data?.data?.url || data?.payment_url || null;
 
     if(ok) {
       spTxId = txId;
-      setP('✅ Demande envoyée — en attente de confirmation...', 50);
+      setP('✅ Demande envoyée — en attente de confirmation...', 55);
 
-      // Sauvegarder en base
       await sauvegarderRecharge(spRef, spTxId, mont, planLabel, 'en_attente_paiement');
 
-      // Sauvegarder infos pour retour éventuel
       localStorage.setItem('mf_last_token', spTxId);
       localStorage.setItem('mf_plan_label', planLabel);
       localStorage.setItem('mf_montant', String(mont));
       localStorage.setItem('mf_ref', spRef);
 
       if(payUrl) {
-        // Si SoleasPay retourne une URL de paiement → rediriger
-        setP('✅ Redirection vers SoleasPay...', 60);
+        setP('✅ Redirection vers SoleasPay...', 65);
         setTimeout(() => { window.location.href = payUrl; }, 800);
       } else {
-        // Paiement direct (STK push) → polling statut
-        setP('📱 Vérifiez votre téléphone Mobile Money...', 60);
+        // STK push envoyé → polling
+        setP('📱 Validez sur votre téléphone Mobile Money...', 65);
         demarrerPolling(spRef, spTxId, mont, planLabel);
       }
+    } else {
+      const errMsg = data?.message || data?.error || data?.data?.message
+                  || 'Erreur SoleasPay ('+resp?.status+')';
+      throw new Error(errMsg);
     } else {
       const errMsg = data?.message || data?.error || data?.data?.message || 'Erreur SoleasPay ('+resp.status+')';
       throw new Error(errMsg);
@@ -806,30 +835,31 @@ function demarrerPolling(ref,txId,mont,label){
 // ── VÉRIFIER STATUT SOLEASPAY ──
 async function verifierSP(txId){
   try{
-    // Essayer avec la référence locale d'abord
-    const url = SP_STATUS_URL + encodeURIComponent(txId);
-    const r = await fetch(url, {
-      headers: {
-        'Authorization': 'Bearer ' + SP_API_KEY,
-        'Content-Type': 'application/json'
-      }
-    });
-    if(!r.ok) return 'pending';
-    const d = await r.json().catch(()=>({}));
-    console.log('SoleasPay status:', d);
+    const statusUrl = SP_API_STATUS + encodeURIComponent(txId);
+    let r, d;
 
-    // SoleasPay peut retourner différents formats selon version API
-    const s = (
-      d?.data?.status ||
-      d?.data?.statut ||
-      d?.status ||
-      d?.statut || ''
-    ).toLowerCase();
+    // Essai direct
+    try {
+      r = await fetch(statusUrl, {
+        headers: { 'x-api-key': SP_API_KEY, 'Authorization': 'Bearer ' + SP_API_KEY }
+      });
+      d = await r.json().catch(()=>({}));
+    } catch {
+      // Fallback proxy
+      try {
+        r = await fetch('https://corsproxy.io/?' + encodeURIComponent(statusUrl), {
+          headers: { 'x-api-key': SP_API_KEY, 'Authorization': 'Bearer ' + SP_API_KEY }
+        });
+        d = await r.json().catch(()=>({}));
+      } catch { return 'pending'; }
+    }
 
-    // Statuts succès SoleasPay
+    console.log('SoleasPay status check:', d);
+
+    // Format réponse SoleasPay: { status: 'success'|'pending'|'failed', token, ... }
+    const s = (d?.status || d?.data?.status || d?.statut || '').toLowerCase();
     if(['success','successful','paid','completed','approved'].includes(s)) return 'success';
-    // Statuts échec
-    if(['failed','failure','cancelled','rejected','declined','no paid'].includes(s)) return 'failed';
+    if(['failed','failure','cancelled','rejected','declined','no_paid','no paid'].includes(s)) return 'failed';
     return 'pending';
   }catch(e){
     console.warn('Polling error:', e.message);
