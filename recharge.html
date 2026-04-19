@@ -767,10 +767,7 @@ async function lancerPaiement(){
       }
     } else {
       const errMsg = data?.message || data?.error || data?.data?.message
-                  || 'Erreur SoleasPay ('+resp?.status+')';
-      throw new Error(errMsg);
-    } else {
-      const errMsg = data?.message || data?.error || data?.data?.message || 'Erreur SoleasPay ('+resp.status+')';
+                  || 'Erreur SoleasPay ('+(resp?.status||'?')+')';
       throw new Error(errMsg);
     }
 
