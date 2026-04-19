@@ -552,7 +552,8 @@ function goPage(n){
   });
   setStep(n);
   window.scrollTo({top:0,behavior:'smooth'});
-  if(n===2) initPage2();
+  // initPage2 APRÈS que la page soit visible (sinon les éléments sont hidden)
+  if(n===2) setTimeout(initPage2, 0);
 }
 
 // ── TYPE ──
@@ -595,11 +596,10 @@ function checkSolde(){
 
 // ── PAGE 2 ──
 function initPage2(){
-  // Afficher les opérateurs du pays courant
-  renderOps(currentPays);
   opSel=null; phoneNum=''; spTxId=null; spRef=null; spPoll=0;
   clearInterval(spInterval);
-  document.querySelectorAll('.op-btn').forEach(b=>b.classList.remove('sel-op'));
+
+  // Reset UI
   const ph=$('num-phone'); if(ph) ph.value='';
   const nf=$('num-flag');  if(nf) nf.textContent='📱';
   const nr=$('num-row');   if(nr) nr.style.borderColor='var(--bd)';
@@ -607,12 +607,18 @@ function initPage2(){
   const bp=$('btn-pay');   if(bp) bp.disabled=true;
   const nh=$('num-hint');
   if(nh){nh.textContent='Entrez le numéro à débiter';nh.style.color='var(--mu)';}
-  // Montant
-  let mont=0,label='';
-  if(selType==='vip'&&planData)      {mont=planData.depot;label=planData.label;}
-  else if(selType==='fond'&&fondData){mont=parseFloat($('inp-fond')?.value)||0;label=fondData.nom+' +'+fondData.taux+'%';}
-  else                               {mont=parseFloat($('inp-solde')?.value)||0;label='Recharge Solde';}
-  $s('ah-plan',label);$s('ah-amount',fmtF(mont));
+
+  // Afficher montant et plan
+  let mont=0, label='';
+  if(selType==='vip'&&planData)       { mont=planData.depot;  label=planData.label; }
+  else if(selType==='fond'&&fondData) { mont=parseFloat($('inp-fond')?.value)||0; label=fondData.nom+' +'+fondData.taux+'%'; }
+  else                                { mont=parseFloat($('inp-solde')?.value)||0; label='Recharge Solde'; }
+
+  const elPlan = $('ah-plan');   if(elPlan)   elPlan.textContent   = label;
+  const elAmt  = $('ah-amount'); if(elAmt)    elAmt.textContent    = fmtF(mont);
+
+  // Afficher les opérateurs du pays courant (après que page2 est visible)
+  renderOps(currentPays);
 }
 
 // ── PAYS ──
