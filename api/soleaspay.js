@@ -1,28 +1,27 @@
 // Vercel Serverless Function — Proxy SoleasPay
-// Endpoint OFFICIEL trouvé: https://soleaspay.com/api/agent/bills/v3
-// Source: code Python du développeur sur l'autre site
+// Endpoint officiel: https://soleaspay.com/api/agent/bills/v3
 
 const SP_KEY = 'SP_DQnD9bXH0-vd5R-jxtc0EXUsa_f0wUxBzCkW0AhCu6Q_AP';
 
-// IDs CONFIRMÉS depuis SoleasPay /api/agent/services
+// IDs confirmés depuis /api/agent/services
 const SERVICE_IDS = {
   // Cameroun
-  mtn_CM:    1,   // MOMO CM — MTN MOBILE MONEY CM
-  orange_CM: 2,   // OM CM — ORANGE MONEY CM
+  orange_money_CM:    2,
+  mtn_mobile_money_CM: 1,
   // Côte d'Ivoire
-  orange_CI: 29,  // OM CI — ORANGE MONEY COTE D'IVOIRE
-  mtn_CI:    30,  // MOMO CI — MTN MONEY COTE D'IVOIRE
-  moov_CI:   31,  // MOOV CI
-  wave_CI:   32,  // WAVE CI
+  orange_money_CI:   29,
+  mtn_mobile_money_CI:30,
+  wave_CI:           32,
+  moov_CI:           31,
   // Burkina Faso
-  moov_BF:   33,  // MOOV BF
-  orange_BF: 34,  // OM BF
+  moov_BF:           33,
+  orange_money_BF:   34,
   // Bénin
-  mtn_BJ:    35,  // MOMO BJ
-  moov_BJ:   36,  // MOOV BJ
+  mtn_mobile_money_BJ:35,
+  moov_BJ:           36,
   // Togo
-  tmoney_TG: 37,  // T-MONEY TG
-  moov_TG:   38,  // MOOV TG
+  tmoney_TG:         37,
+  moov_TG:           38,
 };
 
 module.exports = async function handler(req, res) {
@@ -31,42 +30,51 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const action = req.query?.action || (req.body && req.body.action) || 'pay';
+  const action = req.query?.action || 'pay';
+
+  // ── PARSE BODY manuellement si req.body est undefined ──
+  let body = req.body;
+  if (!body && req.method === 'POST') {
+    try {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      const raw = Buffer.concat(chunks).toString('utf8');
+      body = raw ? JSON.parse(raw) : {};
+    } catch(e) {
+      body = {};
+    }
+  }
+  body = body || {};
 
   try {
-
-    // ── ACTION TEST ──
+    // ── TEST ──
     if (action === 'test') {
       return res.status(200).json({ ok: true, message: 'Proxy SoleasPay opérationnel', ts: new Date().toISOString() });
     }
 
-    // ── ACTION SERVICES — récupérer la liste des services/opérateurs ──
+    // ── SERVICES ──
     if (action === 'services') {
       const r = await fetch('https://soleaspay.com/api/agent/services', {
-        method: 'GET',
-        headers: {
-          'x-api-key': SP_KEY,
-          'Content-Type': 'application/json',
-        }
+        headers: { 'x-api-key': SP_KEY, 'Content-Type': 'application/json' }
       });
-      const text = await r.text();
-      let json;
-      try { json = JSON.parse(text); } catch { json = { raw: text }; }
-      console.log('[SP services] HTTP='+r.status, text.slice(0,500));
-      return res.status(200).json({ _http: r.status, ...json });
+      const d = await r.json().catch(() => ({}));
+      return res.status(200).json({ _http: r.status, ...d });
     }
 
-    // ── ACTION PAY ──
+    // ── PAY ──
     if (action === 'pay') {
       if (req.method !== 'POST') return res.status(405).json({ error: 'POST requis' });
 
-      const { service, wallet, amount, currency, order_id, payer, payerEmail } = req.body || {};
-      if (!service || !wallet || !amount)
-        return res.status(400).json({ error: 'Champs requis: service, wallet, amount' });
+      const { service, serviceId, wallet, amount, currency, order_id, payer, payerEmail } = body;
 
-      // Utiliser le serviceId numérique passé directement depuis le frontend
-      // (confirmé depuis /api/agent/services)
-      const serviceId = body.serviceId || SERVICE_IDS[service] || service;
+      console.log('[SP pay] body reçu:', JSON.stringify(body));
+
+      if (!wallet || !amount) {
+        return res.status(400).json({ error: 'Champs requis: wallet, amount', body_received: body });
+      }
+
+      // Résoudre le service ID numérique
+      const numServiceId = serviceId || SERVICE_IDS[service] || 1;
 
       const payload = {
         wallet:      String(wallet),
@@ -80,15 +88,13 @@ module.exports = async function handler(req, res) {
         failureUrl:  'https://vgn-two.vercel.app/recharge.html?status=failed',
       };
 
-      // Headers EXACTS selon le code Python du dev
       const headers = {
         'x-api-key':    SP_KEY,
-        'operation':    '2',           // opération de collecte
-        'service':      String(serviceId),
+        'operation':    '2',
+        'service':      String(numServiceId),
         'Content-Type': 'application/json',
       };
 
-      console.log('[SP pay] URL: https://soleaspay.com/api/agent/bills/v3');
       console.log('[SP pay] Headers:', JSON.stringify(headers));
       console.log('[SP pay] Payload:', JSON.stringify(payload));
 
@@ -101,39 +107,38 @@ module.exports = async function handler(req, res) {
       const text = await r.text();
       let json;
       try { json = JSON.parse(text); } catch { json = { raw: text }; }
-      console.log('[SP pay] Response HTTP='+r.status, text.slice(0,500));
+      console.log('[SP pay] Réponse HTTP=' + r.status, text.slice(0, 500));
 
-      // Le dev vérifie result.get("succès") en Python
-      const ok = json?.succès === true || json?.success === true || json?.statut === true || r.ok;
+      // SoleasPay retourne { "succès": true/false, ... } selon le dev Python
+      const ok = json?.succès === true || json?.success === true
+              || json?.statut === true || r.ok;
 
       return res.status(200).json({
         ...json,
-        status: ok ? 'success' : 'failed',
-        token:  json?.payId || json?.pay_id || json?.token || json?.id || null,
-        url:    json?.url   || json?.payment_url || null,
-        _http:  r.status,
+        status:  ok ? 'success' : 'failed',
+        token:   json?.payId || json?.pay_id || json?.token || json?.id || null,
+        url:     json?.url   || json?.payment_url || null,
+        _http:   r.status,
       });
     }
 
-    // ── ACTION STATUS ──
+    // ── STATUS ──
     if (action === 'status') {
-      const token    = req.query?.token    || (req.body && req.body.token);
-      const order_id = req.query?.order_id || (req.body && req.body.order_id);
+      const token    = req.query?.token    || body.token;
+      const order_id = req.query?.order_id || body.order_id;
       if (!token && !order_id) return res.status(400).json({ error: 'token ou order_id requis' });
 
-      // URL de vérification EXACTE selon le code Python
-      const url = `https://soleaspay.com/api/agent/verif-pay?orderId=${encodeURIComponent(order_id||token)}&payId=${encodeURIComponent(token||'')}`;
+      const url = `https://soleaspay.com/api/agent/verif-pay?orderId=${encodeURIComponent(order_id || token)}&payId=${encodeURIComponent(token || '')}`;
       console.log('[SP status] URL:', url);
 
       const r = await fetch(url, {
-        method:  'GET',
         headers: { 'x-api-key': SP_KEY },
       });
 
       const text = await r.text();
       let json;
       try { json = JSON.parse(text); } catch { json = { raw: text }; }
-      console.log('[SP status] Response HTTP='+r.status, text.slice(0,400));
+      console.log('[SP status] HTTP=' + r.status, text.slice(0, 400));
 
       const raw = (json?.status || json?.statut || json?.etat || '').toLowerCase();
       let normalized = 'pending';
@@ -148,34 +153,10 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // ── ACTION SCAN SERVICES ── pour trouver les vrais IDs opérateurs
-    if (action === 'scan') {
-      const results = {};
-      // Essayer de récupérer la liste des services
-      for (const url of [
-        'https://soleaspay.com/api/agent/services',
-        'https://soleaspay.com/api/agent/operators',
-        'https://soleaspay.com/api/services',
-        'https://app.soleaspay.com/api/agent/services',
-      ]) {
-        try {
-          const r = await fetch(url, { headers: { 'x-api-key': SP_KEY, 'Content-Type': 'application/json' } });
-          const text = await r.text();
-          if (!text.trim().startsWith('<')) {
-            results[url] = `HTTP ${r.status}: ${text.slice(0,200)}`;
-            break;
-          } else {
-            results[url] = 'HTML (mauvais endpoint)';
-          }
-        } catch(e) { results[url] = 'Erreur: ' + e.message; }
-      }
-      return res.status(200).json({ results });
-    }
-
     return res.status(400).json({ error: 'action inconnue: ' + action });
 
   } catch (err) {
-    console.error('[SP error]', err.message);
+    console.error('[SP error]', err.message, err.stack);
     return res.status(500).json({ error: err.message, status: 'failed' });
   }
 };
