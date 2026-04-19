@@ -693,11 +693,13 @@ async function lancerPaiement(){
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        service:  opCode,
-        wallet:   phoneNum,
-        amount:   mont,
-        currency: 'XAF',
-        order_id: spRef
+        service:    opCode,
+        wallet:     phoneNum,
+        amount:     mont,
+        currency:   'XAF',
+        order_id:   spRef,
+        payer:      P?.full_name || P?.nom || 'Client VGN',
+        payerEmail: U?.email || ''
       })
     });
 
@@ -725,7 +727,8 @@ async function lancerPaiement(){
 
       await sauvegarderRecharge(spRef, spTxId, mont, planLabel, 'en_attente_paiement');
 
-      localStorage.setItem('mf_last_token', spTxId);
+      localStorage.setItem('mf_last_token', spTxId || spRef);
+      localStorage.setItem('mf_last_order', spRef);
       localStorage.setItem('mf_plan_label', planLabel);
       localStorage.setItem('mf_montant', String(mont));
       localStorage.setItem('mf_ref', spRef);
@@ -812,7 +815,7 @@ function demarrerPolling(ref,txId,mont,label){
 // ── VÉRIFIER STATUT SOLEASPAY (via proxy Vercel) ──
 async function verifierSP(txId){
   try{
-    const url = '/api/soleaspay?action=status&token=' + encodeURIComponent(txId);
+    const url = '/api/soleaspay?action=status&token=' + encodeURIComponent(txId) + '&order_id=' + encodeURIComponent(txId);
     const r = await fetch(url);
     const d = await r.json().catch(()=>({}));
     console.log('[POLL status]', d?.status, d?._raw_status, d);
