@@ -766,10 +766,18 @@ function demarrerPolling(ref,txId,mont,label){
   let pct=45;
   spInterval=setInterval(async()=>{
     spPoll++;
-    pct=Math.min(pct+3,88);
-    setP('⏳ Vérification du paiement ('+spPoll+')...',pct);
+    pct = Math.min(pct + 1.2, 88);
+    const msgs = [
+      '📱 Validez la demande sur votre téléphone...',
+      '⏳ En attente de confirmation Mobile Money...',
+      '🔄 Vérification en cours...',
+      '📲 Avez-vous validé sur votre téléphone ?',
+      '⏳ Toujours en attente de votre validation...',
+    ];
+    setP(msgs[Math.floor((spPoll-1)/4) % msgs.length] + ' ('+spPoll+')', pct);
 
     const statut = await verifierSP(txId);
+    console.log('[POLL '+spPoll+'] statut='+statut+' ref='+txId);
 
     if(statut==='success'){
       clearInterval(spInterval);
@@ -779,27 +787,26 @@ function demarrerPolling(ref,txId,mont,label){
     if(statut==='failed'){
       clearInterval(spInterval);
       setP('❌ Paiement refusé par l\'opérateur',0);
-      toast('❌ Paiement refusé — vérifiez votre solde Mobile Money','err');
+      toast('❌ Paiement refusé ou annulé. Réessayez.','err');
       await SB.from('recharges').update({statut:'rejete'}).eq('ref_transaction',ref).eq('user_id',U.id);
-      setTimeout(()=>goPage(2),2000);
+      setTimeout(()=>goPage(2),2500);
       return;
     }
-    // Pending — continuer
-    if(spPoll>=30){
-      // 2.5 minutes dépassées
+    // Après 60 tentatives (5 minutes) → attente manuelle
+    if(spPoll>=60){
       clearInterval(spInterval);
-      setP('⏳ Délai dépassé — demande en attente',90);
-      toast('⏳ Délai dépassé — nous vérifierons manuellement','ok');
+      setP('⏳ Validation en attente...',92);
+      toast('⏳ En attente — plan activé dès confirmation','ok');
       setTimeout(()=>{
         $s('suc-emoji','⏳');
         $s('suc-title','En attente de confirmation');
-        $s('suc-sub','Le paiement est en cours de traitement. Votre plan sera activé dès confirmation.');
-        $s('suc-badge','⏳ '+label+' — En cours');
+        $s('suc-sub','Votre demande a bien été envoyée. Validez sur votre téléphone Mobile Money. Votre plan sera activé automatiquement.');
+        $s('suc-badge','⏳ '+label+' — En attente');
         chargerHistorique();
         goPage(4);
-      },1500);
+      },1200);
     }
-  },6000); // Vérifier toutes les 6 secondes
+  },5000); // toutes les 5 secondes — 60×5 = 5 minutes
 }
 
 // ── VÉRIFIER STATUT SOLEASPAY (via proxy Vercel) ──
