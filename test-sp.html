@@ -20,6 +20,7 @@ h2{color:#4ade80;margin:16px 0 8px;}
 <h2>🔧 Test Proxy SoleasPay — VGN</h2>
 
 <button onclick="testProxy()">✅ Test proxy</button>
+<button onclick="scanEndpoints()" style="background:#7C3AED">🔍 Scanner endpoints</button>
 <button onclick="testPay()">💳 Test paiement</button>
 <button class="red" onclick="clearLog()">🗑 Effacer</button>
 
@@ -46,6 +47,26 @@ function log(msg, cls='') {
   el.prepend(pre);
 }
 function clearLog() { document.getElementById('log').innerHTML=''; }
+
+async function scanEndpoints() {
+  log('🔍 Scan de tous les endpoints SoleasPay...');
+  try {
+    const r = await fetch('/api/soleaspay?action=scan');
+    const d = await r.json();
+    if(d.results) {
+      let txt = 'Résultats scan:\n';
+      for(const [url, result] of Object.entries(d.results)) {
+        const ok = !result.includes('HTML') && !result.includes('Erreur') && !result.includes('404');
+        txt += (ok ? '✅' : '❌') + ' ' + url + '\n   → ' + result + '\n';
+      }
+      log(txt, 'ok');
+    } else {
+      log(JSON.stringify(d, null, 2), 'warn');
+    }
+  } catch(e) {
+    log('❌ ' + e.message, 'err');
+  }
+}
 
 async function testProxy() {
   log('⏳ Test proxy en cours...');
