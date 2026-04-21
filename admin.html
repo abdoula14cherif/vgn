@@ -126,10 +126,8 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .card{background:var(--s2);border-radius:14px;border:1px solid var(--bd);
   overflow:hidden;transition:border-color .2s}
 .card.open{border-color:var(--bd2)}
-.card-head{padding:11px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(255,255,255,.05);touch-action:manipulation}
-.card-head:active{background:rgba(255,255,255,.06)}
-.card-chevron{font-size:1rem;color:var(--mu);margin-left:auto;flex-shrink:0;transition:transform .2s;font-weight:900;pointer-events:none}
-.card.open .card-chevron{transform:rotate(90deg)}
+.card-head{padding:11px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none}
+.card-head:active{background:rgba(255,255,255,.02)}
 .card-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
   justify-content:center;font-size:1rem;flex-shrink:0}
 .ci-w{background:var(--y2)}.ci-g{background:var(--g2)}.ci-r{background:var(--r2)}
@@ -138,13 +136,13 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .card-name{font-size:.77rem;font-weight:600;color:var(--txt);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-meta{font-size:.61rem;color:var(--mu);margin-top:2px}
-.card-right{text-align:right;flex-shrink:0;margin-right:4px}
+.card-right{text-align:right;flex-shrink:0}
 .card-amount{font-size:.88rem;font-weight:700;color:var(--txt);font-family:'DM Mono',monospace}
 .card-stat{font-size:.59rem;font-weight:700;padding:2px 7px;border-radius:7px;
   margin-top:3px;display:inline-block}
 .cs-w{background:var(--y2);color:var(--y)}.cs-g{background:var(--g2);color:var(--g)}.cs-r{background:var(--r2);color:var(--r)}
 
-.card-body{display:none;border-top:1px solid var(--bd);padding:12px 13px 14px}
+.card-body{display:none;border-top:1px solid var(--bd);padding:11px 13px}
 .card.open .card-body{display:block}
 .detail-row{display:flex;justify-content:space-between;align-items:center;
   padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
@@ -154,11 +152,10 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .admin-note-box{background:var(--s3);border-radius:9px;padding:8px 10px;margin:8px 0;
   font-size:.68rem;color:var(--mu);font-family:'DM Mono',monospace;border:1px solid var(--bd)}
 .actions{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
-.abtn{flex:1;min-width:calc(33% - 4px);padding:10px 6px;border-radius:9px;border:none;
-  font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;
-  cursor:pointer;transition:opacity .15s;text-align:center;letter-spacing:.01em;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.abtn:active{opacity:.7;transform:scale(.96)}
+.abtn{flex:1;min-width:calc(33% - 4px);padding:8px 6px;border-radius:9px;border:none;
+  font-family:'DM Sans',sans-serif;font-size:.69rem;font-weight:600;
+  cursor:pointer;transition:opacity .15s;text-align:center;letter-spacing:.01em}
+.abtn:active{opacity:.7}
 .a-valider{background:var(--g);color:#000}
 .a-rejeter{background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.25)}
 .a-notif{background:var(--o2);color:var(--o);border:1px solid rgba(255,107,53,.25)}
@@ -296,56 +293,6 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
 .tag-r{background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.2)}
 .tag-b{background:var(--b2);color:var(--b);border:1px solid rgba(79,142,247,.2)}
 .tag-y{background:var(--y2);color:var(--y);border:1px solid rgba(240,180,41,.2)}
-
-/* ═══ SUPPORT CHAT ═══ */
-.conv-card{background:var(--s2);border-radius:14px;border:1px solid var(--bd);
-  overflow:hidden;margin-bottom:8px;transition:border-color .2s}
-.conv-card.unread{border-left:4px solid var(--r)}
-.conv-head{padding:11px 13px;display:flex;align-items:center;gap:10px;
-  cursor:pointer;touch-action:manipulation}
-.conv-head:active{background:rgba(255,255,255,.04)}
-.conv-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));
-  display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;
-  color:#fff;flex-shrink:0}
-.conv-info{flex:1;min-width:0}
-.conv-nom{font-size:.77rem;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.conv-last{font-size:.62rem;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.conv-right{text-align:right;flex-shrink:0}
-.conv-time{font-size:.59rem;color:var(--mu);font-weight:600}
-.conv-badge{font-size:.58rem;font-weight:800;background:var(--r);color:#fff;
-  padding:2px 8px;border-radius:10px;margin-top:4px;display:inline-block}
-.conv-body{display:none;border-top:1px solid var(--bd)}
-.conv-card.open .conv-body{display:block}
-
-/* Chat window dans admin */
-.achat-msgs{background:#0D1117;min-height:220px;max-height:300px;overflow-y:auto;
-  padding:10px;display:flex;flex-direction:column;gap:8px}
-.achat-msgs::-webkit-scrollbar{width:3px}
-.achat-msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
-.acm{display:flex;flex-direction:column;max-width:85%}
-.acm.user{align-self:flex-start}.acm.admin-sent{align-self:flex-end}
-.acm-bubble{padding:8px 11px;border-radius:12px;font-size:.73rem;line-height:1.5;font-weight:500;word-break:break-word}
-.acm.user .acm-bubble{background:#1E2432;color:#E2E8F0;border-radius:12px 12px 12px 4px}
-.acm.admin-sent .acm-bubble{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:12px 12px 4px 12px}
-.acm-meta{font-size:.55rem;color:#4B5563;margin-top:3px;font-weight:600}
-.acm.admin-sent .acm-meta{text-align:right;color:rgba(255,255,255,.5)}
-
-/* Zone réponse admin */
-.achat-reply{padding:10px 12px;background:var(--s1);border-top:1px solid var(--bd);display:flex;gap:8px;align-items:flex-end}
-.achat-inp{flex:1;background:var(--s2);border:1.5px solid var(--bd);border-radius:12px;
-  padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--txt);
-  outline:none;resize:none;min-height:38px;max-height:100px;line-height:1.4;
-  font-weight:500;transition:border-color .2s}
-.achat-inp:focus{border-color:var(--g)}
-.achat-send{width:38px;height:38px;border-radius:50%;background:var(--g);border:none;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;
-  flex-shrink:0;touch-action:manipulation;transition:transform .15s}
-.achat-send:active{transform:scale(.9)}
-.achat-send:disabled{opacity:.3;cursor:not-allowed}
-.achat-mark{width:100%;padding:8px;background:transparent;border:1px solid var(--bd);
-  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:600;
-  color:var(--g);cursor:pointer;margin-bottom:4px;touch-action:manipulation}
-.achat-mark:active{background:var(--g2)}
 </style>
 </head>
 <body>
@@ -392,8 +339,6 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="tab" id="tb-users" onclick="goTab('users')">👥 Utilisateurs</div>
     <div class="tab" id="tb-notifs" onclick="goTab('notifs')">🔔 Notifs</div>
     <div class="tab" id="tb-stats" onclick="goTab('stats')">📈 Statistiques</div>
-    <div class="tab" id="tb-support" onclick="goTab('support')">💬 Support <span class="tbadge" id="b-support" style="background:var(--r);color:#fff">0</span></div>
-    <div class="tab" id="tb-pro" onclick="goTab('pro')">🚀 Comptes Pro <span class="tbadge" id="b-pro" style="background:#8B5CF6;color:#fff">0</span></div>
   </div>
 </div>
 
@@ -544,35 +489,6 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   <div id="top-users" class="list"></div>
 </div>
 
-<div class="page" id="p-support">
-
-  <!-- En-tête stats support -->
-  <div class="kpi-grid" style="margin-top:4px">
-    <div class="kpi"><div class="kpi-ico" style="background:var(--r2)">📨</div><div class="kpi-val cr" id="sup-nonlu">—</div><div class="kpi-lbl">Non lus</div></div>
-    <div class="kpi"><div class="kpi-ico" style="background:var(--b2)">👥</div><div class="kpi-val cb" id="sup-users">—</div><div class="kpi-lbl">Utilisateurs</div></div>
-    <div class="kpi"><div class="kpi-ico" style="background:var(--g2)">✅</div><div class="kpi-val cg" id="sup-rep">—</div><div class="kpi-lbl">Répondus</div></div>
-  </div>
-
-  <!-- Filtre -->
-  <div class="f-bar" id="f-support" style="margin:6px 10px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none">
-    <div class="chip on" onclick="filtSupport('nonlu',this)">🔴 Non lus</div>
-    <div class="chip" onclick="filtSupport('all',this)">Tous</div>
-    <div class="chip" onclick="filtSupport('replied',this)">✅ Répondus</div>
-  </div>
-
-  <!-- Barre recherche -->
-  <div class="search-bar" style="margin:0 10px 8px">
-    <span class="si">🔍</span>
-    <input id="q-support" type="search" placeholder="Rechercher un utilisateur..." oninput="filtSupport(currentSupportFilt,null)">
-  </div>
-
-  <!-- Liste conversations -->
-  <div class="list" id="list-support">
-    <div class="empty"><div class="empty-ico">💬</div><div class="empty-t">Chargement...</div></div>
-  </div>
-
-</div>
-
 </div><!-- /app -->
 
 <!-- ═══════════ MODALS ═══════════ -->
@@ -586,17 +502,9 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="mf"><label>SOLDE (FCFA)</label><input type="number" id="me-solde" placeholder="0"></div>
     <div class="mf"><label>NIVEAU VIP</label>
       <select id="me-vip">
-        <option>VIP 0</option><option>PROMO 1</option><option>PROMO 2</option>
-        <option>VIP 1</option><option>VIP 2</option><option>VIP 3</option>
+        <option>VIP 0</option><option>VIP 1</option><option>VIP 2</option><option>VIP 3</option>
         <option>VIP 4</option><option>VIP 5</option><option>VIP 6</option><option>VIP 7</option>
         <option>VIP 8</option><option>VIP 9</option>
-      </select>
-    </div>
-    <div class="mf"><label>TYPE DE COMPTE MARKETING</label>
-      <select id="me-account-type">
-        <option value="standard">⭐ Standard (2%)</option>
-        <option value="pro">🚀 Pro (5%)</option>
-        <option value="business">🏆 Business (8%)</option>
       </select>
     </div>
     <div class="mf"><label>GAINS TOTAUX (FCFA)</label><input type="number" id="me-gains" placeholder="0"></div>
@@ -637,22 +545,6 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   </div>
 </div>
 
-<!-- PAGE COMPTES PRO -->
-<div class="page" id="p-pro" style="display:none">
-  <div style="padding:10px 10px 4px;display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:.78rem;font-weight:900;color:var(--txt)">Demandes de comptes Pro / Business</div>
-    <div id="pro-count" style="font-size:.65rem;color:var(--mu);font-weight:700"></div>
-  </div>
-  <div style="padding:0 10px 8px;display:flex;gap:6px;flex-wrap:wrap">
-    <button class="fil on" id="fp-all"  onclick="filtPro('all')">Toutes</button>
-    <button class="fil"    id="fp-pend" onclick="filtPro('en_attente')">⏳ En attente</button>
-    <button class="fil"    id="fp-app"  onclick="filtPro('approuve')">✅ Approuvées</button>
-    <button class="fil"    id="fp-rej"  onclick="filtPro('rejete')">❌ Rejetées</button>
-  </div>
-  <div id="list-pro"></div>
-</div>
-
-
 <script>
 /* ══════════════════════════════════════
    SUPABASE + CONFIG
@@ -663,7 +555,7 @@ const SB=supabase.createClient(
   {auth:{persistSession:true,storageKey:'vgn-admin',storage:window.localStorage}}
 );
 
-const ADMINS=['abdoula13cherif@gmail.com','k.claude228@gmail.com']; // ← ajouter les emails admin ici
+const ADMINS=['admin@vgn.com']; // ← ajouter les emails admin ici
 
 const PLANS_VIP={
   'VIP 1':{gain:70,taches:5},'VIP 2':{gain:175,taches:8},'VIP 3':{gain:560,taches:10},
@@ -689,63 +581,20 @@ let NTYPE='info';
 
 /* ══ LOGIN / LOGOUT ══ */
 async function login(){
-  const email=($('l-email')?.value||'').trim().toLowerCase();
-  const pass=$('l-pass')?.value||'';
-  if(!email){showErr('⚠️ Entrez votre email admin');return}
-  if(!pass){showErr('⚠️ Entrez votre mot de passe');return}
-  const btn=$('lock')?.querySelector('.lock-btn');
-  if(btn){btn.textContent='⏳ Connexion...';btn.disabled=true;}
-  try{
-    await SB.auth.signOut().catch(()=>{});
-    const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
-    if(error){
-      let msg='❌ '+error.message;
-      if(error.message.includes('Invalid login'))msg='❌ Email ou mot de passe incorrect';
-      if(error.message.includes('Email not confirmed'))msg='❌ Email non confirmé dans Supabase';
-      if(error.message.includes('rate limit'))msg='⏳ Trop de tentatives, patientez 1 minute';
-      showErr(msg);return;
-    }
-    if(!data?.user){showErr('❌ Connexion échouée (user null)');return}
-    const userEmail=(data.user.email||'').toLowerCase();
-    if(!ADMINS.map(a=>a.toLowerCase()).includes(userEmail)){
-      await SB.auth.signOut();
-      showErr('⛔ Accès refusé pour : '+userEmail+' — Vérifiez l\'email dans la liste admin');
-      return;
-    }
-    ME=data.user;
-    const lock=$('lock');const app=$('app');
-    if(lock)lock.style.display='none';
-    if(app)app.style.display='block';
-    loadAll();
-  }catch(e){
-    showErr('❌ '+(e.message||'Erreur réseau'));
-    console.error('login error:',e);
-  }finally{
-    if(btn){btn.textContent='Connexion sécurisée →';btn.disabled=false;}
-  }
+  const email=$('l-email').value.trim(), pass=$('l-pass').value;
+  if(!email||!pass){showErr('Champs requis');return}
+  const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
+  if(error){showErr('Identifiants incorrects');return}
+  if(!ADMINS.includes(data.user.email)){await SB.auth.signOut();showErr('Accès non autorisé');return}
+  ME=data.user;$('lock').style.display='none';$('app').style.display='block';loadAll();
 }
-function showErr(m){
-  console.error('Admin login error:', m);
-  const el=$('l-err');
-  if(!el)return;
-  el.textContent=m;
-  el.style.display='block';
-  el.style.fontSize='.8rem';
-  el.style.color='#ff4444';
-  el.style.padding='10px';
-  el.style.background='rgba(255,68,68,.12)';
-  el.style.borderRadius='8px';
-  el.style.marginTop='8px';
-  el.style.fontWeight='800';
-  el.style.border='1px solid rgba(255,68,68,.3)';
-  el.style.textAlign='center';
-}
+function showErr(m){$('l-err').textContent=m;$('l-err').style.display='block'}
 async function logout(){await SB.auth.signOut();location.reload()}
 
 // Vérifier session existante
 (async()=>{
   const{data:{session}}=await SB.auth.getSession();
-  if(session&&ADMINS.map(a=>a.toLowerCase()).includes((session.user?.email||'').toLowerCase())){
+  if(session&&ADMINS.includes(session.user?.email)){
     ME=session.user;$('lock').style.display='none';$('app').style.display='block';loadAll();
   }
 })();
@@ -757,13 +606,11 @@ function goTab(name){
   $('tb-'+name)?.classList.add('on');
   $('p-'+name)?.classList.add('on');
   if(name==='notifs') $('notif-dot').style.display='none';
-  if(name==='support'){ $('b-support').style.display='none'; loadSupport(); }
-  if(name==='pro') loadPro();
 }
 
 /* ══ LOAD ALL ══ */
 async function loadAll(){
-  await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats(),loadSupport()]);
+  await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats()]);
 }
 
 /* ══ DASHBOARD ══ */
@@ -771,7 +618,7 @@ async function loadDash(){
   const[{count:nu},{data:rp},{data:tp},{data:prf}]=await Promise.all([
     SB.from('profiles').select('*',{count:'exact',head:true}),
     SB.from('recharges').select('*').eq('statut','en_attente'),
-    SB.from('transactions').select('id,user_id,montant,statut').eq('type','retrait').eq('statut','en_attente'),
+    SB.from('transactions').select('*').eq('type','retrait').eq('statut','en_attente'),
     SB.from('profiles').select('solde,investissement,gains_totaux,created_at'),
   ]);
 
@@ -807,25 +654,7 @@ async function loadRecharges(){
   const{data}=await SB.from('recharges')
     .select('*, profiles(full_name,email)')
     .order('created_at',{ascending:false}).limit(200);
-  // Aussi charger les recharges crypto en attente (statut='en_attente_crypto')
-  const{data:dataCrypto}=await SB.from('recharges_crypto')
-    .select('*, profiles(full_name,email)')
-    .order('created_at',{ascending:false}).limit(100);
-  // Normaliser les recharges_crypto pour les afficher comme des recharges normales
-  const cryptoAsRecharges=(dataCrypto||[]).map(r=>({
-    ...r,
-    operateur: r.crypto?.toUpperCase()||'CRYPTO',
-    ref_transaction: r.payment_id||'NP-'+r.id,
-    montant_envoye: r.montant_fcfa||0,
-    plan_label: 'Crypto '+r.currency?.toUpperCase(),
-    plan_depot: r.montant_fcfa||0,
-    plan_gain:0, plan_taches:0,
-    statut: r.statut==='finished'?'valide':r.statut==='waiting'?'en_attente':'en_attente',
-    _is_crypto: true
-  }));
-  RECHARGES=[...(data||[]),...cryptoAsRecharges]
-    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
-  renderRech();
+  RECHARGES=data||[];renderRech();
 }
 
 function filtRech(f,el){
@@ -836,44 +665,27 @@ function filtRech(f,el){
 function renderRech(){
   const q=($('q-rech')?.value||'').toLowerCase();
   let d=RECHARGES;
-  if(FILT_RECH!=='all') d=d.filter(r=>
-    FILT_RECH==='en_attente'
-      ? (r.statut==='en_attente'||r.statut==='en_attente_crypto'||r.statut==='waiting'||r.statut==='confirming')
-      : r.statut===FILT_RECH
-  );
+  if(FILT_RECH!=='all') d=d.filter(r=>r.statut===FILT_RECH);
   if(q) d=d.filter(r=>(r.profiles?.full_name+r.profiles?.email+r.ref_transaction).toLowerCase().includes(q));
   renderCardList($('list-rech'),d,'rech');
 }
 
 async function validerRecharge(id,uid,planLabel,planGain,planTaches){
-  if(!confirm('Valider et activer '+planLabel+' pour cet utilisateur ?'))return;
   toast('⏳ Validation...');
   const{error}=await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString()}).eq('id',id);
   if(error){toast('❌ '+error.message,'err');return}
-  await insertNotif(uid,'payment','Plan '+planLabel+' active !',
-    'Votre recharge a ete validee. Vous pouvez maintenant effectuer vos taches et gagner '+fmtF(planGain*planTaches)+' FCFA/jour.');
+  await insertNotif(uid,'payment','✅ Plan '+planLabel+' activé !',
+    'Votre recharge a été validée. Vous pouvez maintenant effectuer vos tâches et gagner '+fmtF(planGain*planTaches)+' FCFA/jour.');
   toast('✅ Validé et VIP activé !','ok');
   await loadAll();
 }
 
 /* ══ RETRAITS ══ */
 async function loadRetraits(){
-  // On sélectionne id,user_id,type,montant,statut,created_at en sûr
-  // Les colonnes methode/frais/montant_net/compte/note peuvent manquer → on les récupère avec try
-  let data=[];
-  try{
-    const res=await SB.from('transactions')
-      .select('id,user_id,type,montant,frais,montant_net,methode,compte,note,admin_note,statut,created_at, profiles(full_name,email)')
-      .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
-    data=res.data||[];
-  }catch(e){
-    // Fallback si colonnes manquantes
-    const res=await SB.from('transactions')
-      .select('id,user_id,type,montant,statut,created_at, profiles(full_name,email)')
-      .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
-    data=res.data||[];
-  }
-  RETRAITS=data;renderRetr();
+  const{data}=await SB.from('transactions')
+    .select('*, profiles(full_name,email)')
+    .eq('type','retrait').order('created_at',{ascending:false}).limit(200);
+  RETRAITS=data||[];renderRetr();
 }
 
 function filtRetr(f,el){
@@ -885,55 +697,15 @@ function renderRetr(){
   const q=($('q-retr')?.value||'').toLowerCase();
   let d=RETRAITS;
   if(FILT_RETR!=='all') d=d.filter(r=>r.statut===FILT_RETR);
-  if(q) d=d.filter(r=>((r.profiles?.full_name||'')+(r.profiles?.email||'')+(r.methode||'')).toLowerCase().includes(q));
+  if(q) d=d.filter(r=>(r.profiles?.full_name+r.profiles?.email+r.methode).toLowerCase().includes(q));
   renderCardList($('list-retr'),d,'retr');
 }
 
-async function validerRetrait(id,uid,montant,frais,montantNet){
-  if(!confirm('Confirmer le paiement de '+fmtF(montantNet||montant)+' FCFA ?'))return;
+async function validerRetrait(id,uid,montant){
   toast('⏳ Traitement...');
-
-  // Récupérer les détails du retrait pour savoir si c'est crypto
-  const{data:retr}=await SB.from('transactions').select('methode,compte,admin_note').eq('id',id).single();
-  const isCrypto = retr?.methode==='crypto';
-
-  if(isCrypto){
-    // Lancer le payout NOWPayments automatiquement
-    try{
-      const NP_KEY = '1XMWTJB-6KC46MV-HTNF9PS-5NH4JK7';
-      const amountUSD = ((montantNet||montant)/600).toFixed(4);
-      // Extraire réseau et adresse depuis admin_note ou compte
-      // compte format: "usdtbsc:0xADDRESS" ou juste "0xADDRESS"
-      const compte = retr?.compte||'';
-      const [currency,...addrParts] = compte.includes(':')?compte.split(':'):[null,compte];
-      const address = addrParts.join(':') || compte;
-      const cur = currency||'usdtbsc';
-
-      const res = await fetch('https://api.nowpayments.io/v1/payout',{
-        method:'POST',
-        headers:{'x-api-key':NP_KEY,'Content-Type':'application/json'},
-        body: JSON.stringify({
-          withdrawals:[{
-            address, currency: cur,
-            amount: amountUSD,
-            ipn_callback_url:'https://tgrfzybemuwvhkbpuzmz.supabase.co/functions/v1/nowpayments-webhook'
-          }]
-        })
-      });
-      const d = await res.json();
-      if(!res.ok) throw new Error(d.message||JSON.stringify(d));
-      toast('₿ Payout NP envoyé !','ok');
-    }catch(e){
-      // Continuer quand même avec validation manuelle
-      console.warn('NP payout error:',e);
-      toast('⚠️ Payout auto échoué — validation manuelle','err');
-    }
-  }
-
   const{error}=await SB.from('transactions').update({statut:'valide'}).eq('id',id);
   if(error){toast('❌ '+error.message,'err');return}
-  await insertNotif(uid,'payment','Retrait effectue',
-    'Votre retrait de '+fmtF(montant)+' FCFA a ete traite. Montant net : '+fmtF(montantNet||montant)+' FCFA. Les fonds sont en route.');
+  await insertNotif(uid,'payment','💸 Retrait effectué','Votre retrait de '+fmtF(montant)+' a été traité avec succès. Les fonds sont en route vers votre compte.');
   toast('✅ Retrait validé !','ok');
   await loadAll();
 }
@@ -943,17 +715,7 @@ function renderCardList(container,data,type,mini=false){
   if(!container)return;
   if(!data||!data.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucun élément</div></div>';return}
   const isRech=type==='rech';
-  const stMap={
-    en_attente:       {lbl:'En attente',    cls:'cs-w',ico:'ci-w',em:'⏳'},
-    en_attente_crypto:{lbl:'Crypto⏳',      cls:'cs-w',ico:'ci-w',em:'₿'},
-    waiting:          {lbl:'Crypto attente',cls:'cs-w',ico:'ci-w',em:'₿'},
-    confirming:       {lbl:'Confirmation',  cls:'cs-w',ico:'ci-w',em:'🔄'},
-    en_cours:         {lbl:'En cours',      cls:'cs-w',ico:'ci-w',em:'🔄'},
-    valide:           {lbl:isRech?'Validé':'Payé',cls:'cs-g',ico:'ci-g',em:'✅'},
-    finished:         {lbl:'Terminé',       cls:'cs-g',ico:'ci-g',em:'✅'},
-    rejete:           {lbl:'Rejeté',        cls:'cs-r',ico:'ci-r',em:'❌'},
-    failed:           {lbl:'Échoué',        cls:'cs-r',ico:'ci-r',em:'❌'},
-  };
+  const stMap={en_attente:{lbl:'En attente',cls:'cs-w',ico:'ci-w',em:'⏳'},valide:{lbl:isRech?'Validé':'Payé',cls:'cs-g',ico:'ci-g',em:'✅'},rejete:{lbl:'Rejeté',cls:'cs-r',ico:'ci-r',em:'❌'}};
   const methIco={mtn:'📱',orange:'🍊',wave:'🌊',crypto:'₿',momo:'📱',bank:'🏦'};
 
   container.innerHTML=data.map(r=>{
@@ -977,29 +739,24 @@ function renderCardList(container,data,type,mini=false){
         <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
     } else {
       detailRows=`
-        <div class="detail-row"><span class="dl">Utilisateur</span><span class="dv">${r.profiles?.full_name||'—'}</span></div>
         <div class="detail-row"><span class="dl">Email</span><span class="dv">${r.profiles?.email||'—'}</span></div>
-        <div class="detail-row"><span class="dl">🌍 Pays/Note</span><span class="dv" style="font-weight:900;color:var(--g)">${r.note||'Cameroun 🇨🇲'}</span></div>
-        <div class="detail-row"><span class="dl">Méthode</span><span class="dv">${r.methode==='crypto'?'₿ Crypto (NOWPayments auto)':r.methode||'—'}</span></div>
-        <div class="detail-row"><span class="dl">Compte / Numéro</span><span class="dv">${r.compte||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Méthode</span><span class="dv">${r.methode||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Compte</span><span class="dv">${r.compte||'—'}</span></div>
         <div class="detail-row"><span class="dl">Montant demandé</span><span class="dv">${fmtF(r.montant)}</span></div>
-        <div class="detail-row"><span class="dl">Frais (5%)</span><span class="dv">${fmtF(r.frais||0)}</span></div>
-        <div class="detail-row"><span class="dl">Net à payer</span><span class="dv cg" style="font-size:.9rem;font-weight:900">${fmtF(r.montant_net||r.montant)}</span></div>
+        <div class="detail-row"><span class="dl">Frais (2%)</span><span class="dv">${fmtF(r.frais||0)}</span></div>
+        <div class="detail-row"><span class="dl">Net à payer</span><span class="dv cg">${fmtF(r.montant_net||r.montant)}</span></div>
         <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
     }
 
-    const isPending=['en_attente','en_attente_crypto','waiting','confirming','en_cours'].includes(st);
-    const actionsHTML=isPending?`<div class="actions" onclick="event.stopPropagation()">
-      ${isRech
-        ? `<button class="abtn a-valider" onclick="validerRecharge('${r.id}','${uid}','${escH(planLabel)}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
-        : `<button class="abtn a-valider" onclick="validerRetrait('${r.id}','${uid}',${r.montant||0},${r.frais||0},${r.montant_net||r.montant||0})">✅ Marquer payé</button>`
-      }
-      <button class="abtn a-rejeter" onclick="openReject('${r.id}','${type}','${escH(nom)}','${isRech?'':'retrait'}')">❌ Rejeter</button>
-      <button class="abtn a-notif" onclick="openQNotif('${uid}','${escH(nom)}')">🔔 Notifier</button>
+    const actionsHTML=st==='en_attente'?`<div class="actions">
+      ${isRech?`<button class="abtn a-valider" onclick="validerRecharge('${r.id}','${uid}','${planLabel}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
+               :`<button class="abtn a-valider" onclick="validerRetrait('${r.id}','${uid}',${r.montant||0})">✅ Marquer payé</button>`}
+      <button class="abtn a-rejeter" onclick="openReject('${r.id}','${type}','${nom.replace(/'/g,'`')}')">❌ Rejeter</button>
+      <button class="abtn a-notif" onclick="openQNotif('${uid}','${nom.replace(/'/g,'`')}')">🔔 Notifier</button>
     </div>`:'';
 
     return `<div class="card" id="card-${r.id}">
-      <div class="card-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="card-head" onclick="toggleCard('card-${r.id}')">
         <div class="card-ico ${sm.ico}">${sm.em}</div>
         <div class="card-info">
           <div class="card-name">${nom}</div>
@@ -1009,7 +766,6 @@ function renderCardList(container,data,type,mini=false){
           <div class="card-amount">${fmtF(amt)}</div>
           <span class="card-stat ${sm.cls}">${sm.lbl}</span>
         </div>
-        <span class="card-chevron">›</span>
       </div>
       <div class="card-body">
         ${detailRows}
@@ -1045,7 +801,7 @@ function renderUsers(){
     const vip=u.vip_niveau||'VIP 0';
     const vipN=parseInt(vip.replace('VIP ',''))||0;
     return `<div class="ucard" id="uc-${u.id}">
-      <div class="uc-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="uc-head" onclick="toggleCard('uc-${u.id}')">
         <div class="uc-av">${ini}</div>
         <div class="uc-info">
           <div class="uc-name">${u.full_name||'Sans nom'}</div>
@@ -1066,11 +822,9 @@ function renderUsers(){
           <div class="uc-cell"><div class="uc-cl">INSCRIT LE</div><div class="uc-cv" style="font-size:.65rem">${dtf(u.created_at)}</div></div>
           <div class="uc-cell"><div class="uc-cl">COMMISSIONS</div><div class="uc-cv cb">${fmtF(u.commission_parrainage)}</div></div>
           <div class="uc-cell"><div class="uc-cl">PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrain||'—'}</div></div>
-          <div class="uc-cell"><div class="uc-cl">TYPE COMPTE</div><div class="uc-cv" style="font-weight:900;color:${u.account_type==='pro'?'#A78BFA':u.account_type==='business'?'#F59E0B':'#94A3B8'}">${u.account_type==='pro'?'🚀 Pro':u.account_type==='business'?'🏆 Business':'⭐ Standard'}</div></div>
-          <div class="uc-cell"><div class="uc-cl">STATUT PRO</div><div class="uc-cv" style="font-size:.63rem">${u.compte_pro_statut||'—'}</div></div>
         </div>
         <div class="actions">
-          <button class="abtn a-edit" onclick="openEdit('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}',${u.solde||0},'${vip}',${u.gains_totaux||0},'${u.account_type||'standard'}')">✏️ Modifier</button>
+          <button class="abtn a-edit" onclick="openEdit('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}',${u.solde||0},'${vip}',${u.gains_totaux||0})">✏️ Modifier</button>
           <button class="abtn a-notif" onclick="openQNotif('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🔔 Notifier</button>
           <button class="abtn a-del" onclick="delUser('${u.id}','${(u.full_name||u.email||'').replace(/'/g,'`')}')">🗑️ Supprimer</button>
         </div>
@@ -1080,10 +834,9 @@ function renderUsers(){
 }
 
 /* ══ MODIFIER PROFIL ══ */
-function openEdit(id,nom,solde,vip,gains,acct){
+function openEdit(id,nom,solde,vip,gains){
   EDIT_ID=id;$s('me-sub',nom);
   $('me-solde').value=solde;$('me-vip').value=vip;$('me-gains').value=gains;$('me-note').value='';
-  const at=$('me-account-type');if(at)at.value=acct||'standard';
   openM('m-edit');
 }
 async function saveEdit(){
@@ -1092,8 +845,7 @@ async function saveEdit(){
   const gains=parseFloat($('me-gains').value)||0;
   const btn=$('me-save');btn.disabled=true;btn.textContent='⏳...';
   const plan=PLANS_VIP[vip]||null;
-  const acct=($('me-account-type')?.value)||'standard';
-  const upd={solde,vip_niveau:vip,gains_totaux:gains,account_type:acct};
+  const upd={solde,vip_niveau:vip,gains_totaux:gains};
   if(plan){upd.taches_total=plan.taches;upd.benefices_jour=plan.gain*plan.taches}
   const{error}=await SB.from('profiles').update(upd).eq('id',EDIT_ID);
   if(error){toast('❌ '+error.message,'err')}
@@ -1108,9 +860,8 @@ async function delUser(id,nom){
 }
 
 /* ══ REJETER ══ */
-let REJECT_EXTRA='';
-function openReject(id,type,nom,extra=''){
-  REJECT_ID=id;REJECT_TYPE=type;REJECT_EXTRA=extra;
+function openReject(id,type,nom){
+  REJECT_ID=id;REJECT_TYPE=type;
   $s('mr-sub',nom);$('mr-note').value='';openM('m-reject');
 }
 async function doReject(){
@@ -1118,26 +869,8 @@ async function doReject(){
   const btn=$('mr-ok');btn.disabled=true;btn.textContent='⏳...';
   const table=REJECT_TYPE==='rech'?'recharges':'transactions';
   const{error}=await SB.from(table).update({statut:'rejete',admin_note:note||null}).eq('id',REJECT_ID);
-  if(error){toast('❌ '+error.message,'err');btn.disabled=false;btn.textContent='❌ Confirmer';return}
-
-  // Si rejet d'un retrait → rembourser le solde
-  if(REJECT_TYPE==='retr'||REJECT_EXTRA==='retrait'){
-    const tr=RETRAITS.find(r=>r.id===REJECT_ID);
-    if(tr&&tr.user_id&&tr.montant){
-      await SB.from('profiles').update({
-        solde:SB.rpc('increment_solde',{user_id_input:tr.user_id,amount:tr.montant})
-      }).eq('id',tr.user_id);
-      // Simple update si rpc non dispo
-      const{data:prof}=await SB.from('profiles').select('solde').eq('id',tr.user_id).single();
-      if(prof){
-        await SB.from('profiles').update({solde:(prof.solde||0)+tr.montant}).eq('id',tr.user_id);
-      }
-    }
-  }
-
-  closeM('m-reject');
-  toast('Demande rejetée','ok');
-  await loadAll();
+  if(error)toast('❌ '+error.message,'err');
+  else{closeM('m-reject');toast('Demande rejetée','ok');await loadAll()}
   btn.disabled=false;btn.textContent='❌ Confirmer';
 }
 
@@ -1222,7 +955,7 @@ async function loadStats(){
   const[{data:rVal},{data:rRej},{data:tVal},{data:nAll},{data:roue},{data:prf}]=await Promise.all([
     SB.from('recharges').select('id').eq('statut','valide'),
     SB.from('recharges').select('id').eq('statut','rejete'),
-    SB.from('transactions').select('id').eq('type','retrait').eq('statut','valide').catch(()=>({data:[]})),
+    SB.from('transactions').select('id').eq('type','retrait').eq('statut','valide'),
     SB.from('notifications').select('id'),
     SB.from('roue_historique').select('id').catch(()=>({data:[]})),
     SB.from('profiles').select('vip_niveau,investissement').order('investissement',{ascending:false}),
@@ -1278,256 +1011,6 @@ function toggleCard(id){
 function openM(id){$(id)?.classList.add('open')}
 function closeM(id){$(id)?.classList.remove('open')}
 document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
-
-/* ══════════════════════════════════════
-   SUPPORT CHAT - ADMIN
-══════════════════════════════════════ */
-let SUPPORT_CONVS=[];
-let currentSupportFilt='nonlu';
-
-async function loadSupport(){
-  const{data:msgs,error}=await SB.from('support_messages')
-    .select('*').eq('direction','user')
-    .order('created_at',{ascending:false}).limit(200);
-  if(error){console.warn('support:',error.message);return;}
-  const map={};
-  (msgs||[]).forEach(m=>{
-    if(!map[m.user_id]){map[m.user_id]={user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[],unread:0};}
-    map[m.user_id].msgs.push(m);
-    if(!m.lu_admin)map[m.user_id].unread++;
-  });
-  SUPPORT_CONVS=Object.values(map);
-  const totalNonLu=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
-  const totalUsers=SUPPORT_CONVS.length;
-  const replied=SUPPORT_CONVS.filter(c=>c.unread===0).length;
-  const $s2=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  $s2('sup-nonlu',totalNonLu);$s2('sup-users',totalUsers);$s2('sup-rep',replied);
-  const badge=document.getElementById('b-support');
-  if(badge){badge.textContent=totalNonLu;badge.style.display=totalNonLu>0?'inline':'none';}
-  renderSupport();
-}
-
-function filtSupport(filt,el){
-  currentSupportFilt=filt;
-  if(el){document.querySelectorAll('#f-support .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
-  renderSupport();
-}
-
-function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function taAgo(iso){
-  const d=Math.floor((Date.now()-new Date(iso))/1000);
-  if(d<60)return 'Maintenant';if(d<3600)return Math.floor(d/60)+'min';
-  if(d<86400)return Math.floor(d/3600)+'h';return Math.floor(d/86400)+'j';
-}
-function autoResizeA(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
-
-function renderSupport(){
-  const q=(document.getElementById('q-support')?.value||'').toLowerCase();
-  let list=SUPPORT_CONVS;
-  if(currentSupportFilt==='nonlu')list=list.filter(c=>c.unread>0);
-  else if(currentSupportFilt==='replied')list=list.filter(c=>c.unread===0);
-  if(q)list=list.filter(c=>(c.user_nom||'').toLowerCase().includes(q));
-  const el=document.getElementById('list-support');if(!el)return;
-  if(!list.length){
-    el.innerHTML='<div class="empty"><div class="empty-ico">'+
-      (currentSupportFilt==='nonlu'?'🎉':'💬')+'</div><div class="empty-t">'+
-      (currentSupportFilt==='nonlu'?'Aucun message non lu !':'Aucune conversation')+
-      '</div></div>';return;
-  }
-  el.innerHTML=list.map(conv=>{
-    const last=conv.msgs[0];
-    const ini=(conv.user_nom||'U')[0].toUpperCase();
-    const lastMsg=(last?.message||'').slice(0,55);
-    const unreadBadge=conv.unread>0?'<div class="conv-badge">'+conv.unread+' nv</div>':'';
-    const uid=conv.user_id;
-    return '<div class="conv-card'+(conv.unread>0?' unread':'')+'" id="conv-'+uid+'">'+
-      '<div class="conv-head" onclick="this.parentElement.classList.toggle('open');ouvrirConv(''+uid+'')">'+
-      '<div class="conv-av">'+ini+'</div>'+
-      '<div class="conv-info"><div class="conv-nom">'+escH(conv.user_nom)+'</div>'+
-      '<div class="conv-last">'+escH(lastMsg)+'</div></div>'+
-      '<div class="conv-right"><div class="conv-time">'+taAgo(last?.created_at||'')+'</div>'+unreadBadge+'</div>'+
-      '<span style="font-size:.9rem;color:var(--mu);margin-left:6px">&#8250;</span></div>'+
-      '<div class="conv-body" id="cb-'+uid+'">'+
-      '<div class="achat-msgs" id="msgs-'+uid+'"><div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Chargement...</div></div>'+
-      '<div class="achat-reply">'+
-      '<textarea class="achat-inp" id="rep-'+uid+'" placeholder="Repondre a '+escH(conv.user_nom)+'..." rows="1" oninput="autoResizeA(this)"></textarea>'+
-      '<button class="achat-send" onclick="envoyerReponse(''+uid+'',''+escH(conv.user_nom)+'')">&#10148;</button>'+
-      '</div>'+
-      '<button class="achat-mark" onclick="marquerLu(''+uid+'')">Marquer tout comme lu</button>'+
-      '</div></div>';
-  }).join('');
-}
-
-async function ouvrirConv(uid){
-  const msgsEl=document.getElementById('msgs-'+uid);if(!msgsEl)return;
-  const{data:all}=await SB.from('support_messages').select('*').eq('user_id',uid).order('created_at',{ascending:true}).limit(100);
-  if(!all||!all.length){msgsEl.innerHTML='<div style="text-align:center;padding:16px;color:#4B5563;font-size:.72rem">Aucun message</div>';return;}
-  msgsEl.innerHTML=all.map(m=>{
-    const side=m.direction==='user'?'user':'admin-sent';
-    const nom=m.direction==='user'?(m.user_nom||'Utilisateur'):'Admin VGN';
-    const time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    const date=new Date(m.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
-    return '<div class="acm '+side+'"><div class="acm-bubble">'+escH(m.message)+'</div>'+
-      '<div class="acm-meta">'+escH(nom)+' · '+date+' '+time+(m.is_auto?' · auto':'')+' </div></div>';
-  }).join('');
-  setTimeout(()=>msgsEl.scrollTop=msgsEl.scrollHeight,80);
-}
-
-async function envoyerReponse(uid,userNom){
-  const inp=document.getElementById('rep-'+uid);
-  const txt=(inp?.value||'').trim();
-  if(!txt){toast('Message vide','err');return;}
-  inp.value='';autoResizeA(inp);
-  const{error}=await SB.from('support_messages').insert({
-    user_id:uid,user_nom:'Support Admin VGN',message:txt,
-    direction:'admin',lu_admin:true,is_auto:false,created_at:new Date().toISOString()
-  });
-  if(error){toast('Erreur: '+error.message,'err');return;}
-  await SB.from('notifications').insert({
-    user_id:uid,type:'info',titre:'Reponse du support VGN',
-    message:txt,lue:false,created_at:new Date().toISOString()
-  });
-  toast('Reponse envoyee a '+userNom,'ok');
-  await ouvrirConv(uid);
-  await marquerLu(uid);
-}
-
-async function marquerLu(uid){
-  await SB.from('support_messages').update({lu_admin:true}).eq('user_id',uid).eq('lu_admin',false);
-  const conv=SUPPORT_CONVS.find(c=>c.user_id===uid);
-  if(conv)conv.unread=0;
-  const card=document.getElementById('conv-'+uid);
-  if(card){card.classList.remove('unread');card.querySelector('.conv-badge')?.remove();}
-  const total=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
-  const badge=document.getElementById('b-support');
-  if(badge){badge.textContent=total;badge.style.display=total>0?'inline':'none';}
-  const e2=document.getElementById('sup-nonlu');if(e2)e2.textContent=total;
-}
-
-function ecouterSupportRT(){
-  SB.channel('admin-support-rt')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'support_messages',filter:'direction=eq.user'},
-    async payload=>{
-      const m=payload.new;
-      let conv=SUPPORT_CONVS.find(c=>c.user_id===m.user_id);
-      if(conv){conv.msgs.unshift(m);conv.unread++;}
-      else{SUPPORT_CONVS.unshift({user_id:m.user_id,user_nom:m.user_nom||'Utilisateur',msgs:[m],unread:1});}
-      const total=SUPPORT_CONVS.reduce((s,c)=>s+c.unread,0);
-      const badge=document.getElementById('b-support');
-      if(badge){badge.textContent=total;badge.style.display='inline';}
-      const e2=document.getElementById('sup-nonlu');if(e2)e2.textContent=total;
-      toast('Nouveau message de '+(m.user_nom||'Utilisateur'),'ok');
-      if(document.getElementById('p-support')?.classList.contains('on'))renderSupport();
-      if(document.getElementById('conv-'+m.user_id)?.classList.contains('open'))await ouvrirConv(m.user_id);
-    }).subscribe();
-}
-
-ecouterSupportRT();
-
-/* ════ COMPTES PRO / BUSINESS ════ */
-let PRO_DATA=[], FILT_PRO='all';
-
-async function loadPro(){
-  const{data}=await SB.from('demandes_compte_pro')
-    .select('*, profiles(full_name,email,vip_niveau,account_type)')
-    .order('created_at',{ascending:false}).limit(100);
-  PRO_DATA=data||[];
-  // Badge count en_attente
-  const nb=PRO_DATA.filter(d=>d.statut==='en_attente').length;
-  $s('b-pro',nb);
-  renderPro();
-}
-
-function filtPro(f){
-  FILT_PRO=f;
-  ['all','pend','app','rej'].forEach(k=>{const el=$('fp-'+k);if(el)el.classList.remove('on');});
-  const map={all:'fp-all',en_attente:'fp-pend',approuve:'fp-app',rejete:'fp-rej'};
-  const el=$(map[f]);if(el)el.classList.add('on');
-  renderPro();
-}
-
-function renderPro(){
-  const list=$('list-pro');if(!list)return;
-  let d=FILT_PRO==='all'?PRO_DATA:PRO_DATA.filter(x=>x.statut===FILT_PRO);
-  $s('pro-count',d.length+' demande'+(d.length>1?'s':''));
-  if(!d.length){list.innerHTML='<div class="empty"><div class="empty-ico">🚀</div><div class="empty-t">Aucune demande</div></div>';return}
-  const stlbl={en_attente:'⏳ En attente',approuve:'✅ Approuvée',rejete:'❌ Rejetée'};
-  const stcol={en_attente:'#F59E0B',approuve:'#22C55E',rejete:'#EF4444'};
-  list.innerHTML=d.map(dem=>{
-    const u=dem.profiles||{};
-    const dt=new Date(dem.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    const typeBadge=dem.type_demande==='pro'?'🚀 Pro':'🏆 Business';
-    const taux=dem.type_demande==='pro'?'5%':'8%';
-    return `<div class="rcard" style="border-left:3px solid ${stcol[dem.statut]||'#94A3B8'}">
-      <div class="rc-head">
-        <div>
-          <div class="rc-name">${u.full_name||u.email||'—'}</div>
-          <div class="rc-meta">${u.email||''} · ${u.vip_niveau||'VIP 0'} · Type actuel: ${u.account_type||'standard'}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:.72rem;font-weight:900;padding:3px 10px;border-radius:8px;background:rgba(139,92,246,.15);color:#A78BFA;margin-bottom:4px">${typeBadge} → ${taux}</div>
-          <div style="font-size:.6rem;color:var(--mu)">${dt}</div>
-        </div>
-      </div>
-      <div class="rc-row"><span class="rc-lbl">Lien groupe</span>
-        <a href="${dem.lien_groupe||'#'}" target="_blank" style="color:var(--b);font-size:.68rem;font-weight:700;text-overflow:ellipsis;overflow:hidden;max-width:60%;display:inline-block;white-space:nowrap">${dem.lien_groupe||'—'}</a>
-      </div>
-      <div class="rc-row"><span class="rc-lbl">Taille groupe</span><span class="rc-val">${dem.taille_groupe||'—'} membres déclarés</span></div>
-      ${dem.description?`<div class="rc-row"><span class="rc-lbl">Description</span><span class="rc-val" style="font-size:.64rem">${dem.description}</span></div>`:''}
-      <div class="rc-row"><span class="rc-lbl">Statut</span>
-        <span style="color:${stcol[dem.statut]};font-weight:900;font-size:.72rem">${stlbl[dem.statut]||dem.statut}</span>
-      </div>
-      ${dem.statut==='en_attente'?`
-      <div class="rc-acts" style="margin-top:8px;display:flex;gap:6px">
-        <button class="abtn" style="background:#22C55E;color:#fff;flex:1" onclick="approvePro('${dem.id}','${dem.user_id}','${dem.type_demande}')">✅ Approuver</button>
-        <button class="abtn a-del" style="flex:1" onclick="rejectPro('${dem.id}','${dem.user_id}')">❌ Rejeter</button>
-      </div>`:''}
-    </div>`;
-  }).join('');
-}
-
-async function approvePro(demandeId, userId, type){
-  if(!confirm('Approuver ce compte '+(type==='pro'?'Pro':'Business')+' ?'))return;
-  try{
-    // Mettre à jour la demande
-    await SB.from('demandes_compte_pro').update({statut:'approuve',traite_le:new Date().toISOString()}).eq('id',demandeId);
-    // Mettre à jour le profil
-    await SB.from('profiles').update({
-      account_type:type,
-      compte_pro_statut:'approuve',
-      compte_pro_approuve_le:new Date().toISOString()
-    }).eq('id',userId);
-    // Notification
-    await SB.from('notifications').insert({
-      user_id:userId, type:'success',
-      titre:'🎉 Compte '+(type==='pro'?'Pro':'Business')+' activé !',
-      message:'Félicitations ! Votre compte '+(type==='pro'?'Pro (5%)':'Business (8%)')+' est maintenant actif. Vos commissions sont mises à jour.',
-      created_at:new Date().toISOString()
-    });
-    toast('✅ Compte '+(type==='pro'?'Pro':'Business')+' approuvé !','ok');
-    await loadPro();
-    await loadUsers();
-  }catch(e){toast('❌ '+(e.message||'Erreur'),'err')}
-}
-
-async function rejectPro(demandeId, userId){
-  const note=prompt('Raison du rejet (optionnel) :');
-  try{
-    await SB.from('demandes_compte_pro').update({
-      statut:'rejete',traite_le:new Date().toISOString(),admin_note:note||null
-    }).eq('id',demandeId);
-    await SB.from('profiles').update({compte_pro_statut:'rejete'}).eq('id',userId);
-    await SB.from('notifications').insert({
-      user_id:userId,type:'error',
-      titre:'Demande compte Pro non approuvée',
-      message:note||'Votre demande ne remplit pas encore toutes les conditions. Réessayez ultérieurement.',
-      created_at:new Date().toISOString()
-    });
-    toast('Demande rejetée','ok');
-    await loadPro();
-  }catch(e){toast('❌ '+(e.message||'Erreur'),'err')}
-}
-
 </script>
 </body>
 </html>
