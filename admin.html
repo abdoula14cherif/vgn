@@ -555,7 +555,8 @@ const SB=supabase.createClient(
   {auth:{persistSession:true,storageKey:'vgn-admin',storage:window.localStorage}}
 );
 
-const ADMINS=['admin@vgn.com']; // ← ajouter les emails admin ici
+/* ══ LISTE DES ADMINS AUTORISÉS ══ */
+const ADMINS=['abdoula13cherif@gmail.com','k.claude228@gmail.com'];
 
 const PLANS_VIP={
   'VIP 1':{gain:70,taches:5},'VIP 2':{gain:175,taches:8},'VIP 3':{gain:560,taches:10},
@@ -902,7 +903,6 @@ async function sendNotif(){
   }
   if(!uids.length){toast('⚠️ Aucun destinataire','err');btn.disabled=false;btn.textContent='📤 Envoyer';return}
   const rows=uids.map(id=>({user_id:id,type:NTYPE,titre,message:msg,lue:false,created_at:new Date().toISOString()}));
-  // Insérer par batch de 50
   for(let i=0;i<rows.length;i+=50) await SB.from('notifications').insert(rows.slice(i,i+50));
   toast('✅ '+uids.length+' notification(s) envoyée(s) !','ok');
   $('n-titre').value='';$('n-msg').value='';
@@ -910,12 +910,10 @@ async function sendNotif(){
   await loadNotifHist();
 }
 
-/* Notif auto après action */
 async function insertNotif(uid,type,titre,message){
   await SB.from('notifications').insert({user_id:uid,type,titre,message,lue:false,created_at:new Date().toISOString()}).catch(()=>{});
 }
 
-/* Notif rapide depuis profil user */
 function openQNotif(uid,nom){
   QNOTIF_UID=uid;$s('qn-sub',nom);$('qn-titre').value='';$('qn-msg').value='';openM('m-qnotif');
 }
@@ -934,7 +932,6 @@ async function loadNotifHist(){
   if(!NOTIFS.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucune notification envoyée</div></div>';return}
   const tIco={info:'ℹ️',success:'✅',warning:'⚠️',promo:'🎁',payment:'💰',urgent:'🚨'};
   const tBg={info:'ci-b',success:'ci-g',warning:'ci-w',promo:'ci-o',payment:'ci-g',urgent:'ci-r'};
-  // Grouper par titre + date
   const grouped={};
   NOTIFS.forEach(n=>{const k=n.titre+'||'+n.created_at?.slice(0,16);if(!grouped[k])grouped[k]={...n,count:0};grouped[k].count++});
   container.innerHTML=Object.values(grouped).slice(0,30).map(n=>{
@@ -967,11 +964,9 @@ async function loadStats(){
   $s('s-notifs',(nAll||[]).length);
   $s('s-roue',(roue||[]).length);
 
-  // Parrainage : users avec code_parrain rempli
   const filleuls=(prf||[]).filter(p=>p.code_parrain).length;
   $s('s-fil',filleuls);
 
-  // Répartition VIP
   const vipCount={};
   (prf||[]).forEach(p=>{const v=p.vip_niveau||'VIP 0';vipCount[v]=(vipCount[v]||0)+1});
   const sorted=Object.entries(vipCount).sort((a,b)=>parseInt(a[0].replace('VIP ',''))-parseInt(b[0].replace('VIP ','')));
@@ -989,10 +984,8 @@ async function loadStats(){
     </div>`;
   }).join('');
 
-  // Top investisseurs
   const topInv=(prf||[]).filter(p=>p.investissement>0).slice(0,8);
   $('top-users').innerHTML=topInv.map((p,i)=>{
-    const u=USERS.find(x=>true)||{}; // just show data we have
     return `<div class="card"><div class="card-head" style="cursor:default">
       <div class="card-ico ci-p">${['🥇','🥈','🥉'][i]||'🏅'}</div>
       <div class="card-info"><div class="card-name">${p.vip_niveau||'VIP 0'}</div><div class="card-meta">Investissement</div></div>
