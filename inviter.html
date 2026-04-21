@@ -112,7 +112,9 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="hero-stats">
       <div class="hst"><div class="hst-v" id="nb-filleuls"><span class="ld"></span></div><div class="hst-l">Filleuls</div></div>
       <div class="hst"><div class="hst-v" id="tot-commis"><span class="ld"></span></div><div class="hst-l">Commissions</div></div>
-      <div class="hst"><div class="hst-v" style="color:#4ADE80">18%</div><div class="hst-l">Niveau 1</div></div><div class="hst"><div class="hst-v" style="color:#60A5FA">10%</div><div class="hst-l">Niveau 2</div></div><div class="hst"><div class="hst-v" style="color:#C084FC">2%</div><div class="hst-l">Niveau 3</div></div>
+      <div class="hst"><div class="hst-v" style="color:#4ADE80">20%</div><div class="hst-l">Niveau 1</div></div>
+      <div class="hst"><div class="hst-v" style="color:#60A5FA">8%</div><div class="hst-l">Niveau 2</div></div>
+      <div class="hst"><div class="hst-v" style="color:#C084FC">2%</div><div class="hst-l">Niveau 3</div></div>
     </div>
   </div>
 
@@ -156,13 +158,13 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="step">
       <div class="snum s3">3</div>
       <div class="stxt">
-      <h4>🌱 Niveau 1 — 18% (filleuls directs)</h4>
-      <p>Sur chaque gain de votre filleul direct, <b>18%</b> vous sont crédités automatiquement.</p>
-      <h4 style="margin-top:8px">🌿 Niveau 2 — 10% (filleuls de vos filleuls)</h4>
-      <p>Sur les gains de leurs filleuls à eux, vous recevez <b>10%</b>.</p>
-      <h4 style="margin-top:8px">🌳 Niveau 3 — 2% (3e génération)</h4>
-      <p>Sur les gains de la 3e génération, <b>2%</b> vous reviennent automatiquement.</p>
-    </div>
+        <h4>🌱 Niveau 1 — 20% (filleuls directs)</h4>
+        <p>Sur chaque gain de votre filleul direct, <b>20%</b> vous sont crédités automatiquement.</p>
+        <h4 style="margin-top:8px">🌿 Niveau 2 — 8% (filleuls de vos filleuls)</h4>
+        <p>Sur les gains de leurs filleuls à eux, vous recevez <b>8%</b>.</p>
+        <h4 style="margin-top:8px">🌳 Niveau 3 — 2% (3e génération)</h4>
+        <p>Sur les gains de la 3e génération, <b>2%</b> vous reviennent automatiquement.</p>
+      </div>
     </div>
   </div>
 
@@ -171,9 +173,9 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <h3>💰 Mes commissions de parrainage</h3>
     <div class="comm-row"><span class="cl">💰 Commission totale reçue</span><span class="cv" id="c-total">—</span></div>
     <div class="comm-row" style="background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.2)">
-      <span class="cl">🌱 N1 — Filleuls directs (18%)</span><span class="cv" style="color:#4ADE80" id="c-n1">—</span></div>
+      <span class="cl">🌱 N1 — Filleuls directs (20%)</span><span class="cv" style="color:#4ADE80" id="c-n1">—</span></div>
     <div class="comm-row" style="background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.2)">
-      <span class="cl">🌿 N2 — Filleuls indirects (10%)</span><span class="cv" style="color:#60A5FA" id="c-n2">—</span></div>
+      <span class="cl">🌿 N2 — Filleuls indirects (8%)</span><span class="cv" style="color:#60A5FA" id="c-n2">—</span></div>
     <div class="comm-row" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.2)">
       <span class="cl">🌳 N3 — 3e génération (2%)</span><span class="cv" style="color:#C084FC" id="c-n3">—</span></div>
     <div class="comm-row"><span class="cl">Nombre de filleuls N1</span><span class="cv" id="c-nb">—</span></div>
@@ -245,7 +247,7 @@ async function chargerFilleuls(){
     const ini=(f.full_name||f.email||'?')[0].toUpperCase();
     const d=new Date(f.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
     const g=f.gains_totaux||0;
-    const comm=Math.floor(g*0.1);
+    const comm=Math.floor(g*0.20); // N1 = 20%
     return `<div class="fitem">
       <div class="fav">${ini}</div>
       <div class="finfo">
