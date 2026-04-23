@@ -213,7 +213,11 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden;min-he
 
 <script>
 const SB=supabase.createClient('https://tgrfzybemuwvhkbpuzmz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ6eWJlbXV3dmhrYnB1em16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMDMwOTgsImV4cCI6MjA4NzY3OTA5OH0.M20AwabfyHK_btwhgCmdUUbP2IAtY4TeYbc3Ovzj7CE',{auth:{persistSession:true,storageKey:'vgn-admin-codes',storage:window.localStorage}});
-const ADMIN='abdoula13cherif@gmail.com';
+// ADMINS AUTORISÉS (liste blanche)
+const ALLOWED_ADMINS = [
+  'abdoula13cherif@gmail.com',
+  'k.claude228@gmail.com'
+];
 const $=id=>document.getElementById(id);
 const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
@@ -228,9 +232,18 @@ async function login(){
   if(!email||!pass){showLockErr('Champs requis');return}
   const btn=$('lock').querySelector('.lock-btn');
   btn.textContent='⏳...';btn.disabled=true;
+  
   const{data,error}=await SB.auth.signInWithPassword({email,password:pass});
   if(error){showLockErr('❌ '+error.message);btn.textContent='🔐 Connexion';btn.disabled=false;return}
-  if(data.user.email!==ADMIN){await SB.auth.signOut();showLockErr('⛔ Accès non autorisé');btn.textContent='🔐 Connexion';btn.disabled=false;return}
+  
+  // Vérification de l'email autorisé (liste blanche)
+  if(!ALLOWED_ADMINS.includes(data.user.email)){
+    await SB.auth.signOut();
+    showLockErr('⛔ Accès non autorisé. Seuls les administrateurs autorisés peuvent se connecter.');
+    btn.textContent='🔐 Connexion';btn.disabled=false;
+    return;
+  }
+  
   $('lock').style.display='none';$('app').style.display='block';
   loadCodes();
 }
@@ -240,7 +253,9 @@ async function logout(){await SB.auth.signOut();location.reload()}
 // Auto-login si session active
 (async()=>{
   const{data:{session}}=await SB.auth.getSession();
-  if(session?.user?.email===ADMIN){$('lock').style.display='none';$('app').style.display='block';loadCodes();}
+  if(session?.user?.email && ALLOWED_ADMINS.includes(session.user.email)){
+    $('lock').style.display='none';$('app').style.display='block';loadCodes();
+  }
 })();
 
 /* ── CHARGER CODES ── */
