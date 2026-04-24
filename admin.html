@@ -409,7 +409,7 @@ async function loadDash(){
   // Charger chaque table séparément — PAS de join FK
   const[r1,r2,r3,r4]=await Promise.all([
     SB.from('profiles').select('*',{count:'exact',head:true}),
-    SB.from('recharges').select('*').eq('statut','en_attente'),
+    SB.from('recharges').select('*').in('statut',['en_attente','en_attente_paiement']),
     SB.from('transactions').select('*').eq('type','retrait').eq('statut','en_attente'),
     SB.from('profiles').select('solde,investissement,gains_totaux,created_at'),
   ]);
@@ -485,7 +485,9 @@ function filtRech(f,el){
 function renderRech(){
   const q=($('q-rech')?.value||'').toLowerCase();
   let d=RECHARGES;
-  if(FILT_RECH!=='all') d=d.filter(r=>r.statut===FILT_RECH);
+  // 'en_attente' couvre aussi 'en_attente_paiement' (statut SoleasPay)
+  if(FILT_RECH==='en_attente') d=d.filter(r=>r.statut==='en_attente'||r.statut==='en_attente_paiement');
+  else if(FILT_RECH!=='all') d=d.filter(r=>r.statut===FILT_RECH);
   if(q) d=d.filter(r=>(
     (r._user?.full_name||'')+(r._user?.email||'')+(r.ref_transaction||'')+(r.num_expediteur||'')
   ).toLowerCase().includes(q));
@@ -553,9 +555,10 @@ function renderCardList(container,data,type,mini=false){
   if(!data?.length){container.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Aucun element</div></div>';return}
   const isRech=type==='rech';
   const stMap={
-    en_attente:{lbl:'En attente',cls:'cs-w',ico:'ci-w',em:'⏳'},
-    valide:{lbl:isRech?'Valide':'Paye',cls:'cs-g',ico:'ci-g',em:'✅'},
-    rejete:{lbl:'Rejete',cls:'cs-r',ico:'ci-r',em:'❌'}
+    en_attente:         {lbl:'En attente',cls:'cs-w',ico:'ci-w',em:'⏳'},
+    en_attente_paiement:{lbl:'En attente',cls:'cs-w',ico:'ci-w',em:'⏳'},
+    valide:             {lbl:isRech?'Valide':'Paye',cls:'cs-g',ico:'ci-g',em:'✅'},
+    rejete:             {lbl:'Rejete',cls:'cs-r',ico:'ci-r',em:'❌'}
   };
   container.innerHTML=data.map(r=>{
     const st=r.statut||'en_attente';
@@ -588,7 +591,7 @@ function renderCardList(container,data,type,mini=false){
         <div class="detail-row"><span class="dl">Date</span><span class="dv">${dtfh(r.created_at)}</span></div>`;
     }
 
-    const actionsHTML=st==='en_attente'?`<div class="actions">
+    const actionsHTML=(st==='en_attente'||st==='en_attente_paiement')?`<div class="actions">
       ${isRech
         ?`<button class="abtn a-valider" onclick="validerRecharge('${r.id}','${uid}','${planLabel}',${r.plan_gain||0},${r.plan_taches||0})">✅ Valider</button>`
         :`<button class="abtn a-valider" onclick="validerRetrait('${r.id}','${uid}',${r.montant||0})">✅ Paye</button>`}
