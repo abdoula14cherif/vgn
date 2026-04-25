@@ -495,12 +495,49 @@ function renderRech(){
 }
 
 async function validerRecharge(id,uid,planLabel,planGain,planTaches){
-  toast('Validation...');
-  const{error}=await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString()}).eq('id',id);
-  if(error){toast('Erreur: '+error.message,'err');return}
-  await insertNotif(uid,'payment','Plan '+planLabel+' active !',
-    'Votre recharge a ete validee. Gains: '+fmtF(planGain*planTaches)+'/jour.');
-  toast('Valide !','ok');
+  toast('Validation en cours...');
+
+  // 1. Lire la recharge pour avoir le montant exact
+  const{data:rech,error:re}=await SB.from('recharges').select('*').eq('id',id).maybeSingle();
+  if(re||!rech){toast('Recharge introuvable','err');return}
+
+  // Verifier pas deja validee
+  if(rech.statut==='valide'){toast('Deja validee','err');return}
+
+  const montant=rech.montant_envoye||0;
+  if(montant<=0){toast('Montant invalide','err');return}
+
+  // 2. Lire le solde actuel du profil
+  const{data:profil,error:pe}=await SB.from('profiles').select('solde,vip_niveau').eq('id',uid).maybeSingle();
+  if(pe||!profil){toast('Profil introuvable','err');return}
+
+  const ancienSolde=profil.solde||0;
+  const nvSolde=ancienSolde+montant; // Crediter EXACTEMENT le montant envoye — pas plus
+
+  // 3. Crediter le solde
+  const{error:ue}=await SB.from('profiles').update({solde:nvSolde}).eq('id',uid);
+  if(ue){toast('Erreur credit: '+ue.message,'err');return}
+
+  // 4. Marquer recharge validee
+  await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString()}).eq('id',id);
+
+  // 5. Commission parrain 5% si parrain existe
+  try{
+    const{data:u}=await SB.from('profiles').select('code_parrain').eq('id',uid).maybeSingle();
+    if(u?.code_parrain){
+      const{data:parrain}=await SB.from('profiles').select('id,solde').eq('code_parrainage',u.code_parrain).maybeSingle();
+      if(parrain){
+        const commission=Math.round(montant*0.05);
+        await SB.from('profiles').update({solde:(parrain.solde||0)+commission}).eq('id',parrain.id);
+        await insertNotif(parrain.id,'payment','Commission parrainage +'+fmtF(commission),'Votre filleul vient de recharger '+fmtF(montant)+'. Commission 5% creditee.');
+      }
+    }
+  }catch(ec){console.warn('Commission parrain error:',ec);}
+
+  // 6. Notifier utilisateur
+  await insertNotif(uid,'payment','Recharge validee +'+fmtF(montant),'Votre recharge de '+fmtF(montant)+' a ete validee. Nouveau solde: '+fmtF(nvSolde)+'.');
+
+  toast('Valide ! +'+fmtF(montant)+' credites','ok');
   await loadAll();
 }
 
