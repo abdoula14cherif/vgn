@@ -17,8 +17,6 @@
 }
 html{font-family:'Nunito',sans-serif;background:var(--bg)}
 body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
-
-/* TOPBAR */
 .topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
   height:calc(var(--H) + var(--sat));background:linear-gradient(135deg,var(--gd),var(--gl));
   display:flex;align-items:center;justify-content:space-between;padding:var(--sat) 14px 0;
@@ -29,19 +27,13 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .tbt{font-size:1rem;font-weight:900;color:#fff}
 .tb-pill{font-size:.67rem;font-weight:800;color:#fff;background:rgba(255,255,255,.18);
   padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.28)}
-
-/* SCROLL */
 .scroll{padding-top:calc(var(--H) + var(--sat));padding-bottom:calc(var(--B) + var(--sab) + 24px);min-height:100svh}
-
-/* TABS */
 .tabs{position:sticky;top:calc(var(--H) + var(--sat));z-index:50;background:#fff;
   display:flex;border-bottom:2px solid var(--bd)}
 .tab{flex:1;text-align:center;padding:12px 0;font-size:.82rem;font-weight:800;
   color:var(--mu);cursor:pointer;position:relative;transition:color .2s}
 .tab.on{color:var(--g)}
 .tab.on::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:var(--g);border-radius:2px}
-
-/* BOTNAV */
 .botnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
   height:calc(var(--B) + var(--sab));padding-bottom:var(--sab);background:#fff;
   border-top:1px solid var(--bd);display:flex;align-items:center;z-index:999;
@@ -50,132 +42,55 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 .bn.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;background:var(--g);border-radius:0 0 3px 3px}
 .bni{font-size:1.2rem}.bnl{font-size:.57rem;font-weight:800;color:var(--mu)}
 .bn.on .bnl{color:var(--g)}
-
-/* PLAN BANNER VIP */
 .plan-banner{margin:10px 12px 8px;border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 3px 14px rgba(0,0,0,.1)}
-.pb0{background:linear-gradient(135deg,var(--gd),var(--gl))}
-.pb1{background:linear-gradient(135deg,#1D4ED8,#60A5FA)}
-.pb2{background:linear-gradient(135deg,#6D28D9,#A78BFA)}
-.pb3{background:linear-gradient(135deg,#C2410C,#FB923C)}
-.pb4{background:linear-gradient(135deg,#991B1B,#F87171)}
-.pb5{background:linear-gradient(135deg,#0F766E,#34D399)}
-.pb6{background:linear-gradient(135deg,#A16207,#FCD34D)}
-.pb7{background:linear-gradient(135deg,#3730A3,#818CF8)}
-.pb8{background:linear-gradient(135deg,#0369A1,#38BDF8)}
-.pb9{background:linear-gradient(135deg,#14532D,#4ADE80)}
-.pb-ico{font-size:2rem;flex-shrink:0}
-.pb-info{flex:1}
-.pb-titre{font-size:.86rem;font-weight:900;color:#fff}
-.pb-sub{font-size:.63rem;color:rgba(255,255,255,.78);margin-top:2px}
-.pb-right{text-align:right}
-.pb-gain{font-size:1.15rem;font-weight:900;color:#fff}
-.pb-gainl{font-size:.57rem;color:rgba(255,255,255,.68)}
-
-/* SUMMARY */
+.pb0{background:linear-gradient(135deg,var(--gd),var(--gl))}.pb1{background:linear-gradient(135deg,#1D4ED8,#60A5FA)}.pb2{background:linear-gradient(135deg,#6D28D9,#A78BFA)}.pb3{background:linear-gradient(135deg,#C2410C,#FB923C)}.pb4{background:linear-gradient(135deg,#991B1B,#F87171)}.pb5{background:linear-gradient(135deg,#0F766E,#34D399)}.pb6{background:linear-gradient(135deg,#A16207,#FCD34D)}.pb7{background:linear-gradient(135deg,#3730A3,#818CF8)}.pb8{background:linear-gradient(135deg,#0369A1,#38BDF8)}.pb9{background:linear-gradient(135deg,#14532D,#4ADE80)}
+.pb-ico{font-size:2rem;flex-shrink:0}.pb-info{flex:1}.pb-titre{font-size:.86rem;font-weight:900;color:#fff}.pb-sub{font-size:.63rem;color:rgba(255,255,255,.78);margin-top:2px}.pb-right{text-align:right}.pb-gain{font-size:1.15rem;font-weight:900;color:#fff}.pb-gainl{font-size:.57rem;color:rgba(255,255,255,.68)}
 .summary{margin:0 12px 10px;background:linear-gradient(135deg,var(--gd),var(--gl));border-radius:14px;padding:12px 16px;box-shadow:0 3px 12px rgba(22,163,74,.2)}
 .sum-row{display:flex;justify-content:space-around;align-items:center}
-.sum-item{text-align:center}
-.sum-lbl{font-size:.59rem;color:rgba(255,255,255,.75);font-weight:700;margin-bottom:3px}
-.sum-val{font-size:1.05rem;font-weight:900;color:#fff}
-.sum-sep{width:1px;background:rgba(255,255,255,.25);height:32px}
-
-/* PROGRESS */
+.sum-item{text-align:center}.sum-lbl{font-size:.59rem;color:rgba(255,255,255,.75);font-weight:700;margin-bottom:3px}.sum-val{font-size:1.05rem;font-weight:900;color:#fff}.sum-sep{width:1px;background:rgba(255,255,255,.25);height:32px}
 .dayp{margin:0 12px 10px;background:#fff;border-radius:14px;padding:11px 14px;box-shadow:0 1px 7px rgba(0,0,0,.07)}
 .dp-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
-.dp-t{font-size:.76rem;font-weight:800;color:var(--txt)}
-.dp-c{font-size:.74rem;font-weight:900;color:var(--g)}
+.dp-t{font-size:.76rem;font-weight:800;color:var(--txt)}.dp-c{font-size:.74rem;font-weight:900;color:var(--g)}
 .dp-b{background:#E5E7EB;border-radius:6px;height:9px;overflow:hidden}
 .dp-f{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--g),var(--gl));transition:width .6s ease}
 .dp-m{font-size:.63rem;color:var(--mu);font-weight:700;margin-top:6px;text-align:center}
-
-/* LOCKED STAGE */
 .locked-box{margin:0 12px 10px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:14px;padding:13px 14px;display:flex;align-items:flex-start;gap:10px}
-.lk-ico{font-size:1.4rem;flex-shrink:0}
-.lk-txt{font-size:.7rem;font-weight:700;color:#92400E;line-height:1.55}
+.lk-ico{font-size:1.4rem;flex-shrink:0}.lk-txt{font-size:.7rem;font-weight:700;color:#92400E;line-height:1.55}
 .lk-btn{display:inline-block;margin-top:7px;font-size:.72rem;font-weight:900;color:#fff;background:var(--o);padding:6px 16px;border-radius:10px;text-decoration:none;box-shadow:0 2px 8px rgba(249,115,22,.3)}
-
-/* SECTION HEADER catégorie */
 .sec-hd{display:flex;align-items:center;gap:8px;margin:12px 12px 7px}
 .sec-hd-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
-.sec-hd-lbl{font-size:.75rem;font-weight:900;color:var(--txt)}
-.sec-hd-ct{font-size:.6rem;font-weight:800;padding:2px 9px;border-radius:20px;margin-left:auto;color:#fff}
-
-/* TACHE LIST */
+.sec-hd-lbl{font-size:.75rem;font-weight:900;color:var(--txt)}.sec-hd-ct{font-size:.6rem;font-weight:800;padding:2px 9px;border-radius:20px;margin-left:auto;color:#fff}
 .tlist{padding:0 12px;display:flex;flex-direction:column;gap:9px;padding-bottom:16px}
-
-/* TACHE CARD */
-.titem{background:#fff;border-radius:16px;overflow:hidden;
-  box-shadow:0 2px 10px rgba(0,0,0,.07);display:flex;align-items:stretch;
-  border-left:5px solid #E5E7EB;transition:transform .15s}
+.titem{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07);display:flex;align-items:stretch;border-left:5px solid #E5E7EB;transition:transform .15s}
 .titem:active{transform:scale(.985)}
-/* couleurs bordure gauche par catégorie */
-.cc-agri{border-left-color:#16A34A}
-.cc-elev{border-left-color:#D97706}
-.cc-aqua{border-left-color:#0284C7}
-.cc-mara{border-left-color:#7C3AED}
-.cc-apic{border-left-color:#F59E0B}
-.cc-arbo{border-left-color:#15803D}
-.cc-agro{border-left-color:#0F766E}
-.cc-poul{border-left-color:#DC2626}
-.cc-lait{border-left-color:#6366F1}
-.cc-serr{border-left-color:#DB2777}
+.cc-agri{border-left-color:#16A34A}.cc-elev{border-left-color:#D97706}.cc-aqua{border-left-color:#0284C7}.cc-mara{border-left-color:#7C3AED}.cc-apic{border-left-color:#F59E0B}.cc-arbo{border-left-color:#15803D}.cc-agro{border-left-color:#0F766E}.cc-poul{border-left-color:#DC2626}.cc-lait{border-left-color:#6366F1}.cc-serr{border-left-color:#DB2777}
 .titem.fin{border-left-color:var(--g);opacity:.88}
-
 .tiimg{width:82px;min-height:90px;object-fit:cover;display:block;flex-shrink:0;background:#f3f4f6}
-.tibody{flex:1;padding:10px 11px}
-.tiname{font-size:.77rem;font-weight:800;color:var(--txt);margin-bottom:4px;line-height:1.3}
+.tibody{flex:1;padding:10px 11px}.tiname{font-size:.77rem;font-weight:800;color:var(--txt);margin-bottom:4px;line-height:1.3}
 .timeta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px}
 .badge{font-size:.58rem;font-weight:800;padding:2px 8px;border-radius:6px;color:#fff}
-.bg-agri{background:#16A34A}.bg-elev{background:#D97706}.bg-aqua{background:#0284C7}
-.bg-mara{background:#7C3AED}.bg-apic{background:#F59E0B}.bg-arbo{background:#15803D}
-.bg-agro{background:#0F766E}.bg-poul{background:#DC2626}.bg-lait{background:#6366F1}
-.bg-serr{background:#DB2777}.bg-ok{background:#16A34A}.bg-mu{background:#6B7280}
-.tirew{font-size:.8rem;font-weight:900;color:var(--g)}
-.titime{font-size:.59rem;color:var(--mu);font-weight:700;margin-top:2px}
+.bg-agri{background:#16A34A}.bg-elev{background:#D97706}.bg-aqua{background:#0284C7}.bg-mara{background:#7C3AED}.bg-apic{background:#F59E0B}.bg-arbo{background:#15803D}.bg-agro{background:#0F766E}.bg-poul{background:#DC2626}.bg-lait{background:#6366F1}.bg-serr{background:#DB2777}.bg-ok{background:#16A34A}.bg-mu{background:#6B7280}
+.tirew{font-size:.8rem;font-weight:900;color:var(--g)}.titime{font-size:.59rem;color:var(--mu);font-weight:700;margin-top:2px}
 .tiright{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 11px;gap:5px;flex-shrink:0}
-.dobtn{background:linear-gradient(135deg,var(--o),var(--od));border:none;border-radius:10px;
-  padding:8px 9px;font-family:'Nunito',sans-serif;font-size:.63rem;font-weight:900;color:#fff;
-  cursor:pointer;text-align:center;line-height:1.3;transition:transform .15s;
-  box-shadow:0 2px 8px rgba(249,115,22,.28)}
-.dobtn:active{transform:scale(.92)}
-.doneico{font-size:1.6rem}
+.dobtn{background:linear-gradient(135deg,var(--o),var(--od));border:none;border-radius:10px;padding:8px 9px;font-family:'Nunito',sans-serif;font-size:.63rem;font-weight:900;color:#fff;cursor:pointer;text-align:center;line-height:1.3;transition:transform .15s;box-shadow:0 2px 8px rgba(249,115,22,.28)}
+.dobtn:active{transform:scale(.92)}.doneico{font-size:1.6rem}
 .sectitle{margin:6px 12px;font-size:.7rem;font-weight:800;color:var(--mu);text-align:center;letter-spacing:.04em}
-
-/* EMPTY */
-.empty{text-align:center;padding:44px 20px}
-.emico{font-size:3.5rem;margin-bottom:12px}
-.emtxt{font-size:.85rem;font-weight:800;color:var(--txt);margin-bottom:6px}
-.emsub{font-size:.73rem;color:var(--mu);line-height:1.6}
+.empty{text-align:center;padding:44px 20px}.emico{font-size:3.5rem;margin-bottom:12px}.emtxt{font-size:.85rem;font-weight:800;color:var(--txt);margin-bottom:6px}.emsub{font-size:.73rem;color:var(--mu);line-height:1.6}
 .em-btn{display:inline-block;margin-top:14px;padding:11px 26px;background:var(--o);color:#fff;font-size:.82rem;font-weight:900;border-radius:12px;text-decoration:none;box-shadow:0 2px 10px rgba(249,115,22,.3)}
-
-/* AD OVERLAY */
-.adov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .3s;
-  max-width:430px;left:50%;transform:translateX(-50%)}
+.adov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;max-width:430px;left:50%;transform:translateX(-50%)}
 .adov.open{opacity:1;pointer-events:all}
 .adbox{background:#111;border-radius:20px;width:calc(100% - 28px);max-width:402px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.7)}
 .adimg-w{width:100%;height:185px;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .adimg-w img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.65}
-.adplay{position:relative;z-index:2;font-size:2.8rem}
-.ad-catbar{position:absolute;top:10px;left:10px;z-index:3;font-size:.62rem;font-weight:800;padding:3px 10px;border-radius:8px;color:#fff}
-.adbd{padding:13px 15px}
-.adbr{font-size:.65rem;font-weight:700;color:#888;margin-bottom:2px}
+.adplay{position:relative;z-index:2;font-size:2.8rem}.ad-catbar{position:absolute;top:10px;left:10px;z-index:3;font-size:.62rem;font-weight:800;padding:3px 10px;border-radius:8px;color:#fff}
+.adbd{padding:13px 15px}.adbr{font-size:.65rem;font-weight:700;color:#888;margin-bottom:2px}
 .adti{font-size:.86rem;font-weight:900;color:#fff;margin-bottom:8px;line-height:1.3}
 .adbw{background:#2a2a2a;border-radius:4px;height:6px;overflow:hidden;margin-bottom:8px}
 .adbar{height:100%;background:linear-gradient(90deg,var(--o),var(--od));border-radius:4px;width:0%}
 .adtm{font-size:.72rem;font-weight:800;color:#aaa;text-align:center;margin-bottom:10px}
-.adbtn{width:100%;padding:12px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;
-  border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;color:#fff;
-  cursor:pointer;display:none;box-shadow:0 3px 14px rgba(22,163,74,.3)}
+.adbtn{width:100%;padding:12px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;color:#fff;cursor:pointer;display:none;box-shadow:0 3px 14px rgba(22,163,74,.3)}
 .adbtn.show{display:block}.adbtn:active{opacity:.85}
-
-/* TOAST */
-.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;
-  transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;
-  padding:8px 20px;border-radius:22px;font-size:.76rem;font-weight:700;z-index:99999;
-  white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-  pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.tst{position:fixed;top:calc(var(--H) + var(--sat) + 8px);left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:8px 20px;border-radius:22px;font-size:.76rem;font-weight:700;z-index:99999;white-space:nowrap;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 .tst.show{transform:translateX(-50%) translateY(0)}.tst.err{background:#DC2626}.tst.ok{background:var(--g)}
 .ld{display:inline-block;width:10px;height:10px;border:2px solid #ccc;border-top-color:var(--g);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -188,7 +103,6 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
   <span class="tbt">✅ Mes Tâches</span>
   <div class="tb-pill">💰 <span id="tb-solde">—</span></div>
 </div>
-
 <div class="tst" id="tst"></div>
 
 <div class="scroll">
@@ -196,7 +110,6 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="tab on" id="tab-ec" onclick="switchTab('enc')">🔄 En cours</div>
     <div class="tab" id="tab-fin" onclick="switchTab('fin')">✅ Terminé</div>
   </div>
-
   <div id="plan-banner" style="display:none"></div>
   <div id="locked-box" style="display:none" class="locked-box">
     <span class="lk-ico">🔒</span>
@@ -204,7 +117,6 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
       <br><a href="recharge.html" class="lk-btn">💎 Choisir un plan VIP</a>
     </div>
   </div>
-
   <div class="summary">
     <div class="sum-row">
       <div class="sum-item"><div class="sum-lbl">Aujourd'hui</div><div class="sum-val" id="s-today">—</div></div>
@@ -214,19 +126,12 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
       <div class="sum-item"><div class="sum-lbl">Statut</div><div class="sum-val" id="s-stage">—</div></div>
     </div>
   </div>
-
   <div class="dayp">
-    <div class="dp-hd">
-      <span class="dp-t">📊 Progression du jour</span>
-      <span class="dp-c" id="dpc">0 / —</span>
-    </div>
+    <div class="dp-hd"><span class="dp-t">📊 Progression du jour</span><span class="dp-c" id="dpc">0 / —</span></div>
     <div class="dp-b"><div class="dp-f" id="dpf" style="width:0%"></div></div>
     <div class="dp-m" id="dpm">Chargement...</div>
   </div>
-
-  <div class="tlist" id="tlist">
-    <div style="text-align:center;padding:30px"><span class="ld"></span></div>
-  </div>
+  <div class="tlist" id="tlist"><div style="text-align:center;padding:30px"><span class="ld"></span></div></div>
 </div>
 
 <nav class="botnav">
@@ -236,7 +141,6 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
   <a class="bn" href="profil.html"><span class="bni">👤</span><span class="bnl">Mon Compte</span></a>
 </nav>
 
-<!-- AD OVERLAY -->
 <div class="adov" id="adov">
   <div class="adbox">
     <div class="adimg-w">
@@ -261,106 +165,88 @@ const SB=supabase.createClient(
   {auth:{persistSession:true,storageKey:'vgn-auth',storage:window.localStorage}}
 );
 
-/* ═══════════════════════
-   CONFIG PLANS VIP
-═══════════════════════ */
 const VIP_CONF={
-  'VIP 0' :{max:3,  gain:70,    ico:'🌱', pb:'pb0', label:'Stage gratuit'},
-  'PROMO 1':{max:1, gain:200,   ico:'🔥', pb:'pbp1',label:'Promo 1', promo:true},
-  'PROMO 2':{max:1, gain:450,   ico:'🔥', pb:'pbp2',label:'Promo 2', promo:true},
-  'VIP 1':{max:5,  gain:70,    ico:'💼', pb:'pb1', label:'Job 1'},
-  'VIP 2':{max:8,  gain:175,   ico:'🚀', pb:'pb2', label:'Job 2'},
-  'VIP 3':{max:10, gain:560,   ico:'⭐', pb:'pb3', label:'Job 3'},
-  'VIP 4':{max:15, gain:1300,  ico:'💎', pb:'pb4', label:'Job 4'},
-  'VIP 5':{max:20, gain:2000,  ico:'🏆', pb:'pb5', label:'Job 5'},
-  'VIP 6':{max:25, gain:3500,  ico:'👑', pb:'pb6', label:'Job 6'},
-  'VIP 7':{max:30, gain:6400,  ico:'🌟', pb:'pb7', label:'Job 7'},
-  'VIP 8':{max:35, gain:11000, ico:'💫', pb:'pb8', label:'Job 8'},
-  'VIP 9':{max:40, gain:19000, ico:'🎯', pb:'pb9', label:'Job 9'},
+  'VIP 0' :{max:3,  gain:0,     ico:'🌱',pb:'pb0',label:'Stage gratuit'},
+  'PROMO 1':{max:1, gain:200,   ico:'🔥',pb:'pb0',label:'Promo 1',promo:true},
+  'PROMO 2':{max:1, gain:450,   ico:'🔥',pb:'pb0',label:'Promo 2',promo:true},
+  'VIP 1':{max:5,  gain:70,    ico:'💼',pb:'pb1',label:'Job 1'},
+  'VIP 2':{max:8,  gain:175,   ico:'🚀',pb:'pb2',label:'Job 2'},
+  'VIP 3':{max:10, gain:560,   ico:'⭐',pb:'pb3',label:'Job 3'},
+  'VIP 4':{max:15, gain:1300,  ico:'💎',pb:'pb4',label:'Job 4'},
+  'VIP 5':{max:20, gain:2000,  ico:'🏆',pb:'pb5',label:'Job 5'},
+  'VIP 6':{max:25, gain:3500,  ico:'👑',pb:'pb6',label:'Job 6'},
+  'VIP 7':{max:30, gain:6400,  ico:'🌟',pb:'pb7',label:'Job 7'},
+  'VIP 8':{max:35, gain:11000, ico:'💫',pb:'pb8',label:'Job 8'},
+  'VIP 9':{max:40, gain:19000, ico:'🎯',pb:'pb9',label:'Job 9'},
 };
 
-/* ═══════════════════════
-   CATALOGUE 36 TÂCHES
-   10 catégories colorées
-═══════════════════════ */
 const CAT_META={
-  'Agriculture':  {ico:'🌾',bg:'bg-agri',cc:'cc-agri',sico:'bg-agri'},
-  'Élevage bovin':{ico:'🐄',bg:'bg-elev',cc:'cc-elev',sico:'bg-elev'},
-  'Aquaculture':  {ico:'🐟',bg:'bg-aqua',cc:'cc-aqua',sico:'bg-aqua'},
-  'Maraîchage':   {ico:'🥦',bg:'bg-mara',cc:'cc-mara',sico:'bg-mara'},
-  'Apiculture':   {ico:'🍯',bg:'bg-apic',cc:'cc-apic',sico:'bg-apic'},
-  'Arboriculture':{ico:'🌳',bg:'bg-arbo',cc:'cc-arbo',sico:'bg-arbo'},
-  'Agroforesterie':{ico:'🌿',bg:'bg-agro',cc:'cc-agro',sico:'bg-agro'},
-  'Aviculture':   {ico:'🐔',bg:'bg-poul',cc:'cc-poul',sico:'bg-poul'},
-  'Laiterie':     {ico:'🥛',bg:'bg-lait',cc:'cc-lait',sico:'bg-lait'},
-  'Hydroponique': {ico:'💧',bg:'bg-serr',cc:'cc-serr',sico:'bg-serr'},
+  'Agriculture':  {ico:'🌾',bg:'bg-agri',cc:'cc-agri'},
+  'Elevage bovin':{ico:'🐄',bg:'bg-elev',cc:'cc-elev'},
+  'Aquaculture':  {ico:'🐟',bg:'bg-aqua',cc:'cc-aqua'},
+  'Maraichage':   {ico:'🥦',bg:'bg-mara',cc:'cc-mara'},
+  'Apiculture':   {ico:'🍯',bg:'bg-apic',cc:'cc-apic'},
+  'Arboriculture':{ico:'🌳',bg:'bg-arbo',cc:'cc-arbo'},
+  'Agroforesterie':{ico:'🌿',bg:'bg-agro',cc:'cc-agro'},
+  'Aviculture':   {ico:'🐔',bg:'bg-poul',cc:'cc-poul'},
+  'Laiterie':     {ico:'🥛',bg:'bg-lait',cc:'cc-lait'},
+  'Hydroponique': {ico:'💧',bg:'bg-serr',cc:'cc-serr'},
 };
 
 const CATALOG={
-  /* 🌾 AGRICULTURE */
-  ag01:{nom:'Champs de Maïs VGN',       cat:'Agriculture',    img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=300&q=80'},
-  ag02:{nom:'Récolte de Blé Doré',       cat:'Agriculture',    img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&q=80'},
-  ag03:{nom:'Culture du Manioc Bio',     cat:'Agriculture',    img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=300&q=80'},
-  ag04:{nom:'Plantation de Cacao',       cat:'Agriculture',    img:'https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=300&q=80'},
-  ag05:{nom:'Rizière Premium VGN',       cat:'Agriculture',    img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'},
-  ag06:{nom:'Sorgho & Mil Fermier',      cat:'Agriculture',    img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=300&q=80'},
-  /* 🐄 ÉLEVAGE BOVIN */
-  el01:{nom:'Élevage Bovin VGN',         cat:'Élevage bovin',  img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=300&q=80'},
-  el02:{nom:'Ranch Ovin & Caprin',        cat:'Élevage bovin',  img:'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=300&q=80'},
-  el03:{nom:'Ferme Bovine Laitière',      cat:'Élevage bovin',  img:'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=300&q=80'},
-  el04:{nom:'Troupeau de Moutons Bio',    cat:'Élevage bovin',  img:'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=300&q=80'},
-  /* 🐟 AQUACULTURE */
-  aq01:{nom:'Élevage de Tilapia VGN',    cat:'Aquaculture',    img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=300&q=80'},
-  aq02:{nom:'Ferme Piscicole Moderne',    cat:'Aquaculture',    img:'https://images.unsplash.com/photo-1518877593221-1f28583780b4?w=300&q=80'},
-  aq03:{nom:'Bassins Catfish Bio',        cat:'Aquaculture',    img:'https://images.unsplash.com/photo-1504973960431-1c467e159aa4?w=300&q=80'},
-  aq04:{nom:'Crevetticulture Premium',    cat:'Aquaculture',    img:'https://images.unsplash.com/photo-1495615080073-6b89c9839ce0?w=300&q=80'},
-  /* 🥦 MARAÎCHAGE */
-  ma01:{nom:'Serre de Tomates VGN',      cat:'Maraîchage',     img:'https://images.unsplash.com/photo-1592921870583-aeafb0639ffe?w=300&q=80'},
-  ma02:{nom:'Culture de Poivrons Bio',    cat:'Maraîchage',     img:'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=300&q=80'},
-  ma03:{nom:'Plantation de Légumes',      cat:'Maraîchage',     img:'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=300&q=80'},
-  ma04:{nom:'Oignons & Ail Fermiers',     cat:'Maraîchage',     img:'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=300&q=80'},
-  /* 🍯 APICULTURE */
-  ap01:{nom:'Ruches de Miel Naturel',    cat:'Apiculture',     img:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&q=80'},
-  ap02:{nom:'Apiculture VGN Premium',     cat:'Apiculture',     img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80'},
-  ap03:{nom:"Miel d'Acacia Sauvage",     cat:'Apiculture',     img:'https://images.unsplash.com/photo-1601063458289-77247ba485ec?w=300&q=80'},
-  /* 🌳 ARBORICULTURE */
-  ar01:{nom:'Verger de Manguiers',        cat:'Arboriculture',  img:'https://images.unsplash.com/photo-1504973960431-1c467e159aa4?w=300&q=80'},
-  ar02:{nom:"Plantation d'Avocatiers",   cat:'Arboriculture',  img:'https://images.unsplash.com/photo-1601926638-c1f9bba4b9e8?w=300&q=80'},
-  ar03:{nom:'Orangeraie Bio VGN',         cat:'Arboriculture',  img:'https://images.unsplash.com/photo-1547514701-42782101795e?w=300&q=80'},
-  /* 🌿 AGROFORESTERIE */
-  af01:{nom:'Forêt Productive VGN',      cat:'Agroforesterie', img:'https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&q=80'},
-  af02:{nom:'Bambouseraie Industrielle',  cat:'Agroforesterie', img:'https://images.unsplash.com/photo-1524490353-a5a09a9e60d0?w=300&q=80'},
-  af03:{nom:'Moringa & Plantes Méd.',    cat:'Agroforesterie', img:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=300&q=80'},
-  /* 🐔 AVICULTURE */
-  po01:{nom:'Ferme Avicole VGN',         cat:'Aviculture',     img:'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=300&q=80'},
-  po02:{nom:'Élevage de Poulets Bio',     cat:'Aviculture',     img:'https://images.unsplash.com/photo-1569288052389-dac9b01c9c05?w=300&q=80'},
-  po03:{nom:"Production d'Œufs VGN",    cat:'Aviculture',     img:'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=300&q=80'},
-  po04:{nom:'Pintades & Dindons Farm.',  cat:'Aviculture',     img:'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=300&q=80'},
-  /* 🥛 LAITERIE */
-  la01:{nom:'Fromagerie Fermière VGN',   cat:'Laiterie',       img:'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=300&q=80'},
-  la02:{nom:'Production Laitière Bio',    cat:'Laiterie',       img:'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&q=80'},
-  /* 💧 HYDROPONIQUE */
-  se01:{nom:'Serre Hydroponique VGN',    cat:'Hydroponique',   img:'https://images.unsplash.com/photo-1558618047-3c08d697a4ac?w=300&q=80'},
-  se02:{nom:'Culture Aéroponique',        cat:'Hydroponique',   img:'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=300&q=80'},
-  se03:{nom:'Ferme Verticale Urbaine',    cat:'Hydroponique',   img:'https://images.unsplash.com/photo-1627920769842-053aebdaedbe?w=300&q=80'},
-  se04:{nom:'Irrigation Connectée IoT',  cat:'Hydroponique',   img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=300&q=80'},
+  ag01:{nom:'Champs de Mais VGN',      cat:'Agriculture',   img:'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=300&q=80'},
+  ag02:{nom:'Recolte de Ble Dore',     cat:'Agriculture',   img:'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&q=80'},
+  ag03:{nom:'Culture du Manioc Bio',   cat:'Agriculture',   img:'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=300&q=80'},
+  ag04:{nom:'Plantation de Cacao',     cat:'Agriculture',   img:'https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=300&q=80'},
+  ag05:{nom:'Riziere Premium VGN',     cat:'Agriculture',   img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'},
+  ag06:{nom:'Sorgho et Mil Fermier',   cat:'Agriculture',   img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=300&q=80'},
+  el01:{nom:'Elevage Bovin VGN',       cat:'Elevage bovin', img:'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=300&q=80'},
+  el02:{nom:'Ranch Ovin et Caprin',    cat:'Elevage bovin', img:'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=300&q=80'},
+  el03:{nom:'Ferme Bovine Laitiere',   cat:'Elevage bovin', img:'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=300&q=80'},
+  el04:{nom:'Troupeau de Moutons Bio', cat:'Elevage bovin', img:'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=300&q=80'},
+  aq01:{nom:'Elevage de Tilapia VGN',  cat:'Aquaculture',   img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=300&q=80'},
+  aq02:{nom:'Ferme Piscicole Moderne', cat:'Aquaculture',   img:'https://images.unsplash.com/photo-1518877593221-1f28583780b4?w=300&q=80'},
+  aq03:{nom:'Bassins Catfish Bio',     cat:'Aquaculture',   img:'https://images.unsplash.com/photo-1504973960431-1c467e159aa4?w=300&q=80'},
+  aq04:{nom:'Crevetticulture Premium', cat:'Aquaculture',   img:'https://images.unsplash.com/photo-1495615080073-6b89c9839ce0?w=300&q=80'},
+  ma01:{nom:'Serre de Tomates VGN',   cat:'Maraichage',    img:'https://images.unsplash.com/photo-1592921870583-aeafb0639ffe?w=300&q=80'},
+  ma02:{nom:'Culture de Poivrons Bio', cat:'Maraichage',    img:'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=300&q=80'},
+  ma03:{nom:'Plantation de Legumes',   cat:'Maraichage',    img:'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=300&q=80'},
+  ma04:{nom:'Oignons et Ail Fermiers', cat:'Maraichage',    img:'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=300&q=80'},
+  ap01:{nom:'Ruches de Miel Naturel',  cat:'Apiculture',    img:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&q=80'},
+  ap02:{nom:'Apiculture VGN Premium',  cat:'Apiculture',    img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80'},
+  ap03:{nom:'Miel Acacia Sauvage',     cat:'Apiculture',    img:'https://images.unsplash.com/photo-1601063458289-77247ba485ec?w=300&q=80'},
+  ar01:{nom:'Verger de Manguiers',     cat:'Arboriculture', img:'https://images.unsplash.com/photo-1504973960431-1c467e159aa4?w=300&q=80'},
+  ar02:{nom:'Plantation Avocatiers',   cat:'Arboriculture', img:'https://images.unsplash.com/photo-1601926638-c1f9bba4b9e8?w=300&q=80'},
+  ar03:{nom:'Orangeraie Bio VGN',      cat:'Arboriculture', img:'https://images.unsplash.com/photo-1547514701-42782101795e?w=300&q=80'},
+  af01:{nom:'Foret Productive VGN',    cat:'Agroforesterie',img:'https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&q=80'},
+  af02:{nom:'Bambouseraie Industrielle',cat:'Agroforesterie',img:'https://images.unsplash.com/photo-1524490353-a5a09a9e60d0?w=300&q=80'},
+  af03:{nom:'Moringa et Plantes Med.', cat:'Agroforesterie',img:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=300&q=80'},
+  po01:{nom:'Ferme Avicole VGN',       cat:'Aviculture',    img:'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=300&q=80'},
+  po02:{nom:'Elevage Poulets Bio',     cat:'Aviculture',    img:'https://images.unsplash.com/photo-1569288052389-dac9b01c9c05?w=300&q=80'},
+  po03:{nom:'Production Oeufs VGN',    cat:'Aviculture',    img:'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=300&q=80'},
+  po04:{nom:'Pintades et Dindons',     cat:'Aviculture',    img:'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=300&q=80'},
+  la01:{nom:'Fromagerie Fermiere VGN', cat:'Laiterie',      img:'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=300&q=80'},
+  la02:{nom:'Production Laitiere Bio', cat:'Laiterie',      img:'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&q=80'},
+  se01:{nom:'Serre Hydroponique VGN',  cat:'Hydroponique',  img:'https://images.unsplash.com/photo-1558618047-3c08d697a4ac?w=300&q=80'},
+  se02:{nom:'Culture Aeroponique',     cat:'Hydroponique',  img:'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=300&q=80'},
+  se03:{nom:'Ferme Verticale Urbaine', cat:'Hydroponique',  img:'https://images.unsplash.com/photo-1627920769842-053aebdaedbe?w=300&q=80'},
+  se04:{nom:'Irrigation Connectee IoT',cat:'Hydroponique',  img:'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=300&q=80'},
 };
 
-const ALL_IDS=Object.keys(CATALOG); // 36 tâches
+const ALL_IDS=Object.keys(CATALOG);
 const SECS=15, DAYS_STAGE=4;
-
 const fmt=n=>Number(n||0).toLocaleString('fr-FR');
 const fmtF=n=>fmt(n)+' FCFA';
 const td=()=>new Date().toISOString().slice(0,10);
 const $=id=>document.getElementById(id);
 const $s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
 function toast(m,t=''){const el=$('tst');el.textContent=m;el.className='tst show'+(t?' '+t:'');setTimeout(()=>el.className='tst',3500)}
-function timeAgo(iso){const d=Math.floor((Date.now()-new Date(iso))/60000);if(d<1)return"À l'instant";if(d<60)return d+'min';if(d<1440)return Math.floor(d/60)+'h';return new Date(iso).toLocaleDateString('fr-FR')}
+function timeAgo(iso){const d=Math.floor((Date.now()-new Date(iso))/60000);if(d<1)return'Il y a moins de 1 min';if(d<60)return d+'min';if(d<1440)return Math.floor(d/60)+'h';return new Date(iso).toLocaleDateString('fr-FR')}
 
 let U=null,P=null,histList=[],doneToday=[],curTab='enc',curT=null,adInt=null,saving=false;
-let vipNiv='VIP 0',MAX=3,GAIN=70,isVIP=false;
+let vipNiv='VIP 0',MAX=3,GAIN=0,isVIP=false;
+let CUSTOM_TACHES=[];
 
-/* ── Pool tâches stable par jour & user ── */
 function getDayPool(){
   const seed=(U?.id||'x').slice(0,8)+td();
   let h=0;for(const c of seed)h=Math.imul(31,h)+c.charCodeAt(0)|0;
@@ -368,28 +254,15 @@ function getDayPool(){
   return [...ALL_IDS].sort(()=>rng()-.5).slice(0,Math.min(MAX*3,ALL_IDS.length));
 }
 
-/* ── Banner VIP ── */
 function renderBanner(){
   const b=$('plan-banner');
   if(vipNiv==='VIP 0'){b.style.display='none';return}
   const c=VIP_CONF[vipNiv]||VIP_CONF['VIP 0'];
   b.style.display='block';
-  const isPromo=c.promo||false;
-  const gainLabel=isPromo?fmtF(GAIN)+'/jour':fmtF(GAIN)+'/tâche';
-  const subLabel=isPromo?'Plan Promo · '+fmtF(GAIN)+' FCFA/jour · 30 jours':MAX+' tâches/jour · Gain '+fmtF(GAIN)+'/tâche';
-  b.innerHTML=`<div class="plan-banner ${c.pb}" style="${isPromo?'background:linear-gradient(135deg,#FF6B6B,#F97316)':''}">
-    <span class="pb-ico">${c.ico}</span>
-    <div class="pb-info">
-      <div class="pb-titre">${vipNiv} — ${c.label} <span style="font-size:.6rem;background:rgba(255,255,255,.2);padding:1px 7px;border-radius:8px;">✅ Actif</span></div>
-      <div class="pb-sub">${subLabel}</div>
-    </div>
-    <div class="pb-right">
-      <div class="pb-gain">+${gainLabel}</div>
-    </div>
-  </div>`;
+  const gainLabel=fmtF(GAIN)+'/tache';
+  b.innerHTML='<div class="plan-banner '+c.pb+'"><span class="pb-ico">'+c.ico+'</span><div class="pb-info"><div class="pb-titre">'+vipNiv+' — '+c.label+' <span style="font-size:.6rem;background:rgba(255,255,255,.2);padding:1px 7px;border-radius:8px;">✅ Actif</span></div><div class="pb-sub">'+MAX+' taches/jour · Gain '+fmtF(GAIN)+'/tache</div></div><div class="pb-right"><div class="pb-gain">+'+gainLabel+'</div></div></div>';
 }
 
-/* ── Summary ── */
 function updateSummary(){
   const n=doneToday.length;
   $s('s-today',n+' / '+MAX);
@@ -397,10 +270,11 @@ function updateSummary(){
   $s('s-stage',isVIP?vipNiv:'Stage VIP 0');
   $('dpf').style.width=(n/Math.max(MAX,1)*100)+'%';
   $s('dpc',n+' / '+MAX);
-  $s('dpm',n===0?"Aucune tâche complétée aujourd'hui":n<MAX?`${MAX-n} tâche${MAX-n>1?'s':''} restante${MAX-n>1?'s':''} !`:"🎉 Objectif atteint ! Revenez demain.");
+  if(n===0)$s('dpm','Aucune tache completee aujourd\'hui');
+  else if(n<MAX)$s('dpm',(MAX-n)+' tache(s) restante(s) !');
+  else $s('dpm','Objectif atteint ! Revenez demain.');
 }
 
-/* ── Switch tab ── */
 function switchTab(t){
   curTab=t;
   $('tab-ec').className='tab'+(t==='enc'?' on':'');
@@ -408,216 +282,74 @@ function switchTab(t){
   render();
 }
 
-/* ── RENDER ── */
 function render(){
   const list=$('tlist');list.innerHTML='';
   $('locked-box').style.display='none';
 
+  // ── VIP 0 : taches gratuites SANS credit solde ──
+  // Les taches VIP 0 ne creditent RIEN — elles servent uniquement de demonstration
+  // Seules les recharges validees par l'admin creditent le solde
+
   if(curTab==='enc'){
-    // Stage terminé sans VIP ?
     if(!isVIP){
       const ms=Date.now()-new Date(P?.created_at||U?.created_at||Date.now()).getTime();
       const jourStage=Math.floor(ms/86400000)+1;
       if(jourStage>DAYS_STAGE&&doneToday.length>=MAX){
         $('locked-box').style.display='flex';
-        list.innerHTML=`<div class="empty"><div class="emico">🔒</div>
-          <div class="emtxt">Stage terminé !</div>
-          <div class="emsub">Activez un plan VIP pour accéder<br>à plus de tâches et augmenter vos gains.</div>
-          <a href="recharge.html" class="em-btn">💎 Investir maintenant</a></div>`;
+        list.innerHTML='<div class="empty"><div class="emico">🔒</div><div class="emtxt">Stage termine !</div><div class="emsub">Activez un plan VIP pour acceder a plus de taches et augmenter vos gains.</div><a href="recharge.html" class="em-btn">💎 Investir maintenant</a></div>';
         return;
       }
     }
-
     if(doneToday.length>=MAX){
-      list.innerHTML=`<div class="empty"><div class="emico">🌙</div>
-        <div class="emtxt">Limite du jour atteinte !</div>
-        <div class="emsub">Vous avez réalisé vos ${MAX} tâches du jour.<br>Revenez demain pour continuer.</div></div>`;
+      list.innerHTML='<div class="empty"><div class="emico">🌙</div><div class="emtxt">Limite du jour atteinte !</div><div class="emsub">Vous avez realise vos '+MAX+' taches du jour.<br>Revenez demain pour continuer.</div></div>';
       return;
     }
-
     const pool=getDayPool();
     const restantes=pool.filter(id=>!doneToday.includes(id));
     if(!restantes.length){
-      list.innerHTML=`<div class="empty"><div class="emico">✅</div><div class="emtxt">Toutes faites !</div><div class="emsub">Revenez demain.</div></div>`;
+      list.innerHTML='<div class="empty"><div class="emico">✅</div><div class="emtxt">Toutes faites !</div><div class="emsub">Revenez demain.</div></div>';
       return;
     }
-
-    // Grouper par catégorie
     const parCat={};
-    restantes.forEach(id=>{
-      const c=CATALOG[id].cat;
-      if(!parCat[c])parCat[c]=[];
-      parCat[c].push(id);
-    });
-
+    restantes.forEach(id=>{const c=CATALOG[id].cat;if(!parCat[c])parCat[c]=[];parCat[c].push(id);});
     let rendered=0;
     for(const [cat,ids] of Object.entries(parCat)){
-      if(rendered>=MAX*2)break; // limiter l'affichage à 2× le max
+      if(rendered>=MAX*2)break;
       const cm=CAT_META[cat]||CAT_META['Agriculture'];
-
-      // Titre section catégorie
       const sh=document.createElement('div');sh.className='sec-hd';
-      sh.innerHTML=`<div class="sec-hd-ico ${cm.bg}">${cm.ico}</div>
-        <span class="sec-hd-lbl">${cat}</span>
-        <span class="sec-hd-ct ${cm.bg}">${ids.length}</span>`;
+      sh.innerHTML='<div class="sec-hd-ico '+cm.bg+'">'+cm.ico+'</div><span class="sec-hd-lbl">'+cat+'</span><span class="sec-hd-ct '+cm.bg+'">'+ids.length+'</span>';
       list.appendChild(sh);
-
       ids.forEach(id=>{
         if(rendered>=MAX*2)return;
         const t=CATALOG[id];
         const div=document.createElement('div');
-        div.className=`titem ${cm.cc}`;
-        div.innerHTML=`
-          <img class="tiimg" src="${t.img}" alt="${t.nom}" loading="lazy"
-            onerror="this.src='https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'">
-          <div class="tibody">
-            <div class="tiname">${t.nom}</div>
-            <div class="timeta">
-              <span class="badge ${cm.bg}">${cm.ico} ${cat}</span>
-              <span class="badge bg-mu">Gratuit</span>
-            </div>
-            <div class="tirew">+${fmtF(GAIN)}</div>
-            <div class="titime">⏱ Publicité de ${SECS} secondes</div>
-          </div>
-          <div class="tiright">
-            <button class="dobtn" onclick="startAd('${id}')">▶️ Faire<br>la tâche</button>
-          </div>`;
+        div.className='titem '+cm.cc;
+        // VIP 0 : afficher "Demo gratuite" au lieu du gain
+        const gainLabel=isVIP?'+'+fmtF(GAIN):'Demo gratuite';
+        div.innerHTML='<img class="tiimg" src="'+t.img+'" alt="'+t.nom+'" loading="lazy" onerror="this.src=\'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80\'"><div class="tibody"><div class="tiname">'+t.nom+'</div><div class="timeta"><span class="badge '+cm.bg+'">'+cm.ico+' '+cat+'</span></div><div class="tirew">'+gainLabel+'</div><div class="titime">⏱ Publicite de '+SECS+' secondes</div></div><div class="tiright"><button class="dobtn" onclick="startAd(\''+id+'\')">▶️ Faire<br>la tache</button></div>';
         list.appendChild(div);
         rendered++;
       });
     }
-
-    // ── TÂCHES CUSTOM (vidéos admin) ──
-    if(CUSTOM_TACHES.length>0&&doneToday.length<MAX){
-      const customRestantes=CUSTOM_TACHES.filter(ct=>{
-        // Vérifier niveau VIP minimum
-        if(ct.vip_min&&ct.vip_min!=='VIP 0'){
-          const reqN=parseInt((ct.vip_min||'').replace('VIP ',''))||0;
-          const userN=parseInt((vipNiv||'').replace('VIP ',''))||0;
-          if(userN<reqN)return false;
-        }
-        // Vérifier si déjà faite aujourd'hui
-        return !histList.some(h=>h.custom_tache_id===ct.id&&h.date_jour===td());
-      });
-      if(customRestantes.length>0){
-        const sh=document.createElement('div');sh.className='sec-hd';
-        sh.innerHTML='<div class="sec-hd-ico bg-agri">🎬</div><span class="sec-hd-lbl">Tâches Vidéo VGN</span><span class="sec-hd-ct bg-agri">'+customRestantes.length+'</span>';
-        list.appendChild(sh);
-        customRestantes.forEach(ct=>{
-          if(rendered>=MAX*2)return;
-          const div=document.createElement('div');
-          div.className='titem cc-agri';
-          const thumb=ct.thumbnail_url||'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80';
-          div.innerHTML=`
-            <div class="tiimg" style="position:relative;overflow:hidden;background:#1F2937;display:flex;align-items:center;justify-content:center;min-width:80px;width:80px;height:70px;border-radius:10px;flex-shrink:0">
-              <img src="${thumb}" alt="${ct.nom}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
-              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-                <div style="width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:.75rem">▶</div>
-              </div>
-            </div>
-            <div class="tibody">
-              <div class="tiname">${ct.nom}</div>
-              <div class="timeta">
-                <span class="badge bg-agri">🎬 Vidéo</span>
-                <span class="badge bg-mu">⏱ ${ct.duree_secs||15}s</span>
-              </div>
-            </div>
-            <div class="tiright">
-              <button class="dobtn" onclick="startCustomAd('${ct.id}','${(ct.nom||'').replace(/'/g,'`')}','${(ct.video_url||'').replace(/'/g,"\'")}',${ct.duree_secs||15})">▶️ Voir<br>la vidéo</button>
-            </div>`;
-          list.appendChild(div);
-          rendered++;
-        });
-      }
-    }
-
   } else {
-    // TERMINÉ
     const todayR=histList.filter(r=>r.date_jour===td());
     const oldR=histList.filter(r=>r.date_jour!==td());
-
     if(!histList.length){
-      list.innerHTML=`<div class="empty"><div class="emico">📋</div><div class="emtxt">Aucune tâche terminée</div><div class="emsub">Les tâches complétées apparaîtront ici.</div></div>`;
+      list.innerHTML='<div class="empty"><div class="emico">📋</div><div class="emtxt">Aucune tache terminee</div><div class="emsub">Les taches completees apparaitront ici.</div></div>';
       return;
     }
-
     const mkItem=(r,faded)=>{
-      const t=CATALOG[r.tache_ref]||{nom:'Tâche VGN',cat:'Agriculture',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'};
+      const t=CATALOG[r.tache_ref]||{nom:'Tache VGN',cat:'Agriculture',img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&q=80'};
       const cm=CAT_META[t.cat]||CAT_META['Agriculture'];
       const div=document.createElement('div');div.className='titem fin';if(faded)div.style.opacity='.7';
-      div.innerHTML=`
-        <img class="tiimg" src="${t.img}" alt="${t.nom}" loading="lazy">
-        <div class="tibody">
-          <div class="tiname">${t.nom}</div>
-          <div class="timeta"><span class="badge bg-ok">✅ Terminé</span><span class="badge ${cm.bg}">${cm.ico} ${t.cat}</span></div>
-          <div class="tirew">+${fmtF(r.reward||GAIN)} crédités</div>
-          <div class="titime">${faded?'📅 '+new Date(r.completee_le).toLocaleDateString('fr-FR'):'🕐 '+timeAgo(r.completee_le)}</div>
-        </div>
-        <div class="tiright"><div class="doneico">✅</div></div>`;
+      div.innerHTML='<img class="tiimg" src="'+t.img+'" alt="'+t.nom+'" loading="lazy"><div class="tibody"><div class="tiname">'+t.nom+'</div><div class="timeta"><span class="badge bg-ok">✅ Termine</span><span class="badge '+cm.bg+'">'+cm.ico+' '+t.cat+'</span></div><div class="tirew">'+(r.reward>0?'+'+fmtF(r.reward)+' credites':'Demo completee')+'</div><div class="titime">'+(faded?'📅 '+new Date(r.completee_le).toLocaleDateString('fr-FR'):'🕐 '+timeAgo(r.completee_le))+'</div></div><div class="tiright"><div class="doneico">✅</div></div>';
       return div;
     };
-
-    if(todayR.length){
-      const s=document.createElement('div');s.className='sectitle';s.textContent="── Aujourd'hui ──";list.appendChild(s);
-      todayR.forEach(r=>list.appendChild(mkItem(r,false)));
-    }
-    if(oldR.length){
-      const s=document.createElement('div');s.className='sectitle';s.textContent='── Jours précédents ──';list.appendChild(s);
-      oldR.forEach(r=>list.appendChild(mkItem(r,true)));
-    }
+    if(todayR.length){const s=document.createElement('div');s.className='sectitle';s.textContent="── Aujourd'hui ──";list.appendChild(s);todayR.forEach(r=>list.appendChild(mkItem(r,false)));}
+    if(oldR.length){const s=document.createElement('div');s.className='sectitle';s.textContent='── Jours precedents ──';list.appendChild(s);oldR.forEach(r=>list.appendChild(mkItem(r,true)));}
   }
 }
 
-/* ── START CUSTOM AD (vidéo admin) ── */
-function startCustomAd(ctId,nom,videoUrl,dureeMin){
-  if(saving)return;
-  if(!videoUrl){toast('❌ Lien vidéo manquant','err');return}
-  // Ouvrir la vidéo
-  window.open(videoUrl,'_blank');
-  // Timer = attendre la durée min avant de valider
-  const btn=document.querySelector('[onclick*="startCustomAd(\''+ctId+'\'"]');
-  if(btn){btn.textContent='⏳ '+dureeMin+'s...';btn.disabled=true;}
-  let secs=dureeMin;
-  const timer=setInterval(()=>{
-    secs--;
-    if(btn)btn.textContent='⏳ '+secs+'s...';
-    if(secs<=0){
-      clearInterval(timer);
-      validerCustomAd(ctId,nom,videoUrl);
-      if(btn){btn.textContent='✅ Validé !';btn.disabled=true;}
-    }
-  },1000);
-}
-
-async function validerCustomAd(ctId,nom,videoUrl){
-  if(saving)return;
-  saving=true;
-  const now=new Date().toISOString();
-  const dj=td();
-  try{
-    const e1=await SB.from('taches_completees').insert({
-      user_id:U.id,tache_ref:'custom_'+ctId,type_tache:'vip',
-      reward:GAIN,date_jour:dj,completee_le:now,custom_tache_id:ctId
-    });
-    if(e1.error)throw e1.error;
-    const ns=(P.solde||0)+GAIN,ng=(P.gains_totaux||0)+GAIN,ngj=(P.gains_jour||0)+GAIN,nt=(P.taches_jour||0)+1;
-    const e2=await SB.from('profiles').update({
-      solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:(P.gains_semaine||0)+GAIN,
-      gains_mois:(P.gains_mois||0)+GAIN,taches_jour:nt,derniere_tache_le:dj
-    }).eq('id',U.id);
-    if(e2.error)throw e2.error;
-    await SB.from('transactions').insert({user_id:U.id,type:'gain_tache',montant:GAIN,statut:'valide',note:'Tâche vidéo: '+nom,created_at:now});
-    P={...P,solde:ns,gains_totaux:ng,gains_jour:ngj,taches_jour:nt};
-    histList.unshift({tache_ref:'custom_'+ctId,custom_tache_id:ctId,reward:GAIN,date_jour:dj,completee_le:now});
-    doneToday.push('custom_'+ctId);
-    $s('tb-solde',fmtF(ns));
-    toast('🎉 +'+fmtF(GAIN)+' crédités !','ok');
-    render();updateSummary();
-  }catch(e){toast('❌ '+(e.message||'Erreur'),'err');}
-  finally{saving=false;}
-}
-
-/* ── START AD ── */
 function startAd(id){
   if(saving)return;
   const t=CATALOG[id];if(!t)return;
@@ -628,159 +360,143 @@ function startAd(id){
   $('ad-catbar').textContent=cm.ico+' '+t.cat;
   $('ad-catbar').className='ad-catbar '+cm.bg;
   const bar=$('adbar');bar.style.transition='none';bar.style.width='0%';
-  $('adtm').innerHTML=`Patientez <b>${SECS}</b> secondes...`;
-  $('adbtn').textContent='✅ Réclamer +'+fmt(GAIN)+' FCFA';
+  const gainLabel=isVIP?'Reclamer +'+fmt(GAIN)+' FCFA':'Tache completee !';
+  $('adtm').innerHTML='Patientez <b>'+SECS+'</b> secondes...';
+  $('adbtn').textContent='✅ '+gainLabel;
   $('adbtn').classList.remove('show');
   $('adov').classList.add('open');
   let el=0;clearInterval(adInt);
   adInt=setInterval(()=>{
     el++;bar.style.transition='width 1s linear';bar.style.width=(el/SECS*100)+'%';
     const r=SECS-el;
-    $('adtm').innerHTML=r>0?`Patientez <b>${r}</b> sec...`:'🎉 Cliquez pour réclamer !';
-    if(el>=SECS){clearInterval(adInt);$('adbtn').classList.add('show')}
+    $('adtm').innerHTML=r>0?'Patientez <b>'+r+'</b> sec...':'Cliquez pour valider !';
+    if(el>=SECS){clearInterval(adInt);$('adbtn').classList.add('show');}
   },1000);
 }
 
-/* ── FINISH AD ── */
 async function finishAd(){
   if(!curT||!U||saving)return;
-  if(doneToday.includes(curT.id)){toast('⚠️ Déjà complétée');return}
-  if(doneToday.length>=MAX){toast('⚠️ Limite du jour atteinte');return}
+  if(doneToday.includes(curT.id)){toast('⚠️ Deja completee');return;}
+  if(doneToday.length>=MAX){toast('⚠️ Limite du jour atteinte');return;}
   clearInterval(adInt);saving=true;
   const btn=$('adbtn');btn.textContent='⏳...';btn.disabled=true;
   const t=curT;curT=null;
+
   try{
     const now=new Date().toISOString(),dj=td();
-    const insertData={
+
+    // Enregistrer la tache completee
+    const{error:e1}=await SB.from('taches_completees').insert({
       user_id:U.id,
       tache_ref:String(t.id),
       type_tache:isVIP?'vip':'stage',
-      reward:GAIN,
+      reward:isVIP?GAIN:0,  // VIP 0 = reward 0, pas de credit solde
       date_jour:dj,
       completee_le:now
-    };
-    const{error:e1}=await SB.from('taches_completees').insert(insertData);
+    });
     if(e1)throw e1;
-    const ns=(P.solde||0)+GAIN,ng=(P.gains_totaux||0)+GAIN,
-          ngj=(P.gains_jour||0)+GAIN,ngs=(P.gains_semaine||0)+GAIN,
-          ngm=(P.gains_mois||0)+GAIN,nt=(P.taches_jour||0)+1;
-    const{error:e2}=await SB.from('profiles').update({
-      solde:ns,gains_totaux:ng,gains_jour:ngj,gains_semaine:ngs,gains_mois:ngm,
-      taches_jour:nt,derniere_tache_le:new Date().toISOString()
-    }).eq('id',U.id);
-    if(e2)throw e2;
-    P={...P,solde:ns,gains_totaux:ng,gains_jour:ngj,taches_jour:nt};
+
+    // ── CORRECTION CRITIQUE ──
+    // VIP 0 : NE PAS crediter le solde — les taches sont gratuites (demo)
+    // Seul l'admin peut crediter le solde via la validation d'une recharge
+    // VIP 1+ : crediter les gains car l'utilisateur a investi reel
+    if(isVIP && GAIN > 0){
+      const ns=(P.solde||0)+GAIN,ng=(P.gains_totaux||0)+GAIN,
+            ngj=(P.gains_jour||0)+GAIN,nt=(P.taches_jour||0)+1;
+      const{error:e2}=await SB.from('profiles').update({
+        solde:ns,gains_totaux:ng,gains_jour:ngj,
+        gains_semaine:(P.gains_semaine||0)+GAIN,
+        gains_mois:(P.gains_mois||0)+GAIN,
+        taches_jour:nt,derniere_tache_le:now
+      }).eq('id',U.id);
+      if(e2)throw e2;
+      await SB.from('transactions').insert({
+        user_id:U.id,type:'gain_tache',montant:GAIN,
+        statut:'valide',note:'Tache VIP: '+t.nom,created_at:now
+      });
+      P={...P,solde:ns,gains_totaux:ng,gains_jour:ngj,taches_jour:nt};
+      $s('tb-solde',fmtF(P.solde));
+      toast('🎉 +'+fmtF(GAIN)+' credites !','ok');
+    } else {
+      // VIP 0 : juste mettre a jour le compteur de taches, pas le solde
+      const nt=(P.taches_jour||0)+1;
+      await SB.from('profiles').update({
+        taches_jour:nt,derniere_tache_le:now
+      }).eq('id',U.id);
+      P={...P,taches_jour:nt};
+      toast('✅ Tache completee ! Rechargez pour investir et gagner.','ok');
+    }
+
     doneToday.push(t.id);
-    histList.unshift({tache_ref:t.id,reward:GAIN,date_jour:dj,completee_le:now});
+    histList.unshift({tache_ref:t.id,reward:isVIP?GAIN:0,date_jour:dj,completee_le:now});
     $('adov').classList.remove('open');
-    toast('🎉 +'+fmtF(GAIN)+' crédités !','ok');
-    $s('tb-solde',fmtF(P.solde));
     updateSummary();render();
   }catch(err){
     $('adov').classList.remove('open');
     toast('❌ '+(err.message||JSON.stringify(err)),'err');
   }finally{
-    saving=false;btn.textContent='✅ Réclamer +'+fmt(GAIN)+' FCFA';btn.disabled=false;
+    saving=false;
+    const gainLabel=isVIP?'Reclamer +'+fmt(GAIN)+' FCFA':'Tache completee !';
+    btn.textContent='✅ '+gainLabel;btn.disabled=false;
   }
 }
 
-/* ── APPLIQUER UN NOUVEAU PROFIL VIP ── */
 function applyProfil(newP,showToast=false){
   const oldVip=vipNiv;
   vipNiv=newP.vip_niveau||'VIP 0';
   const conf=VIP_CONF[vipNiv]||VIP_CONF['VIP 0'];
   MAX=newP.taches_total||conf.max;
-  // Priorité : benefices_jour du profil (défini par le trigger SQL)
-  // Fallback : conf.gain (VIP_CONF)
-  // Pour PROMO : benefices_jour = 200 ou 450 selon le plan
-  if(newP.benefices_jour && newP.benefices_jour > 0 && newP.taches_total && newP.taches_total > 0){
-    GAIN = Math.round(newP.benefices_jour / newP.taches_total);
-  } else {
-    GAIN = conf.gain;
-  }
   isVIP=vipNiv!=='VIP 0';
+  // VIP 0 : gain = 0 (pas de credit)
+  // VIP 1+ : gain selon le plan
+  if(isVIP){
+    if(newP.benefices_jour&&newP.benefices_jour>0&&newP.taches_total&&newP.taches_total>0){
+      GAIN=Math.round(newP.benefices_jour/newP.taches_total);
+    } else {
+      GAIN=conf.gain;
+    }
+  } else {
+    GAIN=0; // Stage VIP 0 ne credite pas
+  }
   P={...P,...newP};
   $s('tb-solde',fmtF(P.solde));
-  renderBanner();
-  updateSummary();
-  if(showToast&&vipNiv!==oldVip){
-    toast('🎉 '+vipNiv+' activé ! Nouvelles tâches disponibles !','ok');
-  }
+  renderBanner();updateSummary();
+  if(showToast&&vipNiv!==oldVip)toast('🎉 '+vipNiv+' active ! Nouvelles taches disponibles !','ok');
   render();
 }
 
-/* ── INIT ── */
-/* ── REMISE À ZÉRO VIP 0 après 24h sans tâche ── */
-async function checkResetInactif(userId, profil){
-  // Seulement pour les stagiaires VIP 0
-  if(profil.vip_niveau && profil.vip_niveau !== 'VIP 0') return profil;
-
-  const derniere = profil.derniere_tache_le;
-  if(!derniere) return profil; // Jamais travaillé → pas de pénalité
-
-  const diffH = (Date.now() - new Date(derniere).getTime()) / 3600000;
-  if(diffH < 24) return profil; // Moins de 24h → rien à faire
-
-  // ── Plus de 24h sans tâche : RESET ──
-  //
-  // ✅ Remis à 0 :
-  //    solde, gains_jour, gains_totaux   → argent perdu
-  //    taches_jour                        → compteur tâches du jour remis à 0
-  //    doneToday (côté client)            → les tâches redeviennent disponibles
-  //
-  // 🔒 NE CHANGE PAS :
-  //    created_at  → le stage continue à s'écouler depuis l'inscription
-  //                  Si on est J2, on reste J2. Le stage ne recommence pas.
-
-  const{error} = await SB.from('profiles')
-    .update({
-      solde:        0,
-      gains_jour:   0,
-      gains_totaux: 0,
-      taches_jour:  0   // tâches du jour remises à 0 → peut refaire ses tâches
-    })
-    .eq('id', userId)
-    .eq('vip_niveau', 'VIP 0');
-
+async function checkResetInactif(userId,profil){
+  if(profil.vip_niveau&&profil.vip_niveau!=='VIP 0')return profil;
+  const derniere=profil.derniere_tache_le;
+  if(!derniere)return profil;
+  const diffH=(Date.now()-new Date(derniere).getTime())/3600000;
+  if(diffH<24)return profil;
+  const{error}=await SB.from('profiles').update({
+    gains_jour:0,gains_totaux:0,taches_jour:0
+    // solde ne change plus — on ne retire pas le solde rechargé
+  }).eq('id',userId).eq('vip_niveau','VIP 0');
   if(!error){
-    // Vider doneToday côté client pour que les tâches soient disponibles
-    doneToday = [];
-
-    const ms = Date.now() - new Date(profil.created_at||Date.now()).getTime();
-    const jourStage = Math.min(Math.floor(ms/86400000)+1, DAYS_STAGE);
-    toast('⚠️ Inactif 24h — Solde et tâches remis à 0. Stage J'+jourStage+'/'+DAYS_STAGE+'.','err');
-    return {...profil, solde:0, gains_jour:0, gains_totaux:0, taches_jour:0};
+    doneToday=[];
+    toast('⚠️ Inactif 24h — Compteurs remis a 0.','err');
+    return{...profil,gains_jour:0,gains_totaux:0,taches_jour:0};
   }
   return profil;
 }
 
 async function init(){
   const{data:{session}}=await SB.auth.getSession();
-  if(!session?.user){window.location.href='index.html';return}
+  if(!session?.user){window.location.href='index.html';return;}
   U=session.user;
-
   const{data:p}=await SB.from('profiles').select('*').eq('id',U.id).single();
   let profil=p||{solde:0,gains_totaux:0,gains_jour:0,investissement:0,taches_jour:0,taches_total:3,vip_niveau:'VIP 0',created_at:U.created_at};
-
-  // Vérifier si reset nécessaire (VIP 0 + 24h inactif)
-  profil = await checkResetInactif(U.id, profil);
-
-  // Charger historique complet (les 2 types)
-  const{data:tc}=await SB.from('taches_completees')
-    .select('*').eq('user_id',U.id)
-    .order('completee_le',{ascending:false}).limit(300);
+  profil=await checkResetInactif(U.id,profil);
+  const{data:tc}=await SB.from('taches_completees').select('*').eq('user_id',U.id).order('completee_le',{ascending:false}).limit(300);
   histList=tc||[];
   doneToday=histList.filter(r=>r.date_jour===td()).map(r=>r.tache_ref).filter(Boolean);
-
   applyProfil(profil,false);
-
-  /* ── Temps réel : mise à jour dès validation recharge par admin ── */
   SB.channel('vgn-profile-'+U.id)
-    .on('postgres_changes',{
-      event:'UPDATE',schema:'public',table:'profiles',filter:`id=eq.${U.id}`
-    }, payload=>{
-      applyProfil(payload.new,true);
-    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles',filter:'id=eq.'+U.id},
+      payload=>{applyProfil(payload.new,true);})
     .subscribe();
 }
 
