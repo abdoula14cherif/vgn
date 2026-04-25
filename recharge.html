@@ -681,15 +681,18 @@ async function verifierSP(txId,orderId){
 
 async function confirmerPlan(ref,txId,mont,label){
   clearInterval(spInterval);
-  setP('✅ Confirmé ! Activation...',100);
+  setP('✅ Paiement recu ! En attente de validation...',100);
   const ico=$('t3-ico'); if(ico){ico.textContent='✅';ico.classList.remove('spin');}
-  await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString(),ref_transaction:txId||ref}).eq('ref_transaction',ref).eq('user_id',U.id);
-  const{data:np}=await SB.from('profiles').select('solde').eq('id',U.id).single();
-  if(np) $s('tb-solde',fmt(np.solde||0)+' F');
-  $s('suc-emoji','🎉');$s('suc-title','Paiement confirmé !');
-  $s('suc-sub','Votre plan a été activé. Bonne chance !');
-  $s('suc-badge','✅ '+label+' — Activé !');
-  toast('🎉 Paiement confirmé !','ok');
+  // Marquer en_attente_paiement — l'admin validera et creditera manuellement
+  await SB.from('recharges').update({
+    statut:'en_attente_paiement',
+    ref_transaction:txId||ref
+  }).eq('ref_transaction',ref).eq('user_id',U.id);
+  $s('suc-emoji','✅');
+  $s('suc-title','Paiement recu !');
+  $s('suc-sub','Votre paiement a bien ete recu. Votre compte sera credite apres validation par notre equipe (quelques minutes).');
+  $s('suc-badge','⏳ '+label+' — En cours de validation');
+  toast('✅ Paiement recu ! Validation en cours...','ok');
   await chargerHistorique();
   setTimeout(()=>goPage(4),1200);
 }
@@ -749,7 +752,7 @@ init();
     (async()=>{
       const{data:{session}}=await SB.auth.getSession();
       if(session?.user?.id){
-        await SB.from('recharges').update({statut:'valide',valide_le:new Date().toISOString(),ref_transaction:token}).eq('ref_transaction',ref).eq('user_id',session.user.id);
+        await SB.from('recharges').update({statut:'en_attente_paiement',ref_transaction:token}).eq('ref_transaction',ref).eq('user_id',session.user.id);
       }
       await chargerHistorique();
     })();
