@@ -244,7 +244,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
 
   <div class="frais-box" id="frais-box" style="display:none">
     <div class="fr-row"><span class="fr-lbl">Montant demande</span><span class="fr-val" id="f-mont">—</span></div>
-    <div class="fr-row"><span class="fr-lbl">Frais (5%)</span><span class="fr-val" id="f-frais">—</span></div>
+    <div class="fr-row"><span class="fr-lbl">Frais (10%)</span><span class="fr-val" id="f-frais">—</span></div>
     <div class="fr-row net"><span class="fr-lbl">Vous recevrez</span><span class="fr-val" id="f-net">—</span></div>
   </div>
 
@@ -266,7 +266,7 @@ body{max-width:430px;margin:0 auto;background:var(--bg);overflow-x:hidden}
     <div class="ov-row"><span class="ov-lbl">Pays</span><span class="ov-val" id="ov-pays">—</span></div>
     <div class="ov-row"><span class="ov-lbl">Compte</span><span class="ov-val" id="ov-compte">—</span></div>
     <div class="ov-row"><span class="ov-lbl">Montant</span><span class="ov-val" id="ov-mont">—</span></div>
-    <div class="ov-row"><span class="ov-lbl">Frais (5%)</span><span class="ov-val r" id="ov-frais">—</span></div>
+    <div class="ov-row"><span class="ov-lbl">Frais (10%)</span><span class="ov-val r" id="ov-frais">—</span></div>
     <div class="ov-row"><span class="ov-lbl">Vous recevrez</span><span class="ov-val g" id="ov-net">—</span></div>
     <div class="ov-btns">
       <button class="btn-cancel" onclick="closeOv()">Annuler</button>
@@ -305,7 +305,7 @@ function toast(msg,type=''){
 const MIN_ABSOLU = 1500;
 let MIN = 1500; // sera mis à jour depuis la DB mais jamais < 1500
 
-const FRAIS = 0.05;
+const FRAIS = 0.10;
 let U = null, P = null;
 let meth = 'momo', pi = 0, ri = 0;
 
@@ -526,7 +526,7 @@ async function soumettre(){
     $('inp-montant').value='';
     $('frais-box').style.display='none';
     $('hint-m').textContent='';
-    $s('sc-sub','Minimum : '+fmtF(MIN_ABSOLU)+' · Frais : 5%');
+    $s('sc-sub','Minimum : '+fmtF(MIN_ABSOLU)+' · Frais : 10%');
     chargerHisto();
   }catch(err){
     toast(err.message,'err');
@@ -576,7 +576,7 @@ async function init(){
   MIN=1500;
   $s('sc-solde',fmtF(P.solde));
   $s('tb-solde',fmtF(P.solde));
-  $s('sc-sub','Minimum : '+fmtF(MIN)+' FCFA · Frais : 5%');
+  $s('sc-sub','Minimum : '+fmtF(MIN)+' FCFA · Frais : 10%');
   if((P.solde||0)<MIN){
     $('btn-retrait').disabled=true;
     $('btn-retrait').textContent='Solde insuffisant (min '+fmtF(MIN)+')';
