@@ -212,6 +212,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="tab" id="tb-notifs" onclick="goTab('notifs')">🔔 Notifs</div>
     <div class="tab" id="tb-stats" onclick="goTab('stats')">📈 Stats</div>
     <div class="tab" id="tb-cond" onclick="goTab('cond')">⚙️ Conditions</div>
+    <div class="tab" id="tb-parr" onclick="goTab('parr')">👥 Parrainage</div>
   </div>
 </div>
 
@@ -326,6 +327,31 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <button class="abtn" style="background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.25);padding:10px;border-radius:10px;font-size:.72rem" onclick="ajouterPreset('vip0block')">🚫 Bloquer VIP 0 sans filleul VIP</button>
     <button class="abtn" style="background:var(--g2);color:var(--g);border:1px solid rgba(0,217,126,.25);padding:10px;border-radius:10px;font-size:.72rem" onclick="ajouterPreset('min1500')">💰 Minimum retrait 1 500 FCFA</button>
     <button class="abtn" style="background:var(--p2);color:var(--p);border:1px solid rgba(155,109,255,.25);padding:10px;border-radius:10px;font-size:.72rem" onclick="ajouterPreset('frais10')">📊 Frais retrait 10%</button>
+  </div>
+</div>
+
+<!-- PARRAINAGE -->
+<div class="page" id="p-parr">
+  <div style="margin-top:4px">
+    <!-- KPIs parrainage -->
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-ico" style="background:var(--g2)">👥</div><div class="kpi-val cg" id="pr-total-filleuls">—</div><div class="kpi-lbl">Total filleuls</div></div>
+      <div class="kpi"><div class="kpi-ico" style="background:var(--y2)">💰</div><div class="kpi-val cy" id="pr-total-comm">—</div><div class="kpi-lbl">Commissions versées</div></div>
+      <div class="kpi"><div class="kpi-ico" style="background:var(--r2)">⚠️</div><div class="kpi-val cr" id="pr-manquants">—</div><div class="kpi-lbl">Commissions manquantes</div></div>
+      <div class="kpi"><div class="kpi-ico" style="background:var(--p2)">🔗</div><div class="kpi-val cp" id="pr-sans-parrain">—</div><div class="kpi-lbl">Sans lien parrain</div></div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters" id="f-parr">
+      <div class="chip on" onclick="filtParr('tous',this)">Tous</div>
+      <div class="chip" onclick="filtParr('manquant',this)">⚠️ Commission manquante</div>
+      <div class="chip" onclick="filtParr('sans_lien',this)">🔗 Sans lien parrain</div>
+      <div class="chip" onclick="filtParr('ok',this)">✅ OK</div>
+    </div>
+    <div class="search"><span class="search-ico">🔍</span><input id="q-parr" placeholder="Nom, email, code parrain..." oninput="renderParrainage()"></div>
+
+    <!-- Liste -->
+    <div id="list-parr"></div>
   </div>
 </div>
 </div><!-- /app -->
@@ -526,6 +552,7 @@ function goTab(name){
   $('tb-'+name)?.classList.add('on');
   $('p-'+name)?.classList.add('on');
   if(name==='notifs') $('notif-dot').style.display='none';
+  if(name==='parr') loadParrainage();
 }
 
 // ── LOAD ALL ──
@@ -1142,6 +1169,238 @@ async function supprimerCondition(id){
 }
 
 
+// ══ PARRAINAGE ══
+let PARR_DATA=[];
+let FILT_PARR='tous';
+let VC_DATA=null; // data pour verser commission
+
+async function loadParrainage(){
+  const el=document.getElementById('list-parr');
+  if(el) el.innerHTML='<div style="text-align:center;padding:24px"><span class="ld"></span></div>';
+
+  // Charger tous les profils avec leur code_parrain et code_parrainage
+  const{data:users}=await SB.from('profiles')
+    .select('id,full_name,email,code_parrainage,code_parrain,parrain_id,solde,investissement,vip_niveau,created_at')
+    .order('created_at',{ascending:false}).limit(500);
+
+  if(!users?.length){if(el)el.innerHTML='<div class="empty"><div class="empty-ico">👥</div><div class="empty-t">Aucun utilisateur</div></div>';return;}
+
+  // Pour chaque utilisateur qui a un code_parrain, chercher le parrain
+  // Construire map code_parrainage → user
+  const byCode=Object.fromEntries((users||[]).map(u=>[u.code_parrainage,u]).filter(([k])=>k));
+
+  // Charger les commissions existantes (type commission dans transactions)
+  const{data:commsExist}=await SB.from('transactions')
+    .select('user_id,montant').eq('type','commission').eq('statut','valide');
+  // Map parrain_id → total commissions reçues
+  const commMap={};
+  (commsExist||[]).forEach(t=>{
+    commMap[t.user_id]=(commMap[t.user_id]||0)+(t.montant||0);
+  });
+
+  // Charger les recharges validées par filleul
+  const{data:recharges}=await SB.from('recharges')
+    .select('user_id,montant_envoye,statut')
+    .in('statut',['valide','en_attente_paiement']);
+  const rechMap={};
+  (recharges||[]).forEach(r=>{
+    rechMap[r.user_id]=(rechMap[r.user_id]||0)+(r.montant_envoye||0);
+  });
+
+  // Construire la liste des relations parrainage
+  const relations=[];
+  for(const u of users){
+    if(!u.code_parrain) continue; // pas de parrain déclaré
+
+    // Trouver le parrain via code_parrain → code_parrainage
+    const parrain=byCode[u.code_parrain]||null;
+    const parrainId=parrain?.id||u.parrain_id||null;
+    const parrainNom=parrain?(parrain.full_name||parrain.email||'?'):'Introuvable';
+    const parrainEmail=parrain?.email||'—';
+
+    const investFilleul=rechMap[u.id]||0;
+    const commAttendue=Math.round(investFilleul*0.20); // 20% N1
+    const commRecue=parrainId?((commMap[parrainId]||0)):0;
+    // La comm reçue peut concerner plusieurs filleuls — on vérifie par filleul
+    // Pour simplifier: si investFilleul > 0 et commRecue < commAttendue → manquant
+    const commManquante=investFilleul>0&&!parrain; // pas de parrain lié
+
+    relations.push({
+      filleul:u,
+      parrainId,parrainNom,parrainEmail,
+      parrainTrouve:!!parrain,
+      investFilleul,
+      commAttendue,
+      commRecue:parrainId?(commMap[parrainId]||0):0,
+      sanslien:!parrain&&!u.parrain_id,
+      ok:!!parrain&&investFilleul===0, // lié mais pas encore investi
+    });
+  }
+
+  // Calculer KPIs
+  const totalFilleuls=relations.length;
+  const totalComm=Object.values(commMap).reduce((a,b)=>a+b,0);
+  const manquants=relations.filter(r=>r.investFilleul>0&&!r.parrainTrouve).length;
+  const sansLien=relations.filter(r=>r.sanslien).length;
+
+  document.getElementById('pr-total-filleuls').textContent=totalFilleuls;
+  document.getElementById('pr-total-comm').textContent=fmtF(totalComm);
+  document.getElementById('pr-manquants').textContent=manquants;
+  document.getElementById('pr-sans-parrain').textContent=sansLien;
+
+  PARR_DATA=relations;
+  renderParrainage();
+}
+
+function filtParr(f,el){
+  FILT_PARR=f;
+  document.getElementById('f-parr')?.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el?.classList.add('on');
+  renderParrainage();
+}
+
+function renderParrainage(){
+  const q=(document.getElementById('q-parr')?.value||'').toLowerCase();
+  let d=PARR_DATA;
+
+  if(FILT_PARR==='manquant') d=d.filter(r=>r.investFilleul>0&&!r.parrainTrouve);
+  else if(FILT_PARR==='sans_lien') d=d.filter(r=>r.sanslien);
+  else if(FILT_PARR==='ok') d=d.filter(r=>r.parrainTrouve);
+
+  if(q) d=d.filter(r=>(
+    (r.filleul.full_name||'')+(r.filleul.email||'')+(r.filleul.code_parrain||'')+(r.parrainNom||'')+(r.parrainEmail||'')
+  ).toLowerCase().includes(q));
+
+  const el=document.getElementById('list-parr');
+  if(!el)return;
+  if(!d.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">👥</div><div class="empty-t">Aucun résultat</div></div>';
+    return;
+  }
+
+  el.innerHTML=d.map(r=>{
+    const statut=!r.parrainTrouve&&r.investFilleul>0
+      ?{bg:'var(--r2)',color:'var(--r)',ico:'⚠️',lbl:'Commission manquante'}
+      :r.sanslien
+        ?{bg:'var(--y2)',color:'var(--y)',ico:'🔗',lbl:'Sans lien parrain'}
+        :r.investFilleul>0
+          ?{bg:'var(--g2)',color:'var(--g)',ico:'✅',lbl:'Commission versée'}
+          :{bg:'var(--b2)',color:'var(--b)',ico:'⏳',lbl:'Pas encore investi'};
+
+    const commBtn=(!r.parrainTrouve||!r.commAttendue)?'':
+      (r.commRecue<r.commAttendue*0.5
+        ?`<button class="abtn" style="background:var(--g2);color:var(--g);border:1px solid rgba(0,217,126,.25);padding:6px 8px;font-size:.62rem" onclick='ouvrirVersement(${JSON.stringify(r)})'>💰 Verser</button>`
+        :'');
+
+    return `<div style="background:var(--s2);border-radius:14px;border:1px solid var(--bd);margin-bottom:6px;padding:11px 13px">
+      <!-- Filleul -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:9px;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:var(--g)">${(r.filleul.full_name||'?')[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.77rem;font-weight:700;color:var(--txt)">${r.filleul.full_name||'Sans nom'}</div>
+          <div style="font-size:.61rem;color:var(--mu)">${r.filleul.email||'—'} · Code parrain saisi: <b>${r.filleul.code_parrain||'—'}</b></div>
+        </div>
+        <div style="font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:7px;background:${statut.bg};color:${statut.color}">${statut.ico} ${statut.lbl}</div>
+      </div>
+
+      <!-- Flèche -->
+      <div style="text-align:center;font-size:.7rem;color:var(--mu);margin-bottom:6px">↑ parrain de ↑</div>
+
+      <!-- Parrain -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;background:var(--s3);border-radius:10px">
+        <div style="width:28px;height:28px;border-radius:8px;background:${r.parrainTrouve?'var(--p2)':'var(--r2)'};display:flex;align-items:center;justify-content:center;font-size:.8rem">${r.parrainTrouve?'👑':'❓'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.74rem;font-weight:700;color:${r.parrainTrouve?'var(--txt)':'var(--r)'}">${r.parrainNom}</div>
+          <div style="font-size:.6rem;color:var(--mu)">${r.parrainEmail}</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:${commBtn?'8px':'0'}">
+        <div style="background:var(--s3);border-radius:8px;padding:6px 8px;text-align:center">
+          <div style="font-size:.6rem;color:var(--mu)">Investi</div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--y)">${fmtF(r.investFilleul)}</div>
+        </div>
+        <div style="background:var(--s3);border-radius:8px;padding:6px 8px;text-align:center">
+          <div style="font-size:.6rem;color:var(--mu)">Comm 20%</div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--g)">${fmtF(r.commAttendue)}</div>
+        </div>
+        <div style="background:var(--s3);border-radius:8px;padding:6px 8px;text-align:center">
+          <div style="font-size:.6rem;color:var(--mu)">Reçu (total)</div>
+          <div style="font-size:.72rem;font-weight:700;color:${r.commRecue>0?'var(--g)':'var(--r)'}">${fmtF(r.commRecue)}</div>
+        </div>
+      </div>
+      ${commBtn}
+    </div>`;
+  }).join('');
+}
+
+function ouvrirVersement(r){
+  VC_DATA=r;
+  const sub=document.getElementById('vc-sub');
+  const detail=document.getElementById('vc-detail');
+  const rapport=document.getElementById('vc-rapport');
+  if(sub) sub.textContent='Filleul: '+(r.filleul.full_name||r.filleul.email);
+  if(rapport) rapport.style.display='none';
+  if(detail) detail.innerHTML=`
+    <div style="font-size:.7rem;color:var(--mu);margin-bottom:4px">Parrain : <strong style="color:var(--txt)">${r.parrainNom}</strong> (${r.parrainEmail})</div>
+    <div style="font-size:.7rem;color:var(--mu);margin-bottom:4px">Investi par filleul : <strong style="color:var(--y)">${fmtF(r.investFilleul)} FCFA</strong></div>
+    <div style="font-size:.7rem;color:var(--mu);margin-bottom:4px">Commission N1 (20%) : <strong style="color:var(--g)">${fmtF(r.commAttendue)} FCFA</strong></div>
+    <div style="font-size:.7rem;color:var(--mu)">Déjà reçu (parrain) : <strong style="color:var(--r)">${fmtF(r.commRecue)} FCFA</strong></div>`;
+  openM('m-verser-comm');
+}
+
+async function verserCommission(){
+  if(!VC_DATA)return;
+  const btn=document.getElementById('vc-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳...';}
+  try{
+    const r=VC_DATA;
+    if(!r.parrainId)throw new Error('Parrain introuvable — reconstituez le lien d\'abord');
+    const commAverser=r.commAttendue;
+    if(commAverser<=0)throw new Error('Aucune commission à verser');
+
+    // Récupérer solde actuel du parrain
+    const{data:parP}=await SB.from('profiles').select('solde,full_name').eq('id',r.parrainId).maybeSingle();
+    if(!parP)throw new Error('Profil parrain introuvable');
+
+    // Créditer
+    const nvSolde=(parP.solde||0)+commAverser;
+    const{error:e1}=await SB.from('profiles').update({solde:nvSolde}).eq('id',r.parrainId);
+    if(e1)throw new Error(e1.message);
+
+    // Enregistrer transaction
+    const{error:e2}=await SB.from('transactions').insert({
+      user_id:r.parrainId,
+      type:'commission',
+      montant:commAverser,
+      statut:'valide',
+      note:'Commission N1 20% — filleul '+( r.filleul.full_name||r.filleul.email)+' investi '+fmtF(r.investFilleul),
+      methode:'parrainage',
+      created_at:new Date().toISOString()
+    });
+    if(e2)throw new Error(e2.message);
+
+    // Notification au parrain
+    await insertNotif(r.parrainId,'payment','Commission N1 +'+fmtF(commAverser),
+      'Commission parrainage versée pour votre filleul '+( r.filleul.full_name||r.filleul.email)+'. +'+fmtF(commAverser)+' FCFA.');
+
+    const rapport=document.getElementById('vc-rapport');
+    if(rapport){
+      rapport.style.display='block';
+      rapport.innerHTML='<div style="font-size:.72rem;color:var(--g);font-weight:700">✅ Commission versée avec succès !</div>'
+        +'<div style="font-size:.67rem;color:var(--txt);margin-top:4px">+'+fmtF(commAverser)+' FCFA → '+parP.full_name+'</div>'
+        +'<div style="font-size:.65rem;color:var(--mu);margin-top:2px">Nouveau solde parrain: '+fmtF(nvSolde)+' FCFA</div>';
+    }
+    toast('✅ Commission '+fmtF(commAverser)+' versée !','ok');
+    VC_DATA=null;
+    // Recharger
+    setTimeout(()=>{loadParrainage();},1000);
+
+  }catch(err){toast('❌ '+err.message,'err');}
+  finally{if(btn){btn.disabled=false;btn.textContent='💰 Verser maintenant';}}
+}
+
 // ── TOGGLE CARDS ──
 function toggleCard(id){
   const el=document.getElementById(id);
@@ -1235,6 +1494,21 @@ document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>
     <div class="mbtns">
       <button class="m-cancel" onclick="closeM('m-correction');document.getElementById('corr-rapport').style.display='none'">Fermer</button>
       <button class="m-confirm" id="corr-btn" onclick="corrigerCompte()">🔧 Corriger maintenant</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VERSER COMMISSION -->
+<div class="modal-ov" id="m-verser-comm">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">💰 Verser la commission</div>
+    <div class="msub" id="vc-sub">—</div>
+    <div style="background:var(--s3);border-radius:10px;padding:10px 12px;margin-bottom:12px" id="vc-detail"></div>
+    <div id="vc-rapport" style="display:none;background:var(--s3);border-radius:10px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(0,217,126,.2)"></div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-verser-comm')">Annuler</button>
+      <button class="m-confirm" id="vc-btn" onclick="verserCommission()">💰 Verser maintenant</button>
     </div>
   </div>
 </div>
