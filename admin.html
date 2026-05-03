@@ -983,146 +983,168 @@ async function loadStats(){
   $('top-users').innerHTML=topInv.map((p,i)=>`<div class="card"><div class="card-head" style="cursor:default"><div class="card-ico ci-p">${['🥇','🥈','🥉'][i]||'🏅'}</div><div class="card-info"><div class="card-name">${p.vip_niveau||'VIP 0'}</div></div><div class="card-right"><div class="card-amount cy">${fmtF(p.investissement)}</div></div></div></div>`).join('')||'<div class="empty"><div class="empty-t">Aucune donnee</div></div>';
 }
 
-// ── CONDITIONS RETRAIT ──
+// ══ CONDITIONS DE RETRAIT — système parametres ══
 let CONDITIONS=[];
-let EDIT_COND_ID=null;
+
+function getDefaultConditions(){
+  return [
+    {id:'c1',nom:'Minimum retrait',type:'min_montant',valeur:'1500',vip_target:'tous',message:'Minimum 1 500 FCFA requis',actif:true},
+    {id:'c2',nom:'Frais retrait 10%',type:'frais_pct',valeur:'10',vip_target:'tous',message:'Frais 10% prélevés',actif:true},
+    {id:'c3',nom:'Blocage VIP 0',type:'blocage_vip',valeur:'filleul_vip',vip_target:'VIP 0',message:'Investissez ou invitez un filleul VIP pour débloquer les retraits',actif:true},
+    {id:'c4',nom:'Délai PROMO 30j',type:'delai_jours',valeur:'30',vip_target:'PROMO',message:'Retrait disponible 30 jours après achat du plan PROMO',actif:true},
+  ];
+}
 
 async function loadConditions(){
-  const{data,error}=await SB.from('conditions_retrait').select('*').order('ordre');
-  if(error){
-    $('list-cond').innerHTML='<div class="empty"><div class="empty-ico">⚙️</div><div class="empty-t">Table non créée — exécutez vgn-conditions-sql.sql</div></div>';
-    return;
+  try{
+    const{data,error}=await SB.from('parametres').select('valeur').eq('cle','conditions_retrait').maybeSingle();
+    if(error) throw error;
+    if(data?.valeur){
+      CONDITIONS=JSON.parse(data.valeur);
+    }else{
+      CONDITIONS=getDefaultConditions();
+      await saveConditions();
+    }
+  }catch(e){
+    // Table parametres pas encore créée → utiliser les defaults en mémoire
+    CONDITIONS=getDefaultConditions();
+    toast('Exécutez vgn-parametres-table.sql dans Supabase','err');
   }
-  CONDITIONS=data||[];
   renderConditions();
 }
 
-function renderConditions(){
-  const container=$('list-cond');
-  if(!CONDITIONS.length){
-    container.innerHTML='<div class="empty"><div class="empty-ico">⚙️</div><div class="empty-t">Aucune condition</div></div>';
-    return;
-  }
-  container.innerHTML=CONDITIONS.map(cond=>{
-    const params=cond.parametres?JSON.stringify(cond.parametres,null,2):'{}';
-    return `<div class="card" id="cond-${cond.id}">
-      <div class="card-head" onclick="toggleCard('cond-${cond.id}')">
-        <div class="card-ico ${cond.active?'ci-g':'ci-r'}">${cond.active?'✅':'❌'}</div>
-        <div class="card-info">
-          <div class="card-name">${cond.label}</div>
-          <div class="card-meta">${cond.code}</div>
-        </div>
-        <div class="card-right">
-          <span class="card-stat ${cond.active?'cs-g':'cs-r'}">${cond.active?'Actif':'Inactif'}</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="detail-row"><span class="dl">Code</span><span class="dv" style="font-family:monospace">${cond.code}</span></div>
-        <div class="detail-row"><span class="dl">Description</span><span class="dv">${cond.description||'—'}</span></div>
-        <div class="detail-row"><span class="dl">Paramètres</span><span class="dv" style="font-family:monospace;font-size:.6rem">${params}</span></div>
-        <div class="actions">
-          <button class="abtn a-valider" onclick="toggleCondition('${cond.id}',${cond.active})">${cond.active?'⏸ Désactiver':'▶ Activer'}</button>
-          <button class="abtn a-edit" onclick="ouvrirEditCond('${cond.id}')">✏️ Modifier</button>
-          <button class="abtn a-del" onclick="supprimerCondition('${cond.id}','${cond.code}')">🗑️ Supprimer</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+function saveConditions(){
+  return SB.from('parametres').upsert(
+    {cle:'conditions_retrait',valeur:JSON.stringify(CONDITIONS)},
+    {onConflict:'cle'}
+  ).then(r=>{ if(r.error) console.warn('Save conditions:',r.error.message); });
 }
 
-async function toggleCondition(id,actuel){
-  const{error}=await SB.from('conditions_retrait').update({active:!actuel,updated_at:new Date().toISOString()}).eq('id',id);
-  if(error){toast('Erreur: '+error.message,'err');return}
-  toast(actuel?'Condition désactivée':'Condition activée','ok');
-  await loadConditions();
+function renderConditions(){
+  const el=$('list-cond');
+  if(!el)return;
+  if(!CONDITIONS.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">⚙️</div><div class="empty-t">Aucune condition — utilisez les présets ci-dessous</div></div>';
+    return;
+  }
+  const typeLabels={min_montant:'💰 Minimum',frais_pct:'📊 Frais %',blocage_vip:'🚫 Blocage VIP',delai_jours:'⏳ Délai jours',message_custom:'💬 Message'};
+  el.innerHTML=CONDITIONS.map(cond=>`
+    <div style="background:var(--s2);border-radius:14px;border:1px solid ${cond.actif?'rgba(0,217,126,.3)':'rgba(239,68,68,.2)'};margin-bottom:6px;padding:11px 13px;display:flex;align-items:center;gap:9px">
+      <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;background:${cond.actif?'var(--g2)':'var(--r2)'}">
+        ${cond.actif?'✅':'⏸'}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.77rem;font-weight:600;color:var(--txt)">${cond.nom}</div>
+        <div style="font-size:.62rem;color:var(--mu);margin-top:2px">${typeLabels[cond.type]||cond.type} · Valeur: <b>${cond.valeur}</b> · VIP: ${cond.vip_target}</div>
+        <div style="font-size:.6rem;color:var(--mu);margin-top:2px;font-style:italic">${cond.message||''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+        <button onclick="toggleCondition('${cond.id}')" style="padding:4px 10px;border-radius:7px;border:none;font-size:.65rem;font-weight:700;cursor:pointer;background:${cond.actif?'var(--r2)':'var(--g2)'};color:${cond.actif?'var(--r)':'var(--g)'}">
+          ${cond.actif?'Désact.':'Activer'}
+        </button>
+        <button onclick="ouvrirEditCond('${cond.id}')" style="padding:4px 10px;border-radius:7px;border:none;font-size:.65rem;font-weight:700;cursor:pointer;background:var(--b2);color:var(--b)">
+          Modifier
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+async function toggleCondition(id){
+  const cond=CONDITIONS.find(c=>c.id===id);
+  if(!cond)return;
+  cond.actif=!cond.actif;
+  await saveConditions();
+  renderConditions();
+  toast(cond.actif?'Condition activée ✅':'Condition désactivée ⏸',cond.actif?'ok':'');
+}
+
+function onCondTypeChange(){
+  const t=$('mc-type').value;
+  const vipField=$('mc-vip-field');
+  const valLabel=$('mc-val-label');
+  if(vipField) vipField.style.display='block';
+  const labels={min_montant:'MONTANT MINIMUM (FCFA)',frais_pct:'TAUX DE FRAIS (%)',delai_jours:'NOMBRE DE JOURS',blocage_vip:'CRITÈRE (filleul_vip)',message_custom:'(laisser vide)'};
+  if(valLabel) valLabel.textContent=labels[t]||'VALEUR';
+}
+
+async function ajouterPreset(preset){
+  const presets={
+    promo30:{id:'p'+Date.now(),nom:'Blocage PROMO 30 jours',type:'delai_jours',valeur:'30',vip_target:'PROMO',message:'Retrait disponible 30 jours après achat du plan PROMO',actif:true},
+    vip0block:{id:'p'+Date.now()+1,nom:'Blocage VIP 0',type:'blocage_vip',valeur:'filleul_vip',vip_target:'VIP 0',message:'Investissez ou invitez un filleul VIP pour débloquer les retraits',actif:true},
+    min1500:{id:'p'+Date.now()+2,nom:'Minimum 1 500 FCFA',type:'min_montant',valeur:'1500',vip_target:'tous',message:'Minimum 1 500 FCFA requis pour retirer',actif:true},
+    frais10:{id:'p'+Date.now()+3,nom:'Frais retrait 10%',type:'frais_pct',valeur:'10',vip_target:'tous',message:'Frais de 10% prélevés sur chaque retrait',actif:true},
+  };
+  const p=presets[preset];
+  if(!p)return;
+  const exists=CONDITIONS.find(c=>c.type===p.type&&c.vip_target===p.vip_target);
+  if(exists){toast('Condition similaire déjà présente','err');return;}
+  CONDITIONS.push(p);
+  await saveConditions();
+  renderConditions();
+  toast('Préset ajouté et sauvegardé !','ok');
+}
+
+async function sauvegarderCondition(){
+  const nom=($('mc-nom')?.value||'').trim();
+  const type=$('mc-type')?.value||'min_montant';
+  const val=($('mc-val')?.value||'').trim();
+  const vip=$('mc-vip-target')?.value||'tous';
+  const msg=($('mc-msg')?.value||'').trim();
+  const actif=$('mc-actif')?.value==='1';
+  if(!nom){toast('Nom requis','err');return;}
+  CONDITIONS.push({id:'c'+Date.now(),nom,type,valeur:val,vip_target:vip,message:msg,actif});
+  await saveConditions();
+  renderConditions();
+  closeM('m-add-cond');
+  toast('Condition créée et sauvegardée !','ok');
 }
 
 function ouvrirEditCond(id){
   const cond=CONDITIONS.find(c=>c.id===id);
   if(!cond)return;
-  EDIT_COND_ID=id;
-  $s('mc-title','✏️ Modifier : '+cond.code);
-  $s('mc-sub',cond.code);
-  $('mc-label').value=cond.label||'';
-  $('mc-desc').value=cond.description||'';
-  $('mc-params').value=cond.parametres?JSON.stringify(cond.parametres):'{}';
-  $('mc-active').value=String(cond.active!==false);
-  openM('m-cond');
+  $('mec-id').value=id;
+  $('mec-nom').value=cond.nom;
+  $('mec-type').value=cond.type;
+  $('mec-val').value=cond.valeur;
+  $('mec-vip-target').value=cond.vip_target;
+  $('mec-msg').value=cond.message||'';
+  $('mec-actif').value=cond.actif?'1':'0';
+  openM('m-edit-cond');
 }
 
-async function saveCondition(){
-  const label=$('mc-label').value.trim();
-  const desc=$('mc-desc').value.trim();
-  const paramsStr=$('mc-params').value.trim();
-  const active=$('mc-active').value==='true';
-  if(!label){toast('Label requis','err');return}
-  let params={};
-  try{params=JSON.parse(paramsStr||'{}')}catch(e){toast('JSON invalide dans paramètres','err');return}
-  const btn=$('mc-save');btn.disabled=true;btn.textContent='...';
-  const{error}=await SB.from('conditions_retrait').update({
-    label,description:desc||null,parametres:params,active,updated_at:new Date().toISOString()
-  }).eq('id',EDIT_COND_ID);
-  if(error){toast('Erreur: '+error.message,'err');}
-  else{closeM('m-cond');toast('Condition mise à jour','ok');await loadConditions();}
-  btn.disabled=false;btn.textContent='Sauvegarder';
-}
-
-async function creerCondition(){
-  const code=$('nc-code').value.trim();
-  const label=$('nc-label').value.trim();
-  const desc=$('nc-desc').value.trim();
-  const paramsStr=$('nc-params').value.trim();
-  if(!code||!label){toast('Code et label requis','err');return}
-  let params={};
-  try{params=JSON.parse(paramsStr||'{}')}catch(e){toast('JSON invalide','err');return}
-  const{error}=await SB.from('conditions_retrait').insert({
-    code,label,description:desc||null,parametres:params,active:true,ordre:CONDITIONS.length+1
-  });
-  if(error){toast('Erreur: '+(error.message.includes('unique')?'Code déjà utilisé':error.message),'err');return}
-  toast('Condition créée','ok');
-  $('nc-code').value='';$('nc-label').value='';$('nc-desc').value='';$('nc-params').value='';
-  await loadConditions();
-}
-
-async function supprimerCondition(id,code){
-  if(!confirm('Supprimer la condition "'+code+'" ?'))return;
-  await SB.from('conditions_retrait').delete().eq('id',id);
-  toast('Condition supprimée','ok');await loadConditions();
-}
-
-
-// ── PRESETS CONDITIONS ──
-async function ajouterPreset(type){
-  const presets={
-    promo30:{code:'promo_delai',label:'Délai PROMO 30 jours',description:'Les plans PROMO 1 et 2 ne peuvent pas retirer avant 30 jours',parametres:{jours:30},ordre:4},
-    vip0block:{code:'vip0_block',label:'Bloquer VIP 0 sans filleul',description:'VIP 0 ne peut retirer que si un filleul a investi',parametres:{actif:true},ordre:3},
-    min1500:{code:'min_montant',label:'Minimum retrait 1 500 FCFA',description:'Montant minimum requis pour un retrait',parametres:{montant:1500},ordre:1},
-    frais10:{code:'frais_retrait',label:'Frais 10%',description:'10% de frais prélevés sur chaque retrait',parametres:{taux:0.10},ordre:2},
+async function mettreAJourCondition(){
+  const id=$('mec-id')?.value;
+  const idx=CONDITIONS.findIndex(c=>c.id===id);
+  if(idx<0)return;
+  CONDITIONS[idx]={
+    ...CONDITIONS[idx],
+    nom:($('mec-nom')?.value||'').trim(),
+    type:$('mec-type')?.value,
+    valeur:($('mec-val')?.value||'').trim(),
+    vip_target:$('mec-vip-target')?.value,
+    message:($('mec-msg')?.value||'').trim(),
+    actif:$('mec-actif')?.value==='1',
   };
-  const p=presets[type];if(!p)return;
-  // Vérifier si le code existe déjà
-  const existing=CONDITIONS.find(c=>c.code===p.code);
-  if(existing){
-    // Activer si désactivé
-    if(!existing.active){
-      await SB.from('conditions_retrait').update({active:true,parametres:p.parametres,updated_at:new Date().toISOString()}).eq('id',existing.id);
-      toast('Condition activée : '+p.label,'ok');
-    } else {
-      toast('Condition déjà active','ok');
-    }
-  } else {
-    const{error}=await SB.from('conditions_retrait').insert({...p,active:true});
-    if(error){toast('Erreur: '+error.message,'err');return}
-    toast('Preset ajouté : '+p.label,'ok');
-  }
-  await loadConditions();
+  await saveConditions();
+  renderConditions();
+  closeM('m-edit-cond');
+  toast('Condition mise à jour !','ok');
 }
 
-// ── UI ──
-function toggleCard(id){const el=$(id);if(!el)return;const was=el.classList.contains('open');document.querySelectorAll('.card.open,.ucard.open').forEach(e=>e.classList.remove('open'));if(!was)el.classList.add('open');}
+async function supprimerCondition(id){
+  if(!confirm('Supprimer cette condition ?'))return;
+  CONDITIONS=CONDITIONS.filter(c=>c.id!==id);
+  await saveConditions();
+  renderConditions();
+  closeM('m-edit-cond');
+  toast('Condition supprimée','ok');
+}
+
+
 function openM(id){$(id)?.classList.add('open')}
 function closeM(id){$(id)?.classList.remove('open')}
 document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
 </script>
 </body>
 </html>
