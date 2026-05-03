@@ -211,6 +211,7 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="tab" id="tb-users" onclick="goTab('users')">👥 Utilisateurs</div>
     <div class="tab" id="tb-notifs" onclick="goTab('notifs')">🔔 Notifs</div>
     <div class="tab" id="tb-stats" onclick="goTab('stats')">📈 Stats</div>
+    <div class="tab" id="tb-cond" onclick="goTab('cond')">⚙️ Conditions</div>
   </div>
 </div>
 
@@ -308,6 +309,25 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   <div class="sh"><h3>🏆 Top investisseurs</h3></div>
   <div id="top-users" class="list"></div>
 </div>
+<!-- CONDITIONS RETRAIT -->
+<div class="page" id="p-cond">
+  <div style="margin-bottom:12px;padding:10px 12px;background:var(--b2);border-radius:12px;border:1px solid rgba(79,142,247,.2);font-size:.7rem;color:var(--b)">
+    ℹ️ Les conditions actives s'appliquent automatiquement sur la page retrait. Désactiver une condition supprime la restriction.
+  </div>
+
+  <!-- LISTE CONDITIONS -->
+  <div class="sh"><h3>⚙️ Conditions actives</h3><span class="sh-link" onclick="openM('m-add-cond')">+ Ajouter</span></div>
+  <div id="list-cond"></div>
+
+  <!-- PRÉSETS RAPIDES -->
+  <div class="sh" style="margin-top:8px"><h3>⚡ Présets rapides</h3></div>
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+    <button class="abtn" style="background:var(--y2);color:var(--y);border:1px solid rgba(240,180,41,.25);padding:10px;border-radius:10px;font-size:.72rem" onclick="ajouterPreset('promo30')">🔥 Bloquer PROMO 1&2 pendant 30 jours</button>
+    <button class="abtn" style="background:var(--r2);color:var(--r);border:1px solid rgba(239,68,68,.25);padding:10px;border-radius:10px;font-size:.72rem" onclick="ajouterPreset('vip0block')">🚫 Bloquer VIP 0 sans filleul VIP</button>
+    <button class="abtn" style="background:var(--g2);color:var(--g);border:1px solid rgba(0,217,126,.25);padding:10px;border-radius:10px;font-size:.72rem" onclick="ajouterPreset('min1500')">💰 Minimum retrait 1 500 FCFA</button>
+    <button class="abtn" style="background:var(--p2);color:var(--p);border:1px solid rgba(155,109,255,.25);padding:10px;border-radius:10px;font-size:.72rem" onclick="ajouterPreset('frais10')">📊 Frais retrait 10%</button>
+  </div>
+</div>
 </div><!-- /app -->
 
 <!-- MODAL MODIFIER -->
@@ -316,12 +336,31 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="mhandle"></div>
     <div class="mtitle">✏️ Modifier le profil</div>
     <div class="msub" id="me-sub">—</div>
+    <div style="background:var(--s3);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:.65rem;color:var(--mu)">
+      Plan investi actuel : <strong id="me-plan-actuel" style="color:var(--g)">—</strong> · Rechargé : <strong id="me-total-rech" style="color:var(--y)">—</strong>
+    </div>
     <div class="mf"><label>SOLDE (FCFA)</label><input type="number" id="me-solde"></div>
+    <div class="mf"><label>INVESTISSEMENT (FCFA)</label><input type="number" id="me-invest"></div>
     <div class="mf"><label>NIVEAU VIP</label>
-      <select id="me-vip"><option>VIP 0</option><option>VIP 1</option><option>VIP 2</option><option>VIP 3</option><option>VIP 4</option><option>VIP 5</option><option>VIP 6</option><option>VIP 7</option><option>VIP 8</option><option>VIP 9</option></select>
+      <select id="me-vip">
+        <option>VIP 0</option><option>PROMO 1</option><option>PROMO 2</option>
+        <option>VIP 1</option><option>VIP 2</option><option>VIP 3</option>
+        <option>VIP 4</option><option>VIP 5</option><option>VIP 6</option>
+        <option>VIP 7</option><option>VIP 8</option><option>VIP 9</option>
+      </select>
     </div>
     <div class="mf"><label>GAINS TOTAUX</label><input type="number" id="me-gains"></div>
-    <div class="mbtns"><button class="m-cancel" onclick="closeM('m-edit')">Annuler</button><button class="m-confirm" id="me-save" onclick="saveEdit()">💾 Sauvegarder</button></div>
+    <div class="mf"><label>GAINS JOUR</label><input type="number" id="me-gains-jour"></div>
+    <div class="mf"><label>TACHES TOTAL / JOUR</label><input type="number" id="me-taches"></div>
+    <div class="mf"><label>GAIN PAR TACHE (FCFA)</label><input type="number" id="me-gain-tache" placeholder="70"></div>
+    <div class="mf"><label>BÉNÉFICES PAR JOUR (FCFA)</label><input type="number" id="me-benef"></div>
+    <div style="background:var(--r2);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:8px 11px;margin-bottom:10px;font-size:.65rem;color:var(--r)">
+      ⚠️ Modifier investissement et solde directement peut causer des incohérences. Utilisez les SQL de correction si besoin.
+    </div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-edit')">Annuler</button>
+      <button class="m-confirm" id="me-save" onclick="saveEdit()">💾 Sauvegarder</button>
+    </div>
   </div>
 </div>
 
@@ -336,6 +375,76 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
   </div>
 </div>
 
+<!-- MODAL AJOUTER CONDITION -->
+<div class="modal-ov" id="m-add-cond">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">⚙️ Nouvelle condition</div>
+    <div class="msub">Définit une règle de retrait pour les utilisateurs</div>
+    <div class="mf"><label>NOM DE LA CONDITION</label><input type="text" id="mc-nom" placeholder="Ex: Blocage PROMO 30j"></div>
+    <div class="mf"><label>TYPE</label>
+      <select id="mc-type" onchange="onCondTypeChange()">
+        <option value="min_montant">💰 Montant minimum de retrait</option>
+        <option value="frais_pct">📊 Frais de retrait (%)</option>
+        <option value="blocage_vip">🚫 Blocage selon niveau VIP</option>
+        <option value="delai_jours">⏳ Délai après investissement (jours)</option>
+        <option value="message_custom">💬 Message personnalisé bloquant</option>
+      </select>
+    </div>
+    <div class="mf" id="mc-val-field"><label id="mc-val-label">VALEUR</label><input type="text" id="mc-val" placeholder="Ex: 1500"></div>
+    <div class="mf" id="mc-vip-field" style="display:none"><label>NIVEAU VIP CONCERNÉ</label>
+      <select id="mc-vip-target">
+        <option value="VIP 0">VIP 0 uniquement</option>
+        <option value="PROMO">Plans PROMO 1 et 2</option>
+        <option value="tous">Tous les niveaux</option>
+      </select>
+    </div>
+    <div class="mf"><label>MESSAGE AFFICHÉ (optionnel)</label><input type="text" id="mc-msg" placeholder="Ex: Retrait disponible dans X jours..."></div>
+    <div class="mf"><label>ACTIF</label>
+      <select id="mc-actif">
+        <option value="1">✅ Oui — activer immédiatement</option>
+        <option value="0">⏸ Non — sauvegarder désactivé</option>
+      </select>
+    </div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-add-cond')">Annuler</button>
+      <button class="m-confirm" onclick="sauvegarderCondition()">💾 Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFIER CONDITION -->
+<div class="modal-ov" id="m-edit-cond">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">✏️ Modifier la condition</div>
+    <input type="hidden" id="mec-id">
+    <div class="mf"><label>NOM</label><input type="text" id="mec-nom"></div>
+    <div class="mf"><label>TYPE</label><select id="mec-type">
+      <option value="min_montant">💰 Montant minimum</option>
+      <option value="frais_pct">📊 Frais (%)</option>
+      <option value="blocage_vip">🚫 Blocage VIP</option>
+      <option value="delai_jours">⏳ Délai jours</option>
+      <option value="message_custom">💬 Message bloquant</option>
+    </select></div>
+    <div class="mf"><label>VALEUR</label><input type="text" id="mec-val"></div>
+    <div class="mf"><label>VIP CONCERNÉ</label><select id="mec-vip-target">
+      <option value="VIP 0">VIP 0 uniquement</option>
+      <option value="PROMO">Plans PROMO</option>
+      <option value="tous">Tous</option>
+    </select></div>
+    <div class="mf"><label>MESSAGE</label><input type="text" id="mec-msg"></div>
+    <div class="mf"><label>ACTIF</label><select id="mec-actif">
+      <option value="1">✅ Actif</option>
+      <option value="0">⏸ Désactivé</option>
+    </select></div>
+    <div class="mbtns">
+      <button class="m-cancel danger" onclick="supprimerCondition($('mec-id').value)">🗑️ Supprimer</button>
+      <button class="m-confirm" onclick="mettreAJourCondition()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL NOTIF RAPIDE -->
 <div class="modal-ov" id="m-qnotif">
   <div class="modal">
@@ -345,6 +454,25 @@ body{max-width:430px;margin:0 auto;min-height:100svh;overflow-x:hidden;position:
     <div class="mf"><label>TITRE</label><input type="text" id="qn-titre"></div>
     <div class="mf"><label>MESSAGE</label><textarea id="qn-msg"></textarea></div>
     <div class="mbtns"><button class="m-cancel" onclick="closeM('m-qnotif')">Annuler</button><button class="m-confirm" id="qn-ok" onclick="sendQNotif()">📤 Envoyer</button></div>
+  </div>
+</div>
+
+<!-- MODAL CONDITION -->
+<div class="modal-ov" id="m-cond">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="mc-title">⚙️ Modifier la condition</div>
+    <div class="msub" id="mc-sub">—</div>
+    <div class="mf"><label>LABEL</label><input type="text" id="mc-label"></div>
+    <div class="mf"><label>DESCRIPTION</label><textarea id="mc-desc"></textarea></div>
+    <div class="mf"><label>PARAMÈTRES JSON</label><input type="text" id="mc-params"></div>
+    <div class="mf"><label>ACTIF</label>
+      <select id="mc-active"><option value="true">✅ Activé</option><option value="false">❌ Désactivé</option></select>
+    </div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-cond')">Annuler</button>
+      <button class="m-confirm" id="mc-save" onclick="saveCondition()">💾 Sauvegarder</button>
+    </div>
   </div>
 </div>
 
@@ -402,7 +530,7 @@ function goTab(name){
 
 // ── LOAD ALL ──
 async function loadAll(){
-  await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats()]);
+  await Promise.all([loadDash(),loadRecharges(),loadRetraits(),loadUsers(),loadNotifHist(),loadStats(),loadConditions()]);
   // Refresh auto toutes les 30s
   clearInterval(loadAll._timer);
   loadAll._timer=setInterval(()=>{loadDash();if(FILT_RECH==='en_attente')loadRecharges();},30000);
@@ -531,10 +659,7 @@ async function validerRecharge(id,uid,planLabel,planGain,planTaches){
       if(parrain){
         const comm1=Math.round(montant*0.20);
         await SB.from('profiles').update({solde:(parrain.solde||0)+comm1}).eq('id',parrain.id);
-        await SB.from('transactions').insert({
-          user_id:parrain.id,type:'commission',montant:comm1,statut:'valide',
-          note:'Commission N1 20% sur '+montant+' FCFA',methode:'parrainage'
-        });
+        // commission N1 creditée sur solde uniquement
         await insertNotif(parrain.id,'payment','Commission N1 +'+fmtF(comm1),
           'Votre filleul a investi '+fmtF(montant)+'. 20% = '+fmtF(comm1)+' FCFA.');
         if(parrain.code_parrain){
@@ -631,7 +756,9 @@ function renderCardList(container,data,type,mini=false){
     if(isRech){
       detailRows=`
         <div class="detail-row"><span class="dl">Email</span><span class="dv">${email||'—'}</span></div>
-        <div class="detail-row"><span class="dl">Plan</span><span class="dv">${r.plan_label||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Plan</span><span class="dv cg">${r.plan_label||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Type recharge</span><span class="dv">${r.type_recharge||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Gain / tache</span><span class="dv">${r.plan_gain?fmtF(r.plan_gain)+' FCFA':'—'}</span></div>
         <div class="detail-row"><span class="dl">Operateur</span><span class="dv">${r.operateur||'—'}</span></div>
         <div class="detail-row"><span class="dl">N expediteur</span><span class="dv">${r.num_expediteur||'—'}</span></div>
         <div class="detail-row"><span class="dl">Reference</span><span class="dv">${r.ref_transaction||'—'}</span></div>
@@ -704,6 +831,10 @@ function renderUsers(){
           <div class="uc-cell"><div class="uc-cl">CODE PARRAIN</div><div class="uc-cv" style="font-size:.65rem">${u.code_parrainage||'—'}</div></div>
           <div class="uc-cell"><div class="uc-cl">INSCRIT LE</div><div class="uc-cv" style="font-size:.65rem">${dtf(u.created_at)}</div></div>
         </div>
+        ${u.retrait_bloque?'<div style="margin-bottom:8px;padding:6px 9px;background:var(--r2);border-radius:8px;font-size:.65rem;color:var(--r)">🚫 Retrait bloqué manuellement'+(u.raison_blocage?' — '+u.raison_blocage:'')+'</div>':''}
+        <div style="margin-bottom:8px;padding:6px 9px;background:var(--s3);border-radius:8px;font-size:.65rem;color:var(--mu)">
+          Plan: <span style="color:var(--g);font-weight:700">${RECHARGES.filter(r=>r.user_id===u.id&&r.statut==='valide').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0]?.plan_label||'—'}</span>
+        </div>
         <div class="actions">
           <button class="abtn a-edit" onclick="openEdit('${u.id}','${safeNom}',${u.solde||0},'${vip}',${u.gains_totaux||0})">✏️ Modifier</button>
           <button class="abtn a-notif" onclick="openQNotif('${u.id}','${safeNom}')">🔔 Notifier</button>
@@ -715,15 +846,49 @@ function renderUsers(){
 }
 
 // ── MODIFIER ──
-function openEdit(id,nom,solde,vip,gains){EDIT_ID=id;$s('me-sub',nom);$('me-solde').value=solde;$('me-vip').value=vip;$('me-gains').value=gains;openM('m-edit');}
+async function openEdit(id,nom,solde,vip,gains){
+  EDIT_ID=id;
+  $s('me-sub',nom);
+  $('me-solde').value=solde;
+  $('me-vip').value=vip;
+  $('me-gains').value=gains;
+  const u=USERS.find(x=>x.id===id)||{};
+  $('me-invest').value=u.investissement||0;
+  $('me-gains-jour').value=u.gains_jour||0;
+  $('me-taches').value=u.taches_total||0;
+  $('me-benef').value=u.benefices_jour||0;
+  // Blocage retrait
+  if($('me-retrait-bloque')) $('me-retrait-bloque').checked=!!u.retrait_bloque;
+  if($('me-raison-blocage')) $('me-raison-blocage').value=u.raison_blocage||'';
+  // Plan investi depuis recharges
+  $s('me-plan-actuel','Chargement...');$s('me-total-rech','...');
+  const{data:rechs}=await SB.from('recharges').select('plan_label,montant_envoye,statut,created_at,type_recharge')
+    .eq('user_id',id).eq('statut','valide').order('created_at',{ascending:false}).limit(10);
+  const plans=(rechs||[]).map(r=>r.plan_label).filter(Boolean);
+  const dernierPlan=plans[0]||'Aucun';
+  const totalRech=(rechs||[]).reduce((a,r)=>a+(r.montant_envoye||0),0);
+  const plansList=plans.slice(0,3).join(', ')||(dernierPlan);
+  $s('me-plan-actuel',plansList);
+  $s('me-total-rech',fmtF(totalRech));
+  openM('m-edit');
+}
 async function saveEdit(){
   const solde=parseFloat($('me-solde').value)||0;
+  const investissement=parseFloat($('me-invest').value)||0;
   const vip=$('me-vip').value;
   const gains=parseFloat($('me-gains').value)||0;
+  const gains_jour=parseFloat($('me-gains-jour').value)||0;
+  const taches_total=parseInt($('me-taches').value)||0;
+  const benefices_jour=parseFloat($('me-benef').value)||0;
+  const retrait_bloque=$('me-retrait-bloque')?.checked||false;
+  const raison_blocage=($('me-raison-blocage')?.value||'').trim()||null;
   const btn=$('me-save');btn.disabled=true;btn.textContent='...';
   const plan=PLANS_VIP[vip]||null;
-  const upd={solde,vip_niveau:vip,gains_totaux:gains};
-  if(plan){upd.taches_total=plan.taches;upd.benefices_jour=plan.gain*plan.taches}
+  const upd={solde,vip_niveau:vip,gains_totaux:gains,gains_jour,investissement,retrait_bloque,raison_blocage};
+  if(taches_total>0) upd.taches_total=taches_total;
+  else if(plan) upd.taches_total=plan.taches;
+  if(benefices_jour>0) upd.benefices_jour=benefices_jour;
+  else if(plan) upd.benefices_jour=plan.gain*plan.taches;
   const{error}=await SB.from('profiles').update(upd).eq('id',EDIT_ID);
   if(error) toast('Erreur: '+error.message,'err');
   else{closeM('m-edit');toast('Profil mis a jour','ok');await loadUsers()}
@@ -816,6 +981,141 @@ async function loadStats(){
   }).join('');
   const topInv=(prf.data||[]).filter(p=>p.investissement>0).slice(0,8);
   $('top-users').innerHTML=topInv.map((p,i)=>`<div class="card"><div class="card-head" style="cursor:default"><div class="card-ico ci-p">${['🥇','🥈','🥉'][i]||'🏅'}</div><div class="card-info"><div class="card-name">${p.vip_niveau||'VIP 0'}</div></div><div class="card-right"><div class="card-amount cy">${fmtF(p.investissement)}</div></div></div></div>`).join('')||'<div class="empty"><div class="empty-t">Aucune donnee</div></div>';
+}
+
+// ── CONDITIONS RETRAIT ──
+let CONDITIONS=[];
+let EDIT_COND_ID=null;
+
+async function loadConditions(){
+  const{data,error}=await SB.from('conditions_retrait').select('*').order('ordre');
+  if(error){
+    $('list-cond').innerHTML='<div class="empty"><div class="empty-ico">⚙️</div><div class="empty-t">Table non créée — exécutez vgn-conditions-sql.sql</div></div>';
+    return;
+  }
+  CONDITIONS=data||[];
+  renderConditions();
+}
+
+function renderConditions(){
+  const container=$('list-cond');
+  if(!CONDITIONS.length){
+    container.innerHTML='<div class="empty"><div class="empty-ico">⚙️</div><div class="empty-t">Aucune condition</div></div>';
+    return;
+  }
+  container.innerHTML=CONDITIONS.map(cond=>{
+    const params=cond.parametres?JSON.stringify(cond.parametres,null,2):'{}';
+    return `<div class="card" id="cond-${cond.id}">
+      <div class="card-head" onclick="toggleCard('cond-${cond.id}')">
+        <div class="card-ico ${cond.active?'ci-g':'ci-r'}">${cond.active?'✅':'❌'}</div>
+        <div class="card-info">
+          <div class="card-name">${cond.label}</div>
+          <div class="card-meta">${cond.code}</div>
+        </div>
+        <div class="card-right">
+          <span class="card-stat ${cond.active?'cs-g':'cs-r'}">${cond.active?'Actif':'Inactif'}</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="detail-row"><span class="dl">Code</span><span class="dv" style="font-family:monospace">${cond.code}</span></div>
+        <div class="detail-row"><span class="dl">Description</span><span class="dv">${cond.description||'—'}</span></div>
+        <div class="detail-row"><span class="dl">Paramètres</span><span class="dv" style="font-family:monospace;font-size:.6rem">${params}</span></div>
+        <div class="actions">
+          <button class="abtn a-valider" onclick="toggleCondition('${cond.id}',${cond.active})">${cond.active?'⏸ Désactiver':'▶ Activer'}</button>
+          <button class="abtn a-edit" onclick="ouvrirEditCond('${cond.id}')">✏️ Modifier</button>
+          <button class="abtn a-del" onclick="supprimerCondition('${cond.id}','${cond.code}')">🗑️ Supprimer</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function toggleCondition(id,actuel){
+  const{error}=await SB.from('conditions_retrait').update({active:!actuel,updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){toast('Erreur: '+error.message,'err');return}
+  toast(actuel?'Condition désactivée':'Condition activée','ok');
+  await loadConditions();
+}
+
+function ouvrirEditCond(id){
+  const cond=CONDITIONS.find(c=>c.id===id);
+  if(!cond)return;
+  EDIT_COND_ID=id;
+  $s('mc-title','✏️ Modifier : '+cond.code);
+  $s('mc-sub',cond.code);
+  $('mc-label').value=cond.label||'';
+  $('mc-desc').value=cond.description||'';
+  $('mc-params').value=cond.parametres?JSON.stringify(cond.parametres):'{}';
+  $('mc-active').value=String(cond.active!==false);
+  openM('m-cond');
+}
+
+async function saveCondition(){
+  const label=$('mc-label').value.trim();
+  const desc=$('mc-desc').value.trim();
+  const paramsStr=$('mc-params').value.trim();
+  const active=$('mc-active').value==='true';
+  if(!label){toast('Label requis','err');return}
+  let params={};
+  try{params=JSON.parse(paramsStr||'{}')}catch(e){toast('JSON invalide dans paramètres','err');return}
+  const btn=$('mc-save');btn.disabled=true;btn.textContent='...';
+  const{error}=await SB.from('conditions_retrait').update({
+    label,description:desc||null,parametres:params,active,updated_at:new Date().toISOString()
+  }).eq('id',EDIT_COND_ID);
+  if(error){toast('Erreur: '+error.message,'err');}
+  else{closeM('m-cond');toast('Condition mise à jour','ok');await loadConditions();}
+  btn.disabled=false;btn.textContent='Sauvegarder';
+}
+
+async function creerCondition(){
+  const code=$('nc-code').value.trim();
+  const label=$('nc-label').value.trim();
+  const desc=$('nc-desc').value.trim();
+  const paramsStr=$('nc-params').value.trim();
+  if(!code||!label){toast('Code et label requis','err');return}
+  let params={};
+  try{params=JSON.parse(paramsStr||'{}')}catch(e){toast('JSON invalide','err');return}
+  const{error}=await SB.from('conditions_retrait').insert({
+    code,label,description:desc||null,parametres:params,active:true,ordre:CONDITIONS.length+1
+  });
+  if(error){toast('Erreur: '+(error.message.includes('unique')?'Code déjà utilisé':error.message),'err');return}
+  toast('Condition créée','ok');
+  $('nc-code').value='';$('nc-label').value='';$('nc-desc').value='';$('nc-params').value='';
+  await loadConditions();
+}
+
+async function supprimerCondition(id,code){
+  if(!confirm('Supprimer la condition "'+code+'" ?'))return;
+  await SB.from('conditions_retrait').delete().eq('id',id);
+  toast('Condition supprimée','ok');await loadConditions();
+}
+
+
+// ── PRESETS CONDITIONS ──
+async function ajouterPreset(type){
+  const presets={
+    promo30:{code:'promo_delai',label:'Délai PROMO 30 jours',description:'Les plans PROMO 1 et 2 ne peuvent pas retirer avant 30 jours',parametres:{jours:30},ordre:4},
+    vip0block:{code:'vip0_block',label:'Bloquer VIP 0 sans filleul',description:'VIP 0 ne peut retirer que si un filleul a investi',parametres:{actif:true},ordre:3},
+    min1500:{code:'min_montant',label:'Minimum retrait 1 500 FCFA',description:'Montant minimum requis pour un retrait',parametres:{montant:1500},ordre:1},
+    frais10:{code:'frais_retrait',label:'Frais 10%',description:'10% de frais prélevés sur chaque retrait',parametres:{taux:0.10},ordre:2},
+  };
+  const p=presets[type];if(!p)return;
+  // Vérifier si le code existe déjà
+  const existing=CONDITIONS.find(c=>c.code===p.code);
+  if(existing){
+    // Activer si désactivé
+    if(!existing.active){
+      await SB.from('conditions_retrait').update({active:true,parametres:p.parametres,updated_at:new Date().toISOString()}).eq('id',existing.id);
+      toast('Condition activée : '+p.label,'ok');
+    } else {
+      toast('Condition déjà active','ok');
+    }
+  } else {
+    const{error}=await SB.from('conditions_retrait').insert({...p,active:true});
+    if(error){toast('Erreur: '+error.message,'err');return}
+    toast('Preset ajouté : '+p.label,'ok');
+  }
+  await loadConditions();
 }
 
 // ── UI ──
