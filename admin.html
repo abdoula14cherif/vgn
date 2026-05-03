@@ -838,6 +838,7 @@ function renderUsers(){
         <div class="actions">
           <button class="abtn a-edit" onclick="openEdit('${u.id}','${safeNom}',${u.solde||0},'${vip}',${u.gains_totaux||0})">✏️ Modifier</button>
           <button class="abtn a-notif" onclick="openQNotif('${u.id}','${safeNom}')">🔔 Notifier</button>
+          <button class="abtn" style="background:var(--p2);color:var(--p);border:1px solid rgba(155,109,255,.25)" onclick="ouvrirCorrection('${u.id}','${safeNom}')">🔧 Auto-corriger</button>
           <button class="abtn a-del" onclick="delUser('${u.id}','${safeNom}')">🗑️ Supprimer</button>
         </div>
       </div>
@@ -1141,10 +1142,101 @@ async function supprimerCondition(id){
 }
 
 
+// ── TOGGLE CARDS ──
+function toggleCard(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('open');
+}
+
+// ── CORRECTION AUTOMATIQUE ──
+let CORR_ID=null;
+function ouvrirCorrection(uid,nom){
+  CORR_ID=uid;
+  const s=document.getElementById('m-corr-sub');
+  if(s)s.textContent=nom;
+  const r=document.getElementById('corr-rapport');
+  if(r)r.style.display='none';
+  openM('m-correction');
+}
+async function corrigerCompte(){
+  if(!CORR_ID)return;
+  const btn=document.getElementById('corr-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Correction...';}
+  const log=[];
+  try{
+    const uid=CORR_ID;
+    const{data:p}=await SB.from('profiles').select('*').eq('id',uid).maybeSingle();
+    if(!p)throw new Error('Profil introuvable');
+    const{data:rch}=await SB.from('recharges').select('montant_envoye,plan_label,plan_gain,plan_taches,plan_niveau,type_recharge').eq('user_id',uid).in('statut',['valide','en_attente_paiement']);
+    const inv=(rch||[]).reduce((a,r)=>a+(r.montant_envoye||0),0);
+    const{data:tc}=await SB.from('taches_completees').select('reward').eq('user_id',uid);
+    const gt=(tc||[]).reduce((a,t)=>a+(t.reward||0),0);
+    const{data:cm}=await SB.from('transactions').select('montant').eq('user_id',uid).eq('type','commission').eq('statut','valide');
+    const gc=(cm||[]).reduce((a,t)=>a+(t.montant||0),0);
+    const{data:rt}=await SB.from('transactions').select('montant').eq('user_id',uid).eq('type','retrait').in('statut',['valide','en_attente']);
+    const tr=(rt||[]).reduce((a,t)=>a+(t.montant||0),0);
+    const gains=gt+gc;
+    const solde=Math.max(0,inv+gains-tr);
+    const upd={};
+    if(Math.abs((p.investissement||0)-inv)>10){upd.investissement=inv;log.push('Invest: '+fmtF(p.investissement||0)+' → '+fmtF(inv));}
+    if(Math.abs((p.gains_totaux||0)-gains)>5){upd.gains_totaux=gains;log.push('Gains: '+fmtF(p.gains_totaux||0)+' → '+fmtF(gains));}
+    if(Math.abs((p.solde||0)-solde)>50){upd.solde=solde;log.push('Solde: '+fmtF(p.solde||0)+' → '+fmtF(solde));}
+    const lv=(rch||[]).filter(r=>r.plan_niveau>0).sort((a,b)=>(b.plan_niveau||0)-(a.plan_niveau||0))[0];
+    if(lv&&p.vip_niveau!=='VIP '+lv.plan_niveau){upd.vip_niveau='VIP '+lv.plan_niveau;upd.taches_total=lv.plan_taches||3;upd.benefices_jour=(lv.plan_gain||0)*(lv.plan_taches||3);log.push('VIP: '+p.vip_niveau+' → VIP '+lv.plan_niveau);}
+    if(!p.parrain_id&&p.code_parrain){
+      const{data:pr}=await SB.from('profiles').select('id').eq('code_parrainage',p.code_parrain).maybeSingle();
+      if(pr){upd.parrain_id=pr.id;log.push('Parrain reconstruit');}
+    }
+    if(!p.parrain_id&&(upd.parrain_id||p.parrain_id)){
+      const pid=upd.parrain_id||p.parrain_id;
+      const{data:commEx}=await SB.from('transactions').select('id').eq('user_id',pid).eq('type','commission').limit(1);
+      if(!commEx?.length&&inv>0){
+        const c1=Math.round(inv*0.20);
+        const{data:pp}=await SB.from('profiles').select('solde').eq('id',pid).maybeSingle();
+        if(pp){await SB.from('profiles').update({solde:(pp.solde||0)+c1}).eq('id',pid);await SB.from('transactions').insert({user_id:pid,type:'commission',montant:c1,statut:'valide',note:'Commission N1 reconstituée',methode:'parrainage'});log.push('Commission N1 parrain: +'+fmtF(c1));}
+      }
+    }
+    if(Object.keys(upd).length){
+      const{error:e}=await SB.from('profiles').update(upd).eq('id',uid);
+      if(e)throw new Error(e.message);
+      log.push('✅ '+Object.keys(upd).length+' champ(s) corrigé(s)');
+    }else{log.push('✅ Compte déjà correct — aucune correction');}
+    const el=document.getElementById('corr-rapport');
+    if(el){el.style.display='block';el.innerHTML='<div style="font-size:.7rem;font-weight:700;color:var(--g);margin-bottom:5px">Rapport:</div>'+log.map(l=>'<div style="font-size:.67rem;color:var(--txt);padding:2px 0;border-bottom:1px solid var(--bd)">'+l+'</div>').join('');}
+    toast('Correction terminée !','ok');
+    await loadUsers();await loadRecharges();
+  }catch(err){toast('Erreur: '+err.message,'err');}
+  finally{if(btn){btn.disabled=false;btn.textContent='🔧 Corriger maintenant';}}
+}
+
 function openM(id){$(id)?.classList.add('open')}
 function closeM(id){$(id)?.classList.remove('open')}
 document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
+
 </script>
+
+<!-- MODAL CORRECTION AUTO -->
+<div class="modal-ov" id="m-correction">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">🔧 Correction automatique</div>
+    <div class="msub" id="m-corr-sub">—</div>
+    <div style="background:var(--s3);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:.68rem;color:var(--mu);line-height:1.7">
+      Cette correction va <strong style="color:var(--txt)">recalculer et synchroniser</strong> le compte :<br>
+      · Investissement = somme des recharges validées<br>
+      · Gains = tâches + commissions reçues<br>
+      · Solde = invest + gains - retraits<br>
+      · Niveau VIP selon dernier plan rechargé<br>
+      · Lien parrain reconstruit si manquant
+    </div>
+    <div id="corr-rapport" style="display:none;background:var(--s3);border-radius:10px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(0,217,126,.2)"></div>
+    <div class="mbtns">
+      <button class="m-cancel" onclick="closeM('m-correction');document.getElementById('corr-rapport').style.display='none'">Fermer</button>
+      <button class="m-confirm" id="corr-btn" onclick="corrigerCompte()">🔧 Corriger maintenant</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
